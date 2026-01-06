@@ -57,7 +57,7 @@ func Message(buf *proto.Message) *discordgo.Message {
 		MentionEveryone: buf.MentionEveryone,
 		Author:          User(buf.Author),
 		Attachments:     attachments,
-		Components:      nil, // TODO(discord/buf2struct): Support components
+		Components:      MessageComponents(buf.Components),
 		Embeds:          embeds,
 		Reactions:       nil,
 		Pinned:          buf.Pinned,

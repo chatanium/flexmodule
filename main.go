@@ -23,7 +23,11 @@ var (
 	log       hclog.Logger
 )
 
-var GUILD_ID string
+var (
+	GUILD_ID      string
+	DISCORD_TOKEN string
+	PLUGIN_PATH   string
+)
 
 func main() {
 	log = hclog.New(&hclog.LoggerOptions{
@@ -33,19 +37,31 @@ func main() {
 		ColorHeaderAndFields: true,
 	})
 
-	godotenv.Load("./private.env")
+	godotenv.Load("private.env")
 	GUILD_ID = os.Getenv("GUILD_ID")
 	if GUILD_ID == "" {
 		log.Error("GUILD_ID is not set")
 		os.Exit(1)
 	}
 
+	DISCORD_TOKEN = os.Getenv("DISCORD_TOKEN")
+	if DISCORD_TOKEN == "" {
+		log.Error("DISCORD_TOKEN is not set")
+		os.Exit(1)
+	}
+
+	PLUGIN_PATH = os.Getenv("PLUGIN_PATH")
+	if PLUGIN_PATH == "" {
+		log.Error("PLUGIN_PATH is not set")
+		os.Exit(1)
+	}
+
 	// We don't want to see the plugin logs.
 	// log.SetOutput(io.Discard)
 
-	log.Debug("starting up", "path", os.Getenv("PLUGIN_PATH"))
+	log.Debug("starting up", "path", PLUGIN_PATH)
 
-	session, err := discordgo.New("Bot " + os.Getenv("DISCORD_TOKEN"))
+	session, err := discordgo.New("Bot " + DISCORD_TOKEN)
 	if err != nil {
 		log.Error("Error creating Discord session", "error", err.Error())
 		os.Exit(1)
@@ -71,7 +87,7 @@ func main() {
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: shared.Handshake,
 		Plugins:         runtimePluginMap,
-		Cmd:             exec.Command("./bin/voice-player-module"),
+		Cmd:             exec.Command(PLUGIN_PATH),
 		Logger:          log.ResetNamed("Module").Named("TestModule"),
 		AllowedProtocols: []plugin.Protocol{
 			plugin.ProtocolGRPC,
@@ -150,17 +166,34 @@ func RunDiscordV1(client plugin.ClientProtocol, discordHelper discord.Helper) {
 	// Get hook client to call module functions
 	hook := runtimeClients.GetHook()
 
+	// // test
+	// test := &discordgo.ApplicationCommand{
+	// 	Name:        "buttons",
+	// 	Description: "Test the buttons if you got courage",
+	// }
+	// log.Debug(">> Discord", "A-A", hclog.Fmt("%+v", test))
+	// a, err := dgSession.ApplicationCommandCreate(dgSession.State.User.ID, GUILD_ID, test)
+	// if err != nil {
+	// 	log.Error("Discord", "error", err.Error())
+	// 	os.Exit(1)
+	// }
+	// log.Debug(">> Discord", "B-B", hclog.Fmt("%+v", a))
+
 	// Use the runtime's Discord helper, not the module's helper client
 	resp := hook.OnInit(discordHelper)
 	log.Debug("Discord", "initresp", hclog.Fmt("%+v", resp))
 	if len(resp.Interactions) != 0 {
+		log.Debug("Discord", "AppID", dgSession.State.User.ID)
 		for _, i := range resp.Interactions {
-			log.Debug("Discord", "interaction", hclog.Fmt("%+v", i))
-			_, err := dgSession.ApplicationCommandCreate(dgSession.State.User.ID, GUILD_ID, i)
+			log.Debug(">> Discord", "B-A", hclog.Fmt("%+v", i))
+			// int64 to int64 pointer
+			i.DefaultMemberPermissions = nil
+			_i, err := dgSession.ApplicationCommandCreate(dgSession.State.User.ID, GUILD_ID, i)
 			if err != nil {
 				log.Error("Discord", "error", err.Error())
 				os.Exit(1)
 			}
+			log.Debug(">> Discord", "B-B", hclog.Fmt("%+v", _i))
 		}
 	}
 

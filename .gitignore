@@ -1,6 +1,6 @@
 /bin
 /logs
-private.env
+.env
 /.vscode
 /helper-service
 /.claude

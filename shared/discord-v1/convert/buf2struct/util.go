@@ -2,6 +2,7 @@ package buf2struct
 
 import (
 	"time"
+
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -20,4 +21,12 @@ func TimestampValue(ts *timestamppb.Timestamp) time.Time {
 		return time.Time{}
 	}
 	return ts.AsTime()
+}
+
+func Int32PtrToIntPtr(i32 *int32) *int {
+	if i32 == nil {
+		return nil
+	}
+	i := int(*i32)
+	return &i
 }

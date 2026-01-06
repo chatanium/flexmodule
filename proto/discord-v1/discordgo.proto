@@ -4,7 +4,6 @@ option go_package = "github.com/thirdscam/chatanium-flexmodule/proto/discord-v1"
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
-import "google/protobuf/any.proto";
 
 // MessageType is the type of Message
 // https://discord.com/developers/docs/resources/channel#message-object-message-types
@@ -44,7 +43,7 @@ message Message {
 	bool mention_everyone = 9;
 	User author = 10;
 	repeated MessageAttachment attachments = 11;
-	repeated google.protobuf.Any components = 12; // Using Any for MessageComponent as it's an interface
+	repeated MessageComponent components = 12;
 	repeated MessageEmbed embeds = 13;
 	repeated User mentions = 14;
 	repeated MessageReactions reactions = 15;
@@ -95,7 +94,7 @@ message MessageSend {
 	string content = 1;
 	repeated MessageEmbed embeds = 2;
 	bool tts = 3;
-	repeated google.protobuf.Any components = 4; // Using Any for MessageComponent
+	repeated MessageComponent components = 4;
 	repeated File files = 5;
 	MessageAllowedMentions allowed_mentions = 6;
 	MessageReference reference = 7;
@@ -107,7 +106,7 @@ message MessageSend {
 // MessageEdit is used to chain parameters via ChannelMessageEditComplex.
 message MessageEdit {
 	string content = 1;
-	repeated google.protobuf.Any components = 2; // Using Any for MessageComponent
+	repeated MessageComponent components = 2;
 	repeated MessageEmbed embeds = 3;
 	MessageAllowedMentions allowed_mentions = 4;
 	MessageFlags flags = 5;
@@ -1412,7 +1411,7 @@ message WebhookParams {
     repeated File files = 5;
 
     // Slice in Go -> repeated message
-	repeated google.protobuf.Any components = 6; // Using Any for MessageComponent
+	repeated MessageComponent components = 6;
 
     // Slice of pointers in Go -> repeated message
     repeated MessageEmbed embeds = 7;
@@ -1436,7 +1435,7 @@ message WebhookEdit {
     // Pointer in Go + OmitEmpty -> optional string
     optional string content = 1;
 
-    repeated google.protobuf.Any components = 2; // Changed from optional repeated
+    repeated MessageComponent components = 2;
 
     // Pointer to Slice of Pointers in Go + OmitEmpty -> repeated message
     repeated MessageEmbed embeds = 3; // Changed from optional repeated
@@ -1466,15 +1465,199 @@ enum ChannelType {
     // ... other channel types ...
 }
 
-// ComponentType represents the type of a message component. (Needs definition based on Discord API)
+// ComponentType represents the type of a message component.
 enum ComponentType {
-    COMPONENT_TYPE_UNKNOWN = 0; // Default zero value
-    // Add specific component types based on Discord API, e.g.:
+    COMPONENT_TYPE_UNKNOWN = 0;
     COMPONENT_TYPE_ACTION_ROW = 1;
     COMPONENT_TYPE_BUTTON = 2;
     COMPONENT_TYPE_SELECT_MENU = 3;
     COMPONENT_TYPE_TEXT_INPUT = 4;
-    // ... other component types ...
+    COMPONENT_TYPE_USER_SELECT_MENU = 5;
+    COMPONENT_TYPE_ROLE_SELECT_MENU = 6;
+    COMPONENT_TYPE_MENTIONABLE_SELECT_MENU = 7;
+    COMPONENT_TYPE_CHANNEL_SELECT_MENU = 8;
+    COMPONENT_TYPE_SECTION = 9;
+    COMPONENT_TYPE_TEXT_DISPLAY = 10;
+    COMPONENT_TYPE_THUMBNAIL = 11;
+    COMPONENT_TYPE_MEDIA_GALLERY = 12;
+    COMPONENT_TYPE_FILE = 13;
+    COMPONENT_TYPE_SEPARATOR = 14;
+    COMPONENT_TYPE_CONTAINER = 17;
+}
+
+// ButtonStyle represents the style of a button component.
+enum ButtonStyle {
+    BUTTON_STYLE_UNSPECIFIED = 0;
+    BUTTON_STYLE_PRIMARY = 1;
+    BUTTON_STYLE_SECONDARY = 2;
+    BUTTON_STYLE_SUCCESS = 3;
+    BUTTON_STYLE_DANGER = 4;
+    BUTTON_STYLE_LINK = 5;
+    BUTTON_STYLE_PREMIUM = 6;
+}
+
+// TextInputStyle represents the style of a text input component.
+enum TextInputStyle {
+    TEXT_INPUT_STYLE_UNSPECIFIED = 0;
+    TEXT_INPUT_STYLE_SHORT = 1;
+    TEXT_INPUT_STYLE_PARAGRAPH = 2;
+}
+
+// SeparatorSpacingSize represents spacing size around the separator.
+enum SeparatorSpacingSize {
+    SEPARATOR_SPACING_SIZE_UNSPECIFIED = 0;
+    SEPARATOR_SPACING_SIZE_SMALL = 1;
+    SEPARATOR_SPACING_SIZE_LARGE = 2;
+}
+
+// SelectMenuDefaultValueType represents the type of an entity selected by default.
+enum SelectMenuDefaultValueType {
+    SELECT_MENU_DEFAULT_VALUE_TYPE_UNSPECIFIED = 0;
+    SELECT_MENU_DEFAULT_VALUE_TYPE_USER = 1;
+    SELECT_MENU_DEFAULT_VALUE_TYPE_ROLE = 2;
+    SELECT_MENU_DEFAULT_VALUE_TYPE_CHANNEL = 3;
+}
+
+// ============================================================
+// MESSAGE COMPONENT DEFINITIONS
+// ============================================================
+
+// MessageComponent wrapper using oneof for polymorphism
+// This replaces google.protobuf.Any for type-safe component handling
+message MessageComponent {
+    oneof component {
+        ActionsRow actions_row = 1;
+        Button button = 2;
+        SelectMenu select_menu = 3;
+        TextInput text_input = 4;
+        Section section = 5;
+        TextDisplay text_display = 6;
+        Thumbnail thumbnail = 7;
+        MediaGallery media_gallery = 8;
+        FileComponent file_component = 9;
+        Separator separator = 10;
+        Container container = 11;
+    }
+}
+
+// SelectMenuOption represents an option for a select menu.
+message SelectMenuOption {
+    string label = 1;
+    string value = 2;
+    string description = 3;
+    ComponentEmoji emoji = 4;
+    bool is_default = 5;
+}
+
+// SelectMenuDefaultValue represents an entity selected by default.
+message SelectMenuDefaultValue {
+    string id = 1;
+    SelectMenuDefaultValueType type = 2;
+}
+
+// UnfurledMediaItem represents an unfurled media item.
+message UnfurledMediaItem {
+    string url = 1;
+}
+
+// MediaGalleryItem represents an item used in MediaGallery.
+message MediaGalleryItem {
+    UnfurledMediaItem media = 1;
+    optional string description = 2;
+    bool spoiler = 3;
+}
+
+// ActionsRow is a top-level container for displaying a row of interactive components.
+message ActionsRow {
+    repeated MessageComponent components = 1;
+    int32 id = 2;
+}
+
+// Button represents a button component.
+message Button {
+    string label = 1;
+    ButtonStyle style = 2;
+    bool disabled = 3;
+    ComponentEmoji emoji = 4;
+    string url = 5;
+    string custom_id = 6;
+    string sku_id = 7;
+    int32 id = 8;
+}
+
+// SelectMenu represents a select menu component.
+message SelectMenu {
+    ComponentType menu_type = 1;
+    string custom_id = 2;
+    string placeholder = 3;
+    optional int32 min_values = 4;
+    int32 max_values = 5;
+    repeated SelectMenuDefaultValue default_values = 6;
+    repeated SelectMenuOption options = 7;
+    bool disabled = 8;
+    repeated int32 channel_types = 9;
+    int32 id = 10;
+}
+
+// TextInput represents a text input component.
+message TextInput {
+    string custom_id = 1;
+    string label = 2;
+    TextInputStyle style = 3;
+    string placeholder = 4;
+    string value = 5;
+    bool required = 6;
+    int32 min_length = 7;
+    int32 max_length = 8;
+    int32 id = 9;
+}
+
+// Section is a top-level layout component for joining text with an accessory.
+message Section {
+    int32 id = 1;
+    repeated MessageComponent components = 2;
+    MessageComponent accessory = 3;
+}
+
+// TextDisplay allows adding markdown-formatted text.
+message TextDisplay {
+    string content = 1;
+}
+
+// Thumbnail can be used as an accessory for Section.
+message Thumbnail {
+    int32 id = 1;
+    UnfurledMediaItem media = 2;
+    optional string description = 3;
+    bool spoiler = 4;
+}
+
+// MediaGallery groups images, videos or gifs into a gallery grid.
+message MediaGallery {
+    int32 id = 1;
+    repeated MediaGalleryItem items = 2;
+}
+
+// FileComponent displays an uploaded file as an attachment.
+message FileComponent {
+    int32 id = 1;
+    UnfurledMediaItem file = 2;
+    bool spoiler = 3;
+}
+
+// Separator adds vertical padding and visual division.
+message Separator {
+    int32 id = 1;
+    optional bool divider = 2;
+    optional SeparatorSpacingSize spacing = 3;
+}
+
+// Container is a visually distinct top-level layout component.
+message Container {
+    int32 id = 1;
+    optional int32 accent_color = 2;
+    bool spoiler = 3;
+    repeated MessageComponent components = 4;
 }
 
 // ApplicationCommandType represents the type of application command.
@@ -1752,7 +1935,7 @@ message MessageComponentInteractionDataResolved {
 // ModalSubmitInteractionData contains the data of modal submit interaction.
 message ModalSubmitInteractionData {
     string custom_id = 1;
-    repeated google.protobuf.Any components = 2; // Go code had json:"-" but it's data
+    repeated MessageComponent components = 2;
 }
 
 // ApplicationCommandInteractionDataOption represents an option of a slash command.
@@ -1811,7 +1994,7 @@ message InteractionResponse {
 message InteractionResponseData {
     bool tts = 1;
     string content = 2;
-    repeated google.protobuf.Any components = 3;
+    repeated MessageComponent components = 3;
     repeated MessageEmbed embeds = 4;
     optional MessageAllowedMentions allowed_mentions = 5;
     repeated File files = 6; // Go had json:"-" but it's data

@@ -60,6 +60,7 @@ func Message(s *discordgo.Message) *proto.Message {
 		MentionEveryone: s.MentionEveryone,
 		Author:          User(s.Author),
 		Attachments:     attachments,
+		Components:      MessageComponents(s.Components),
 		Embeds:          embeds,
 		Pinned:          s.Pinned,
 		Type:            proto.MessageType(s.Type),

@@ -27,6 +27,11 @@ func ApplicationCommand(buf *proto.ApplicationCommand) *discordgo.ApplicationCom
 		}
 	}
 
+	options := make([]*discordgo.ApplicationCommandOption, 0)
+	for _, v := range buf.Options {
+		options = append(options, ApplicationCommandOption(v))
+	}
+
 	return &discordgo.ApplicationCommand{
 		ID:                buf.Id,
 		ApplicationID:     buf.ApplicationId,
@@ -41,7 +46,82 @@ func ApplicationCommand(buf *proto.ApplicationCommand) *discordgo.ApplicationCom
 		NSFW:                     buf.Nsfw,
 		Description:              buf.Description,
 		DescriptionLocalizations: &descriptionLocalizations,
-		Options:                  nil, // TODO(discord/bufstruct): implements Options
+		Options:                  options,
+	}
+}
+
+func ApplicationCommandOption(buf *proto.ApplicationCommandOption) *discordgo.ApplicationCommandOption {
+	if buf == nil {
+		return nil
+	}
+
+	options := make([]*discordgo.ApplicationCommandOption, 0)
+	for _, v := range buf.Options {
+		options = append(options, ApplicationCommandOption(v))
+	}
+
+	nameLocalizations := make(map[discordgo.Locale]string)
+	if buf.NameLocalizations != nil {
+		for k, v := range buf.NameLocalizations {
+			nameLocalizations[util.StringToLocale(k)] = v
+		}
+	}
+
+	descriptionLocalizations := make(map[discordgo.Locale]string)
+	if buf.DescriptionLocalizations != nil {
+		for k, v := range buf.DescriptionLocalizations {
+			descriptionLocalizations[util.StringToLocale(k)] = v
+		}
+	}
+
+	channelType := make([]discordgo.ChannelType, 0)
+	for _, v := range buf.ChannelTypes {
+		channelType = append(channelType, discordgo.ChannelType(v))
+	}
+
+	choices := make([]*discordgo.ApplicationCommandOptionChoice, 0)
+	for _, v := range buf.Choices {
+		choices = append(choices, ApplicationCommandOptionChoice(v))
+	}
+
+	return &discordgo.ApplicationCommandOption{
+		Type:                     discordgo.ApplicationCommandOptionType(buf.Type),
+		Name:                     buf.Name,
+		NameLocalizations:        nameLocalizations,
+		Description:              buf.Description,
+		DescriptionLocalizations: descriptionLocalizations,
+		Required:                 buf.Required,
+		Choices:                  choices,
+		Options:                  options,
+		ChannelTypes:             channelType,
+		MinValue:                 buf.MinValue,
+		MaxValue:                 *buf.MaxValue,
+		MinLength:                Int32PtrToIntPtr(buf.MinLength),
+		MaxLength:                *Int32PtrToIntPtr(buf.MaxLength),
+	}
+}
+
+func ApplicationCommandOptionChoice(buf *proto.ApplicationCommandOptionChoice) *discordgo.ApplicationCommandOptionChoice {
+	if buf == nil {
+		return nil
+	}
+
+	var value any
+	switch v := buf.Value.(type) {
+	case *proto.ApplicationCommandOptionChoice_StringValue:
+		value = v.StringValue
+	case *proto.ApplicationCommandOptionChoice_IntegerValue:
+		value = v.IntegerValue
+	case *proto.ApplicationCommandOptionChoice_NumberValue:
+		value = v.NumberValue
+	default:
+		fmt.Println("ApplicationCommandOptionChoice > Unknown value type")
+		value = nil
+	}
+
+	return &discordgo.ApplicationCommandOptionChoice{
+		Name:  buf.Name,
+		Value: value,
 	}
 }
 
@@ -97,12 +177,17 @@ func ApplicationCommandInteractionData(buf *proto.ApplicationCommandInteractionD
 		return nil
 	}
 
+	options := make([]*discordgo.ApplicationCommandInteractionDataOption, 0)
+	for _, v := range buf.Options {
+		options = append(options, ApplicationCommandInteractionDataOption(v))
+	}
+
 	return &discordgo.ApplicationCommandInteractionData{
 		ID:          buf.Id,
 		Name:        buf.Name,
 		CommandType: discordgo.ApplicationCommandType(buf.CommandType),
 		Resolved:    ApplicationCommandInteractionDataResolved(buf.Resolved),
-		Options:     nil,
+		Options:     options,
 		TargetID:    buf.TargetId,
 	}
 }
@@ -117,10 +202,39 @@ func ApplicationCommandInteractionDataOption(buf *proto.ApplicationCommandIntera
 		options = append(options, ApplicationCommandInteractionDataOption(v))
 	}
 
+	fmt.Println("ApplicationCommandInteractionDataOption")
+
+	var value any
+	switch buf.Value.(type) {
+	case *proto.ApplicationCommandInteractionDataOption_StringValue:
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_StringValue).StringValue
+	case *proto.ApplicationCommandInteractionDataOption_IntegerValue:
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_IntegerValue).IntegerValue
+	case *proto.ApplicationCommandInteractionDataOption_BooleanValue:
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_BooleanValue).BooleanValue
+	case *proto.ApplicationCommandInteractionDataOption_UserValueId: // TODO: check this (ID or User struct?)
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_UserValueId).UserValueId
+	case *proto.ApplicationCommandInteractionDataOption_ChannelValueId: // TODO: check this (ID or Channel struct?)
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_ChannelValueId).ChannelValueId
+	case *proto.ApplicationCommandInteractionDataOption_RoleValueId: // TODO: check this (ID or Role struct?)
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_RoleValueId).RoleValueId
+	case *proto.ApplicationCommandInteractionDataOption_MentionableValueId: // TODO: check this
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_MentionableValueId).MentionableValueId
+	case *proto.ApplicationCommandInteractionDataOption_NumberValue:
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_NumberValue).NumberValue
+	case *proto.ApplicationCommandInteractionDataOption_AttachmentValueId:
+		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_AttachmentValueId).AttachmentValueId
+
+	// Add other types as needed
+	default:
+		fmt.Println("ApplicationCommandInteractionDataOption > Unknown value type")
+		value = nil
+	}
+
 	return &discordgo.ApplicationCommandInteractionDataOption{
 		Name:    buf.Name,
 		Type:    discordgo.ApplicationCommandOptionType(buf.Type),
-		Value:   buf.Value,
+		Value:   value,
 		Options: options,
 		Focused: buf.Focused,
 	}
@@ -151,11 +265,23 @@ func ApplicationCommandInteractionDataResolved(buf *proto.ApplicationCommandInte
 		channels[v.Id] = Channel(v)
 	}
 
+	messages := make(map[string]*discordgo.Message)
+	for _, v := range buf.Messages {
+		messages[v.Id] = Message(v)
+	}
+
+	attachments := make(map[string]*discordgo.MessageAttachment)
+	for _, v := range buf.Attachments {
+		attachments[v.Id] = MessageAttachment(v)
+	}
+
 	return &discordgo.ApplicationCommandInteractionDataResolved{
-		Users:    users,
-		Members:  members,
-		Roles:    roles,
-		Channels: channels,
+		Users:       users,
+		Members:     members,
+		Roles:       roles,
+		Channels:    channels,
+		Messages:    messages,
+		Attachments: attachments,
 	}
 }
 
@@ -212,7 +338,7 @@ func ModalSubmitInteractionData(buf *proto.ModalSubmitInteractionData) *discordg
 
 	return &discordgo.ModalSubmitInteractionData{
 		CustomID:   buf.CustomId,
-		Components: nil, // TODO(discord/bufstruct): implements Components
+		Components: MessageComponents(buf.Components),
 	}
 }
 

@@ -49,6 +49,13 @@ func ApplicationCommand(s *discordgo.ApplicationCommand) *proto.ApplicationComma
 		}
 	}
 
+	options := make([]*proto.ApplicationCommandOption, 0)
+	if s.Options != nil {
+		for _, v := range s.Options {
+			options = append(options, ApplicationCommandOption(v))
+		}
+	}
+
 	return &proto.ApplicationCommand{
 		Id:                s.ID,
 		ApplicationId:     s.ApplicationID,
@@ -63,8 +70,87 @@ func ApplicationCommand(s *discordgo.ApplicationCommand) *proto.ApplicationComma
 		Nsfw:                     s.NSFW,
 		Description:              s.Description,
 		DescriptionLocalizations: descriptionLocalizations,
-		Options:                  nil, // TODO(discord/bufstruct): implements Options
+		Options:                  options,
 	}
+}
+
+func ApplicationCommandOption(s *discordgo.ApplicationCommandOption) *proto.ApplicationCommandOption {
+	if s == nil {
+		return nil
+	}
+
+	options := make([]*proto.ApplicationCommandOption, 0)
+	for _, v := range s.Options {
+		options = append(options, ApplicationCommandOption(v))
+	}
+
+	nameLocalizations := make(map[string]string)
+	for k, v := range s.NameLocalizations {
+		nameLocalizations[string(k)] = v
+	}
+
+	descriptionLocalizations := make(map[string]string)
+	for k, v := range s.DescriptionLocalizations {
+		descriptionLocalizations[string(k)] = v
+	}
+
+	channelType := make([]proto.ChannelType, 0)
+	for _, v := range s.ChannelTypes {
+		channelType = append(channelType, proto.ChannelType(v))
+	}
+
+	choices := make([]*proto.ApplicationCommandOptionChoice, 0)
+	for _, v := range s.Choices {
+		choices = append(choices, ApplicationCommandOptionChoice(v))
+	}
+
+	result := &proto.ApplicationCommandOption{
+		Type:                     proto.ApplicationCommandOptionType(s.Type),
+		Name:                     s.Name,
+		NameLocalizations:        nameLocalizations,
+		Description:              s.Description,
+		DescriptionLocalizations: descriptionLocalizations,
+		ChannelTypes:             channelType,
+		Autocomplete:             s.Autocomplete,
+		Choices:                  choices,
+		Required:                 s.Required,
+		Options:                  options,
+		MinValue:                 s.MinValue,
+		MaxValue:                 &s.MaxValue,
+		MinLength:                IntPtrToInt32Ptr(s.MinLength),
+		MaxLength:                IntPtrToInt32Ptr(&s.MaxLength),
+	}
+
+	return result
+}
+
+func ApplicationCommandOptionChoice(s *discordgo.ApplicationCommandOptionChoice) *proto.ApplicationCommandOptionChoice {
+	if s == nil {
+		return nil
+	}
+
+	result := &proto.ApplicationCommandOptionChoice{
+		Name: s.Name,
+	}
+
+	switch v := s.Value.(type) {
+	case string:
+		result.Value = &proto.ApplicationCommandOptionChoice_StringValue{
+			StringValue: v,
+		}
+	case int:
+		result.Value = &proto.ApplicationCommandOptionChoice_IntegerValue{
+			IntegerValue: int64(v),
+		}
+	case float64:
+		result.Value = &proto.ApplicationCommandOptionChoice_NumberValue{
+			NumberValue: v,
+		}
+	default:
+		fmt.Printf("ApplicationCommandOptionChoice > unknown choice value type: %T\n", v)
+	}
+
+	return result
 }
 
 func Interaction(s *discordgo.Interaction) *proto.Interaction {
@@ -137,53 +223,8 @@ func ApplicationCommandInteractionData(s *discordgo.ApplicationCommandInteractio
 		Name:        s.Name,
 		CommandType: proto.ApplicationCommandType(s.CommandType),
 		Resolved:    ApplicationCommandInteractionDataResolved(s.Resolved),
-		Options:     options, // TODO(discord/bufstruct): implements Options
+		Options:     options,
 		TargetId:    s.TargetID,
-	}
-}
-
-func ApplicationCommandInteractionDataResolved(s *discordgo.ApplicationCommandInteractionDataResolved) *proto.ApplicationCommandInteractionDataResolved {
-	if s == nil {
-		return nil
-	}
-
-	users := make(map[string]*proto.User)
-	for k, v := range s.Users {
-		users[k] = User(v)
-	}
-
-	roles := make(map[string]*proto.Role)
-	for k, v := range s.Roles {
-		roles[k] = Role(v)
-	}
-
-	members := make(map[string]*proto.Member)
-	for k, v := range s.Members {
-		members[k] = Member(v)
-	}
-
-	channels := make(map[string]*proto.Channel)
-	for k, v := range s.Channels {
-		channels[k] = Channel(v)
-	}
-
-	messages := make(map[string]*proto.Message)
-	for k, v := range s.Messages {
-		messages[k] = Message(v)
-	}
-
-	attachments := make(map[string]*proto.MessageAttachment)
-	for k, v := range s.Attachments {
-		attachments[k] = MessageAttachment(v)
-	}
-
-	return &proto.ApplicationCommandInteractionDataResolved{
-		Users:       users,
-		Members:     members,
-		Roles:       roles,
-		Channels:    channels,
-		Messages:    messages,
-		Attachments: attachments,
 	}
 }
 
@@ -245,6 +286,51 @@ func ApplicationCommandInteractionDataOption(s *discordgo.ApplicationCommandInte
 	return result
 }
 
+func ApplicationCommandInteractionDataResolved(s *discordgo.ApplicationCommandInteractionDataResolved) *proto.ApplicationCommandInteractionDataResolved {
+	if s == nil {
+		return nil
+	}
+
+	users := make(map[string]*proto.User)
+	for k, v := range s.Users {
+		users[k] = User(v)
+	}
+
+	roles := make(map[string]*proto.Role)
+	for k, v := range s.Roles {
+		roles[k] = Role(v)
+	}
+
+	members := make(map[string]*proto.Member)
+	for k, v := range s.Members {
+		members[k] = Member(v)
+	}
+
+	channels := make(map[string]*proto.Channel)
+	for k, v := range s.Channels {
+		channels[k] = Channel(v)
+	}
+
+	messages := make(map[string]*proto.Message)
+	for k, v := range s.Messages {
+		messages[k] = Message(v)
+	}
+
+	attachments := make(map[string]*proto.MessageAttachment)
+	for k, v := range s.Attachments {
+		attachments[k] = MessageAttachment(v)
+	}
+
+	return &proto.ApplicationCommandInteractionDataResolved{
+		Users:       users,
+		Members:     members,
+		Roles:       roles,
+		Channels:    channels,
+		Messages:    messages,
+		Attachments: attachments,
+	}
+}
+
 func MessageComponentInteractionData(s *discordgo.MessageComponentInteractionData) *proto.MessageComponentInteractionData {
 	if s == nil {
 		return nil
@@ -298,7 +384,7 @@ func ModalSubmitInteractionData(s *discordgo.ModalSubmitInteractionData) *proto.
 
 	return &proto.ModalSubmitInteractionData{
 		CustomId:   s.CustomID,
-		Components: nil, // TODO(discord/bufstruct): implements Components
+		Components: MessageComponents(s.Components),
 	}
 }
 
