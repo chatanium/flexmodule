@@ -45,6 +45,13 @@ func Message(buf *proto.Message) *discordgo.Message {
 		}
 	}
 
+	var components []discordgo.MessageComponent
+	for _, c := range buf.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &discordgo.Message{
 		ID:              buf.Id,
 		ChannelID:       buf.ChannelId,
@@ -57,7 +64,7 @@ func Message(buf *proto.Message) *discordgo.Message {
 		MentionEveryone: buf.MentionEveryone,
 		Author:          User(buf.Author),
 		Attachments:     attachments,
-		Components:      MessageComponents(buf.Components),
+		Components:      components,
 		Embeds:          embeds,
 		Reactions:       nil,
 		Pinned:          buf.Pinned,
@@ -240,7 +247,7 @@ func MessageSend(buf *proto.MessageSend) *discordgo.MessageSend {
 		Files:      files,
 		StickerIDs: stickerIDs,
 		// Note: AllowedMentions and Reference need conversion functions
-		// Flags:      discordgo.MessageFlags(buf.Flags),
+		// Flags:      discordgo.MessageFlags(buf.Flags), // TODO: implement MessageFlags
 	}
 }
 
@@ -280,13 +287,41 @@ func MessageEdit(buf *proto.MessageEdit) *discordgo.MessageEdit {
 		content = &buf.Content
 	}
 
+	var components []discordgo.MessageComponent
+	for _, c := range buf.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &discordgo.MessageEdit{
-		Content:     content,
-		Embeds:      embeds,
-		Files:       files,
-		Attachments: attachments,
-		ID:          buf.Id,
-		Channel:     buf.Channel,
-		// Note: AllowedMentions and Flags need proper handling
+		Content:         content,
+		Embeds:          embeds,
+		Files:           files,
+		Attachments:     attachments,
+		ID:              buf.Id,
+		Channel:         buf.Channel,
+		AllowedMentions: MessageAllowedMentions(buf.AllowedMentions),
+		Components:      &components,
+		Flags:           discordgo.MessageFlags(buf.Flags),
+		Embed:           nil,
+	}
+}
+
+func MessageAllowedMentions(buf *proto.MessageAllowedMentions) *discordgo.MessageAllowedMentions {
+	if buf == nil {
+		return nil
+	}
+
+	var parse []discordgo.AllowedMentionType
+	for _, p := range buf.Parse {
+		parse = append(parse, discordgo.AllowedMentionType(p))
+	}
+
+	return &discordgo.MessageAllowedMentions{
+		Parse:       parse,
+		Roles:       buf.Roles,
+		Users:       buf.Users,
+		RepliedUser: buf.RepliedUser,
 	}
 }

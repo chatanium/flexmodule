@@ -84,6 +84,16 @@ func ApplicationCommandOption(buf *proto.ApplicationCommandOption) *discordgo.Ap
 		choices = append(choices, ApplicationCommandOptionChoice(v))
 	}
 
+	var maxValue float64
+	if buf.MaxValue != nil {
+		maxValue = *buf.MaxValue
+	}
+
+	var maxLength int
+	if buf.MaxLength != nil {
+		maxLength = *Int32PtrToIntPtr(buf.MaxLength)
+	}
+
 	return &discordgo.ApplicationCommandOption{
 		Type:                     discordgo.ApplicationCommandOptionType(buf.Type),
 		Name:                     buf.Name,
@@ -95,9 +105,9 @@ func ApplicationCommandOption(buf *proto.ApplicationCommandOption) *discordgo.Ap
 		Options:                  options,
 		ChannelTypes:             channelType,
 		MinValue:                 buf.MinValue,
-		MaxValue:                 *buf.MaxValue,
+		MaxValue:                 maxValue,
 		MinLength:                Int32PtrToIntPtr(buf.MinLength),
-		MaxLength:                *Int32PtrToIntPtr(buf.MaxLength),
+		MaxLength:                maxLength,
 	}
 }
 
@@ -115,7 +125,7 @@ func ApplicationCommandOptionChoice(buf *proto.ApplicationCommandOptionChoice) *
 	case *proto.ApplicationCommandOptionChoice_NumberValue:
 		value = v.NumberValue
 	default:
-		fmt.Println("ApplicationCommandOptionChoice > Unknown value type")
+		fmt.Printf("ApplicationCommandOptionChoice > Unknown value type: %+v\n", v)
 		value = nil
 	}
 
@@ -227,7 +237,7 @@ func ApplicationCommandInteractionDataOption(buf *proto.ApplicationCommandIntera
 
 	// Add other types as needed
 	default:
-		fmt.Println("ApplicationCommandInteractionDataOption > Unknown value type")
+		fmt.Printf("ApplicationCommandInteractionDataOption > Unknown value type: %+v\n", buf.Value)
 		value = nil
 	}
 
@@ -336,9 +346,16 @@ func ModalSubmitInteractionData(buf *proto.ModalSubmitInteractionData) *discordg
 		return nil
 	}
 
+	var components []discordgo.MessageComponent
+	for _, c := range buf.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &discordgo.ModalSubmitInteractionData{
 		CustomID:   buf.CustomId,
-		Components: MessageComponents(buf.Components),
+		Components: components,
 	}
 }
 

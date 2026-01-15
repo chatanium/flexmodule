@@ -30,6 +30,11 @@ func Member(buf *proto.Member) *discordgo.Member {
 		return nil
 	}
 
+	var user *discordgo.User
+	if buf.User != nil {
+		user = User(buf.User)
+	}
+
 	return &discordgo.Member{
 		GuildID:                    buf.GuildId,
 		JoinedAt:                   buf.JoinedAt.AsTime(),
@@ -42,6 +47,8 @@ func Member(buf *proto.Member) *discordgo.Member {
 		Flags:                      discordgo.MemberFlags(buf.Flags),
 		Pending:                    buf.Pending,
 		Permissions:                buf.Permissions,
+		Banner:                     buf.Banner,
+		User:                       user,
 		CommunicationDisabledUntil: util.PbTimestamp2AsTimePtr(buf.CommunicationDisabledUntil),
 	}
 }
@@ -477,4 +484,3 @@ func Webhook(buf *proto.Webhook) *discordgo.Webhook {
 	}
 	return webhook
 }
-

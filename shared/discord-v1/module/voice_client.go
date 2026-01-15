@@ -173,6 +173,9 @@ func (vc *VoiceClient) sendLoop() {
 				TimeoutMs:    req.TimeoutMs,
 			})
 			if err != nil {
+				if log != nil {
+					log.Error("sendLoop: failed to send voice packet", "error", err)
+				}
 				return
 			}
 
@@ -192,9 +195,15 @@ func (vc *VoiceClient) receiveLoop() {
 	for {
 		packet, err := vc.stream.Recv()
 		if err == io.EOF {
+			if log != nil {
+				log.Debug("receiveLoop: stream closed (EOF)")
+			}
 			return
 		}
 		if err != nil {
+			if log != nil {
+				log.Error("receiveLoop: failed to receive voice packet", "error", err)
+			}
 			return
 		}
 

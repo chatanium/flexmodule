@@ -225,6 +225,9 @@ func main() {
 		Output:     os.Stderr, // Use stderr to avoid conflicting with go-plugin's stdout handshake
 	})
 
+	// Set logger for discord module package to enable error logging before termination
+	DiscordPlugin.SetLogger(log)
+
 	broker.ServeToRuntime(map[string]plugin.Plugin{
 		"core-v1":    &CorePlugin.Plugin{Impl: &core{}},
 		"discord-v1": &DiscordPlugin.Plugin{Impl: &discord{}},

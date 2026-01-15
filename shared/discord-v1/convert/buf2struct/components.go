@@ -39,29 +39,21 @@ func MessageComponent(buf *proto.MessageComponent) discordgo.MessageComponent {
 	}
 }
 
-// MessageComponents converts a slice of proto.MessageComponent to discordgo.MessageComponent slice
-func MessageComponents(buf []*proto.MessageComponent) []discordgo.MessageComponent {
-	if buf == nil {
-		return nil
-	}
-
-	result := make([]discordgo.MessageComponent, 0, len(buf))
-	for _, c := range buf {
-		if converted := MessageComponent(c); converted != nil {
-			result = append(result, converted)
-		}
-	}
-	return result
-}
-
 // ActionsRow converts proto.ActionsRow to discordgo.ActionsRow
 func ActionsRow(buf *proto.ActionsRow) *discordgo.ActionsRow {
 	if buf == nil {
 		return nil
 	}
 
+	var components []discordgo.MessageComponent
+	for _, c := range buf.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &discordgo.ActionsRow{
-		Components: MessageComponents(buf.Components),
+		Components: components,
 		ID:         int(buf.Id),
 	}
 }
@@ -204,9 +196,16 @@ func Section(buf *proto.Section) *discordgo.Section {
 		return nil
 	}
 
+	components := make([]discordgo.MessageComponent, 0, len(buf.Components))
+	for _, c := range buf.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &discordgo.Section{
 		ID:         int(buf.Id),
-		Components: MessageComponents(buf.Components),
+		Components: components,
 		Accessory:  MessageComponent(buf.Accessory),
 	}
 }
@@ -341,10 +340,17 @@ func Container(buf *proto.Container) *discordgo.Container {
 		return nil
 	}
 
+	components := make([]discordgo.MessageComponent, 0, len(buf.Components))
+	for _, c := range buf.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	result := &discordgo.Container{
 		ID:         int(buf.Id),
 		Spoiler:    buf.Spoiler,
-		Components: MessageComponents(buf.Components),
+		Components: components,
 	}
 
 	if buf.AccentColor != nil {

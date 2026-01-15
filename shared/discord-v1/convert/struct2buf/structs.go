@@ -31,6 +31,11 @@ func Member(s *discordgo.Member) *proto.Member {
 		return nil
 	}
 
+	var user *proto.User
+	if s.User != nil {
+		user = User(s.User)
+	}
+
 	return &proto.Member{
 		GuildId:                    s.GuildID,
 		JoinedAt:                   timestamppb.New(s.JoinedAt),
@@ -43,6 +48,8 @@ func Member(s *discordgo.Member) *proto.Member {
 		Flags:                      int32(s.Flags),
 		Pending:                    s.Pending,
 		Permissions:                s.Permissions,
+		Banner:                     s.Banner,
+		User:                       user,
 		CommunicationDisabledUntil: util.AsTimePtrToPbTimestamp(s.CommunicationDisabledUntil),
 	}
 }

@@ -280,6 +280,21 @@ func ApplicationCommandInteractionDataOption(s *discordgo.ApplicationCommandInte
 					ChannelValueId: channel.ID,
 				}
 			}
+		case discordgo.ApplicationCommandOptionUser:
+			user := s.UserValue(DiscordSession)
+			if user == nil {
+				fmt.Println("ApplicationCommandInteractionDataOption > discordgo.User is nil")
+				result.Value = &proto.ApplicationCommandInteractionDataOption_UserValueId{
+					UserValueId: "",
+				}
+			} else {
+				result.Value = &proto.ApplicationCommandInteractionDataOption_UserValueId{
+					UserValueId: user.ID,
+				}
+			}
+		case discordgo
+		default:
+			fmt.Printf("ApplicationCommandInteractionDataOption > unknown option value type for option '%s' of type %d\n", s.Name, s.Type)
 		}
 	}
 
@@ -382,9 +397,16 @@ func ModalSubmitInteractionData(s *discordgo.ModalSubmitInteractionData) *proto.
 		return nil
 	}
 
+	var components []*proto.MessageComponent
+	for _, c := range s.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &proto.ModalSubmitInteractionData{
 		CustomId:   s.CustomID,
-		Components: MessageComponents(s.Components),
+		Components: components,
 	}
 }
 

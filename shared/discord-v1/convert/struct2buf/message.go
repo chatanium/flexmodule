@@ -48,6 +48,13 @@ func Message(s *discordgo.Message) *proto.Message {
 		}
 	}
 
+	var components []*proto.MessageComponent
+	for _, c := range s.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &proto.Message{
 		Id:              s.ID,
 		ChannelId:       s.ChannelID,
@@ -60,7 +67,7 @@ func Message(s *discordgo.Message) *proto.Message {
 		MentionEveryone: s.MentionEveryone,
 		Author:          User(s.Author),
 		Attachments:     attachments,
-		Components:      MessageComponents(s.Components),
+		Components:      components,
 		Embeds:          embeds,
 		Pinned:          s.Pinned,
 		Type:            proto.MessageType(s.Type),
@@ -259,7 +266,7 @@ func MessageSend(s *discordgo.MessageSend) *proto.MessageSend {
 		Files:      files,
 		StickerIds: stickerIDs,
 		// Note: AllowedMentions and Reference need conversion functions
-		// Flags:      proto.MessageFlags(s.Flags),
+		// Flags:      proto.MessageFlags(s.Flags), // TODO: implement MessageFlags
 	}
 }
 

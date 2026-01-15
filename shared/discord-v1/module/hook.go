@@ -24,7 +24,16 @@ type GRPCServer struct {
 }
 
 // OnInit is called when the discord plugin is initialized.
-func (m *GRPCServer) OnInit(ctx context.Context, req *proto.InitRequest) (*proto.InitResponse, error) {
+func (m *GRPCServer) OnInit(ctx context.Context, req *proto.InitRequest) (resp *proto.InitResponse, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if log != nil {
+				log.Error("OnInit panic recovered", "panic", r)
+			}
+			err = fmt.Errorf("panic in OnInit: %v", r)
+			resp = nil
+		}
+	}()
 	// Dial the broker server using the helper server ID provided by runtime
 	conn, err := m.broker.Dial(req.HelperServerId)
 	if err != nil {
@@ -53,10 +62,10 @@ func (m *GRPCServer) OnInit(ctx context.Context, req *proto.InitRequest) (*proto
 		vsAware.SetVoiceStream(voiceStreamClient)
 	}
 
-	resp := m.Impl.OnInit(helperClient)
+	initResp := m.Impl.OnInit(helperClient)
 
 	interactions := make([]*proto.ApplicationCommand, 0)
-	for _, v := range resp.Interactions {
+	for _, v := range initResp.Interactions {
 		interactions = append(interactions, struct2buf.ApplicationCommand(v))
 	}
 
@@ -66,7 +75,17 @@ func (m *GRPCServer) OnInit(ctx context.Context, req *proto.InitRequest) (*proto
 }
 
 // OnCreateChatMessage is called when a message is created from the runtime.
-func (m *GRPCServer) OnCreateMessage(ctx context.Context, req *proto.Message) (*proto_common.Empty, error) {
+func (m *GRPCServer) OnCreateMessage(ctx context.Context, req *proto.Message) (resp *proto_common.Empty, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if log != nil {
+				log.Error("OnCreateMessage panic recovered", "panic", r)
+			}
+			err = fmt.Errorf("panic in OnCreateMessage: %v", r)
+			resp = nil
+		}
+	}()
+
 	// Convert the protobuf message to a discordgo.Message struct
 	m.Impl.OnCreateChatMessage(buf2struct.Message(req))
 
@@ -75,7 +94,17 @@ func (m *GRPCServer) OnCreateMessage(ctx context.Context, req *proto.Message) (*
 }
 
 // OnCreateInteraction is called when an interaction is created from the runtime.
-func (m *GRPCServer) OnCreateInteraction(ctx context.Context, req *proto.Interaction) (*proto_common.Empty, error) {
+func (m *GRPCServer) OnCreateInteraction(ctx context.Context, req *proto.Interaction) (resp *proto_common.Empty, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if log != nil {
+				log.Error("OnCreateInteraction panic recovered", "panic", r)
+			}
+			err = fmt.Errorf("panic in OnCreateInteraction: %v", r)
+			resp = nil
+		}
+	}()
+
 	// Convert the protobuf message to a discordgo.Interaction struct
 	m.Impl.OnCreateInteraction(buf2struct.Interaction(req))
 
@@ -84,7 +113,17 @@ func (m *GRPCServer) OnCreateInteraction(ctx context.Context, req *proto.Interac
 }
 
 // OnEvent is called when an (discord) event is created from the runtime.
-func (m *GRPCServer) OnEvent(ctx context.Context, req *proto.OnEventRequest) (*proto_common.Empty, error) {
+func (m *GRPCServer) OnEvent(ctx context.Context, req *proto.OnEventRequest) (resp *proto_common.Empty, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if log != nil {
+				log.Error("OnEvent panic recovered", "panic", r)
+			}
+			err = fmt.Errorf("panic in OnEvent: %v", r)
+			resp = nil
+		}
+	}()
+
 	m.Impl.OnEvent(req.Event)
 
 	// Hook function is not required to return anything to the client (runtime)
@@ -105,6 +144,9 @@ func (h *HookClient) OnInit(helper shared.Helper) shared.InitResponse {
 		HelperServerId: 0,
 	})
 	if err != nil {
+		if log != nil {
+			log.Error("HookClient.OnInit: failed to call OnInit", "error", err)
+		}
 		// Return empty response on error
 		return shared.InitResponse{
 			Interactions: []*discordgo.ApplicationCommand{},

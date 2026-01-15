@@ -149,29 +149,21 @@ func MessageComponent(s discordgo.MessageComponent) *proto.MessageComponent {
 	}
 }
 
-// MessageComponents converts a slice of discordgo.MessageComponent to proto.MessageComponent slice
-func MessageComponents(s []discordgo.MessageComponent) []*proto.MessageComponent {
-	if s == nil {
-		return nil
-	}
-
-	result := make([]*proto.MessageComponent, 0, len(s))
-	for _, c := range s {
-		if converted := MessageComponent(c); converted != nil {
-			result = append(result, converted)
-		}
-	}
-	return result
-}
-
 // ActionsRow converts discordgo.ActionsRow to proto.ActionsRow
 func ActionsRow(s *discordgo.ActionsRow) *proto.ActionsRow {
 	if s == nil {
 		return nil
 	}
 
+	components := make([]*proto.MessageComponent, 0, len(s.Components))
+	for _, c := range s.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &proto.ActionsRow{
-		Components: MessageComponents(s.Components),
+		Components: components,
 		Id:         int32(s.ID),
 	}
 }
@@ -310,9 +302,16 @@ func Section(s *discordgo.Section) *proto.Section {
 		return nil
 	}
 
+	components := make([]*proto.MessageComponent, 0, len(s.Components))
+	for _, c := range s.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	return &proto.Section{
 		Id:         int32(s.ID),
-		Components: MessageComponents(s.Components),
+		Components: components,
 		Accessory:  MessageComponent(s.Accessory),
 	}
 }
@@ -434,10 +433,17 @@ func Container(s *discordgo.Container) *proto.Container {
 		return nil
 	}
 
+	components := make([]*proto.MessageComponent, 0, len(s.Components))
+	for _, c := range s.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
 	result := &proto.Container{
 		Id:         int32(s.ID),
 		Spoiler:    s.Spoiler,
-		Components: MessageComponents(s.Components),
+		Components: components,
 	}
 
 	if s.AccentColor != nil {

@@ -3,11 +3,21 @@ package module
 import (
 	"context"
 
+	"github.com/hashicorp/go-hclog"
 	plugin "github.com/hashicorp/go-plugin"
 	proto "github.com/thirdscam/chatanium-flexmodule/proto/discord-v1"
 	shared "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1"
 	"google.golang.org/grpc"
 )
+
+// Package-level logger for error logging before module termination
+var log hclog.Logger
+
+// SetLogger allows modules to set a logger for the discord module package.
+// This enables error logging before the module terminates.
+func SetLogger(logger hclog.Logger) {
+	log = logger
+}
 
 // FlexModule uses hashicorp/go-plugin:
 // So we need to declare a separate Plugin for the runtime and module.
