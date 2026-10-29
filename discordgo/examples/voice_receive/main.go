@@ -7,8 +7,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/pion/rtp"
-	"github.com/pion/webrtc/v3/pkg/media"
-	"github.com/pion/webrtc/v3/pkg/media/oggwriter"
+	"github.com/pion/webrtc/v4/pkg/media"
+	"github.com/pion/webrtc/v4/pkg/media/oggwriter"
 )
 
 // Variables used for command line parameters
@@ -26,6 +26,8 @@ func init() {
 }
 
 func createPionRTPPacket(p *discordgo.Packet) *rtp.Packet {
+	// DiscordGo already strips RTP extensions from Opus; do not copy their IDs
+	// into the fresh header used only for Ogg recording.
 	return &rtp.Packet{
 		Header: rtp.Header{
 			Version: 2,
@@ -39,30 +41,41 @@ func createPionRTPPacket(p *discordgo.Packet) *rtp.Packet {
 	}
 }
 
-func handleVoice(c chan *discordgo.Packet) {
+func handleVoice(c <-chan *discordgo.Packet, done <-chan time.Time) {
 	files := make(map[uint32]media.Writer)
-	for p := range c {
-		file, ok := files[p.SSRC]
-		if !ok {
-			var err error
-			file, err = oggwriter.New(fmt.Sprintf("%d.ogg", p.SSRC), 48000, 2)
-			if err != nil {
-				fmt.Printf("failed to create file %d.ogg, giving up on recording: %v\n", p.SSRC, err)
+	defer func() {
+		for ssrc, file := range files {
+			if err := file.Close(); err != nil {
+				fmt.Printf("failed to close file %d.ogg: %v\n", ssrc, err)
+			}
+		}
+	}()
+
+	for {
+		select {
+		case <-done:
+			return
+		case p, ok := <-c:
+			if !ok {
 				return
 			}
-			files[p.SSRC] = file
+			file, ok := files[p.SSRC]
+			if !ok {
+				var err error
+				file, err = oggwriter.New(fmt.Sprintf("%d.ogg", p.SSRC), 48000, 2)
+				if err != nil {
+					fmt.Printf("failed to create file %d.ogg, giving up on recording: %v\n", p.SSRC, err)
+					return
+				}
+				files[p.SSRC] = file
+			}
+			// Construct pion RTP packet from DiscordGo's type.
+			rtp := createPionRTPPacket(p)
+			err := file.WriteRTP(rtp)
+			if err != nil {
+				fmt.Printf("failed to write to file %d.ogg: %v\n", p.SSRC, err)
+			}
 		}
-		// Construct pion RTP packet from DiscordGo's type.
-		rtp := createPionRTPPacket(p)
-		err := file.WriteRTP(rtp)
-		if err != nil {
-			fmt.Printf("failed to write to file %d.ogg, giving up on recording: %v\n", p.SSRC, err)
-		}
-	}
-
-	// Once we made it here, we're done listening for packets. Close all files
-	for _, f := range files {
-		f.Close()
 	}
 }
 
@@ -89,11 +102,14 @@ func main() {
 		return
 	}
 
-	go func() {
-		time.Sleep(10 * time.Second)
-		close(v.OpusRecv)
-		v.Close()
+	defer func() {
+		if err := v.Disconnect(); err != nil {
+			fmt.Println("failed to disconnect from voice channel:", err)
+		}
 	}()
 
-	handleVoice(v.OpusRecv)
+	// Stop receiving without closing the channel owned by DiscordGo's sender.
+	timer := time.NewTimer(10 * time.Second)
+	defer timer.Stop()
+	handleVoice(v.OpusRecv, timer.C)
 }
