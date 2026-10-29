@@ -56,6 +56,10 @@ deadline; deferred inode reclamation is not mistaken for an immediate leak.
 Kernel errors or an expired deadline remain cleanup failures and retain claims,
 never a successful stop.
 
+Discord helper HTTP requests use fresh HTTP/1 connections with matching
+`http/1.1` TLS ALPN, not the default Go transport's inherited `h2` advertisement.
+Redirects and automatic mutation replays remain disabled.
+
 Current entry points:
 
 | Path | Responsibility |

@@ -3,6 +3,7 @@ package discordhttp
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"io"
 	"mime"
 	"mime/multipart"
@@ -42,6 +43,75 @@ func localHTTPTransport(t *testing.T, handler http.Handler) (*Transport, *httpte
 	}
 	t.Cleanup(func() { _ = transport.Close() })
 	return transport, server
+}
+
+func TestActualHTTPSCloneNegotiatesOnlyHTTP1FromHTTP2Default(t *testing.T) {
+	var mutations atomic.Int32
+	request := testRequest()
+	request.Path = "/api/v10/applications/1/guilds/2/commands"
+	request.JSON = []byte(`{"name":"transport-test","description":"transport test"}`)
+	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == http.MethodPost {
+			mutations.Add(1)
+			if r.Host != "discord.com" || r.URL.Path != request.Path || r.ProtoMajor != 1 || r.TLS.NegotiatedProtocol != "http/1.1" {
+				t.Error("bounded command request did not use the fixed HTTP/1 origin and protocol")
+			}
+			if !r.Close || r.ContentLength != int64(len(request.JSON)) || len(r.TransferEncoding) != 0 {
+				t.Error("bounded command request lost its single-attempt body framing")
+			}
+			body, err := io.ReadAll(r.Body)
+			if err != nil || !bytes.Equal(body, request.JSON) {
+				t.Error("bounded command request body changed")
+			}
+		}
+		_, _ = io.WriteString(w, `{"id":"1"}`)
+	}))
+	server.EnableHTTP2 = true
+	server.TLS = &tls.Config{NextProtos: []string{"h2", "http/1.1"}}
+	server.StartTLS()
+	t.Cleanup(server.Close)
+
+	// Use the real default clone path: it initializes and inherits h2 ALPN.
+	// Change only local routing and certificate trust, not protocol selection.
+	base := http.DefaultTransport.(*http.Transport).Clone()
+	base.Proxy = nil
+	base.TLSClientConfig.RootCAs = server.Client().Transport.(*http.Transport).TLSClientConfig.RootCAs
+	certificate := server.Certificate()
+	if len(certificate.DNSNames) > 0 {
+		base.TLSClientConfig.ServerName = certificate.DNSNames[0]
+	} else if len(certificate.IPAddresses) > 0 {
+		base.TLSClientConfig.ServerName = certificate.IPAddresses[0].String()
+	} else {
+		t.Fatal("local TLS certificate has no verifiable hostname")
+	}
+	base.DialContext = func(ctx context.Context, network, address string) (net.Conn, error) {
+		var dialer net.Dialer
+		return dialer.DialContext(ctx, "tcp", server.Listener.Addr().String())
+	}
+	t.Cleanup(base.CloseIdleConnections)
+	client := &http.Client{Transport: base, Timeout: testConfig().RequestDeadline}
+
+	// The same trusted base must actually negotiate HTTP/2 before cloning it
+	// into the single-attempt boundary; an HTTP/1-only test server misses this.
+	control, err := client.Get("https://discord.com/api/v10/gateway")
+	if err != nil {
+		t.Fatal("local HTTP/2 positive control failed")
+	}
+	_, readErr := io.Copy(io.Discard, control.Body)
+	closeErr := control.Body.Close()
+	if readErr != nil || closeErr != nil || control.ProtoMajor != 2 || control.TLS.NegotiatedProtocol != "h2" {
+		t.Fatal("local positive control did not complete over HTTP/2")
+	}
+
+	transport, err := New(testConfig(), client)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = transport.Close() })
+	result, err := transport.Do(context.Background(), request)
+	if err != nil || result.StatusCode != http.StatusOK || mutations.Load() != 1 {
+		t.Fatalf("bounded command status=%d mutations=%d error=%v", result.StatusCode, mutations.Load(), err)
+	}
 }
 
 func TestActualHTTPSMultipartHasExactNonChunkedLength(t *testing.T) {

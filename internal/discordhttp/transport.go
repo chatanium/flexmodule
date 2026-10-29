@@ -112,6 +112,12 @@ func New(config Config, client *http.Client) (*Transport, error) {
 		clone.DisableKeepAlives = true
 		clone.Protocols = new(http.Protocols)
 		clone.Protocols.SetHTTP1(true)
+		// Clone initializes the source transport's HTTP/2 defaults and can
+		// retain its h2 ALPN advertisement. Protocols alone does not trim
+		// NextProtos when HTTP/2 initialization is disabled on this clone.
+		if clone.TLSClientConfig != nil {
+			clone.TLSClientConfig.NextProtos = []string{"http/1.1"}
+		}
 		owned.Transport = clone
 	} else {
 		owned.Transport = base
