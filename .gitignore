@@ -9,3 +9,4 @@
 CLAUDE.md
 *.log
 claudedocs/*.md
+/.tools/

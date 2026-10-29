@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"
+mode=${1:?Expected build or clean}
+shift
+: "${BUILD_OUTPUTS:?Run through make}"
+safe_file .tools/build.lock
+exec 9>.tools/build.lock
+flock -x 9
+
+# Check the entire owned set before modifying any output, including on clean.
+for output in $BUILD_OUTPUTS; do
+    [[ "$output" == bin/* ]] || fail "Build output outside bin/: $output"
+    safe_file "$output"
+done
+if [[ "$mode" == clean ]]; then
+    for output in $BUILD_OUTPUTS; do rm -f -- "$output"; done
+    exit 0
+fi
+[[ "$mode" == build && $# -gt 0 ]] || fail 'Expected build targets'
+use_go
+export GOOS=${GOOS:-linux} GOARCH=${GOARCH:-amd64} CGO_ENABLED=${CGO_ENABLED:-0}
+if [[ "$CGO_ENABLED" == 1 ]]; then
+    printf 'CGO enabled: provide CC for %s/%s and required system libraries; no native tools are installed.\n' "$GOOS" "$GOARCH"
+fi
+
+temporary=
+cleanup() {
+    local status=$?
+    stop_child
+    if [[ -n "$temporary" ]]; then rm -f -- "$temporary"; fi
+    exit "$status"
+}
+trap cleanup EXIT
+for target in "$@"; do
+    IFS=: read -r module package output extra <<< "$target"
+    [[ -n "$module" && -n "$package" && -n "$output" && -z "$extra" ]] || fail "Invalid target: $target"
+    [[ "$module" == . ]] || safe_path "$module"
+    [[ -f "$module/go.mod" ]] || fail "Module missing: $module"
+    printf 'Building %s (%s) -> %s [%s/%s, CGO=%s]\n' "$module" "$package" "$output" "$GOOS" "$GOARCH" "$CGO_ENABLED"
+    if [[ "$output" == - ]]; then
+        run "$GO_BINARY" -C "$ROOT/$module" build -mod=readonly -trimpath -tags= "$package"
+        continue
+    fi
+    case " $BUILD_OUTPUTS " in *" $output "*) ;; *) fail "Unowned build output: $output" ;; esac
+    # A consuming module must resolve the SDK locally, not silently fall back
+    # to upstream when a nested module's replace directive is missing.
+    temporary=$(mktemp "$ROOT/.tools/resolve.XXXXXXXX")
+    run "$GO_BINARY" -C "$ROOT/$module" list -mod=readonly -m -f '{{.Dir}}' github.com/bwmarrin/discordgo > "$temporary"
+    IFS= read -r resolved < "$temporary"
+    [[ "$(realpath -- "$resolved")" == "$ROOT/discordgo" ]] || fail "$module resolved DiscordGo to $resolved; require $ROOT/discordgo"
+    rm -f -- "$temporary"
+    temporary=
+    safe_file "$output"
+    mkdir -p -- "$(dirname -- "$output")"
+    temporary=$(mktemp "$ROOT/$output.tmp.XXXXXXXX")
+    run "$GO_BINARY" -C "$ROOT/$module" build -mod=readonly -trimpath -tags= -o "$temporary" "$package"
+    safe_file "$output"
+    mv -fT -- "$temporary" "$output"
+    temporary=
+done

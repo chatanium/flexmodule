@@ -3,11 +3,13 @@
 
 version: v1
 plugins:
-  - plugin: buf.build/protocolbuffers/go
+  - plugin: go
+    path: ../.tools/bin/protoc-gen-go
     out: .
     opt:
       - paths=source_relative
-  - plugin: buf.build/grpc/go:v1.3.0
+  - plugin: go-grpc
+    path: ../.tools/bin/protoc-gen-go-grpc
     out: .
     opt:
       - paths=source_relative
