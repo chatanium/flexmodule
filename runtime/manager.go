@@ -15,6 +15,7 @@ import (
 	core "github.com/thirdscam/chatanium-flexmodule/shared/core-v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -239,7 +240,8 @@ func (m *Manager) Launch(ctx context.Context, spec ModuleSpec) (result *Instance
 		return i, startup.Err()
 	}
 	factory := host.NewRunnerFactory(m.options.Host, lease)
-	client := plugin.NewClient(&plugin.ClientConfig{
+	primary := &primaryTransport{}
+	clientConfig := &plugin.ClientConfig{
 		HandshakeConfig:     core.HandshakeConfig(),
 		Plugins:             bridge.PluginMap(),
 		RunnerFunc:          bindRunnerStartup(factory, startup),
@@ -258,10 +260,12 @@ func (m *Manager) Launch(ctx context.Context, spec ModuleSpec) (result *Instance
 			grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(l.ControlMessageMaxBytes), grpc.MaxCallSendMsgSize(l.ControlMessageMaxBytes)),
 			guard.DialOption(),
 		},
-	})
+	}
+	client := plugin.NewClient(clientConfig)
 	i.mu.Lock()
 	i.factory = factory
 	i.plugin = client
+	i.primaryTransport = primary
 	i.connectDone = make(chan struct{})
 	connectDone := i.connectDone
 	i.mu.Unlock()
@@ -272,6 +276,25 @@ func (m *Manager) Launch(ctx context.Context, spec ModuleSpec) (result *Instance
 	ready := make(chan connected, 1)
 	go func() {
 		defer close(connectDone)
+		// Start fills the actual AutoMTLS certificate and trust configuration.
+		// Client() calls Start again idempotently; install the exact delegated
+		// credentials only after that configuration exists.
+		if _, err := client.Start(); err != nil {
+			ready <- connected{err: err}
+			return
+		}
+		if err := startup.Err(); err != nil {
+			ready <- connected{err: err}
+			return
+		}
+		if clientConfig.TLSConfig == nil {
+			ready <- connected{err: runtimeError(codes.FailedPrecondition, "PROTOCOL_INCOMPATIBLE")}
+			return
+		}
+		clientConfig.GRPCDialOptions = append(clientConfig.GRPCDialOptions, grpc.WithTransportCredentials(&primaryCredentials{
+			TransportCredentials: credentials.NewTLS(clientConfig.TLSConfig),
+			owner:                primary,
+		}))
 		rpc, err := client.Client()
 		if err != nil {
 			ready <- connected{err: err}
@@ -389,7 +412,7 @@ func (m *Manager) Launch(ctx context.Context, spec ModuleSpec) (result *Instance
 	i.openGateLocked()
 	i.mu.Unlock()
 	go i.eventLane()
-	go m.watchHelpers(i, hooks)
+	go i.watchHelperErrors(hooks.HelperErrors())
 	return i, nil
 }
 func deadlineOf(ctx context.Context) time.Time { d, _ := ctx.Deadline(); return d }
@@ -431,21 +454,14 @@ func failureReason(err error, fallback string) string {
 	}
 	return fallback
 }
-func (m *Manager) watchHelpers(i *Instance, hooks *core.HookClient) {
+func (i *Instance) watchHelperErrors(helperErrors <-chan error) {
 	select {
 	case <-i.lifetime.Done():
 		return
-	case err, ok := <-hooks.HelperErrors():
-		if ok && err != nil {
-			m.fail(i, "BROKER_TRANSPORT_LOST")
-		} else {
-			i.mu.Lock()
-			active := i.state == Running
-			i.mu.Unlock()
-			if active {
-				m.fail(i, "BROKER_TRANSPORT_LOST")
-			}
-		}
+	case <-helperErrors:
+		// A helper notification and terminal cancellation may both be ready.
+		// The selected channel alone cannot classify an expected teardown.
+		i.failTransport("BROKER_TRANSPORT_LOST")
 	}
 }
 func (i *Instance) failLocked(reason string) bool {
@@ -459,6 +475,9 @@ func (i *Instance) failLocked(reason string) bool {
 	i.state = Failed
 	i.openGateLocked()
 	i.cancelStartup()
+	for admission := range i.admissions {
+		admission.cancel()
+	}
 	i.cancelLifetime()
 	i.queue = nil
 	return true
@@ -538,7 +557,7 @@ func (m *Manager) stopInstance(i *Instance, caller context.Context) {
 	if drain != nil {
 		for _, b := range i.prepared {
 			if err := b.Adapter.Drain(drain, i.principal); err != nil {
-				cleanupErrors = append(cleanupErrors, err)
+				cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupBackendDrain, err))
 			}
 		}
 		close(i.drainReady)
@@ -567,9 +586,7 @@ func (m *Manager) stopInstance(i *Instance, caller context.Context) {
 		i.mu.Unlock()
 		i.cancelDrain()
 	}
-	i.cancelStartup()
-	i.cancelLifetime()
-	i.closeBrokerAdmission()
+	i.beginTerminalCleanup()
 	cleanup, cancel := context.WithTimeout(context.Background(), time.Duration(m.config.Limits.TerminationDeadline))
 	defer cancel()
 	i.mu.Lock()
@@ -577,13 +594,14 @@ func (m *Manager) stopInstance(i *Instance, caller context.Context) {
 	i.mu.Unlock()
 	if failed {
 		if err := m.options.Host.Terminate(cleanup, string(i.principal.InstanceID)); err != nil {
-			cleanupErrors = append(cleanupErrors, err)
+			cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupHostTerminate, err))
 		}
 	}
 	select {
 	case <-i.launchDone:
 	case <-cleanup.Done():
-		m.finishCleanup(i, runtimeError(codes.Unavailable, "CLEANUP_INCOMPLETE"))
+		cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupLaunchJoin, runtimeError(codes.Unavailable, "CLEANUP_INCOMPLETE")))
+		m.finishCleanup(i, errors.Join(cleanupErrors...))
 		return
 	}
 	i.mu.Lock()
@@ -596,7 +614,7 @@ func (m *Manager) stopInstance(i *Instance, caller context.Context) {
 		case <-laneDone:
 		case <-cleanup.Done():
 			laneJoined = false
-			cleanupErrors = append(cleanupErrors, runtimeError(codes.Unavailable, "CLEANUP_INCOMPLETE"))
+			cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupCallbackJoin, runtimeError(codes.Unavailable, "CLEANUP_INCOMPLETE")))
 		}
 	}
 	i.mu.Lock()
@@ -604,21 +622,21 @@ func (m *Manager) stopInstance(i *Instance, caller context.Context) {
 	i.mu.Unlock()
 	if safeStop && hooks != nil {
 		if err := m.stage(cleanup, i, wire.Stage_STAGE_STOP, nil); err != nil {
-			cleanupErrors = append(cleanupErrors, err)
+			cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupStopHook, err))
 		}
 	}
 	if hooks != nil {
 		if err := hooks.Close(); err != nil {
-			cleanupErrors = append(cleanupErrors, err)
+			cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupHelperClose, err))
 		}
 	}
 	// This operation is independent of go-plugin's client mutex. In particular,
 	// muxDial may ignore ctx while Client.Client holds that mutex.
 	if err := m.options.Host.Terminate(cleanup, string(i.principal.InstanceID)); err != nil {
-		cleanupErrors = append(cleanupErrors, err)
+		cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupHostTerminate, err))
 	}
 	i.mu.Lock()
-	client, factory, connectDone := i.plugin, i.factory, i.connectDone
+	client, factory, connectDone, primary := i.plugin, i.factory, i.connectDone, i.primaryTransport
 	if client != nil && i.killDone == nil {
 		i.killDone = make(chan struct{})
 		go func() { client.Kill(); close(i.killDone) }()
@@ -631,21 +649,25 @@ func (m *Manager) stopInstance(i *Instance, caller context.Context) {
 	// Backend workers may own upload readers and credential leases. Cancel and
 	// release them before waiting for those stores' physical reclamation.
 	if err := i.cleanupRegisteredBackends(cleanup); err != nil {
-		cleanupErrors = append(cleanupErrors, err)
+		cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupBackend, err))
 	}
 	if err := m.options.FileCleanup(cleanup, i.principal); err != nil {
-		cleanupErrors = append(cleanupErrors, err)
+		cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupFiles, err))
 	}
 	if err := m.credentials.RevokeInstance(cleanup, i.principal); err != nil {
-		cleanupErrors = append(cleanupErrors, err)
+		cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupCredentials, err))
 	}
 	transportClosed := true
-	for _, done := range []<-chan struct{}{killDone, connectDone} {
-		if done != nil {
+	for _, pending := range []struct {
+		phase CleanupPhase
+		done  <-chan struct{}
+	}{{CleanupPluginJoin, killDone}, {CleanupConnectJoin, connectDone}} {
+		if pending.done != nil {
 			select {
-			case <-done:
+			case <-pending.done:
 			case <-cleanup.Done():
 				transportClosed = false
+				cleanupErrors = append(cleanupErrors, cleanupPhaseError(pending.phase, runtimeError(codes.Unavailable, "CLEANUP_INCOMPLETE")))
 			}
 		}
 	}
@@ -655,22 +677,28 @@ func (m *Manager) stopInstance(i *Instance, caller context.Context) {
 		i.mu.Unlock()
 		if lateHooks != nil && lateHooks != hooks {
 			if err := lateHooks.Close(); err != nil {
-				cleanupErrors = append(cleanupErrors, err)
+				cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupHelperClose, err))
 			}
 		}
 	}
 	if err := i.waitControls(cleanup); err != nil {
-		cleanupErrors = append(cleanupErrors, err)
+		cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupControls, err))
+	}
+	if transportClosed {
+		if err := primary.close(cleanup); err != nil {
+			cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupTransport, err))
+			transportClosed = false
+		}
 	}
 	if transportClosed && factory != nil {
 		if err := factory.CloseTransport(); err != nil {
-			cleanupErrors = append(cleanupErrors, err)
+			cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupTransport, err))
 			transportClosed = false
 		}
 	}
 	if transportClosed && len(cleanupErrors) == 0 {
 		if err := m.options.Host.Release(cleanup, string(i.principal.InstanceID)); err != nil {
-			cleanupErrors = append(cleanupErrors, err)
+			cleanupErrors = append(cleanupErrors, cleanupPhaseError(CleanupHostRelease, err))
 		}
 	} else {
 		cleanupErrors = append(cleanupErrors, runtimeError(codes.Unavailable, "CLEANUP_INCOMPLETE"))

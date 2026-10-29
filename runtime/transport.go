@@ -49,18 +49,7 @@ func (i *Instance) newBrokerGuard() (*core.BrokerGuard, error) {
 		if status.Code(err) == codes.Unavailable {
 			reason = "BROKER_TRANSPORT_LOST"
 		}
-		i.mu.Lock()
-		// Normal terminal cleanup has already closed admission and canceled
-		// lifetime before closing the broker. A late EOF is not a new failure.
-		if i.lifetime.Err() != nil {
-			i.mu.Unlock()
-			return
-		}
-		failed := i.failLocked(reason)
-		i.mu.Unlock()
-		if failed {
-			i.manager.startStop(i, nil)
-		}
+		i.failTransport(reason)
 	})
 	if err != nil {
 		return nil, err
@@ -76,11 +65,35 @@ func (i *Instance) newBrokerGuard() (*core.BrokerGuard, error) {
 	return guard, nil
 }
 
-func (i *Instance) closeBrokerAdmission() {
+// beginTerminalCleanup linearizes expected transport shutdown with failure
+// observers on the same authoritative lock. Admission is already closed and
+// drain work has finished or expired before this transition.
+func (i *Instance) beginTerminalCleanup() {
 	i.mu.Lock()
+	i.cancelStartup()
+	for admission := range i.admissions {
+		admission.cancel()
+	}
+	i.cancelLifetime()
 	guard := i.brokerGuard
 	i.mu.Unlock()
 	if guard != nil {
 		guard.Close()
+	}
+}
+
+func (i *Instance) failTransport(reason string) {
+	i.mu.Lock()
+	// Expected terminal shutdown is not a new module failure. This check and
+	// beginTerminalCleanup's cancellation share i.mu, so a late helper error
+	// cannot race through after observing an obsolete live lifetime.
+	if i.lifetime.Err() != nil {
+		i.mu.Unlock()
+		return
+	}
+	failed := i.failLocked(reason)
+	i.mu.Unlock()
+	if failed {
+		i.manager.startStop(i, nil)
 	}
 }

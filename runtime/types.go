@@ -76,6 +76,7 @@ type Instance struct {
 	connectDone        chan struct{}
 	killDone           chan struct{}
 	factory            *host.RunnerFactory
+	primaryTransport   *primaryTransport
 	drainReady         chan struct{}
 	bound              bool
 	grants             *wire.Grants
