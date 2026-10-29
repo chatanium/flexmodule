@@ -404,7 +404,7 @@ func InteractionResponse(s *discordgo.InteractionResponse) *proto.InteractionRes
 
 	return &proto.InteractionResponse{
 		Type: proto.InteractionResponseType(s.Type),
-		Data: InteractionResponseData(s.Data), // TODO: implement InteractionResponseData conversion
+		Data: InteractionResponseData(s.Data),
 	}
 }
 
@@ -413,13 +413,27 @@ func InteractionResponseData(s *discordgo.InteractionResponseData) *proto.Intera
 		return nil
 	}
 
+	components := make([]*proto.MessageComponent, 0, len(s.Components))
+	for _, c := range s.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
+	embeds := make([]*proto.MessageEmbed, 0, len(s.Embeds))
+	for _, embed := range s.Embeds {
+		embeds = append(embeds, MessageEmbed(embed))
+	}
+
+	flags := proto.MessageFlags(s.Flags)
+
 	return &proto.InteractionResponseData{
 		Tts:             s.TTS,
 		Content:         s.Content,
-		Components:      MessageComponents(s.Components),
-		Embeds:          MessageEmbeds(s.Embeds),
+		Components:      components,
+		Embeds:          embeds,
 		AllowedMentions: MessageAllowedMentions(s.AllowedMentions),
-		Flags:           int64(s.Flags),
+		Flags:           &flags,
 	}
 }
 

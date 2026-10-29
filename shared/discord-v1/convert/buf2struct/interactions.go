@@ -396,6 +396,11 @@ func InteractionResponseData(buf *proto.InteractionResponseData) *discordgo.Inte
 		attachments = append(attachments, MessageAttachment(attachment))
 	}
 
+	var flags discordgo.MessageFlags
+	if buf.Flags != nil {
+		flags = discordgo.MessageFlags(*buf.Flags)
+	}
+
 	return &discordgo.InteractionResponseData{
 		TTS:             buf.Tts,
 		Content:         buf.Content,
@@ -404,7 +409,7 @@ func InteractionResponseData(buf *proto.InteractionResponseData) *discordgo.Inte
 		AllowedMentions: MessageAllowedMentions(buf.AllowedMentions),
 		Files:           files,
 		Attachments:     &attachments,
-		Flags:           discordgo.MessageFlags(buf.Flags), // TODO: verify if this conversion is correct
+		Flags:           flags, // TODO: verify if this conversion is correct
 	}
 }
 
