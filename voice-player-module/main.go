@@ -2,262 +2,384 @@ package main
 
 import (
 	"context"
+	_ "embed"
+	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"os"
-	"path/filepath"
-	"strings"
+	"os/signal"
+	"sync"
+	"syscall"
 	"time"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"google.golang.org/grpc/metadata"
-
-	broker "github.com/thirdscam/chatanium-flexmodule/shared"
-
-	Core "github.com/thirdscam/chatanium-flexmodule/shared/core-v1"
-	CorePlugin "github.com/thirdscam/chatanium-flexmodule/shared/core-v1/module"
-
-	pb "github.com/thirdscam/chatanium-flexmodule/proto/discord-v1"
-	Discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1"
-	DiscordPlugin "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1/module"
+	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
+	discordwire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
+	core "github.com/thirdscam/chatanium-flexmodule/shared/core-v2"
+	discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
-const (
-	TARGET_GUILD_ID   = "919823370600742942"
-	TARGET_CHANNEL_ID = "1434561578560131245"
-	TEMP_DIR          = "./temp_audio"
-)
+//go:embed manifest.json
+var manifestJSON []byte
 
-var PERMISSIONS = Core.Permissions{
-	"DISCORD_V1_ON_CREATE_MESSAGE",
-	"DISCORD_V1_REQ_VOICE_STATE",
-	"DISCORD_V1_CREATE_VOICE_STREAM",
+type attachmentRequest struct {
+	guild, channel, voice string
+	attachment            attachment
 }
 
-var MANIFEST = Core.Manifest{
-	Name:        "VoicePlayerModule",
-	Version:     "0.0.1",
-	Author:      "thirdscam",
-	Repository:  "github:thirdscam/chatanium-flexmodule",
-	Permissions: PERMISSIONS,
+type player struct {
+	mu                                  sync.Mutex
+	core                                core.CoreClient
+	discord                             *discord.Client
+	voice                               *discord.VoiceClient
+	lifetime                            context.Context
+	cancel                              context.CancelFunc
+	cfg                                 playerConfig
+	ready, started, validated, draining bool
+	failure                             error
+	scratch                             *scratchSpace
+	downloads                           *attachmentDownloader
+	queue                               chan attachmentRequest
+	slots                               chan struct{}
+	wg                                  sync.WaitGroup
+	done                                chan struct{}
+	cleanupDeadline                     time.Time
+	cleanupError                        error
 }
 
-var log hclog.Logger
-
-type core struct {
-	ready bool
+func newPlayer(lifetime context.Context) *player {
+	ctx, cancel := context.WithCancel(lifetime)
+	return &player{lifetime: ctx, cancel: cancel}
 }
 
-func (m *core) GetManifest() (Core.Manifest, error) {
-	return MANIFEST, nil
-}
-
-func (m *core) GetStatus() (Core.Status, error) {
-	return Core.Status{
-		IsReady: m.ready,
-	}, nil
-}
-
-func (m *core) OnStage(stage string) {
-	log.Debug("OnStage", "stage", stage)
-	switch stage {
-	case "MODULE_INIT":
-		m.ready = true
-		// Create temp directory for audio files
-		os.MkdirAll(TEMP_DIR, 0755)
-	case "MODULE_SHUTDOWN":
-		cancelMedia()
-		// Cleanup temp directory
-		os.RemoveAll(TEMP_DIR)
-	}
-}
-
-type voicePlayer struct {
-	Discord.AbstractHooks
-	helper      Discord.Helper
-	voiceStream pb.VoiceStreamClient
-}
-
-func (vp *voicePlayer) OnInit(h Discord.Helper) Discord.InitResponse {
-	vp.helper = h
-	log.Info("Voice Player Module initialized")
-
-	return Discord.InitResponse{
-		Interactions: []*discordgo.ApplicationCommand{},
-	}
-}
-
-// SetVoiceStream implements VoiceStreamAware interface
-// This is called automatically by the plugin system to provide VoiceStream client
-func (vp *voicePlayer) SetVoiceStream(stream pb.VoiceStreamClient) {
-	vp.voiceStream = stream
-	log.Debug("VoiceStream client set successfully")
-}
-
-func (vp *voicePlayer) OnCreateChatMessage(m *discordgo.Message) error {
-	// Ignore messages with nil Author (can happen with some Discord events)
-	if m == nil || m.Author == nil {
-		return nil
-	}
-
-	// Ignore bot messages
-	if m.Author.Bot {
-		return nil
-	}
-
-	// Check if message has audio attachments
-	if len(m.Attachments) == 0 {
-		return nil
-	}
-
-	for _, attachment := range m.Attachments {
-		// Check if it's an audio file
-		if isAudioFile(attachment.Filename) {
-			log.Info("Audio file detected",
-				"filename", attachment.Filename,
-				"url", attachment.URL,
-				"size", attachment.Size,
-			)
-
-			// Send acknowledgment
-			vp.helper.ChannelMessageSend(m.ChannelID,
-				fmt.Sprintf("🎵 음성 파일을 감지했습니다: `%s`\n음성 채널에 접속하여 재생합니다...", attachment.Filename))
-
-			// Play audio in background
-			go vp.playAudioFile(attachment, m.ChannelID)
-		}
-	}
-
-	return nil
-}
-
-func (vp *voicePlayer) playAudioFile(attachment *discordgo.MessageAttachment, replyChannelID string) {
-	// Download audio file
-	localPath := filepath.Join(TEMP_DIR, attachment.Filename)
-	err := downloadFile(attachment.URL, localPath)
-	if err != nil {
-		log.Error("Failed to download audio file", "error", err)
-		vp.helper.ChannelMessageSend(replyChannelID, "❌ 음성 파일 다운로드 실패: "+err.Error())
-		return
-	}
-	defer os.Remove(localPath)
-
-	log.Info("Audio file downloaded", "path", localPath)
-
-	// Convert to DCA (Discord Compatible Audio)
-	dcaPath := localPath + ".dca"
-	err = convertToDCA(mediaContext, localPath, dcaPath)
-	if err != nil {
-		log.Error("Failed to convert to DCA", "error", err)
-		vp.helper.ChannelMessageSend(replyChannelID, "❌ 음성 변환 실패: "+err.Error())
-		return
-	}
-	defer os.Remove(dcaPath)
-
-	log.Info("Audio file converted to DCA", "path", dcaPath)
-
-	// Create voice client
-	voiceClient := DiscordPlugin.NewVoiceClient(vp.voiceStream, "voice-player")
-
-	// Join voice channel
-	ctx := getContextWithModuleID("voice-player")
-	err = voiceClient.Join(ctx, TARGET_GUILD_ID, TARGET_CHANNEL_ID, false, false)
-	if err != nil {
-		log.Error("Failed to join voice channel", "error", err)
-		vp.helper.ChannelMessageSend(replyChannelID, "❌ 음성 채널 접속 실패: "+err.Error())
-		return
-	}
-	defer voiceClient.Leave()
-
-	log.Info("Joined voice channel", "guild", TARGET_GUILD_ID, "channel", TARGET_CHANNEL_ID)
-	vp.helper.ChannelMessageSend(replyChannelID, "✅ 음성 채널에 접속했습니다. 재생을 시작합니다...")
-
-	// Wait for connection to be ready
-	err = voiceClient.WaitForReady(5 * time.Second)
-	if err != nil {
-		log.Error("Voice connection not ready", "error", err)
-		vp.helper.ChannelMessageSend(replyChannelID, "❌ 음성 연결 실패: "+err.Error())
-		return
-	}
-
-	// Set speaking state
-	err = voiceClient.Speaking(true)
-	if err != nil {
-		log.Error("Failed to set speaking state", "error", err)
-	}
-
-	// Play DCA file
-	err = playDCA(mediaContext, voiceClient, dcaPath)
-	if err != nil {
-		log.Error("Failed to play audio", "error", err)
-		vp.helper.ChannelMessageSend(replyChannelID, "❌ 재생 실패: "+err.Error())
-		return
-	}
-
-	// Stop speaking
-	voiceClient.Speaking(false)
-
-	// Get stats
-	packetsSent, _, bytesSent, _ := voiceClient.GetStats()
-	log.Info("Playback completed",
-		"packets_sent", packetsSent,
-		"bytes_sent", bytesSent,
-	)
-
-	vp.helper.ChannelMessageSend(replyChannelID,
-		fmt.Sprintf("✅ 재생 완료!\n📊 전송: %d 패킷, %d 바이트", packetsSent, bytesSent))
-}
-
-func isAudioFile(filename string) bool {
-	ext := strings.ToLower(filepath.Ext(filename))
-	audioExtensions := []string{".mp3", ".wav", ".ogg", ".flac", ".m4a", ".aac", ".opus", ".webm"}
-
-	for _, audioExt := range audioExtensions {
-		if ext == audioExt {
-			return true
-		}
-	}
-	return false
-}
-
-func downloadFile(url string, filepath string) error {
-	resp, err := http.Get(url)
+func (p *player) bind(_ context.Context, conn grpc.ClientConnInterface) (err error) {
+	p.core, err = core.NewCoreClient(conn, core.JSONLimits{MaxBytes: 64 * 1024, MaxDepth: 16})
 	if err != nil {
 		return err
 	}
-	defer resp.Body.Close()
-
-	out, err := os.Create(filepath)
+	p.discord, err = discord.NewClient(conn)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
-
-	_, err = io.Copy(out, resp.Body)
+	p.voice, err = discord.NewVoiceClient(conn)
 	return err
 }
 
-func getContextWithModuleID(moduleID string) context.Context {
-	ctx := context.Background()
-	md := metadata.New(map[string]string{
-		"module-id": moduleID,
-	})
-	return metadata.NewOutgoingContext(ctx, md)
+func (p *player) GetManifest(context.Context) (*corewire.ModuleManifest, error) {
+	manifest := new(corewire.ModuleManifest)
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: false}).Unmarshal(manifestJSON, manifest); err != nil {
+		return nil, err
+	}
+	return manifest, nil
+}
+
+func (p *player) GetStatus(context.Context) (*corewire.Status, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	state := corewire.Readiness_READINESS_NOT_READY
+	if p.failure != nil {
+		state = corewire.Readiness_READINESS_FAILED
+	} else if p.ready && !p.draining {
+		state = corewire.Readiness_READINESS_READY
+	}
+	return &corewire.Status{Readiness: state}, nil
+}
+
+func (p *player) OnStage(ctx context.Context, req *corewire.StageRequest) error {
+	if req == nil {
+		return errors.New("missing player stage")
+	}
+	switch req.Stage {
+	case corewire.Stage_STAGE_INIT:
+		return p.initialize(ctx, req.InitContext)
+	case corewire.Stage_STAGE_START:
+		p.mu.Lock()
+		if !p.ready || p.started || p.draining {
+			p.mu.Unlock()
+			return errors.New("player cannot start in current state")
+		}
+		p.started = true
+		p.done = make(chan struct{})
+		p.wg.Add(1)
+		p.mu.Unlock()
+		go p.run()
+		go func() { p.wg.Wait(); close(p.done) }()
+		return nil
+	case corewire.Stage_STAGE_DRAIN, corewire.Stage_STAGE_STOP:
+		return p.close(ctx)
+	default:
+		return errors.New("unsupported player stage")
+	}
+}
+
+func (p *player) initialize(ctx context.Context, init *corewire.InitContext) (err error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+	if p.ready || p.draining || p.core == nil || p.discord == nil || p.voice == nil {
+		return errors.New("player initialization state is invalid")
+	}
+	defer func() {
+		if err != nil {
+			p.failure = err
+		}
+	}()
+	value, err := p.core.GetConfig(ctx)
+	if err != nil {
+		return err
+	}
+	cfg, err := decodeConfig(value.Json, init)
+	if err != nil {
+		return err
+	}
+	scratch, err := openScratch(init.ScratchDirectory)
+	if err != nil {
+		return err
+	}
+	if err = validateEncoder(ctx, scratch.path, cfg.Limits); err != nil {
+		return errors.Join(err, scratch.Close())
+	}
+	p.cfg, p.scratch = cfg, scratch
+	p.downloads = newAttachmentDownloader(cfg.Limits)
+	p.queue = make(chan attachmentRequest, cfg.Limits.QueueEntries)
+	p.slots = make(chan struct{}, cfg.Limits.QueueEntries)
+	p.ready = true
+	return nil
+}
+
+// START never waits for these RUNNING-only lookups: the authenticated host
+// activation gate opens only after START returns. No media work is admitted
+// until every configured channel has an actual, matching guild and type.
+func (p *player) run() {
+	defer p.wg.Done()
+	ctx, cancel := context.WithTimeout(p.lifetime, p.cfg.Limits.operationTimeout)
+	err := p.validateChannels(ctx)
+	cancel()
+	if err != nil {
+		p.fail(err)
+		return
+	}
+	p.mu.Lock()
+	if p.draining {
+		p.mu.Unlock()
+		return
+	}
+	p.validated = true
+	for range p.cfg.Limits.Workers {
+		p.wg.Add(1)
+		go p.worker()
+	}
+	p.mu.Unlock()
+}
+
+func (p *player) validateChannels(ctx context.Context) error {
+	for _, target := range p.cfg.Targets {
+		voice, err := p.discord.Channel(ctx, target.VoiceChannelID)
+		if err != nil {
+			return err
+		}
+		if voice == nil || voice.ID != target.VoiceChannelID || voice.GuildID != target.GuildID || voice.Type != discordgo.ChannelTypeGuildVoice {
+			return errors.New("configured voice channel has an invalid actual guild or type")
+		}
+		for _, id := range target.TextChannelIDs {
+			channel, err := p.discord.Channel(ctx, id)
+			if err != nil {
+				return err
+			}
+			if channel == nil || channel.ID != id || channel.GuildID != target.GuildID || channel.Type != discordgo.ChannelTypeGuildText {
+				return errors.New("configured text channel has an invalid actual guild or type")
+			}
+		}
+	}
+	return nil
+}
+
+func (p *player) fail(err error) {
+	p.mu.Lock()
+	p.failure = errors.Join(p.failure, err)
+	p.ready = false
+	p.mu.Unlock()
+	p.cancel()
+}
+
+func (p *player) OnEvent(ctx context.Context, envelope *corewire.EventEnvelope) error {
+	decoded, err := discord.DecodeEvent(envelope)
+	if err != nil {
+		return err
+	}
+	event, ok := decoded.(*discordwire.MessageCreateEvent)
+	if !ok {
+		return errors.New("player received an undeclared event")
+	}
+	message := event.GetMessage().GetValue()
+	if message == nil {
+		return nil
+	}
+	author := message.GetAuthor().GetValue()
+	if author == nil || author.GetBot().GetValue() || author.GetId().GetValue() == "" {
+		return nil
+	}
+	guild, channel := message.GetGuildId().GetValue(), message.GetChannelId().GetValue()
+	if guild == "" || channel == "" {
+		return nil
+	} // DM is never mapped to a default guild.
+	var destination string
+	for _, target := range p.cfg.Targets {
+		if target.GuildID != guild {
+			continue
+		}
+		for _, id := range target.TextChannelIDs {
+			if id == channel {
+				destination = target.VoiceChannelID
+			}
+		}
+	}
+	if destination == "" {
+		return nil
+	}
+	p.mu.Lock()
+	failed, available := p.failure != nil, p.started && p.validated && !p.draining
+	p.mu.Unlock()
+	if failed {
+		return errors.New("player background operation failed")
+	}
+	if !available {
+		return p.reply(ctx, channel, "Audio playback is not accepting work.")
+	}
+	var requests []attachmentRequest
+	for _, item := range message.GetAttachments().GetValue().GetValues() {
+		a := item.GetValue()
+		if a == nil || !isAudioFile(a.GetFilename().GetValue()) {
+			continue
+		}
+		if len(a.GetFilename().GetValue()) > 512 || len(a.GetUrl().GetValue()) > 8192 || a.GetSize().GetValue() < 0 || a.GetSize().GetValue() > p.cfg.Limits.MaxDownloadBytes {
+			return p.reply(ctx, channel, "Attachment metadata exceeds the configured limits; this batch was not accepted.")
+		}
+		if len(requests) == p.cfg.Limits.QueueEntries {
+			return p.reply(ctx, channel, "Attachment batch exceeds the configured queue limit.")
+		}
+		requests = append(requests, attachmentRequest{guild: guild, channel: channel, voice: destination, attachment: attachment{URL: a.GetUrl().GetValue(), Filename: a.GetFilename().GetValue(), Size: a.GetSize().GetValue()}})
+	}
+	if len(requests) == 0 {
+		return nil
+	}
+	reserved := 0
+	for range requests {
+		select {
+		case p.slots <- struct{}{}:
+			reserved++
+		default:
+			for range reserved {
+				<-p.slots
+			}
+			return p.reply(ctx, channel, "Audio queue is full; this batch was not accepted.")
+		}
+	}
+	p.mu.Lock()
+	if p.draining || p.failure != nil {
+		p.mu.Unlock()
+		for range requests {
+			<-p.slots
+		}
+		return p.reply(ctx, channel, "Audio playback is draining.")
+	}
+	for _, request := range requests {
+		p.queue <- request
+	}
+	p.mu.Unlock()
+	return p.reply(ctx, channel, fmt.Sprintf("Accepted %d audio attachment(s). Playback completion will be reported separately.", len(requests)))
+}
+
+func (p *player) reply(ctx context.Context, channel, content string) error {
+	ctx, cancel := context.WithTimeout(ctx, p.cfg.Limits.operationTimeout)
+	defer cancel()
+	_, err := p.discord.ChannelMessageSendComplex(ctx, channel, &discord.MessageSendView{Content: content, AllowedMentions: &discordgo.MessageAllowedMentions{Parse: []discordgo.AllowedMentionType{}}})
+	return err
+}
+
+func (p *player) worker() {
+	defer p.wg.Done()
+	for {
+		select {
+		case <-p.lifetime.Done():
+			return
+		case request := <-p.queue:
+			if p.lifetime.Err() != nil {
+				<-p.slots
+				return
+			}
+			err := p.play(request)
+			<-p.slots
+			if p.lifetime.Err() != nil {
+				return
+			}
+			text := "Playback completed: the runtime confirmed the terminal COMPLETED state. This is not proof of audible delivery."
+			if err != nil {
+				text = "Audio preparation or playback failed; no completion was recorded."
+			}
+			if reportErr := p.reply(p.lifetime, request.channel, text); reportErr != nil {
+				p.fail(errors.Join(err, reportErr))
+				return
+			}
+		}
+	}
+}
+
+func (p *player) close(ctx context.Context) error {
+	p.mu.Lock()
+	p.draining, p.ready = true, false
+	if deadline, ok := ctx.Deadline(); ok && (p.cleanupDeadline.IsZero() || deadline.Before(p.cleanupDeadline)) {
+		p.cleanupDeadline = deadline
+	}
+	done, scratch, downloads := p.done, p.scratch, p.downloads
+	p.mu.Unlock()
+	p.cancel()
+	if done != nil {
+		select {
+		case <-done:
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+	if downloads != nil {
+		downloads.close()
+	}
+	var err error
+	if scratch != nil {
+		err = scratch.Close()
+	}
+	p.mu.Lock()
+	err = errors.Join(err, p.cleanupError)
+	p.scratch = nil
+	for p.queue != nil {
+		select {
+		case <-p.queue:
+			<-p.slots
+		default:
+			p.mu.Unlock()
+			return err
+		}
+	}
+	p.mu.Unlock()
+	return err
 }
 
 func main() {
-	log = hclog.New(&hclog.LoggerOptions{
-		Name:       "VoicePlayerModule",
-		Level:      hclog.LevelFromString("DEBUG"),
-		JSONFormat: true,
-		Output:     os.Stderr,
-	})
-
-	broker.ServeToRuntime(map[string]plugin.Plugin{
-		"core-v1":    &CorePlugin.Plugin{Impl: &core{}},
-		"discord-v1": &DiscordPlugin.Plugin{Impl: &voicePlayer{}},
-	})
+	lifetime, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+	player := newPlayer(lifetime)
+	module, err := core.NewModulePlugin(lifetime, player, player.bind, core.TransportLimits{MaxReceiveBytes: 32 * 1024 * 1024, MaxSendBytes: 4 * 1024 * 1024})
+	if err != nil {
+		_, _ = io.WriteString(os.Stderr, "player bootstrap failed\n")
+		return
+	}
+	defer module.Close()
+	plugin.Serve(module.ServeConfig())
+	cleanup, stop := context.WithTimeout(context.Background(), 10*time.Second)
+	defer stop()
+	if player.close(cleanup) != nil {
+		_, _ = io.WriteString(os.Stderr, "player cleanup failed\n")
+	}
 }

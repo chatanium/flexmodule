@@ -1,66 +1,210 @@
 package main
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
-	"time"
+	"os/exec"
+	"strings"
+	"syscall"
 
-	DiscordModule "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1/module"
+	discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
 	"github.com/thirdscam/chatanium-flexmodule/shared/media/opus"
 )
 
-var mediaContext, cancelMedia = context.WithCancel(context.Background())
+const ffmpegPath = "/opt/flexmodule/bin/ffmpeg"
 
-// convertToDCA writes raw length-prefixed Opus frames using image-provided ffmpeg.
-func convertToDCA(ctx context.Context, inputPath string, outputPath string) error {
-	outFile, err := os.Create(outputPath)
-	if err != nil {
-		return fmt.Errorf("failed to create output file: %w", err)
+// Read-only, image-pinned tools are checked inside the media container. Neither
+// this command nor playback adds host PATH lookup, download or updater logic.
+func validateEncoder(ctx context.Context, scratchDirectory string, limits playerLimits) error {
+	info, err := os.Lstat(ffmpegPath)
+	if err != nil || !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 {
+		return errors.New("pinned media-image ffmpeg executable is unavailable")
 	}
-	err = opus.Encode(ctx, inputPath, outFile, 128)
-	if closeErr := outFile.Close(); err == nil {
-		err = closeErr
+	ctx, cancel := context.WithTimeout(ctx, limits.operationTimeout)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, ffmpegPath, "-version")
+	cmd.Dir = scratchDirectory
+	cmd.Env = []string{"LD_LIBRARY_PATH=/opt/flexmodule/lib", "LANG=C", "LC_ALL=C", "HOME=" + scratchDirectory, "TMPDIR=" + scratchDirectory}
+	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
+	cmd.Cancel = func() error {
+		err := syscall.Kill(-cmd.Process.Pid, syscall.SIGKILL)
+		if errors.Is(err, syscall.ESRCH) {
+			return os.ErrProcessDone
+		}
+		return err
 	}
-	if err != nil {
-		os.Remove(outputPath)
-		return fmt.Errorf("failed to encode Opus frames: %w", err)
+	cmd.WaitDelay = limits.cleanupTimeout
+	var stdout bytes.Buffer
+	out := &boundedWriter{writer: &stdout, remaining: limits.MaxProcessOutputBytes}
+	errout := &boundedWriter{writer: io.Discard, remaining: limits.MaxProcessOutputBytes}
+	cmd.Stdout, cmd.Stderr = out, errout
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("pinned ffmpeg version validation failed: %w", errors.Join(ctx.Err(), err))
 	}
-	log.Info("Successfully converted to DCA", "input", inputPath, "output", outputPath)
+	if out.exceeded || errout.exceeded {
+		return errors.New("ffmpeg version output exceeds configured limit")
+	}
+	line, _, _ := strings.Cut(stdout.String(), "\n")
+	if line != "ffmpeg version 9.0.2" && !strings.HasPrefix(line, "ffmpeg version 9.0.2 ") {
+		return errors.New("media image must provide pinned FFmpeg 9.0.2")
+	}
 	return nil
 }
 
-// playDCA plays a DCA file through the existing module voice client.
-func playDCA(ctx context.Context, vc *DiscordModule.VoiceClient, dcaPath string) error {
-	file, err := os.Open(dcaPath)
-	if err != nil {
-		return fmt.Errorf("failed to open DCA file: %w", err)
+type boundedWriter struct {
+	writer    io.Writer
+	remaining int64
+	exceeded  bool
+}
+
+func (w *boundedWriter) Write(b []byte) (int, error) {
+	if int64(len(b)) > w.remaining {
+		w.exceeded = true
+		return 0, errors.New("media output exceeds configured byte limit")
 	}
-	defer file.Close()
+	n, err := w.writer.Write(b)
+	w.remaining -= int64(n)
+	if err == nil && n != len(b) {
+		err = io.ErrShortWrite
+	}
+	return n, err
+}
+
+// Preparation owns its file until ffmpeg has exited, all frames have been read
+// back successfully and the file is closed. Partial artifacts are never exposed
+// as playable audio. A single real Opus packet succeeds; an empty file does not.
+func prepareAudio(ctx context.Context, input *scratchFile, dir *scratchDirectory, limits playerLimits) (artifact *scratchFile, frames uint64, err error) {
+	ctx, cancel := context.WithTimeout(ctx, limits.encodeTimeout)
+	defer cancel()
+	artifact, out, err := dir.create()
+	if err != nil {
+		return nil, 0, err
+	}
+	defer func() {
+		if err != nil {
+			err = errors.Join(err, artifact.Remove())
+			artifact = nil
+		}
+	}()
+	writer := &boundedWriter{writer: out, remaining: limits.MaxArtifactBytes}
+	result, encodeErr := opus.Encode(ctx, input.path, writer, opus.EncodeOptions{
+		Executable: ffmpegPath, BitrateKbps: limits.BitrateKbps,
+		MaxInputBytes: limits.MaxDownloadBytes, MaxOutputBytes: limits.MaxArtifactBytes,
+		MaxFrames: int64(limits.MaxFrames), MaxPacketBytes: int(limits.MaxPacketBytes),
+		MaxDiagnosticBytes: int(limits.MaxProcessOutputBytes), Timeout: limits.encodeTimeout,
+	})
+	err = encodeErr
+	if err == nil {
+		err = out.Sync()
+	}
+	err = errors.Join(err, out.Close())
+	if err != nil {
+		return artifact, 0, err
+	}
+	file, err := dir.root.Open(artifact.name)
+	if err != nil {
+		return artifact, 0, err
+	}
+	defer func() { err = errors.Join(err, file.Close()) }()
+	info, err := file.Stat()
+	if err != nil {
+		return artifact, 0, err
+	}
+	if info.Size() != result.Bytes {
+		return artifact, 0, errors.New("encoder result does not match complete artifact byte count")
+	}
 	decoder := opus.NewDecoder(file)
-	frameCount := 0
-	ticker := time.NewTicker(20 * time.Millisecond)
-	defer ticker.Stop()
 	for {
-		frame, err := decoder.OpusFrame(ctx)
-		if err == io.EOF {
+		packet, readErr := decoder.OpusFrame(ctx)
+		if readErr == io.EOF {
 			break
 		}
-		if err != nil {
-			return fmt.Errorf("failed to read opus frame: %w", err)
+		if readErr != nil {
+			return artifact, 0, readErr
 		}
-		vc.Send(frame, 5, 5000)
-		frameCount++
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-ticker.C:
-		}
-		if frameCount%100 == 0 {
-			log.Debug("Sending audio frames", "count", frameCount)
+		frames++
+		if frames > limits.MaxFrames || uint64(len(packet)) > limits.MaxPacketBytes {
+			return artifact, 0, errors.New("encoded audio exceeds configured frame or packet limit")
 		}
 	}
-	log.Info("Finished playing audio", "total_frames", frameCount)
+	if frames == 0 {
+		return artifact, 0, opus.ErrEmptyAudio
+	}
+	if frames != uint64(result.Frames) {
+		return artifact, 0, errors.New("encoder result does not match complete artifact frame count")
+	}
+	if err = ctx.Err(); err != nil {
+		return artifact, 0, err
+	}
+	return artifact, frames, nil
+}
+
+func (p *player) recordCleanup(err error) {
+	if err == nil {
+		return
+	}
+	p.mu.Lock()
+	p.cleanupError = errors.Join(p.cleanupError, err)
+	p.failure = errors.Join(p.failure, err)
+	p.ready = false
+	p.mu.Unlock()
+	p.cancel()
+}
+
+func (p *player) play(request attachmentRequest) (err error) {
+	dir, err := p.scratch.directory()
+	if err != nil {
+		return err
+	}
+	defer func() { cleanupErr := dir.Close(); p.recordCleanup(cleanupErr); err = errors.Join(err, cleanupErr) }()
+	input, err := p.downloads.DownloadAttachment(p.lifetime, request.attachment, dir)
+	if err != nil {
+		return err
+	}
+	artifact, frames, err := prepareAudio(p.lifetime, input, dir, p.cfg.Limits)
+	if err != nil {
+		return err
+	}
+	if err := input.Remove(); err != nil {
+		return err
+	}
+	file, err := dir.root.Open(artifact.name)
+	if err != nil {
+		return err
+	}
+	defer func() { cleanupErr := file.Close(); p.recordCleanup(cleanupErr); err = errors.Join(err, cleanupErr) }()
+	ctx, cancel := context.WithTimeout(p.lifetime, p.cfg.Limits.jobLifetime)
+	defer cancel()
+	admit, stop := context.WithTimeout(ctx, p.cfg.Limits.operationTimeout)
+	job, err := p.voice.CreatePlaybackJob(admit, discord.CreatePlaybackJobRequest{GuildID: request.guild, ChannelID: request.voice, Priority: *p.cfg.Priority, Lifetime: p.cfg.Limits.jobLifetime, Format: discord.Opus48kHz20ms})
+	stop()
+	if err != nil {
+		return err
+	} // Ambiguous creation is not retried.
+	defer func() {
+		p.mu.Lock()
+		deadline := p.cleanupDeadline
+		p.mu.Unlock()
+		cleanup, finish := cleanupContext(p.cfg.Limits.cleanupTimeout, deadline)
+		defer finish()
+		terminal, cleanupErr := p.voice.CancelPlaybackJob(cleanup, discord.JobRequest{JobID: job.JobID})
+		if cleanupErr == nil && !terminal.Terminal() {
+			cleanupErr = errors.New("owned playback cancel did not reach terminal state")
+		}
+		p.recordCleanup(cleanupErr)
+		err = errors.Join(err, cleanupErr)
+	}()
+	decoder := opus.NewDecoder(file)
+	snapshot, err := p.voice.ProducePlayback(ctx, discord.JobRequest{JobID: job.JobID}, p.cfg.Limits.MaxPacketBytes, decoder.OpusFrame)
+	if err != nil {
+		return err
+	}
+	if snapshot.State != discord.PlaybackCompleted || !snapshot.InputEnded || snapshot.FinalSequence != frames || snapshot.LastUDPWrittenSequence != frames {
+		return fmt.Errorf("playback did not complete the validated %d-frame artifact", frames)
+	}
 	return nil
 }
