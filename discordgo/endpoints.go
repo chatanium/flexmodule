@@ -14,7 +14,7 @@ package discordgo
 import "strconv"
 
 // APIVersion is the Discord API version used for the REST and Websocket API.
-var APIVersion = "9"
+var APIVersion = "10"
 
 // Known Discord API Endpoints.
 var (
@@ -45,7 +45,7 @@ var (
 	EndpointCDNGuilds       = EndpointCDN + "guilds/"
 	EndpointCDNRoleIcons    = EndpointCDN + "role-icons/"
 
-	EndpointVoice        = EndpointAPI + "/voice/"
+	EndpointVoice        = EndpointAPI + "voice/"
 	EndpointVoiceRegions = EndpointVoice + "regions"
 
 	EndpointUser               = func(uID string) string { return EndpointUsers + uID }

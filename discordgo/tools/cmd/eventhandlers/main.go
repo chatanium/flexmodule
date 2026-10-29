@@ -115,6 +115,15 @@ func constName(name string) string {
 	if !isDiscordEvent(name) {
 		return "__" + constCase(name) + "__"
 	}
+	// The SDK wrapper names include Event; Discord's wire names do not.
+	switch name {
+	case "StageInstanceEventCreate":
+		return "STAGE_INSTANCE_CREATE"
+	case "StageInstanceEventDelete":
+		return "STAGE_INSTANCE_DELETE"
+	case "StageInstanceEventUpdate":
+		return "STAGE_INSTANCE_UPDATE"
+	}
 
 	return constCase(name)
 }

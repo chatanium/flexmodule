@@ -175,9 +175,14 @@ func (m *Message) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	*m = Message(v.message)
-	m.Components = make([]MessageComponent, len(v.RawComponents))
-	for i, v := range v.RawComponents {
-		m.Components[i] = v.MessageComponent
+	// An omitted components field must remain nil so a partial MESSAGE_UPDATE
+	// does not erase the cached components. A present [] remains non-nil and
+	// therefore still explicitly clears them in State.MessageAdd.
+	if v.RawComponents != nil {
+		m.Components = make([]MessageComponent, len(v.RawComponents))
+		for i, v := range v.RawComponents {
+			m.Components[i] = v.MessageComponent
+		}
 	}
 	return err
 }

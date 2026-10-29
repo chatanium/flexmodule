@@ -177,8 +177,9 @@ func (s *State) GuildRemove(guild *Guild) error {
 
 // Guild gets a guild by ID.
 // Useful for querying if @me is in a guild:
-//    _, err := discordgo.Session.State.Guild(guildID)
-//	  isInGuild := err == nil
+//
+//	   _, err := discordgo.Session.State.Guild(guildID)
+//		  isInGuild := err == nil
 func (s *State) Guild(guildID string) (*Guild, error) {
 	if s == nil {
 		return nil, ErrNilState
@@ -643,7 +644,9 @@ func (s *State) ThreadMembersUpdate(tmu *ThreadMembersUpdate) error {
 
 	for _, addedMember := range tmu.AddedMembers {
 		thread.Members = append(thread.Members, addedMember.ThreadMember)
-		if addedMember.Member != nil {
+		// Embedded partial members may omit User. Preserve the event, but do
+		// not manufacture an identity to insert an unkeyable cache entry.
+		if addedMember.Member != nil && addedMember.Member.User != nil {
 			err = s.memberAdd(addedMember.Member)
 			if err != nil {
 				return err

@@ -42,9 +42,6 @@ type Session struct {
 	// Should the session reconnect the websocket on errors.
 	ShouldReconnectOnError bool
 
-	// Should voice connections reconnect on a session reconnect.
-	ShouldReconnectVoiceOnSessionError bool
-
 	// Should the session retry requests when rate limited.
 	ShouldRetryOnRateLimit bool
 
@@ -135,8 +132,19 @@ type Session struct {
 	// stores session ID of current Gateway connection
 	sessionID string
 
-	// used to make sure gateway websocket writes do not happen concurrently
-	wsMutex sync.Mutex
+	// All main Gateway writers share this cancellable gate.
+	wsMutex gatewayMutex
+	// Serializes connection establishment and teardown, separately from state.
+	wsLifecycle gatewayMutex
+	dispatchMu  sync.RWMutex
+	// Serializes host ingress across an old reader and a reconnect handshake.
+	dispatchSerial           sync.Mutex
+	dispatchObserver         func(*Session, *Event, error)
+	gatewayFrameMaxBytes     int64
+	gatewayDecodedMaxBytes   int64
+	gatewayFaulted           bool
+	gatewayFatal             func(error)
+	gatewayCallbacksDetached bool
 }
 
 // ApplicationIntegrationType dictates where application can be installed and its available interaction contexts.

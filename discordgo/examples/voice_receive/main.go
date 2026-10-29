@@ -1,6 +1,9 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
+	"os"
 	"flag"
 	"fmt"
 	"time"
@@ -16,12 +19,15 @@ var (
 	Token     string
 	ChannelID string
 	GuildID   string
+	VoiceConfigPath string
+	VoiceConfig discordgo.VoiceConfig
 )
 
 func init() {
 	flag.StringVar(&Token, "t", "", "Bot Token")
 	flag.StringVar(&GuildID, "g", "", "Guild in which voice channel exists")
 	flag.StringVar(&ChannelID, "c", "", "Voice channel to connect to")
+	flag.StringVar(&VoiceConfigPath, "voice-config", "", "Required JSON file containing explicit discordgo.VoiceConfig bounds (durations in nanoseconds)")
 	flag.Parse()
 }
 
@@ -41,7 +47,7 @@ func createPionRTPPacket(p *discordgo.Packet) *rtp.Packet {
 	}
 }
 
-func handleVoice(c <-chan *discordgo.Packet, done <-chan time.Time) {
+func handleVoice(ctx context.Context, voice *discordgo.VoiceConnection) error {
 	files := make(map[uint32]media.Writer)
 	defer func() {
 		for ssrc, file := range files {
@@ -52,34 +58,26 @@ func handleVoice(c <-chan *discordgo.Packet, done <-chan time.Time) {
 	}()
 
 	for {
-		select {
-		case <-done:
-			return
-		case p, ok := <-c:
-			if !ok {
-				return
-			}
-			file, ok := files[p.SSRC]
-			if !ok {
-				var err error
-				file, err = oggwriter.New(fmt.Sprintf("%d.ogg", p.SSRC), 48000, 2)
-				if err != nil {
-					fmt.Printf("failed to create file %d.ogg, giving up on recording: %v\n", p.SSRC, err)
-					return
-				}
-				files[p.SSRC] = file
-			}
-			// Construct pion RTP packet from DiscordGo's type.
-			rtp := createPionRTPPacket(p)
-			err := file.WriteRTP(rtp)
-			if err != nil {
-				fmt.Printf("failed to write to file %d.ogg: %v\n", p.SSRC, err)
-			}
+		p, err := voice.ReceiveOpus(ctx)
+		if err != nil { return err }
+		file, ok := files[p.SSRC]
+		if !ok {
+			file, err = oggwriter.New(fmt.Sprintf("%d.ogg", p.SSRC), 48000, 2)
+			if err != nil { return fmt.Errorf("create recording %d: %w", p.SSRC, err) }
+			files[p.SSRC] = file
+		}
+		if err = file.WriteRTP(createPionRTPPacket(p)); err != nil {
+			return fmt.Errorf("write recording %d: %w", p.SSRC, err)
 		}
 	}
 }
 
 func main() {
+	if !discordgo.VoiceAvailable() { fmt.Println(discordgo.ErrVoiceUnavailable); return }
+	configBytes, err := os.ReadFile(VoiceConfigPath)
+	if err == nil { err = json.Unmarshal(configBytes, &VoiceConfig) }
+	if err == nil { err = VoiceConfig.Validate() }
+	if err != nil { fmt.Println("invalid required voice configuration:", err); return }
 	s, err := discordgo.New("Bot " + Token)
 	if err != nil {
 		fmt.Println("error creating Discord session:", err)
@@ -96,7 +94,7 @@ func main() {
 		return
 	}
 
-	v, err := s.ChannelVoiceJoin(GuildID, ChannelID, true, false)
+	v, err := s.ChannelVoiceJoinContext(context.Background(), GuildID, ChannelID, true, false, VoiceConfig)
 	if err != nil {
 		fmt.Println("failed to join voice channel:", err)
 		return
@@ -108,8 +106,9 @@ func main() {
 		}
 	}()
 
-	// Stop receiving without closing the channel owned by DiscordGo's sender.
-	timer := time.NewTimer(10 * time.Second)
-	defer timer.Stop()
-	handleVoice(v.OpusRecv, timer.C)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := handleVoice(ctx, v); err != nil && ctx.Err() == nil {
+		fmt.Println("voice receive failed:", err)
+	}
 }

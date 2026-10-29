@@ -1,6 +1,8 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"encoding/binary"
 	"flag"
 	"fmt"
@@ -9,28 +11,41 @@ import (
 	"os/signal"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/bwmarrin/discordgo"
 )
 
 func init() {
 	flag.StringVar(&token, "t", "", "Bot Token")
+	flag.StringVar(&voiceConfigPath, "voice-config", "", "Required JSON file containing explicit discordgo.VoiceConfig bounds (durations in nanoseconds)")
 	flag.Parse()
 }
 
 var token string
+var voiceConfigPath string
+var voiceConfig discordgo.VoiceConfig
 var buffer = make([][]byte, 0)
 
 func main() {
 
 	if token == "" {
-		fmt.Println("No token provided. Please run: airhorn -t <bot token>")
+		fmt.Println("Usage: airhorn -t <bot token> -voice-config <bounds.json> (voice-enabled build required)")
+		return
+	}
+	if !discordgo.VoiceAvailable() {
+		fmt.Println(discordgo.ErrVoiceUnavailable)
+		return
+	}
+	configBytes, err := os.ReadFile(voiceConfigPath)
+	if err == nil { err = json.Unmarshal(configBytes, &voiceConfig) }
+	if err == nil { err = voiceConfig.Validate() }
+	if err != nil {
+		fmt.Println("Invalid required voice configuration:", err)
 		return
 	}
 
 	// Load the sound file.
-	err := loadSound()
+	err = loadSound()
 	if err != nil {
 		fmt.Println("Error loading sound: ", err)
 		fmt.Println("Please copy $GOPATH/src/github.com/bwmarrin/examples/airhorn/airhorn.dca to this directory.")
@@ -182,34 +197,24 @@ func loadSound() error {
 	}
 }
 
-// playSound plays the current buffer to the provided channel.
+// playSound submits immutable frames and awaits each local UDP-write receipt.
+// Only the transport paces packets; no sleeps or public send queue are used.
 func playSound(s *discordgo.Session, guildID, channelID string) (err error) {
-
-	// Join the provided voice channel.
-	vc, err := s.ChannelVoiceJoin(guildID, channelID, false, true)
-	if err != nil {
-		return err
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	vc, err := s.ChannelVoiceJoinContext(ctx, guildID, channelID, false, true, voiceConfig)
+	if err != nil { return err }
+	defer func() {
+		closeCtx, closeCancel := context.WithTimeout(context.Background(), voiceConfig.CloseTimeout)
+		defer closeCancel()
+		closeErr := vc.DisconnectContext(closeCtx)
+		if err == nil { err = closeErr }
+	}()
+	for _, frame := range buffer {
+		submission, submitErr := vc.SubmitOpus(ctx, frame)
+		if submitErr != nil { return submitErr }
+		result := <-submission.Done()
+		if result.Err != nil { return result.Err }
 	}
-
-	// Sleep for a specified amount of time before playing the sound
-	time.Sleep(250 * time.Millisecond)
-
-	// Start speaking.
-	vc.Speaking(true)
-
-	// Send the buffer data.
-	for _, buff := range buffer {
-		vc.OpusSend <- buff
-	}
-
-	// Stop speaking
-	vc.Speaking(false)
-
-	// Sleep for a specificed amount of time before ending.
-	time.Sleep(250 * time.Millisecond)
-
-	// Disconnect from the provided voice channel.
-	vc.Disconnect()
-
 	return nil
 }
