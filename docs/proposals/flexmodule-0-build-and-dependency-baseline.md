@@ -15,9 +15,11 @@ FlexModule의 모든 Go 모듈이 같은 로컬 DiscordGo 소스를 사용하도
 
 ## 2. Background & Motivation
 
-### 확인된 현재 상태
+### 기존 감사 기준선과 현재 의존성 계약
 
-루트 모듈은 Go `1.24.0`, `google.golang.org/protobuf v1.36.5`, `google.golang.org/grpc v1.71.0`, `hashicorp/go-plugin v1.6.3`을 선언하고 DiscordGo를 `./discordgo`로 대체합니다. 로컬 DiscordGo에는 upstream `v0.28.1`만으로는 제공되지 않는 컴포넌트 타입이 있으므로, `require`의 버전 문자열이 같다는 이유로 같은 API를 사용하는 것으로 볼 수 없습니다.
+아래 오류와 구형 버전은 업그레이드 전 감사의 기록입니다. 당시 루트 모듈은 Go `1.24.0`, protobuf `v1.36.5`, gRPC `v1.71.0`, go-plugin `v1.6.3`을 선언했습니다. 소비 모듈의 DiscordGo `require v0.28.1`과 달리 실제 로컬 SDK 기준선은 `v0.29.0`, commit `6e8fa27c7917ea54d8b9ec26f126becae59058d2`였습니다. 이 기록을 현재 버전이나 최종 API 범위로 해석하지 않습니다.
+
+현재 계약은 유지 대상 여섯 모듈의 의존성을 검증된 릴리스로 올리고, DiscordGo 소스를 commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`, pseudo-version `v0.29.1-0.20260214123928-f43dd94faaac`에 고정하는 것입니다. 이 소스는 **태그 없는 upstream revision**이며 최신 안정 태그 `v0.29.0`과 구분합니다. 로컬 `replace`, SDK의 중첩 Git 이력과 필요한 로컬 변경은 보존하고 변경된 API의 모든 호출자를 이관합니다. API 및 이벤트 범위의 근거는 [새 source inventory](../../tools/protocol/inventory/source-refresh-summary.json)와 P1/P3의 현행 분류입니다. 의존성 메타데이터 확인은 빌드나 실제 호환성 검증의 성공을 뜻하지 않습니다.
 
 기존 감사에서 루트와 `chatanium-musicbot` 빌드는 다음 네 오류로 실패했습니다. 이 문서를 작성하면서 빌드를 다시 실행하지 않았습니다.
 
@@ -51,7 +53,7 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 
 ### 3.2 Non-Goals
 
-- [ ] 의존성을 일괄 최신화하거나 DiscordGo를 upstream으로 교체하지 않습니다.
+- [ ] 의존성 업그레이드를 이유로 범용 런타임 요구나 기존 감사의 기능 및 보안 범위를 줄이지 않습니다. 기존의 일괄 최신화 제외 조건은 사용자의 전체 의존성 업그레이드 요구로 대체합니다.
 - [ ] 빌드 복구를 이유로 변환 필드, 비활성 변환기 또는 Discord API 범위를 줄이지 않습니다.
 - [ ] 필드 누락, enum 값 불일치, patch presence 또는 파일 전송 문제를 이 제안만으로 해결했다고 간주하지 않습니다. 전체 동작 수정은 [P2](flexmodule-2-domain-conversions.md) 및 [P3](flexmodule-3-discord-backend.md)의 범위입니다.
 - [ ] Docker 이미지 구성, gVisor 실행 및 운영 호스트 준비를 구현하지 않습니다. 이미지와 실행 의존성은 [P4](flexmodule-4-runtime-and-isolation.md), 예제별 패키징 및 검증 설명은 [P6](flexmodule-6-examples-and-validation.md)에서 완성합니다.
@@ -63,7 +65,7 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 
 빌드 경로는 도구 고정, 모듈 의존성 해석, 임시 출력 생성, 성공한 대상의 게시로 나눕니다. 프로토콜 생성은 바이너리 빌드와 분리하며, 평상시 빌드는 저장소에 포함된 생성 파일을 사용합니다. 빌드 과정에서 조용히 스키마를 다시 생성하거나 `go mod tidy`로 의존성 파일을 변경하지 않습니다.
 
-현재 발견된 Go 모듈은 다음 여덟 개입니다. 루트의 `go build ./...`는 중첩 모듈을 모두 빌드하는 명령이 아니므로, 모듈별 실행 결과를 구분해야 합니다.
+기존 감사에서 발견한 Go 모듈은 다음 여덟 개입니다. 이 중 유지 대상은 여섯 개이며 ignored helper 두 개는 폐기 대상입니다. 루트의 `go build ./...`는 중첩 모듈을 모두 빌드하는 명령이 아니므로, 모듈별 실행 결과를 구분해야 합니다.
 
 | 모듈 경로 | 현재 상태와 변경 계약 |
 |---|---|
@@ -76,7 +78,7 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 | `helper-service` | ignored 실험 디렉터리의 모듈이며 DiscordGo를 소비하지 않습니다. 현황 목록에는 포함하되 생산 빌드와 이미지 입력에서는 제외합니다. |
 | `helper-service/plugin-go-grpc` | ignored 실험 디렉터리의 하위 모듈이며 `helper-service => ../`를 사용합니다. 생산 의존성으로 편입하지 않고 P6에서 구식 helper 경로와 함께 폐기합니다. |
 
-워크스페이스 설정만으로 누락된 `replace`를 감추지 않습니다. 각 중첩 모듈을 단독 작업 디렉터리로 빌드해도 같은 소스를 해석하도록 모듈 파일 자체를 수정합니다. 의존성 변경이 필요한 `go.sum`만 함께 갱신하며, 관계없는 모듈의 라이브러리 버전을 맞추기 위한 일괄 업그레이드는 하지 않습니다.
+워크스페이스 설정만으로 누락된 `replace`를 감추지 않습니다. 각 중첩 모듈을 단독 작업 디렉터리로 빌드해도 같은 소스를 해석하도록 모듈 파일 자체를 수정합니다. 유지 대상 여섯 모듈의 직접 및 간접 의존성 그래프와 필요한 `go.sum`을 함께 갱신하고 기존 로컬 대체 경로를 보존합니다. 현재 major로 바뀐 Pion은 `/webrtc/v4 v4.2.26`과 `rtp v1.10.6`에 맞게 예제 호출자를 이관하며, 버전 문자열만 바꾸는 호환 shim을 추가하지 않습니다.
 
 ### 4.2 Data Model Changes
 
@@ -96,17 +98,19 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 
 #### 도구 버전 기준선
 
-Go의 최소 언어 버전은 유지하고 실제 실행 도구는 다음 기준으로 고정합니다. 이는 사용자 기능 요구사항과 구분되는 재현성 확보용 기술 선택입니다.
+유지 대상 모듈의 최소 언어 버전과 실제 실행 도구는 다음 기준으로 고정합니다. 구형 버전은 위 감사 기록에만 남기고 현재 도구나 라이브러리 pin으로 사용하지 않습니다.
 
 | 항목 | 기준 | 근거 및 처리 |
 |---|---|---|
-| Go 언어 및 최소 버전 | `go 1.24.0` 유지 | `go.mod`의 언어 및 최소 버전 계약입니다. 이 선언을 정확히 `go1.24.0` 컴파일러를 사용해야 한다는 요구로 해석하지 않습니다. |
-| 실제 Go 컴파일러 | 기준선 설정 시 지원 중인 릴리스의 정확한 patch 버전 고정 | Go 1.24 이상의 언어 계약을 충족하는 지원 릴리스를 선택하여 `Makefile`의 도구 버전에 기록합니다. `.0`의 오래된 컴파일러를 최소 버전 선언만으로 강제하지 않으며, 이후 빌드는 기록한 정확한 버전을 사용합니다. |
-| Buf CLI | `1.50.0` | 작성 환경에서 버전 조회로 확인한 설치 버전입니다. 생성 또는 스키마 검증의 성공을 뜻하지 않습니다. |
-| `protoc-gen-go` | `v1.36.5` | 현재 protobuf 런타임과 같은 릴리스이며 공식 Go 모듈 배포에서 실재를 확인했습니다. |
-| `protoc-gen-go-grpc` | `v1.3.0` | 기존 `buf.gen.yaml`의 버전을 유지합니다. |
-| 루트 protobuf 런타임 | `v1.36.5` 유지 | 생성기 고정을 이유로 런타임을 업그레이드하지 않습니다. |
-| 루트 gRPC 및 go-plugin | `v1.71.0`, `v1.6.3` 유지 | 후속 기능에 실제 필요하지 않은 변경은 하지 않습니다. |
+| Go 언어 및 최소 버전 | `go 1.27.0` | `go-ytdlp v1.5.6`의 Go 1.27 요구에 맞춰 여섯 유지 모듈의 floor를 통일합니다. gRPC `v1.85.0`은 Go 1.26.0 이상을 요구하므로 기존 1.24 floor는 유지할 수 없습니다. |
+| 실제 Go 컴파일러 | `go1.27.3` | 최소 버전과 별도로 고정한 실제 patch 릴리스입니다. |
+| Buf CLI | `1.75.0` | Go 소스 빌드 floor는 1.26.7입니다. 설치된 버전이나 생성 성공을 이 문서에서 새로 검증한 것은 아닙니다. |
+| `protoc-gen-go` 및 protobuf 런타임 | `v1.36.12` | 생성기와 애플리케이션 런타임을 같은 릴리스로 고정합니다. |
+| `protoc-gen-go-grpc` | `v1.6.2` | generic stream 인터페이스에 맞게 호출자를 이관하고 `require_unimplemented_servers=false`는 유지합니다. |
+| gRPC 및 go-plugin | `v1.85.0`, `v1.8.0` | 각각 현재 고정 릴리스를 사용합니다. go-plugin의 AutoMTLS와 multiplex는 1.8에서 새로 생긴 기능으로 설명하지 않습니다. |
+| 기타 직접 의존성 | `go-ytdlp v1.5.6`, `oauth2 v0.37.0`, `websocket v1.5.3`, `x/crypto v0.58.0` | 미디어 wrapper의 실제 API와 SDK 예제도 함께 이관합니다. UUID `v1.6.0`, hclog `v1.6.3`, godotenv `v1.5.1`은 이미 최신 안정 릴리스이므로 유지합니다. |
+
+최신 DCA revision도 `DiscordGo.OpusSend`에 직접 의존하므로 버전만 올려 P5의 공개 채널 제거와 공존시킬 수 없습니다. 모듈 호출자와 의존성에서 DCA를 제거하고 실제 ffmpeg 인코딩과 bounded Opus packet 처리를 모듈 측 `shared/media/opus`로 이관합니다. 코어에 인코더나 host installer를 추가하지 않습니다. 최신 go-plugin이 요구하는 `github.com/golang/protobuf v1.5.4`의 간접 의존성은 로컬 생성 코드를 새 protobuf로 옮겼다는 이유만으로 제거되었다고 주장하지 않습니다.
 
 생성기는 정확한 Go 모듈 버전으로 만든 저장소 전용 도구 디렉터리의 실행 파일을 사용합니다. Buf 설정은 현재의 원격 unpinned Go 플러그인 대신 이 고정된 로컬 생성기를 가리킵니다. `paths=source_relative`와 `require_unimplemented_servers=false`는 유지합니다. PATH에서 우연히 발견한 다른 생성기, `@latest`, 버전 없는 원격 플러그인을 허용하지 않습니다. 모듈 및 도구 배포의 기존 무결성 확인 절차를 사용하며 별도의 범용 checksum 기록 체계는 만들지 않습니다.
 
@@ -251,6 +255,7 @@ P1 전환 시 런타임, SDK 및 모든 예제의 import를 함께 옮기며 v1 
 - [실험 helper 모듈](../../helper-service/go.mod), [실험 helper plugin 모듈](../../helper-service/plugin-go-grpc/go.mod)
 - [현재 정방향 interaction 변환](../../shared/discord-v1/convert/struct2buf/interactions.go), [현재 역방향 interaction 변환](../../shared/discord-v1/convert/buf2struct/interactions.go)
 - [현재 component 변환](../../shared/discord-v1/convert/struct2buf/components.go), [현재 embed 변환](../../shared/discord-v1/convert/struct2buf/message.go), [현재 Discord schema](../../proto/discord-v1/discordgo.proto)
-- [protobuf Go v1.36.5 공식 모듈 배포 정보](https://proxy.golang.org/google.golang.org/protobuf/@v/v1.36.5.info)
-- [protoc-gen-go-grpc v1.3.0 공식 모듈 배포 정보](https://proxy.golang.org/google.golang.org/grpc/cmd/protoc-gen-go-grpc/@v/v1.3.0.info)
+- [protobuf 및 Go 생성기 v1.36.12 공식 모듈 정보](https://proxy.golang.org/google.golang.org/protobuf/@v/v1.36.12.info), [gRPC v1.85.0](https://proxy.golang.org/google.golang.org/grpc/@v/v1.85.0.info)
+- [protoc-gen-go-grpc v1.6.2](https://proxy.golang.org/google.golang.org/grpc/cmd/protoc-gen-go-grpc/@v/v1.6.2.info), [Buf v1.75.0](https://proxy.golang.org/github.com/bufbuild/buf/@v/v1.75.0.info), [go-plugin v1.8.0](https://github.com/hashicorp/go-plugin/releases/tag/v1.8.0)
+- [고정 DiscordGo upstream 변경 내역](https://github.com/bwmarrin/discordgo/compare/v0.29.0...f43dd94faaacd5b163e9e783f14b5bd8be639fc9), [go-ytdlp v1.5.6 Go 요구](https://proxy.golang.org/github.com/lrstanley/go-ytdlp/@v/v1.5.6.mod)
 - [프로토콜 계약 제안](flexmodule-1-protocol-contracts.md), [도메인 변환 제안](flexmodule-2-domain-conversions.md), [런타임 및 격리 제안](flexmodule-4-runtime-and-isolation.md), [예제 및 검증 제안](flexmodule-6-examples-and-validation.md)

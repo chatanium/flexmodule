@@ -15,12 +15,18 @@ Ultimately, Chatanium's goal is to deploy/develop/operate better chatbots. There
 
 ## Build and generation
 
-The language floor is Go 1.24.0. The compiler is pinned to **Go 1.27.3** in
+The language floor is Go 1.27.0. The compiler is pinned to **Go 1.27.3** in
 `.go-version` and `tools/versions.mk`; build commands select it with `GOTOOLCHAIN`.
-Buf 1.50.0, protoc-gen-go v1.36.5, and protoc-gen-go-grpc v1.3.0 are installed
+Buf 1.75.0, protoc-gen-go v1.36.12, and protoc-gen-go-grpc v1.6.2 are installed
 under the ignored `.tools/bin` directory. If a version-manager shim cannot start
 the pinned compiler, set `BOOTSTRAP_GO` to an actual Go executable, or install
 the pinned distribution at `.tools/go/bin/go`.
+
+The local DiscordGo source is pinned to upstream commit
+`f43dd94faaacd5b163e9e783f14b5bd8be639fc9`
+(`v0.29.1-0.20260214123928-f43dd94faaac`). This is an untagged upstream revision,
+not a stable release tag. Dependency versions do not imply that every optional
+or test-only entry in an upstream module's lazy dependency graph is latest.
 
 ```sh
 make tools
@@ -69,6 +75,16 @@ ordinary or media-module compilation.
   build preservation, failed generation preservation, and rollback after a
   partially published change were exercised. These checks do not certify v2
   conversion semantics, sandbox isolation, or live Discord/voice behavior.
+- **2026-10-29 — media dependency decoupling:** replaced the DCA library with
+  module-side `shared/media/opus`. Packet-boundary tests and real FFmpeg/libopus
+  encoding/decoding passed; a blocked input was canceled and the child reaped.
+  This smoke used host FFmpeg 5.1.9, not the separately pinned media image.
+- **2026-10-29 — v2 transport:** generated the owned v1/v2 bindings with the
+  upgraded tools. Core boundary tests and the typed Discord registry compiled.
+  A real two-process AutoMTLS/multiplex smoke exercised reverse helper startup,
+  exact JSON configuration, callback-scoped upload of 524,325 bytes in three
+  chunks, transient empty reads, and cancellation of a blocked source. This
+  fixture does not certify production authorization, file storage or isolation.
 - The [staged proposals](docs/proposals/flexmodule-0-build-and-dependency-baseline.md)
   define the coordinated v2 cutover. The P0 runtime still uses v1; it is not a
   completed or deployable v2 implementation.
