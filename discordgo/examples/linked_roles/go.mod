@@ -1,11 +1,13 @@
 module github.com/bwmarrin/discordgo/examples/linked_roles
 
-go 1.13
+go 1.27.0
 
 replace github.com/bwmarrin/discordgo => ../../
 
 require (
-	github.com/bwmarrin/discordgo v0.26.1
-	github.com/joho/godotenv v1.4.0
-	golang.org/x/oauth2 v0.3.0
+	github.com/bwmarrin/discordgo v0.29.1-0.20260214123928-f43dd94faaac
+	github.com/joho/godotenv v1.5.1
+	golang.org/x/oauth2 v0.37.0
 )
+
+require github.com/gorilla/websocket v1.5.3 // indirect
