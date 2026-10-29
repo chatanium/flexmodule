@@ -4,6 +4,8 @@ go 1.24.0
 
 replace github.com/thirdscam/chatanium-flexmodule => ../
 
+replace github.com/bwmarrin/discordgo => ../discordgo
+
 require (
 	github.com/bwmarrin/discordgo v0.28.1
 	github.com/hashicorp/go-hclog v1.6.3
