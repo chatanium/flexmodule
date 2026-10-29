@@ -1,30 +1,31 @@
-package Provider
+package provider
 
 import "context"
 
-// MusicID is a unique identifier for a music.
-// It is used to download file name as MusicID.
-//
-// recommended to use hash of the URL as key.
-type MusicID string
-
-type Music struct {
-	Id     MusicID // unique identifier for the music
-	Title  string
-	RawUrl string
-	Type   string
-
-	ThumbnailUrl string
-	Duration     string
+// Track contains display metadata and an extractor-produced source URL, never a path.
+type Track struct {
+	ID           string
+	Title        string
+	SourceURL    string
+	ThumbnailURL string
 }
 
-type Interface interface {
-	Start() error
-	GetMusic(ctx context.Context, query string) ([]Music, error)
+type Provider interface {
+	Initialize(context.Context) error
+	Resolve(context.Context, string) ([]Track, error)
 }
 
-func GetProviders() map[string]Interface {
-	return map[string]Interface{
-		"youtube": &Youtube{},
-	}
+type Limits struct {
+	MaxResults       int
+	MaxQueryBytes    int
+	MaxOutputBytes   int64
+	ToolTimeoutMS    int64
+	ResolveTimeoutMS int64
 }
+
+const (
+	FFmpeg  = "/opt/flexmodule/bin/ffmpeg"
+	FFprobe = "/opt/flexmodule/bin/ffprobe"
+	YTDLP   = "/opt/flexmodule/yt-dlp/yt-dlp"
+	Deno    = "/opt/flexmodule/bin/deno"
+)

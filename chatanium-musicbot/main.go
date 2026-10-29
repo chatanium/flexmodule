@@ -2,507 +2,413 @@ package main
 
 import (
 	"context"
+	_ "embed"
+	"errors"
 	"fmt"
 	"os"
-	"time"
+	"strings"
+	"sync"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"google.golang.org/grpc/metadata"
-
-	broker "github.com/thirdscam/chatanium-flexmodule/shared"
-
-	Core "github.com/thirdscam/chatanium-flexmodule/shared/core-v1"
-	CorePlugin "github.com/thirdscam/chatanium-flexmodule/shared/core-v1/module"
-
-	pb "github.com/thirdscam/chatanium-flexmodule/proto/discord-v1"
-	Discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1"
-	DiscordPlugin "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1/module"
-
-	Provider "github.com/thirdscam/chatanium-flexmodule/chatanium-musicbot/provider"
+	provider "github.com/thirdscam/chatanium-flexmodule/chatanium-musicbot/provider"
+	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
+	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
+	core "github.com/thirdscam/chatanium-flexmodule/shared/core-v2"
+	discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
-var PERMISSIONS = Core.Permissions{
-	"DISCORD_V1_ON_CREATE_INTERACTION",
-	"DISCORD_V1_REQ_VOICE_STATE",
-	"DISCORD_V1_CREATE_VOICE_STREAM",
+//go:embed manifest.json
+var manifestJSON []byte
+
+type musicBot struct {
+	mu         sync.Mutex
+	readiness  corewire.Readiness
+	running    bool
+	draining   bool
+	config     Config
+	core       core.CoreClient
+	discord    *discord.Client
+	voice      *discord.VoiceClient
+	provider   provider.Provider
+	preparer   *Preparer
+	scratch    string
+	lifetime   context.Context
+	cancel     context.CancelFunc
+	playlists  map[string]*Playlist
+	workers    sync.WaitGroup
+	done       chan struct{}
+	commandIDs map[string]map[string]string
 }
 
-var MANIFEST = Core.Manifest{
-	Name:        "MusicBot",
-	Version:     "0.2.0",
-	Author:      "ANTEGRAL",
-	Repository:  "github:thirdscam/chatanium-flexmodule",
-	Permissions: PERMISSIONS,
+func (m *musicBot) bind(_ context.Context, conn grpc.ClientConnInterface) (err error) {
+	m.core, err = core.NewCoreClient(conn, core.JSONLimits{MaxBytes: 1 << 20, MaxDepth: 32})
+	if err != nil {
+		return err
+	}
+	m.discord, err = discord.NewClient(conn)
+	if err != nil {
+		return err
+	}
+	m.voice, err = discord.NewVoiceClient(conn)
+	return err
 }
-
-var log hclog.Logger
-
-// providers holds the music providers (youtube, etc.)
-var providers map[string]Provider.Interface = make(map[string]Provider.Interface)
-
-// core implements the core-v1 plugin interface
-type core struct {
-	ready bool
+func (m *musicBot) GetManifest(context.Context) (*corewire.ModuleManifest, error) {
+	manifest := new(corewire.ModuleManifest)
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: false}).Unmarshal(manifestJSON, manifest); err != nil {
+		return nil, err
+	}
+	return proto.Clone(manifest).(*corewire.ModuleManifest), nil
 }
-
-func (c *core) GetManifest() (Core.Manifest, error) {
-	return MANIFEST, nil
+func (m *musicBot) GetStatus(context.Context) (*corewire.Status, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return &corewire.Status{Readiness: m.readiness}, nil
 }
-
-func (c *core) GetStatus() (Core.Status, error) {
-	return Core.Status{
-		IsReady: c.ready,
-	}, nil
-}
-
-func (c *core) OnStage(stage string) {
-	log.Debug("OnStage", "stage", stage)
-	switch stage {
-	case "MODULE_INIT":
-		// Initialize providers
-		providers = Provider.GetProviders()
-		for k, v := range providers {
-			log.Info("Starting provider", "name", k)
-			if err := v.Start(); err != nil {
-				log.Error("Failed to start provider", "name", k, "error", err)
-				return
+func (m *musicBot) OnStage(ctx context.Context, req *corewire.StageRequest) (err error) {
+	switch req.Stage {
+	case corewire.Stage_STAGE_INIT:
+		defer func() {
+			if err != nil {
+				m.mu.Lock()
+				m.readiness = corewire.Readiness_READINESS_FAILED
+				m.mu.Unlock()
+				if m.scratch != "" {
+					err = errors.Join(err, os.RemoveAll(m.scratch))
+				}
+			}
+		}()
+		if m.core == nil || m.discord == nil || m.voice == nil {
+			return errors.New("authenticated helper clients unavailable")
+		}
+		value, err := m.core.GetConfig(ctx)
+		if err != nil {
+			return err
+		}
+		config, err := decodeConfig(value.Json)
+		if err != nil {
+			return err
+		}
+		if err = validateGrants(config, req.InitContext); err != nil {
+			return err
+		}
+		m.config = config
+		m.scratch, err = openScratch(req.InitContext.ScratchDirectory)
+		if err != nil {
+			return err
+		}
+		cache, err := os.MkdirTemp(m.scratch, "deno-*")
+		if err != nil {
+			return err
+		}
+		l := config.Limits
+		m.provider = &provider.Youtube{Limits: provider.Limits{MaxResults: l.MaxResults, MaxQueryBytes: l.MaxQueryBytes, MaxOutputBytes: l.MaxProcessOutputBytes, ToolTimeoutMS: l.ToolTimeoutMS, ResolveTimeoutMS: l.ResolveTimeoutMS}, CacheDirectory: cache}
+		if err = m.provider.Initialize(ctx); err != nil {
+			return err
+		}
+		m.preparer = newPreparer(m.scratch, l)
+		m.commandIDs = make(map[string]map[string]string, len(config.Guilds))
+		for _, guild := range config.Guilds {
+			ids := map[string]string{}
+			for _, command := range musicCommands() {
+				created, e := m.discord.ApplicationCommandCreate(ctx, config.ApplicationID, guild.GuildID, command)
+				if e != nil {
+					return e
+				}
+				if created == nil || created.ID == "" {
+					return errors.New("command registration omitted identity")
+				}
+				ids[created.ID] = command.Name
+			}
+			m.commandIDs[guild.GuildID] = ids
+		}
+		m.mu.Lock()
+		m.readiness = corewire.Readiness_READINESS_READY
+		m.mu.Unlock()
+		return nil
+	case corewire.Stage_STAGE_START:
+		m.mu.Lock()
+		defer m.mu.Unlock()
+		if m.readiness != corewire.Readiness_READINESS_READY || m.running || m.draining {
+			return errors.New("invalid music START state")
+		}
+		// Never retain the lifecycle/event context or its delivery reference.
+		m.lifetime, m.cancel = context.WithCancel(context.Background())
+		m.done = make(chan struct{})
+		m.playlists = make(map[string]*Playlist, len(m.config.Guilds))
+		tasks := make(chan prepareTask)
+		runPreparationWorkers(m.lifetime, m.config.Limits.Workers, tasks, &m.workers)
+		for _, guild := range m.config.Guilds {
+			p := newPlaylist(m.lifetime, guild.GuildID, m.config.Limits, *m.config.Priority, m.voice, m.provider, m.preparer, tasks, m.notify)
+			m.playlists[guild.GuildID] = p
+			go p.run()
+		}
+		m.running = true
+		go func() {
+			<-m.lifetime.Done()
+			for _, p := range m.playlists {
+				<-p.done
+			}
+			m.workers.Wait()
+			close(m.done)
+		}()
+		return nil
+	case corewire.Stage_STAGE_DRAIN, corewire.Stage_STAGE_STOP:
+		m.mu.Lock()
+		m.draining = true
+		m.running = false
+		cancel, done := m.cancel, m.done
+		m.mu.Unlock()
+		for _, p := range m.playlists {
+			p.beginClose(ctx)
+		}
+		if cancel != nil {
+			cancel()
+		}
+		if done != nil {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+			case <-done:
 			}
 		}
-		// Create temp directory for audio files
-		os.MkdirAll(MUSIC_PATH, 0o755)
-		c.ready = true
-	case "MODULE_SHUTDOWN":
-		cancelMedia()
-		// Cleanup temp directory
-		os.RemoveAll(MUSIC_PATH)
+		var cleanup error
+		if m.preparer != nil {
+			m.preparer.client.CloseIdleConnections()
+		}
+		for _, p := range m.playlists {
+			cleanup = errors.Join(cleanup, p.failure)
+		}
+		if m.scratch != "" {
+			cleanup = errors.Join(cleanup, os.RemoveAll(m.scratch))
+		}
+		m.mu.Lock()
+		m.readiness = corewire.Readiness_READINESS_NOT_READY
+		m.mu.Unlock()
+		return cleanup
+	default:
+		return errors.New("unsupported lifecycle stage")
 	}
 }
-
-// musicBot implements the discord-v1 plugin interface
-type musicBot struct {
-	Discord.AbstractHooks
-	helper      Discord.Helper
-	voiceStream pb.VoiceStreamClient
-}
-
-func (m *musicBot) OnInit(h Discord.Helper) Discord.InitResponse {
-	m.helper = h
-	log.Info("MusicBot module initialized")
-
-	return Discord.InitResponse{
-		Interactions: []*discordgo.ApplicationCommand{
-			{
-				Name:        "play",
-				Description: "Play music",
-				Options: []*discordgo.ApplicationCommandOption{
-					{
-						Type:        discordgo.ApplicationCommandOptionString,
-						Name:        "provider",
-						Description: "Enter a provider of music",
-						Required:    true,
-						Choices: []*discordgo.ApplicationCommandOptionChoice{
-							{
-								Name:  "youtube",
-								Value: "youtube",
-							},
-						},
-					},
-					{
-						Type:        discordgo.ApplicationCommandOptionString,
-						Name:        "query",
-						Description: "Enter a query to search",
-						Required:    true,
-					},
-				},
-			},
-			{
-				Name:        "remove",
-				Description: "Remove a music from playlist",
-				Options: []*discordgo.ApplicationCommandOption{
-					{
-						Type:        discordgo.ApplicationCommandOptionInteger,
-						Name:        "index",
-						Description: "Enter a index of music",
-						Required:    true,
-					},
-				},
-			},
-			{
-				Name:        "list",
-				Description: "Show playlist",
-			},
-			{
-				Name:        "pause",
-				Description: "Pause/Resume music",
-			},
-			{
-				Name:        "skip",
-				Description: "Skip music",
-			},
-			{
-				Name:        "loop",
-				Description: "Loop music",
-			},
-		},
+func musicCommands() []*discordgo.ApplicationCommand {
+	stringOption := func(name, description string) *discordgo.ApplicationCommandOption {
+		return &discordgo.ApplicationCommandOption{Type: discordgo.ApplicationCommandOptionString, Name: name, Description: description, Required: true}
 	}
+	commands := []*discordgo.ApplicationCommand{
+		{Name: "play", Description: "Accept an ordered bounded music request", Options: []*discordgo.ApplicationCommandOption{
+			{Type: discordgo.ApplicationCommandOptionString, Name: "provider", Description: "Music provider", Required: true, Choices: []*discordgo.ApplicationCommandOptionChoice{{Name: "youtube", Value: "youtube"}}}, stringOption("query", "YouTube URL or search query")}},
+		{Name: "remove", Description: "Remove a waiting entry (never current)", Options: []*discordgo.ApplicationCommandOption{stringOption("entry", "Entry ID from /list")}},
+		{Name: "list", Description: "Show independent current and waiting playlist state"},
+		{Name: "pause", Description: "Pause the owned current playback job"},
+		{Name: "resume", Description: "Resume the same owned current playback job"},
+		{Name: "skip", Description: "Cancel current and wait for terminal and reader release"},
+		{Name: "loop", Description: "Loop only normally completed entries", Options: []*discordgo.ApplicationCommandOption{{Type: discordgo.ApplicationCommandOptionBoolean, Name: "enabled", Description: "Enable loop", Required: true}}},
+	}
+	permissions := int64(discordgo.PermissionUseApplicationCommands)
+	contexts := []discordgo.InteractionContextType{discordgo.InteractionContextGuild}
+	integrations := []discordgo.ApplicationIntegrationType{discordgo.ApplicationIntegrationGuildInstall}
+	for _, c := range commands {
+		c.Type = discordgo.ChatApplicationCommand
+		c.DefaultMemberPermissions = &permissions
+		c.Contexts = &contexts
+		c.IntegrationTypes = &integrations
+	}
+	return commands
 }
-
-// SetVoiceStream implements VoiceStreamAware interface
-func (m *musicBot) SetVoiceStream(stream pb.VoiceStreamClient) {
-	m.voiceStream = stream
-	log.Debug("VoiceStream client set successfully")
-}
-
-func (m *musicBot) OnCreateInteraction(i *discordgo.Interaction) error {
-	if i.Type != discordgo.InteractionApplicationCommand {
+func (m *musicBot) OnEvent(ctx context.Context, envelope *corewire.EventEnvelope) error {
+	decoded, err := discord.DecodeEvent(envelope)
+	if err != nil {
+		return err
+	}
+	event, ok := decoded.(*wire.InteractionCreateEvent)
+	if !ok {
+		return errors.New("unexpected event for music module")
+	}
+	partial := event.GetInteraction().GetValue()
+	if partial == nil {
+		return errors.New("interaction payload missing")
+	}
+	if partial.GetType().GetValue() != uint32(discordgo.InteractionApplicationCommand) {
 		return nil
 	}
-
-	data := i.ApplicationCommandData()
-
-	switch data.Name {
-	case "play":
-		go m.handlePlay(i, data)
-	case "remove":
-		m.handleRemove(i, data)
-	case "list":
-		m.handleList(i)
-	case "pause":
-		m.handlePause(i)
-	case "skip":
-		m.handleSkip(i)
-	case "loop":
-		m.handleLoop(i)
+	interaction := &discord.InteractionHandle{Value: &discordgo.Interaction{ID: partial.GetId().GetValue(), AppID: partial.GetAppId().GetValue(), GuildID: partial.GetGuildId().GetValue(), ChannelID: partial.GetChannelId().GetValue(), Type: discordgo.InteractionApplicationCommand}, Credential: partial.GetCredentialRef().GetValue()}
+	if interaction.Value.ID == "" || interaction.Credential == nil {
+		return errors.New("interaction identity or owner credential absent")
 	}
-
+	if interaction.Value.AppID != m.config.ApplicationID {
+		return errors.New("interaction application differs from configured owner")
+	}
+	ctx, cancel := context.WithTimeout(ctx, millis(m.config.Limits.CommandTimeoutMS))
+	defer cancel()
+	m.mu.Lock()
+	running := m.running
+	playlist := m.playlists[interaction.Value.GuildID]
+	m.mu.Unlock()
+	if !running {
+		return m.respond(ctx, interaction, "Music module is draining; no new work accepted.")
+	}
+	command := partial.GetData().GetValue().GetApplicationCommand()
+	if command == nil {
+		return m.respond(ctx, interaction, "Unsupported interaction payload.")
+	}
+	name, owned := m.commandIDs[interaction.Value.GuildID][command.GetId().GetValue()]
+	if !owned || name != command.GetName().GetValue() {
+		return errors.New("interaction command ownership mismatch")
+	}
+	var guild *GuildConfig
+	for i := range m.config.Guilds {
+		if m.config.Guilds[i].GuildID == interaction.Value.GuildID {
+			guild = &m.config.Guilds[i]
+			break
+		}
+	}
+	if guild == nil || !contains(guild.TextChannelIDs, interaction.Value.ChannelID) || playlist == nil {
+		return m.respond(ctx, interaction, "This guild or text channel is not approved.")
+	}
+	member := partial.GetMember().GetValue()
+	userID := ""
+	if member != nil {
+		userID = member.GetUser().GetValue().GetId().GetValue()
+	}
+	if userID == "" {
+		return m.respond(ctx, interaction, "A guild member identity is required.")
+	}
+	options := map[string]*discordgo.ApplicationCommandInteractionDataOption{}
+	for _, field := range command.GetOptions().GetValue().GetValues() {
+		option := field.GetValue()
+		if option == nil {
+			return errors.New("null command option")
+		}
+		optionName, optionType := option.GetName().GetValue(), option.GetType().GetValue()
+		if _, exists := options[optionName]; exists {
+			return errors.New("duplicate command option")
+		}
+		value, e := discord.ProtoToApplicationCommandInteractionDataOption(&wire.ApplicationCommandInteractionDataOption{Name: &optionName, Type: &optionType, Value: option.GetValue().GetValue()})
+		if e != nil {
+			return e
+		}
+		options[optionName] = value
+	}
+	// Explicit defer precedes any potentially slow voice control or queue work.
+	flags := uint64(discordgo.MessageFlagsEphemeral)
+	if err = m.discord.InteractionRespond(ctx, interaction, &discord.InteractionResponseView{Type: discordgo.InteractionResponseDeferredChannelMessageWithSource, Data: &discord.InteractionResponseDataView{Flags: &flags}}); err != nil {
+		return err
+	}
+	result, operationErr := m.execute(ctx, playlist, guild, interaction.Value.ChannelID, userID, name, options)
+	if operationErr != nil {
+		result = "Music command failed: " + safeCommandError(operationErr)
+	}
+	_, reportErr := m.discord.InteractionResponseEdit(ctx, interaction, &discord.WebhookEditPatch{Content: &result, AllowedMentions: &discordgo.MessageAllowedMentions{Parse: []discordgo.AllowedMentionType{}}})
+	if reportErr != nil {
+		return errors.Join(operationErr, fmt.Errorf("interaction reporting failed: %w", reportErr))
+	}
 	return nil
 }
-
-func (m *musicBot) handlePlay(i *discordgo.Interaction, data discordgo.ApplicationCommandInteractionData) {
-	log.Info("Play command called",
-		"user", i.Member.User.Username,
-		"channel", i.ChannelID,
-		"query", data.Options[1].StringValue(),
-	)
-
-	// Send initial response
-	m.ephemeralRespond(i, "**Adding song to queue...**\nIf you enter a playlist, it might take a while for the entire contents to import.\n(The first song will automatically play when it's ready.)")
-
-	// Get the query options
-	queryType := data.Options[0].StringValue()
-	query := data.Options[1].StringValue()
-
-	// Get the provider
-	var provider Provider.Interface
-	switch queryType {
-	case "youtube":
-		provider = &Provider.Youtube{}
-	default:
-		m.editResponse(i, "**Invalid provider name!**\nPlease input a valid provider name.")
-		return
+func safeCommandError(err error) string {
+	// Never echo extractor output, source URL, raw RPC payload or credentials.
+	if errors.Is(err, context.DeadlineExceeded) {
+		return "deadline exceeded"
 	}
-
-	// Find user's voice channel
-	channelID := m.getVoiceChannelByUser(i.GuildID, i.Member.User.ID)
-	if channelID == "" {
-		m.editResponse(i, "**Failed to find voice channel.**\nPlease rejoin the voice channel and try again. (or you're not in a voice channel)")
-		return
+	if errors.Is(err, context.Canceled) {
+		return "cancelled"
 	}
-
-	// Get the music
-	musics, err := provider.GetMusic(mediaContext, query)
-	if err != nil {
-		log.Error("Failed to query music", "error", err)
-		m.editResponse(i, "**Failed to query music.**\nPlease try again or input another query.")
-		return
-	}
-
-	// Create voice client
-	voiceClient := DiscordPlugin.NewVoiceClient(m.voiceStream, "musicbot")
-
-	// Join the voice channel
-	ctx := getContextWithModuleID("musicbot")
-	err = voiceClient.Join(ctx, i.GuildID, channelID, false, true)
-	if err != nil {
-		log.Error("Failed to join voice channel", "error", err)
-		m.editResponse(i, "**Failed to join voice channel.**\nPlease try again.")
-		return
-	}
-	log.Info("Joined voice channel", "channel", channelID)
-
-	// Music download thread
-	isReady := make(chan error, 1)
-
-	go func() {
-		var respMsg string
-
-		for j, music := range musics {
-			// Download file
-			err := DownloadMusic(music.RawUrl, music.Id)
-			if err != nil {
-				m.editResponse(i, "**Failed to download music.**\nPlease try again.")
-				if j == 0 {
-					isReady <- err
-				}
-				return
-			}
-
-			log.Info("Downloaded music", "index", j+1, "total", len(musics), "title", music.Title)
-			GetState(ChannelID(channelID)).Enqueue(music)
-
-			// Update the response message
-			if j == 0 {
-				respMsg += fmt.Sprintf("**Added to queue:**\n-> **%s**", music.Title)
-				isReady <- nil
-			} else {
-				respMsg += fmt.Sprintf("\n-> %s", music.Title)
-			}
-
-			m.editResponse(i, respMsg)
-			time.Sleep(time.Second * 10) // prevent rate limit
+	return "operation rejected; inspect /list task state or host safe diagnostics"
+}
+func (m *musicBot) execute(ctx context.Context, p *Playlist, guild *GuildConfig, textChannel, userID, name string, options map[string]*discordgo.ApplicationCommandInteractionDataOption) (string, error) {
+	switch name {
+	case "play":
+		source, query := options["provider"], options["query"]
+		if source == nil || source.Type != discordgo.ApplicationCommandOptionString || source.StringValue() != "youtube" || query == nil || query.Type != discordgo.ApplicationCommandOptionString {
+			return "", errors.New("provider and query required")
 		}
-	}()
-	if err := <-isReady; err != nil {
-		return
-	}
-
-	// Play the music if not already playing
-	state := GetState(ChannelID(channelID))
-	if !state.IsPlaying() {
-		m.playMusic(voiceClient, channelID, i.ChannelID)
-	}
-}
-
-func (m *musicBot) handleRemove(i *discordgo.Interaction, data discordgo.ApplicationCommandInteractionData) {
-	index := data.Options[0].IntValue()
-	log.Info("Remove command", "index", index)
-
-	channelID := m.getVoiceChannelByUser(i.GuildID, i.Member.User.ID)
-	if channelID == "" {
-		m.ephemeralRespond(i, "**Failed to find voice channel.** (or you're not in a voice channel)\nPlease rejoin the voice channel and try again.")
-		return
-	}
-
-	if index <= 0 {
-		m.ephemeralRespond(i, "**Invalid index!**\nOnly positive integers are allowed.\n(The 0th song is the currently playing song, so you should use /skip)")
-		return
-	}
-
-	music, err := GetState(ChannelID(channelID)).Remove(int(index - 1))
-
-	if err == errEmptyQueue {
-		m.ephemeralRespond(i, "**Cannot find queue!**\nPlease play a song first.")
-		return
-	}
-
-	if err == errIndexOutOfRange {
-		m.ephemeralRespond(i, "**Invalid index!**\nPlease input a valid index.")
-		return
-	}
-
-	m.ephemeralRespond(i, fmt.Sprintf("Removing: **#%d** - %s", index, music.Title))
-}
-
-func (m *musicBot) handleList(i *discordgo.Interaction) {
-	channelID := m.getVoiceChannelByUser(i.GuildID, i.Member.User.ID)
-	if channelID == "" {
-		m.ephemeralRespond(i, "**Failed to find voice channel.** (or you're not in a voice channel)\nPlease rejoin the voice channel and try again.")
-		return
-	}
-
-	queue := GetState(ChannelID(channelID)).GetQueue()
-	if len(queue) == 0 {
-		m.ephemeralRespond(i, "**Queue is empty!**\nPlease play a song first.")
-		return
-	}
-
-	respMsg := fmt.Sprintf("**Now Playing: %s**\n\nQueue:\n", queue[0].Title)
-	for idx, music := range queue {
-		if idx == 0 {
-			continue
-		}
-		respMsg += fmt.Sprintf("**#%d** - %s\n", idx, music.Title)
-	}
-
-	m.ephemeralRespond(i, respMsg)
-}
-
-func (m *musicBot) handlePause(i *discordgo.Interaction) {
-	channelID := m.getVoiceChannelByUser(i.GuildID, i.Member.User.ID)
-	if channelID == "" {
-		m.ephemeralRespond(i, "**Failed to find voice channel.** (or you're not in a voice channel)\nPlease rejoin the voice channel and try again.")
-		return
-	}
-
-	err := GetState(ChannelID(channelID)).Pause()
-	if err == errSignalTimeout {
-		m.ephemeralRespond(i, "**Failed to pause/resume music.**\nPlease try again.")
-		log.Warn("Failed to pause/resume music (channel timeout)")
-		return
-	}
-
-	m.ephemeralRespond(i, "**Music paused/resumed.**")
-}
-
-func (m *musicBot) handleSkip(i *discordgo.Interaction) {
-	channelID := m.getVoiceChannelByUser(i.GuildID, i.Member.User.ID)
-	if channelID == "" {
-		m.ephemeralRespond(i, "**Failed to find voice channel.** (or you're not in a voice channel)\nPlease rejoin the voice channel and try again.")
-		return
-	}
-
-	err := GetState(ChannelID(channelID)).Skip()
-	if err == errSignalTimeout {
-		m.ephemeralRespond(i, "**Failed to skip music.**\nPlease try again.")
-		log.Warn("Failed to skip music (channel timeout)")
-		return
-	}
-
-	m.ephemeralRespond(i, "**Music skipped.**")
-}
-
-func (m *musicBot) handleLoop(i *discordgo.Interaction) {
-	channelID := m.getVoiceChannelByUser(i.GuildID, i.Member.User.ID)
-	if channelID == "" {
-		m.ephemeralRespond(i, "**Failed to find voice channel.** (or you're not in a voice channel)\nPlease rejoin the voice channel and try again.")
-		return
-	}
-
-	isLoopMode := GetState(ChannelID(channelID)).ToggleLoop()
-
-	message := "Loop mode is now off."
-	if isLoopMode {
-		message = "Loop mode is now on."
-	}
-
-	m.ephemeralRespond(i, fmt.Sprintf("**Loop mode switched!**\n%s", message))
-}
-
-func (m *musicBot) playMusic(voiceClient *DiscordPlugin.VoiceClient, voiceChannelID, textChannelID string) {
-	defer voiceClient.Leave()
-
-	// Wait for connection to be ready
-	err := voiceClient.WaitForReady(5 * time.Second)
-	if err != nil {
-		log.Error("Voice connection not ready", "error", err)
-		m.helper.ChannelMessageSend(textChannelID, "**Voice connection failed.**")
-		return
-	}
-
-	for {
-		state := GetState(ChannelID(voiceChannelID))
-		state.SetIsPlaying(true)
-
-		nowMusic := state.GetFront()
-
-		if state.IsQueueEmpty() {
-			state.SetIsPlaying(false)
-			RemoveStatusEmbed(m.helper, textChannelID)
-			return
-		}
-
-		// Update status embed
-		SetStatusEmbed(m.helper, textChannelID, EmbedState{
-			Title:        nowMusic.Title,
-			ThumbnailUrl: nowMusic.ThumbnailUrl,
-		})
-
-		// Start playing
-		log.Info("Playing music", "title", nowMusic.Title)
-
-		err := voiceClient.Speaking(true)
+		state, err := m.discord.UserVoiceState(ctx, guild.GuildID, userID)
 		if err != nil {
-			log.Error("Failed to set speaking state", "error", err)
+			return "", err
 		}
-
-		PlayMusic(voiceClient, nowMusic.Id, state.pause, state.skip)
-
-		voiceClient.Speaking(false)
-
-		// Handle queue after playback
-		state.Lock()
-		front := state.Pop()
-
-		if state.loop {
-			state.queue = append(state.queue, front)
+		if state == nil || !contains(guild.VoiceChannelIDs, state.ChannelID) {
+			return "", errors.New("member is not in an approved voice channel")
 		}
-
-		// Check for duplicates before removing file
-		isDuplicated := false
-		for _, music := range state.queue {
-			if music.Id == front.Id {
-				isDuplicated = true
-				break
-			}
+		ticket, err := p.Enqueue(ctx, query.StringValue(), textChannel, state.ChannelID)
+		if err != nil {
+			return "", err
 		}
-
-		if !isDuplicated {
-			RemoveMusic(nowMusic.Id)
+		return "Accepted ordered request " + ticket + ". /list shows resolved entry IDs and preparation errors.", nil
+	case "list":
+		s, err := p.Snapshot(ctx)
+		return formatPlaylist(s), err
+	case "remove":
+		entry := options["entry"]
+		if entry == nil || entry.Type != discordgo.ApplicationCommandOptionString {
+			return "", errors.New("waiting entry ID required")
 		}
-		state.Unlock()
-
-		time.Sleep(1 * time.Second)
+		return "Waiting entry removed.", p.Remove(ctx, entry.StringValue())
+	case "pause":
+		s, err := p.Pause(ctx)
+		return "Playback state: " + s.State.String(), err
+	case "resume":
+		s, err := p.Resume(ctx)
+		return "Playback state: " + s.State.String(), err
+	case "skip":
+		return "Current playback reached terminal and released its artifact reader.", p.Skip(ctx)
+	case "loop":
+		enabled := options["enabled"]
+		if enabled == nil || enabled.Type != discordgo.ApplicationCommandOptionBoolean {
+			return "", errors.New("explicit loop setting required")
+		}
+		return fmt.Sprintf("Loop: %t", enabled.BoolValue()), p.SetLoop(ctx, enabled.BoolValue())
+	default:
+		return "", errors.New("unsupported owned command")
 	}
 }
-
-func (m *musicBot) getVoiceChannelByUser(guildID, userID string) string {
-	guild, err := m.helper.Guild(guildID)
-	if err != nil {
-		log.Warn("Failed to get guild", "error", err)
-		return ""
+func (m *musicBot) respond(ctx context.Context, interaction *discord.InteractionHandle, content string) error {
+	flags := uint64(discordgo.MessageFlagsEphemeral)
+	return m.discord.InteractionRespond(ctx, interaction, &discord.InteractionResponseView{Type: discordgo.InteractionResponseChannelMessageWithSource, Data: &discord.InteractionResponseDataView{Content: &content, Flags: &flags, AllowedMentions: &discordgo.MessageAllowedMentions{Parse: []discordgo.AllowedMentionType{}}}})
+}
+func (m *musicBot) notify(ctx context.Context, channel, content string) error {
+	_, err := m.discord.ChannelMessageSendComplex(ctx, channel, &discord.MessageSendView{Content: content, AllowedMentions: &discordgo.MessageAllowedMentions{Parse: []discordgo.AllowedMentionType{}}})
+	return err
+}
+func formatPlaylist(s PlaylistSnapshot) string {
+	var b strings.Builder
+	fmt.Fprintf(&b, "Loop: %t\n", s.Loop)
+	if s.Current == nil {
+		b.WriteString("Current: none\n")
+	} else {
+		fmt.Fprintf(&b, "Current [%s]: %s (%s)\n", s.Current.ID, shortText(s.Current.Title, 120), s.Current.State)
 	}
-
-	for _, vs := range guild.VoiceStates {
-		if vs.UserID == userID {
-			log.Debug("Found user in voice channel", "channel", vs.ChannelID, "user", vs.UserID)
-			return vs.ChannelID
+	b.WriteString("Waiting:\n")
+	for _, entry := range s.Waiting {
+		line := fmt.Sprintf("[%s] %s (%s)\n", entry.ID, shortText(entry.Title, 100), entry.State)
+		if b.Len()+len(line) > 1500 {
+			b.WriteString("More entries omitted from this response.\n")
+			break
 		}
+		b.WriteString(line)
 	}
-
-	return ""
+	if s.LastError != "" {
+		b.WriteString("Last task error: " + shortText(s.LastError, 250))
+	}
+	return b.String()
 }
-
-func (m *musicBot) ephemeralRespond(i *discordgo.Interaction, content string) {
-	log.Debug("ephemeralRespond", "content", content)
-	m.helper.InteractionRespond(i, &discordgo.InteractionResponse{
-		Type: discordgo.InteractionResponseChannelMessageWithSource,
-		Data: &discordgo.InteractionResponseData{
-			Content: content,
-			Flags:   discordgo.MessageFlagsEphemeral,
-		},
-	})
-	log.Debug("ephemeralRespond", "done")
+func shortText(value string, limit int) string {
+	for index := range value {
+		if limit == 0 {
+			return value[:index] + "…"
+		}
+		limit--
+	}
+	return value
 }
-
-func (m *musicBot) editResponse(i *discordgo.Interaction, content string) {
-	m.helper.InteractionResponseEdit(i, &discordgo.WebhookEdit{
-		Content: &content,
-	})
-}
-
-func getContextWithModuleID(moduleID string) context.Context {
-	ctx := context.Background()
-	md := metadata.New(map[string]string{
-		"module-id": moduleID,
-	})
-	return metadata.NewOutgoingContext(ctx, md)
-}
-
 func main() {
-	log = hclog.New(&hclog.LoggerOptions{
-		Name:       "MusicBot",
-		Level:      hclog.LevelFromString("DEBUG"),
-		JSONFormat: true,
-		Output:     os.Stderr,
-	})
-
-	// Set logger for discord module package to enable error logging before termination
-	DiscordPlugin.SetLogger(log)
-
-	broker.ServeToRuntime(map[string]plugin.Plugin{
-		"core-v1":    &CorePlugin.Plugin{Impl: &core{}},
-		"discord-v1": &DiscordPlugin.Plugin{Impl: &musicBot{}},
-	})
+	bot := &musicBot{readiness: corewire.Readiness_READINESS_NOT_READY}
+	module, err := core.NewModulePlugin(context.Background(), bot, bot.bind, core.TransportLimits{MaxReceiveBytes: 4 << 20, MaxSendBytes: 4 << 20})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "music module bootstrap failed")
+		os.Exit(1)
+	}
+	defer module.Close()
+	plugin.Serve(module.ServeConfig())
 }
