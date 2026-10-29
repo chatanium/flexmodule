@@ -14,7 +14,6 @@ import (
 	"github.com/thirdscam/chatanium-flexmodule/shared"
 	"github.com/thirdscam/chatanium-flexmodule/shared/core-v1"
 	"github.com/thirdscam/chatanium-flexmodule/shared/discord-v1"
-	"github.com/thirdscam/chatanium-flexmodule/shared/discord-v1/convert/struct2buf"
 	discordRuntime "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1/runtime"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -78,8 +77,6 @@ func main() {
 	})
 
 	dgSession.Open()
-
-	struct2buf.DiscordSession = session
 
 	// Create Discord helper
 	discordHelper := discordRuntime.NewDiscordHelper(dgSession)

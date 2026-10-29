@@ -212,8 +212,6 @@ func ApplicationCommandInteractionDataOption(buf *proto.ApplicationCommandIntera
 		options = append(options, ApplicationCommandInteractionDataOption(v))
 	}
 
-	fmt.Println("ApplicationCommandInteractionDataOption")
-
 	var value any
 	switch buf.Value.(type) {
 	case *proto.ApplicationCommandInteractionDataOption_StringValue:
@@ -222,17 +220,17 @@ func ApplicationCommandInteractionDataOption(buf *proto.ApplicationCommandIntera
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_IntegerValue).IntegerValue
 	case *proto.ApplicationCommandInteractionDataOption_BooleanValue:
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_BooleanValue).BooleanValue
-	case *proto.ApplicationCommandInteractionDataOption_UserValueId: // TODO: check this (ID or User struct?)
+	case *proto.ApplicationCommandInteractionDataOption_UserValueId: // => Need manual resolve (in module)
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_UserValueId).UserValueId
-	case *proto.ApplicationCommandInteractionDataOption_ChannelValueId: // TODO: check this (ID or Channel struct?)
+	case *proto.ApplicationCommandInteractionDataOption_ChannelValueId: // => Need manual resolve (in module)
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_ChannelValueId).ChannelValueId
-	case *proto.ApplicationCommandInteractionDataOption_RoleValueId: // TODO: check this (ID or Role struct?)
+	case *proto.ApplicationCommandInteractionDataOption_RoleValueId: // => Need manual resolve (in module)
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_RoleValueId).RoleValueId
-	case *proto.ApplicationCommandInteractionDataOption_MentionableValueId: // TODO: check this
+	case *proto.ApplicationCommandInteractionDataOption_MentionableValueId: // => Need manual resolve (in module)
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_MentionableValueId).MentionableValueId
 	case *proto.ApplicationCommandInteractionDataOption_NumberValue:
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_NumberValue).NumberValue
-	case *proto.ApplicationCommandInteractionDataOption_AttachmentValueId:
+	case *proto.ApplicationCommandInteractionDataOption_AttachmentValueId: // => Need manual resolve (in module)
 		value = buf.Value.(*proto.ApplicationCommandInteractionDataOption_AttachmentValueId).AttachmentValueId
 
 	// Add other types as needed
@@ -367,7 +365,58 @@ func InteractionResponse(buf *proto.InteractionResponse) *discordgo.InteractionR
 
 	return &discordgo.InteractionResponse{
 		Type: discordgo.InteractionResponseType(buf.Type),
-		Data: nil, // TODO: implement InteractionResponseData conversion
+		Data: InteractionResponseData(buf.Data),
+	}
+}
+
+func InteractionResponseData(buf *proto.InteractionResponseData) *discordgo.InteractionResponseData {
+	if buf == nil {
+		return nil
+	}
+
+	var components []discordgo.MessageComponent
+	for _, c := range buf.Components {
+		if converted := MessageComponent(c); converted != nil {
+			components = append(components, converted)
+		}
+	}
+
+	var embeds []*discordgo.MessageEmbed
+	for _, e := range buf.Embeds {
+		embeds = append(embeds, MessageEmbed(e))
+	}
+
+	var files []*discordgo.File
+	for _, file := range buf.Files {
+		files = append(files, File(file))
+	}
+
+	var attachments []*discordgo.MessageAttachment
+	for _, attachment := range buf.Attachments {
+		attachments = append(attachments, MessageAttachment(attachment))
+	}
+
+	return &discordgo.InteractionResponseData{
+		TTS:             buf.Tts,
+		Content:         buf.Content,
+		Components:      components,
+		Embeds:          embeds,
+		AllowedMentions: MessageAllowedMentions(buf.AllowedMentions),
+		Files:           files,
+		Attachments:     &attachments,
+		Flags:           discordgo.MessageFlags(buf.Flags), // TODO: verify if this conversion is correct
+	}
+}
+
+func File(buf *proto.File) *discordgo.File {
+	if buf == nil {
+		return nil
+	}
+
+	return &discordgo.File{
+		Name:        buf.Name,
+		ContentType: buf.ContentType,
+		Reader:      nil, // TODO(discord/bufstruct): Implement file reader if needed
 	}
 }
 

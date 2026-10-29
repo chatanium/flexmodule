@@ -294,6 +294,11 @@ func MessageEdit(buf *proto.MessageEdit) *discordgo.MessageEdit {
 		}
 	}
 
+	var embed *discordgo.MessageEmbed
+	if buf.Embeds != nil && len(buf.Embeds) > 0 {
+		embed = MessageEmbed(buf.Embeds[0])
+	}
+
 	return &discordgo.MessageEdit{
 		Content:         content,
 		Embeds:          embeds,
@@ -304,7 +309,7 @@ func MessageEdit(buf *proto.MessageEdit) *discordgo.MessageEdit {
 		AllowedMentions: MessageAllowedMentions(buf.AllowedMentions),
 		Components:      &components,
 		Flags:           discordgo.MessageFlags(buf.Flags),
-		Embed:           nil,
+		Embed:           embed,
 	}
 }
 

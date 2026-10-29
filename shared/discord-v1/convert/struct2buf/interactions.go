@@ -7,12 +7,6 @@ import (
 	proto "github.com/thirdscam/chatanium-flexmodule/proto/discord-v1"
 )
 
-// The channel parameters of the interaction, etc. require a discordgo.Session.
-//
-// Therefore, need to assign it for use in some conversion functions,
-// and some object conversion functions may not be available if a session is not provided.
-var DiscordSession *discordgo.Session
-
 func ApplicationCommand(s *discordgo.ApplicationCommand) *proto.ApplicationCommand {
 	if s == nil {
 		return nil
@@ -233,11 +227,6 @@ func ApplicationCommandInteractionDataOption(s *discordgo.ApplicationCommandInte
 		return nil
 	}
 
-	if DiscordSession == nil {
-		fmt.Println("ApplicationCommandInteractionDataOption > DiscordSession is nil")
-		return nil
-	}
-
 	options := make([]*proto.ApplicationCommandInteractionDataOption, 0)
 	for _, v := range s.Options {
 		options = append(options, ApplicationCommandInteractionDataOption(v))
@@ -269,30 +258,27 @@ func ApplicationCommandInteractionDataOption(s *discordgo.ApplicationCommandInte
 				BooleanValue: s.BoolValue(),
 			}
 		case discordgo.ApplicationCommandOptionChannel:
-			channel := s.ChannelValue(DiscordSession)
-			if channel == nil {
+			if s.Value == nil {
 				fmt.Println("ApplicationCommandInteractionDataOption > discordgo.Channel is nil")
 				result.Value = &proto.ApplicationCommandInteractionDataOption_ChannelValueId{
 					ChannelValueId: "",
 				}
 			} else {
 				result.Value = &proto.ApplicationCommandInteractionDataOption_ChannelValueId{
-					ChannelValueId: channel.ID,
+					ChannelValueId: s.Value.(string),
 				}
 			}
 		case discordgo.ApplicationCommandOptionUser:
-			user := s.UserValue(DiscordSession)
-			if user == nil {
+			if s.Value == nil {
 				fmt.Println("ApplicationCommandInteractionDataOption > discordgo.User is nil")
 				result.Value = &proto.ApplicationCommandInteractionDataOption_UserValueId{
 					UserValueId: "",
 				}
 			} else {
 				result.Value = &proto.ApplicationCommandInteractionDataOption_UserValueId{
-					UserValueId: user.ID,
+					UserValueId: s.Value.(string),
 				}
 			}
-		case discordgo
 		default:
 			fmt.Printf("ApplicationCommandInteractionDataOption > unknown option value type for option '%s' of type %d\n", s.Name, s.Type)
 		}
@@ -418,7 +404,22 @@ func InteractionResponse(s *discordgo.InteractionResponse) *proto.InteractionRes
 
 	return &proto.InteractionResponse{
 		Type: proto.InteractionResponseType(s.Type),
-		Data: nil, // TODO: implement InteractionResponseData conversion
+		Data: InteractionResponseData(s.Data), // TODO: implement InteractionResponseData conversion
+	}
+}
+
+func InteractionResponseData(s *discordgo.InteractionResponseData) *proto.InteractionResponseData {
+	if s == nil {
+		return nil
+	}
+
+	return &proto.InteractionResponseData{
+		Tts:             s.TTS,
+		Content:         s.Content,
+		Components:      MessageComponents(s.Components),
+		Embeds:          MessageEmbeds(s.Embeds),
+		AllowedMentions: MessageAllowedMentions(s.AllowedMentions),
+		Flags:           int64(s.Flags),
 	}
 }
 
