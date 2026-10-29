@@ -1,5 +1,7 @@
 package Provider
 
+import "context"
+
 // MusicID is a unique identifier for a music.
 // It is used to download file name as MusicID.
 //
@@ -17,8 +19,8 @@ type Music struct {
 }
 
 type Interface interface {
-	Start()
-	GetMusic(query string) ([]Music, error)
+	Start() error
+	GetMusic(ctx context.Context, query string) ([]Music, error)
 }
 
 func GetProviders() map[string]Interface {

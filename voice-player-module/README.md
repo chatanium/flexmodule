@@ -25,7 +25,7 @@ Discord 음성 채널에서 음성 파일을 재생하는 FlexModule입니다.
 
 ### 시스템 요구사항
 
-**ffmpeg 설치 필요** (DCA 라이브러리가 ffmpeg를 사용):
+**libopus 인코더가 포함된 FFmpeg가 필요합니다.** 모듈이 `shared/media/opus`를 통해 실행하며, 실행 중 설치하거나 갱신하지 않습니다.
 ```bash
 # Ubuntu/Debian
 sudo apt-get install ffmpeg
@@ -104,7 +104,7 @@ Discord의 **어떤 채널**에서든 음성 파일을 업로드하면:
 ### audio.go
 - `convertToDCA()`: 음성 파일을 DCA 형식으로 변환
 - `playDCA()`: DCA 파일을 음성 채널에 재생
-- DCA 라이브러리 (github.com/jonas747/dca) 사용
+- `shared/media/opus` 사용: FFmpeg 인코딩과 크기가 제한된 Ogg/DCA 프레임 읽기. `github.com/jonas747/dca`에는 의존하지 않습니다.
 
 ### 주요 상수
 
@@ -133,16 +133,12 @@ func (vp *voicePlayer) OnCreateChatMessage(m *discordgo.Message) error {
 
 ### 2. 음성 파일 변환
 ```go
-// DCA 라이브러리 사용
-options := &dca.EncodeOptions{
-    Volume:       256,
-    Channels:     2,      // 스테레오
-    FrameRate:    48000,  // 48kHz
-    FrameDuration: 20,    // 20ms 프레임
-    Bitrate:      128,    // 128kbps
-}
-encodeSession, err := dca.EncodeMem(inFile, options)
+// inputPath is the input path; outFile is an output writer owned by the caller.
+// The caller closes outFile after Encode returns.
+err := opus.Encode(ctx, inputPath, outFile, 128)
 ```
+
+인코딩은 스테레오, 48kHz, 20ms Opus 패킷을 사용합니다. 출력은 기존 캐시와 같은 raw DCA 프레임이며, 읽기는 raw DCA와 DCA1 메타데이터 형식을 지원합니다. 취소 시 FFmpeg를 종료하고 회수하며, 변환 실패를 성공한 캐시로 남기지 않습니다.
 
 ### 3. 음성 재생
 ```go
@@ -152,7 +148,7 @@ voiceClient.Join(ctx, TARGET_GUILD_ID, TARGET_CHANNEL_ID, false, false)
 
 // DCA 프레임을 20ms 간격으로 전송
 for {
-    frame, err := decoder.OpusFrame()
+    frame, err := decoder.OpusFrame(ctx)
     voiceClient.Send(frame, 5, 5000)
     time.Sleep(20 * time.Millisecond)
 }
@@ -206,7 +202,7 @@ for {
 
 ## 주의사항
 
-1. **ffmpeg 필수**: DCA 라이브러리가 ffmpeg를 사용하므로 반드시 설치 필요
+1. **FFmpeg 필수**: 모듈 이미지의 PATH에 libopus 지원 FFmpeg가 있어야 합니다. 일반 런타임 빌드는 FFmpeg나 native Go 인코딩 라이브러리를 요구하지 않습니다.
 2. **임시 파일**: 재생 후 자동으로 삭제되지만, 오류 발생 시 `./temp_audio` 확인 필요
 3. **동시 재생**: 현재는 하나의 파일만 재생 가능 (큐 시스템 미구현)
 4. **하드코딩된 채널**: 길드/채널 ID가 코드에 하드코딩되어 있음

@@ -61,16 +61,20 @@ func (c *core) OnStage(stage string) {
 	log.Debug("OnStage", "stage", stage)
 	switch stage {
 	case "MODULE_INIT":
-		c.ready = true
 		// Initialize providers
 		providers = Provider.GetProviders()
 		for k, v := range providers {
 			log.Info("Starting provider", "name", k)
-			v.Start()
+			if err := v.Start(); err != nil {
+				log.Error("Failed to start provider", "name", k, "error", err)
+				return
+			}
 		}
 		// Create temp directory for audio files
 		os.MkdirAll(MUSIC_PATH, 0o755)
+		c.ready = true
 	case "MODULE_SHUTDOWN":
+		cancelMedia()
 		// Cleanup temp directory
 		os.RemoveAll(MUSIC_PATH)
 	}
@@ -208,7 +212,7 @@ func (m *musicBot) handlePlay(i *discordgo.Interaction, data discordgo.Applicati
 	}
 
 	// Get the music
-	musics, err := provider.GetMusic(query)
+	musics, err := provider.GetMusic(mediaContext, query)
 	if err != nil {
 		log.Error("Failed to query music", "error", err)
 		m.editResponse(i, "**Failed to query music.**\nPlease try again or input another query.")
@@ -229,7 +233,7 @@ func (m *musicBot) handlePlay(i *discordgo.Interaction, data discordgo.Applicati
 	log.Info("Joined voice channel", "channel", channelID)
 
 	// Music download thread
-	isReady := make(chan bool)
+	isReady := make(chan error, 1)
 
 	go func() {
 		var respMsg string
@@ -239,6 +243,9 @@ func (m *musicBot) handlePlay(i *discordgo.Interaction, data discordgo.Applicati
 			err := DownloadMusic(music.RawUrl, music.Id)
 			if err != nil {
 				m.editResponse(i, "**Failed to download music.**\nPlease try again.")
+				if j == 0 {
+					isReady <- err
+				}
 				return
 			}
 
@@ -248,7 +255,7 @@ func (m *musicBot) handlePlay(i *discordgo.Interaction, data discordgo.Applicati
 			// Update the response message
 			if j == 0 {
 				respMsg += fmt.Sprintf("**Added to queue:**\n-> **%s**", music.Title)
-				isReady <- true
+				isReady <- nil
 			} else {
 				respMsg += fmt.Sprintf("\n-> %s", music.Title)
 			}
@@ -257,7 +264,9 @@ func (m *musicBot) handlePlay(i *discordgo.Interaction, data discordgo.Applicati
 			time.Sleep(time.Second * 10) // prevent rate limit
 		}
 	}()
-	<-isReady
+	if err := <-isReady; err != nil {
+		return
+	}
 
 	// Play the music if not already playing
 	state := GetState(ChannelID(channelID))

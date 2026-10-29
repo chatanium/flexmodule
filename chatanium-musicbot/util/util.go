@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"math/big"
 	Url "net/url"
-	"os"
-	"path"
 	"sync"
 )
 
@@ -18,16 +16,6 @@ func Str2Int64(s string) (int64, error) {
 		return -1, fmt.Errorf("failed to convert ID: %v", s)
 	}
 	return n.Int64(), nil
-}
-
-func GetYtdlpPath() string {
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		return "yt-dlp"
-	}
-
-	result := path.Join(homeDir, ".local", "bin", "yt-dlp")
-	return result
 }
 
 func GetSha256Hash(s string) string {

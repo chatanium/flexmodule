@@ -20,9 +20,9 @@ import (
 	Core "github.com/thirdscam/chatanium-flexmodule/shared/core-v1"
 	CorePlugin "github.com/thirdscam/chatanium-flexmodule/shared/core-v1/module"
 
+	pb "github.com/thirdscam/chatanium-flexmodule/proto/discord-v1"
 	Discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1"
 	DiscordPlugin "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1/module"
-	pb "github.com/thirdscam/chatanium-flexmodule/proto/discord-v1"
 )
 
 const (
@@ -69,6 +69,7 @@ func (m *core) OnStage(stage string) {
 		// Create temp directory for audio files
 		os.MkdirAll(TEMP_DIR, 0755)
 	case "MODULE_SHUTDOWN":
+		cancelMedia()
 		// Cleanup temp directory
 		os.RemoveAll(TEMP_DIR)
 	}
@@ -148,7 +149,7 @@ func (vp *voicePlayer) playAudioFile(attachment *discordgo.MessageAttachment, re
 
 	// Convert to DCA (Discord Compatible Audio)
 	dcaPath := localPath + ".dca"
-	err = convertToDCA(localPath, dcaPath)
+	err = convertToDCA(mediaContext, localPath, dcaPath)
 	if err != nil {
 		log.Error("Failed to convert to DCA", "error", err)
 		vp.helper.ChannelMessageSend(replyChannelID, "❌ 음성 변환 실패: "+err.Error())
@@ -189,7 +190,7 @@ func (vp *voicePlayer) playAudioFile(attachment *discordgo.MessageAttachment, re
 	}
 
 	// Play DCA file
-	err = playDCA(voiceClient, dcaPath)
+	err = playDCA(mediaContext, voiceClient, dcaPath)
 	if err != nil {
 		log.Error("Failed to play audio", "error", err)
 		vp.helper.ChannelMessageSend(replyChannelID, "❌ 재생 실패: "+err.Error())
