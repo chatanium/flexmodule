@@ -28,6 +28,11 @@ streaming refs. Interaction/webhook credentials use typed opaque references.
 Absent, zero, false, empty, clear and explicit JSON null remain distinct; enum
 and permission-mask values are not renumbered to declaration ordinals.
 
+`StageRequest.init_context` supplies the authenticated `persistent_directory`
+and `scratch_directory` paths. Consumers must use those values rather than
+assuming literal mount locations; host implementation constants are not
+replacement configuration.
+
 ## Regenerate Go bindings
 
 From the repository root, with the pinned Go compiler installed:
