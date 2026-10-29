@@ -10,3 +10,5 @@ CLAUDE.md
 *.log
 claudedocs/*.md
 /.tools/
+__pycache__/
+*.py[cod]
