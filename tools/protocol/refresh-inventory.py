@@ -71,10 +71,18 @@ def main():
     baseline = historical["inventories"]
     audit = directory / "legacy-conversion-coverage.json"
     require(hashlib.sha256(audit.read_bytes()).hexdigest() == historical["provenance"]["inventorySHA256"][audit.name], "Historical conversion audit changed")
+    historical_ast = baseline["source-ast.json"]
+    require(len(historical_ast["SchemaMessages"]) == 154 and len(historical_ast["SchemaEnums"]) == 23, "Historical schema census changed")
     files = {f["path"]: f["sha256"] for f in raw["sourceFiles"]}
+    require(len(files) == len(raw["sourceFiles"]), "Duplicate SDK source file")
+    require(sha(raw["sourceFiles"]) == policy["provenance"]["sourcePackageSHA256"], "Source package revision digest disagrees with reviewed provenance")
     require(files == policy["sourceFiles"], "Source files do not match reviewed source pin; re-extract and review source-policy.json")
     for name, expected in files.items():
         require(hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected, f"Stale extraction: {name}")
+    sdk_directories = {str(Path(name).parent) for name in files}
+    current_files = {str(path.relative_to(ROOT)) for sdk in sdk_directories for path in (ROOT / sdk).glob("*.go") if not path.name.endswith("_test.go")}
+    exact_keys(current_files, files, "SDK source file")
+    require(raw["sourceFiles"] == policy["sourceFileBuildPolicies"], "Unreviewed SDK build constraints/profile membership")
     types = unique(raw["types"], "Name", "SDK type")
     methods = unique(raw["methods"], "name", "Session method")
     events = unique(raw["events"], "sourceName", "source event")
@@ -88,10 +96,58 @@ def main():
         require(sha(shape(t)) == reviewed["shapeSHA256"], f"Unclassified type/field change: {name}")
         exact_keys([f["Name"] for f in t["Fields"] or []], reviewed["fields"], name + " field")
         require(reviewed["classification"] and all(reviewed["fields"].values()), f"Missing field/type policy for {name}")
+        dependencies = set(t["References"]) - types.keys() - BUILTINS
+        require(not dependencies, f"Unknown type references in {name}: {sorted(dependencies)}")
     for name, m in methods.items():
         require(sha(method_shape(m)) == policy["methods"][name]["sourceSHA256"], f"Unreviewed method signature/body/defaults/docs: {name}")
+        for argument in m["arguments"] + m["results"]:
+            unknown = set(argument["references"]) - types.keys() - BUILTINS
+            require(not unknown, f"Unknown method types in {name}: {sorted(unknown)}")
     for name, e in events.items():
         require(sha(e) == policy["events"][name]["sourceSHA256"], f"Unreviewed event registration/wrapper: {name}")
+    nested = {f"{t['File']}:{t['Line']}:{t['Column']}:{t['Name']}": t for t in raw["nestedTypes"]}
+    require(len(nested) == len(raw["nestedTypes"]), "Duplicate nested declaration")
+    nested_names = {t["Name"] for t in raw["nestedTypes"] if not t["Name"].startswith("anonymous@")}
+    exact_keys(nested, policy["nestedTypes"], "nested declaration")
+    for name, t in nested.items():
+        require(sha(shape(t)) == policy["nestedTypes"][name]["shapeSHA256"], f"Unreviewed nested declaration: {name}")
+        unknown = set(t["References"]) - types.keys() - nested_names - BUILTINS
+        require(not unknown, f"Unknown nested type references in {name}: {sorted(unknown)}")
+    for name, fields in policy["retiredTypeFields"].items():
+        require(name in types, f"Unknown owner of retired source fields: {name}")
+        current = {f["Name"] for f in types[name]["Fields"] or []}
+        require(not current & fields.keys(), f"Retired source field reappeared: {name}")
+        require(all(f["classification"] == "runtime-only" and f["decision"] for f in fields.values()), f"Unreviewed retired field disposition: {name}")
+    declarations = {d["receiver"] + "." + d["name"]: d for d in raw["publicDeclarations"]}
+    exact_keys(declarations, policy["publicDeclarations"], "public SDK declaration")
+    profiles = {}
+    public_rows = []
+    for name, declaration in sorted(declarations.items()):
+        reviewed = policy["publicDeclarations"][name]
+        require(sha(declaration) == reviewed["sourceSHA256"], f"Unreviewed public SDK declaration: {name}")
+        require(reviewed["classification"] and reviewed["decision"], f"Missing public SDK declaration policy: {name}")
+        for implementation in declaration["implementations"]:
+            for argument in implementation["arguments"] + implementation["results"]:
+                unknown = set(argument["references"]) - types.keys() - BUILTINS
+                require(not unknown, f"Unknown public declaration types in {name}: {sorted(unknown)}")
+        public_rows.append({**copy.deepcopy(declaration), "classification": reviewed["classification"], "decision": reviewed["decision"]})
+    for profile in ("ordinary", "native_voice"):
+        active_files = {f["path"] for f in raw["sourceFiles"] if profile in f["buildProfiles"]}
+        active_declarations = []
+        for name, declaration in declarations.items():
+            active = [m for m in declaration["implementations"] if m["source"].rsplit(":", 1)[0] in active_files]
+            require(len(active) <= 1, f"Duplicate active declaration in {profile}: {name}")
+            if active:
+                active_declarations.append(name)
+        profiles[profile] = {
+            "GOOS": "linux", "GOARCH": "amd64", "CGO_ENABLED": profile == "native_voice",
+            "tags": ["voice"] if profile == "native_voice" else [],
+            "sourceFiles": sorted(active_files),
+            "packageTypes": sorted(t["Name"] for t in types.values() if t["File"] in active_files),
+            "publicDeclarations": sorted(active_declarations),
+            "sessionMethods": sorted(m["name"] for m in methods.values() if m["source"].rsplit(":", 1)[0] in active_files),
+            "evidence": "Go syntax and build-constraint selection only; not compiled or executed behavior.",
+        }
 
     def dependencies(record):
         refs = set(record["References"])
@@ -202,14 +258,21 @@ def main():
     source_ast["NestedTypes"] = copy.deepcopy(raw["nestedTypes"])
     source_ast["HistoricalFunctions"] = source_ast["Functions"]
     source_ast["FunctionProvenance"] = "Original legacy conversion source audit; not refreshed or claimed current implementation"
-    source_ast["HistoricalSchemaProvenance"] = "SchemaMessages/SchemaEnums are the unchanged original 154-message/23-enum legacy baseline; not a current SDK type or wire-schema denominator."
+    source_ast["HistoricalSchemaProvenance"] = "SchemaMessages/SchemaEnums are the unchanged original 154-message/23-enum legacy baseline from source-baseline-v0.29.0.json. Historical v1 source paths are provenance only: clean cutover removed those files; refresh never reads or requires them. Not a current SDK type or wire-schema denominator."
     source_ast["NestedTypePolicies"] = copy.deepcopy(policy["nestedTypes"])
+    source_ast["BuildProfiles"] = profiles
     source_ast["TypePolicies"] = copy.deepcopy(policy["types"])
+    source_ast["RetiredTypeFields"] = copy.deepcopy(policy["retiredTypeFields"])
     provenance = {**policy["provenance"], "extraction": "go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json", "refresh": "python3 tools/protocol/refresh-inventory.py", "sourceFiles": raw["sourceFiles"], "rawSHA256": hashlib.sha256((directory / "source-extracted.json").read_bytes()).hexdigest(), "historicalBaseline": "source-baseline-v0.29.0.json", "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"}
     outputs = {"source-ast.json": source_ast, "source-api.json": api, "source-methods.json": {"sourceFiles": [Path(f["path"]).name for f in raw["sourceFiles"]], "count": len(methods), "methods": raw["methods"]}, "source-type-closure.json": type_closure, "source-events.json": event_catalog}
+    outputs["source-public-declarations.json"] = {"scope": "All exported SDK package functions and methods on exported receiver types; one logical declaration per receiver/name, build-tagged implementations retained separately. Session dispositions are the source-api catalog, other declarations are domain conveniences or host-only SDK integrations, never additional module RPCs.", "count": len(public_rows), "declarations": public_rows, "buildProfiles": profiles, "unsupportedBuilds": {"voice_without_cgo": "Intentionally unsupported SDK build; voice_nocgo.go is retained in source hashes with no supported build profile."}}
     for catalog in outputs.values():
         catalog["sourceProvenance"] = provenance
-    summary = {"sourceCommit": provenance["sdkCommit"], "sourceTypes": len(types), "historicalGeneratedTypes": len(old_generated), "nestedTypes": len(raw["nestedTypes"]), "methods": len(methods), "canonicalOperations": len(canonical), "aliases": categories["convenience_alias"], "events": len(events), "moduleFacingEvents": visible, "apiTypeRoots": len(roots), "apiTypeClosure": len(reachable), "eventTypeClosure": len(event_reachable), "combinedTypeClosure": len(combined), "componentVariants": len(raw["polymorphicExpansion"]["MessageComponent"]), "interactionVariants": len(raw["polymorphicExpansion"]["InteractionData"]), "delta": policy["delta"]}
+    summary = {"upstreamBaseCommit": provenance["sdkCommit"], "sourceRevision": provenance["sourceRevision"], "sourceTypes": len(types), "historicalGeneratedTypes": len(old_generated), "nestedTypes": len(raw["nestedTypes"]), "methods": len(methods), "canonicalOperations": len(canonical), "aliases": categories["convenience_alias"], "events": len(events), "moduleFacingEvents": visible, "apiTypeRoots": len(roots), "apiTypeClosure": len(reachable), "eventTypeClosure": len(event_reachable), "combinedTypeClosure": len(combined), "componentVariants": len(raw["polymorphicExpansion"]["MessageComponent"]), "interactionVariants": len(raw["polymorphicExpansion"]["InteractionData"]), "delta": policy["delta"]}
+    summary.update({"sourceProvenance": provenance, "publicSDKDeclarations": len(public_rows), "buildProfileCounts": {name: {key: len(profile[key]) for key in ("sourceFiles", "packageTypes", "publicDeclarations", "sessionMethods")} for name, profile in profiles.items()}})
+    summary["moduleOperationsIncludingState"] = api["counts"]["distinctTypedRPCOperationsIncludingStateHelper"]
+    require(summary["moduleOperationsIncludingState"] == policy["moduleContract"]["operations"], "Public operation count changed; owner decision required")
+    require(visible == policy["moduleContract"]["events"], "Public event count changed; owner decision required")
     outputs["source-refresh-summary.json"] = summary
     # Compute everything, reject omissions, then publish. No input baseline/audit is overwritten.
     for name, value in outputs.items():

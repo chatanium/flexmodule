@@ -1,5 +1,0 @@
-syntax = "proto3";
-package common;
-option go_package = "github.com/thirdscam/chatanium-flexmodule/proto";
-
-message Empty {}

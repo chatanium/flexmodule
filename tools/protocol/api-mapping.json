@@ -4,111 +4,321 @@
   "sourceProvenance": {
     "sdkCommit": "f43dd94faaacd5b163e9e783f14b5bd8be639fc9",
     "sdkVersion": "v0.29.1-0.20260214123928-f43dd94faaac",
-    "sdkTree": "40cefda1705b8dad207b3cf9b9888348eca865a7",
     "officialSource": "https://github.com/bwmarrin/discordgo/tree/f43dd94faaacd5b163e9e783f14b5bd8be639fc9",
-    "sourceImport": "Exact official upstream source; untagged pin, not claimed stable. Independent Go module/example ownership edits are not source-package inputs.",
+    "sourceImport": "Pinned upstream f43dd94 plus deliberate local P3 context-bound Gateway, strict ingress, ordered observer and official Stage registration patches, and local P5 bounded native DAVE voice cutover. NOT unmodified upstream or a claimed upstream release. Independent module/example manifest edits are outside this SDK-package census.",
     "catalogKind": "Reviewed source inventory only; not protobuf/converter/runtime verification",
+    "sdkUpstreamTree": "40cefda1705b8dad207b3cf9b9888348eca865a7",
+    "sourceRevision": "f43dd94faaacd5b163e9e783f14b5bd8be639fc9+local-P3-Gateway+local-P5-native-voice",
+    "sdkCommitScope": "sdkCommit/sdkVersion/sdkUpstreamTree identify the pinned upstream base only, not the patched local source tree.",
+    "localSourcePatches": {
+      "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
+      "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
+    },
+    "sourcePackageSHA256": "443acf8109c18439d2a056fded068ee1d046d32cf7273e3267f52cc8d653c68d",
+    "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
     "extraction": "go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
     "sourceFiles": [
       {
         "path": "discordgo/components.go",
-        "sha256": "c6a81575ef04f16b8afeb0a49086be9390313f459d76f4f51df090a8f5f738b9"
+        "sha256": "c6a81575ef04f16b8afeb0a49086be9390313f459d76f4f51df090a8f5f738b9",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/discord.go",
-        "sha256": "8164f8230833443607fdfd615d31074d4c9d7ba7094bda3a23f2b67efe84f9ce"
+        "sha256": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/endpoints.go",
-        "sha256": "6a1fead9bb505b551b7cc8576c770e4d36ff5baada435a9a7866e5dd7fa1df4b"
+        "sha256": "5f496f57ad583a8a5e8073690103e3eb77d2dec12787a79d71f4d969b8db494f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/event.go",
-        "sha256": "52d8f287c407ba969fc7fcebd5e9b3ea3ae5b699e07587b927f334e0f29aa1d8"
+        "sha256": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/eventhandlers.go",
-        "sha256": "8b5f1b10bdc0c70cceaf9980773099b0f7aa873c8fea36335b84f5a663d15f3b"
+        "sha256": "11e720d86f3eb457206adde87b585e5d8fec5e5b67bd06f61732d2ef334111b7",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/events.go",
-        "sha256": "b4998b7b303b3aa9291d93b3177115a45756d58f8e409cc8fe57260c9431c123"
+        "sha256": "b4998b7b303b3aa9291d93b3177115a45756d58f8e409cc8fe57260c9431c123",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_context.go",
+        "sha256": "4cccbe39e0bb7e175ed2fd4ed89649f93668134e00f1fade2eaa989852958c71",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_dispatch.go",
+        "sha256": "d2bb7736498513b99a0085bba11a76c2f1273cf2d88d0ea8bf7db8d6628af52f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_ingress.go",
+        "sha256": "379b96636bbfa4bf574e039fd05332a6289bfa8879ae129a786a068e735158d0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_payload.go",
+        "sha256": "443ff2e9c6df3aa13c295ff9450abbd7811652ee7bd26483f46122200f409496",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/interactions.go",
-        "sha256": "fafd9ef3fb5396df8cb273537bc284250052cde804c968f46d0d6e65756f3a71"
+        "sha256": "fafd9ef3fb5396df8cb273537bc284250052cde804c968f46d0d6e65756f3a71",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/locales.go",
-        "sha256": "e84d174a37df048769ade0c068732e4f0c5aaae23cbfa6dba061815510052d9f"
+        "sha256": "e84d174a37df048769ade0c068732e4f0c5aaae23cbfa6dba061815510052d9f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79"
+        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/message.go",
-        "sha256": "25d5497055ef9305ca6fe0fd0cd92b71574402ce3a7f1f8238b3232f627e283c"
+        "sha256": "b1b29d909be56f9daf87ef095a9315491e666afc943fb743586bafdfea9a0471",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc"
+        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/ratelimit.go",
-        "sha256": "d0fdceee0dbb764bbad5c7a2c998d502d918204384d637a5e9605a2de7abe1d1"
+        "sha256": "d0fdceee0dbb764bbad5c7a2c998d502d918204384d637a5e9605a2de7abe1d1",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/restapi.go",
-        "sha256": "cd10081ae18488460926b061415fc7962d472b376f5b3814595cf733d3165cf7"
+        "sha256": "44664bc0e12355514ce2635cf189e91752f61ffa9c505e41e7d9853f94329afb",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/state.go",
-        "sha256": "b6e79789b27a6514ab816bd0d23ebc2c857c8be3fa122e4be2d1fe3f06eef6b9"
+        "sha256": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/structs.go",
-        "sha256": "a5ce4990c96341264d58abb5a2fc2e4ad17bbb454189de6b660bac4c0a78aea6"
+        "sha256": "8aff34dc9d04d4e5bd6cbcd50efa7c47aeddcfa89e0010822b8b5fbb1c2112a0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/user.go",
-        "sha256": "630fafca4237f15bba22cf452879cfbcab30e59c9934069f11fcd0c469d75ed4"
+        "sha256": "630fafca4237f15bba22cf452879cfbcab30e59c9934069f11fcd0c469d75ed4",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/util.go",
-        "sha256": "99641a9261c2be5dd74fd717c889f076150164647c99a70aae64fdbdd800807f"
+        "sha256": "99641a9261c2be5dd74fd717c889f076150164647c99a70aae64fdbdd800807f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/voice.go",
-        "sha256": "55530d81d6c38f641cd2f38008951aa6ef1e24ae611cccbed62047c93739f30e"
+        "sha256": "1e39dad8077b6f7f5e41485249c1e5635140284b0444f1725c3e5ceecc5a9f32",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_disabled.go",
+        "sha256": "ccda5e563a220bc2077c698dd19b00d9a0f539f030d921e0acf6f2e2d3d0d346",
+        "buildConstraint": "!voice",
+        "buildProfiles": [
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_gateway.go",
+        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
+      },
+      {
+        "path": "discordgo/voice_nocgo.go",
+        "sha256": "b880d0316f0801a76ca3b97b961e8ca71ffb0af382a989ff45412bd7d591abad",
+        "buildConstraint": "voice && !cgo",
+        "buildProfiles": []
+      },
+      {
+        "path": "discordgo/voice_opus.go",
+        "sha256": "64d3cbc3d8ce521da88c2536b1c26603009e724d55d2b2b72fdb1f9b650553b0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_packet.go",
+        "sha256": "f742bbca0c00e12c9a9e292fe07d4cf3114c20252b12fc71faecf216dfab04a4",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_protocol.go",
+        "sha256": "dcd87f9d22000318711cb233a579e0c5448c574d46e432024cafccf1cae4d2ac",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_transport.go",
+        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
+      },
+      {
+        "path": "discordgo/voice_udp.go",
+        "sha256": "d53b5401844b898dc989bc81913ee07d650b692a8a21acd609f06a864cfdb759",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
       },
       {
         "path": "discordgo/webhook.go",
-        "sha256": "dcec5083aa0c411e26d6f64c09ca0c4cb6a75747a72ca99d8cebcaee38acdce6"
+        "sha256": "dcec5083aa0c411e26d6f64c09ca0c4cb6a75747a72ca99d8cebcaee38acdce6",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/wsapi.go",
-        "sha256": "4ee5efc87cb3c3b0982b337dd6f1241afa87ba132143c6d6f132cc7d5f005840"
+        "sha256": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       }
     ],
-    "rawSHA256": "b6199a202fff12792684e44166501d3ed4411caa05f6e6289403629aa6e9ec21",
+    "rawSHA256": "eff63962705df3a6a03d25653df7a8fdbaa5f2d8de70624e5f2b1ee210b52316",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   },
   "inputSHA256": {
-    "source-api.json": "1ee3707e93e576d87fbb98928747b64a89e5c4986251eef02fd4e83a49be1090",
-    "source-ast.json": "de96232d6aecb91a64e9a32fd1c292895f9a855944b229d121e5c26107828b49",
+    "source-api.json": "6765ef0ec1b2978a55e02cf169d32111cd6080fc26a15d5231c2a7965688e973",
+    "source-ast.json": "51e191ad98db5a50bf6d8626899304fe3319228b41d0d742c92aaa09001a7e01",
     "source-baseline-v0.29.0.json": "bcff0ae6ad23ad7838b2852bf1c34cd21ca6451ac7b50dfdd5318936f3dbc7a0",
-    "source-events.json": "3e969f53c08072c93eabf93d4b2a006c3626bacbea28695a6da54ed565d148dc",
-    "source-extracted.json": "b6199a202fff12792684e44166501d3ed4411caa05f6e6289403629aa6e9ec21",
-    "source-methods.json": "3365acca427a24a0ffa90721c1a9c0ed4ab8c17ed058480d1d45b44840368f38",
-    "source-policy.json": "d7408adea8c6f8dac4b26a1e286940dce4bc185b891b6825fce71aa355fc9fd8",
-    "source-refresh-summary.json": "e94ba543fe8d2b145f0ea21d9e30d7970604a5a7f376ce633a2004dccba5d8b6",
-    "source-type-closure.json": "e3373fe916efd43db51107e47cea018f424ff01241e84fbfb2f533a2946a9f16"
+    "source-events.json": "376868c590c1727a6c869a4dbd55f4eb50f3834346749e72df31c9ba3e5d8c31",
+    "source-extracted.json": "eff63962705df3a6a03d25653df7a8fdbaa5f2d8de70624e5f2b1ee210b52316",
+    "source-methods.json": "177bcb1280546ec2deb3ae983630225bf8f468edf7e0f58e3ef280fde91f96c1",
+    "source-policy.json": "795c12d9c6139e6141bfe3e1d2375104ba5f77795e07853b9927bfe39aa2a9af",
+    "source-public-declarations.json": "af52d79595613a17ddfaffb4aefd0d13219e3ce855beb78dbd48b1d230ddfaff",
+    "source-refresh-summary.json": "92aab72188d84bda1a2ffd4634efc19afdc354cab75d21ab4d53bae680c92ae0",
+    "source-type-closure.json": "95c230bf016a12da61cfd08dfbad2afe8e91eb3020f11543bf6505075bb50b66"
   },
   "counts": {
-    "sourceMethods": 232,
+    "sourceMethods": 240,
     "canonicalHelperOperations": 153,
     "rest": 149,
     "gateway": 3,
@@ -116,7 +326,7 @@
     "ownership": 3,
     "aliases": 43,
     "excluded": 24,
-    "nonExposedInternal": 12
+    "nonExposedInternal": 20
   },
   "rules": {
     "reasonLessAlias": "omit canonical reason; audit option applies if present; effective empty only when both absent",
@@ -7304,7 +7514,7 @@
         }
       ],
       "responseFields": [],
-      "source": "discordgo/wsapi.go:470-472",
+      "source": "discordgo/wsapi.go:490-492",
       "sourceSignature": "func (s *Session) RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error",
       "requiredCredential": {
         "kind": "runtime_bot",
@@ -7326,7 +7536,7 @@
       "officialEvidence": [
         "https://docs.discord.com/developers/events/gateway-events#request-guild-members"
       ],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation."
     },
     {
       "name": "RequestGuildMembersList",
@@ -7386,7 +7596,7 @@
         }
       ],
       "responseFields": [],
-      "source": "discordgo/wsapi.go:481-483",
+      "source": "discordgo/wsapi.go:501-503",
       "sourceSignature": "func (s *Session) RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error",
       "requiredCredential": {
         "kind": "runtime_bot",
@@ -7408,7 +7618,7 @@
       "officialEvidence": [
         "https://docs.discord.com/developers/events/gateway-events#request-guild-members"
       ],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation."
     },
     {
       "name": "SKUs",
@@ -8477,8 +8687,8 @@
         }
       ],
       "responseFields": [],
-      "source": "discordgo/wsapi.go:422-446",
-      "sourceSignature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) (err error)",
+      "source": "discordgo/wsapi.go:465-467",
+      "sourceSignature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) error",
       "requiredCredential": {
         "kind": "runtime_bot",
         "scope": [],
@@ -8496,7 +8706,7 @@
       "implementation": "contract_only_no_handler_claim",
       "defaults": {},
       "officialEvidence": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation."
     },
     {
       "name": "User",
@@ -9777,7 +9987,7 @@
   "sourceClassifications": [
     {
       "name": "AddHandler",
-      "sourceRange": "discordgo/event.go:120-129",
+      "sourceRange": "discordgo/event.go:122-131",
       "sourceSignature": "func (s *Session) AddHandler(handler interface{}) func()",
       "classification": "backend_internal_control_helper",
       "reason": "Go 콜백 등록 및 해제 함수는 SDK 프로세스 내부 도구입니다. 모듈 이벤트 구독은 형식 지정 event envelope와 grant로 구현하며 함수를 wire로 전달하지 않습니다.",
@@ -9785,13 +9995,13 @@
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
     {
       "name": "AddHandlerOnce",
-      "sourceRange": "discordgo/event.go:134-143",
+      "sourceRange": "discordgo/event.go:136-145",
       "sourceSignature": "func (s *Session) AddHandlerOnce(handler interface{}) func()",
       "classification": "backend_internal_control_helper",
       "reason": "Go 콜백 등록 및 해제 함수는 SDK 프로세스 내부 도구입니다. 모듈 이벤트 구독은 형식 지정 event envelope와 grant로 구현하며 함수를 wire로 전달하지 않습니다.",
@@ -11375,26 +11585,25 @@
       "fullMethod": "/flexmodule.discord.v2.Helper/ChannelTyping"
     },
     {
-      "name": "ChannelVoiceJoin",
-      "sourceRange": "discordgo/wsapi.go:721-758",
-      "sourceSignature": "func (s *Session) ChannelVoiceJoin(gID, cID string, mute, deaf bool) (voice *VoiceConnection, err error)",
+      "name": "ChannelVoiceJoinContext",
+      "sourceRange": "discordgo/voice.go:118-174",
+      "sourceSignature": "func (s *Session) ChannelVoiceJoinContext(ctx context.Context, guildID, channelID string, mute, deaf bool, config VoiceConfig) (*VoiceConnection, error)",
       "classification": "backend_internal_control_helper",
-      "reason": "공유 VoiceConnection 및 Gateway opcode 4는 P5 voice 소유권/작업 스케줄러 내부에서만 사용합니다. raw join/수동 voice handshake RPC 또는 VoiceConnection DTO를 노출하지 않습니다.",
+      "reason": "Host P5 reserves a fresh bounded native voice connection; context/config/VoiceConnection are internal, never raw join or native transport RPCs.",
       "notes": [
-        "기능 대응: 재생은 CreatePlaybackJob + StreamPlayback, 수신은 SubscribeVoice/UnsubscribeVoice로 소유하며 마지막 job과 subscription이 끝나야 연결을 해제합니다. mute/deaf 설정은 P5의 승인된 연결 정책으로 적용하고 다른 채널 이동 요청을 우회하지 못합니다.",
-        "ChannelVoiceJoinManual의 빈 cID에 의한 연결 해제는 P5 소유 작업/구독 취소로만 대체합니다."
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
       ],
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
     {
       "name": "ChannelVoiceJoinManual",
-      "sourceRange": "discordgo/wsapi.go:768-785",
-      "sourceSignature": "func (s *Session) ChannelVoiceJoinManual(gID, cID string, mute, deaf bool) (err error)",
+      "sourceRange": "discordgo/wsapi.go:712-714",
+      "sourceSignature": "func (s *Session) ChannelVoiceJoinManual(gID, cID string, mute, deaf bool) error",
       "classification": "backend_internal_control_helper",
       "reason": "공유 VoiceConnection 및 Gateway opcode 4는 P5 voice 소유권/작업 스케줄러 내부에서만 사용합니다. raw join/수동 voice handshake RPC 또는 VoiceConnection DTO를 노출하지 않습니다.",
       "notes": [
@@ -11404,7 +11613,23 @@
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
+    },
+    {
+      "name": "ChannelVoiceJoinManualContext",
+      "sourceRange": "discordgo/gateway_context.go:210-216",
+      "sourceSignature": "func (s *Session) ChannelVoiceJoinManualContext(ctx context.Context, gID, cID string, mute, deaf bool) error",
+      "classification": "backend_internal_control_helper",
+      "reason": "Host-only main Gateway opcode-4 writer; voice ownership goes through P5 jobs/subscriptions, not raw module voice state mutation.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
@@ -11429,7 +11654,7 @@
     },
     {
       "name": "Close",
-      "sourceRange": "discordgo/wsapi.go:953-955",
+      "sourceRange": "discordgo/wsapi.go:802-804",
       "sourceSignature": "func (s *Session) Close() error",
       "classification": "backend_internal_control_helper",
       "reason": "공유 Discord 연결, 게이트웨이 탐색, 세션 시작 한도 및 수명 주기는 백엔드가 소유합니다. 모듈이 공유 세션을 열거나 닫거나 제어하도록 노출하지 않습니다.",
@@ -11437,21 +11662,37 @@
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
     {
       "name": "CloseWithCode",
-      "sourceRange": "discordgo/wsapi.go:960-1006",
-      "sourceSignature": "func (s *Session) CloseWithCode(closeCode int) (err error)",
+      "sourceRange": "discordgo/wsapi.go:808-841",
+      "sourceSignature": "func (s *Session) CloseWithCode(closeCode int) error",
       "classification": "backend_internal_control_helper",
       "reason": "공유 Discord 연결, 게이트웨이 탐색, 세션 시작 한도 및 수명 주기는 백엔드가 소유합니다. 모듈이 공유 세션을 열거나 닫거나 제어하도록 노출하지 않습니다.",
       "notes": [],
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
+    },
+    {
+      "name": "ConfigureGatewayIngress",
+      "sourceRange": "discordgo/gateway_ingress.go:31-54",
+      "sourceSignature": "func (s *Session) ConfigureGatewayIngress(frameMaxBytes, decodedMaxBytes int64, onFatal func(error)) error",
+      "classification": "backend_internal_control_helper",
+      "reason": "Host selects finite Gateway ingress bounds and a private fatal callback before Open; not a module operation.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
@@ -11976,15 +12217,15 @@
     },
     {
       "name": "GatewayWriteStruct",
-      "sourceRange": "discordgo/wsapi.go:528-540",
-      "sourceSignature": "func (s *Session) GatewayWriteStruct(data interface{}) (err error)",
+      "sourceRange": "discordgo/wsapi.go:542-544",
+      "sourceSignature": "func (s *Session) GatewayWriteStruct(data interface{}) error",
       "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
       "reason": "임의 HTTP method/URL/header/body/bucket 또는 임의 Gateway opcode 전송은 인증과 리소스 범위 검사를 우회할 수 있습니다. 모든 허용 작업은 이름 있는 형식 지정 RPC를 사용하며 범용 전송 escape hatch는 제공하지 않습니다.",
       "notes": [],
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
@@ -13581,7 +13822,7 @@
     },
     {
       "name": "HeartbeatLatency",
-      "sourceRange": "discordgo/wsapi.go:278-282",
+      "sourceRange": "discordgo/wsapi.go:311-315",
       "sourceSignature": "func (s *Session) HeartbeatLatency() time.Duration",
       "classification": "backend_internal_control_helper",
       "reason": "공유 Discord 연결, 게이트웨이 탐색, 세션 시작 한도 및 수명 주기는 백엔드가 소유합니다. 모듈이 공유 세션을 열거나 닫거나 제어하도록 노출하지 않습니다.",
@@ -13589,7 +13830,7 @@
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
@@ -14058,7 +14299,7 @@
     },
     {
       "name": "Open",
-      "sourceRange": "discordgo/wsapi.go:50-215",
+      "sourceRange": "discordgo/wsapi.go:47-49",
       "sourceSignature": "func (s *Session) Open() error",
       "classification": "backend_internal_control_helper",
       "reason": "공유 Discord 연결, 게이트웨이 탐색, 세션 시작 한도 및 수명 주기는 백엔드가 소유합니다. 모듈이 공유 세션을 열거나 닫거나 제어하도록 노출하지 않습니다.",
@@ -14066,7 +14307,23 @@
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Host-only websocket control remains non-exposed. Uses cached resumeGatewayURL and validates ws schemes on reconnect; no module credential or transport access.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
+    },
+    {
+      "name": "OpenContext",
+      "sourceRange": "discordgo/wsapi.go:54-230",
+      "sourceSignature": "func (s *Session) OpenContext(ctx context.Context) (err error)",
+      "classification": "backend_internal_control_helper",
+      "reason": "Host owns the shared Gateway connection lifecycle and startup context; modules cannot open/close the session.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": false
     },
@@ -14120,7 +14377,7 @@
     },
     {
       "name": "RequestGuildMembers",
-      "sourceRange": "discordgo/wsapi.go:470-472",
+      "sourceRange": "discordgo/wsapi.go:490-492",
       "sourceSignature": "func (s *Session) RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error",
       "classification": "canonical_typed_bot_rpc",
       "reason": "Gateway의 형식 지정 guild-member 요청을 허용합니다. 원시 GatewayWriteStruct 대신 고정 opcode/selector를 사용하며 실제 응답은 GuildMembersChunk 이벤트로 전달합니다.",
@@ -14133,15 +14390,15 @@
       ],
       "protoOperation": "RequestGuildMembers",
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": true,
       "sdkExposed": true,
       "fullMethod": "/flexmodule.discord.v2.Helper/RequestGuildMembers"
     },
     {
       "name": "RequestGuildMembersBatch",
-      "sourceRange": "discordgo/wsapi.go:494-504",
-      "sourceSignature": "func (s *Session) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) (err error)",
+      "sourceRange": "discordgo/wsapi.go:514-521",
+      "sourceSignature": "func (s *Session) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) error",
       "classification": "convenience_alias",
       "reason": "편의 메서드를 완전한 형식 지정 작업으로 합칩니다. 독립 RPC를 만들지 않습니다.",
       "notes": [
@@ -14151,7 +14408,7 @@
       "officialEvidence": [],
       "protoOperation": "RequestGuildMembers",
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": true,
       "mapping": {
@@ -14203,8 +14460,8 @@
     },
     {
       "name": "RequestGuildMembersBatchList",
-      "sourceRange": "discordgo/wsapi.go:515-525",
-      "sourceSignature": "func (s *Session) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) (err error)",
+      "sourceRange": "discordgo/wsapi.go:532-539",
+      "sourceSignature": "func (s *Session) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) error",
       "classification": "convenience_alias",
       "reason": "편의 메서드를 완전한 형식 지정 작업으로 합칩니다. 독립 RPC를 만들지 않습니다.",
       "notes": [
@@ -14214,7 +14471,7 @@
       "officialEvidence": [],
       "protoOperation": "RequestGuildMembersList",
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": false,
       "sdkExposed": true,
       "mapping": {
@@ -14265,8 +14522,24 @@
       ]
     },
     {
+      "name": "RequestGuildMembersContext",
+      "sourceRange": "discordgo/gateway_context.go:194-196",
+      "sourceSignature": "func (s *Session) RequestGuildMembersContext(ctx context.Context, guildID, query string, limit int, nonce string, presences bool) error",
+      "classification": "backend_internal_control_helper",
+      "reason": "Host context-bound implementation of the existing RequestGuildMembers RPC; not a second public operation.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
+    },
+    {
       "name": "RequestGuildMembersList",
-      "sourceRange": "discordgo/wsapi.go:481-483",
+      "sourceRange": "discordgo/wsapi.go:501-503",
       "sourceSignature": "func (s *Session) RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error",
       "classification": "canonical_typed_bot_rpc",
       "reason": "Gateway의 형식 지정 guild-member 요청을 허용합니다. 원시 GatewayWriteStruct 대신 고정 opcode/selector를 사용하며 실제 응답은 GuildMembersChunk 이벤트로 전달합니다.",
@@ -14279,10 +14552,26 @@
       ],
       "protoOperation": "RequestGuildMembersList",
       "typeRoots": [],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": true,
       "sdkExposed": true,
       "fullMethod": "/flexmodule.discord.v2.Helper/RequestGuildMembersList"
+    },
+    {
+      "name": "RequestGuildMembersListContext",
+      "sourceRange": "discordgo/gateway_context.go:200-205",
+      "sourceSignature": "func (s *Session) RequestGuildMembersListContext(ctx context.Context, guildID string, userIDs []string, limit int, nonce string, presences bool) error",
+      "classification": "backend_internal_control_helper",
+      "reason": "Host context-bound implementation of the existing RequestGuildMembersList RPC; not a second public operation.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
     },
     {
       "name": "RequestRaw",
@@ -14322,7 +14611,7 @@
       "officialEvidence": [],
       "protoOperation": null,
       "typeRoots": [],
-      "sourceReview": "Unsafe generic HTTP remains excluded. Reviewed Discord 502 retry handling and retry error wording; no typed operation or raw HTTP exposure.",
+      "sourceReview": "Parent-approved local P3 Go1.27 vet correction: literal %s format for ErrUnauthorized informational logging; existing disposition/signature/defaults and canonical behavior unchanged. Source-only review, no checks run.",
       "wireExposed": false,
       "sdkExposed": false
     },
@@ -14342,6 +14631,22 @@
       "wireExposed": true,
       "sdkExposed": true,
       "fullMethod": "/flexmodule.discord.v2.Helper/SKUs"
+    },
+    {
+      "name": "SetDispatchObserver",
+      "sourceRange": "discordgo/gateway_dispatch.go:17-22",
+      "sourceSignature": "func (s *Session) SetDispatchObserver(observer func(*Session, *Event, error))",
+      "classification": "backend_internal_control_helper",
+      "reason": "Single host-only ordered Gateway observer; raw payloads, decode errors, private voice/session credentials stay inside host ingress.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
     },
     {
       "name": "StageInstance",
@@ -14692,7 +14997,7 @@
     },
     {
       "name": "UpdateCustomStatus",
-      "sourceRange": "discordgo/wsapi.go:404-419",
+      "sourceRange": "discordgo/wsapi.go:447-462",
       "sourceSignature": "func (s *Session) UpdateCustomStatus(state string) (err error)",
       "classification": "convenience_alias",
       "reason": "편의 메서드를 완전한 형식 지정 작업으로 합칩니다. 독립 RPC를 만들지 않습니다.",
@@ -14742,7 +15047,7 @@
     },
     {
       "name": "UpdateGameStatus",
-      "sourceRange": "discordgo/wsapi.go:369-371",
+      "sourceRange": "discordgo/wsapi.go:412-414",
       "sourceSignature": "func (s *Session) UpdateGameStatus(idle int, name string) (err error)",
       "classification": "convenience_alias",
       "reason": "편의 메서드를 완전한 형식 지정 작업으로 합칩니다. 독립 RPC를 만들지 않습니다.",
@@ -14799,7 +15104,7 @@
     },
     {
       "name": "UpdateListeningStatus",
-      "sourceRange": "discordgo/wsapi.go:397-399",
+      "sourceRange": "discordgo/wsapi.go:440-442",
       "sourceSignature": "func (s *Session) UpdateListeningStatus(name string) (err error)",
       "classification": "convenience_alias",
       "reason": "편의 메서드를 완전한 형식 지정 작업으로 합칩니다. 독립 RPC를 만들지 않습니다.",
@@ -14851,8 +15156,8 @@
     },
     {
       "name": "UpdateStatusComplex",
-      "sourceRange": "discordgo/wsapi.go:422-446",
-      "sourceSignature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) (err error)",
+      "sourceRange": "discordgo/wsapi.go:465-467",
+      "sourceSignature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) error",
       "classification": "canonical_typed_bot_rpc",
       "reason": "현재 로컬 SDK에 노출된 이름과 매개변수를 유지하는 형식 지정 봇 작업입니다. 인스턴스 grant 및 Discord 리소스 권한을 각각 검사합니다.",
       "notes": [
@@ -14863,14 +15168,30 @@
       "typeRoots": [
         "UpdateStatusData"
       ],
-      "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "wireExposed": true,
       "sdkExposed": true,
       "fullMethod": "/flexmodule.discord.v2.Helper/UpdateStatusComplex"
     },
     {
+      "name": "UpdateStatusComplexContext",
+      "sourceRange": "discordgo/gateway_context.go:185-190",
+      "sourceSignature": "func (s *Session) UpdateStatusComplexContext(ctx context.Context, usd UpdateStatusData) error",
+      "classification": "backend_internal_control_helper",
+      "reason": "Host context-bound implementation of the existing UpdateStatusComplex RPC; not a second public operation.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
+    },
+    {
       "name": "UpdateStreamingStatus",
-      "sourceRange": "discordgo/wsapi.go:386-392",
+      "sourceRange": "discordgo/wsapi.go:429-435",
       "sourceSignature": "func (s *Session) UpdateStreamingStatus(idle int, name string, url string) (err error)",
       "classification": "convenience_alias",
       "reason": "편의 메서드를 완전한 형식 지정 작업으로 합칩니다. 독립 RPC를 만들지 않습니다.",
@@ -14932,7 +15253,7 @@
     },
     {
       "name": "UpdateWatchStatus",
-      "sourceRange": "discordgo/wsapi.go:377-379",
+      "sourceRange": "discordgo/wsapi.go:420-422",
       "sourceSignature": "func (s *Session) UpdateWatchStatus(idle int, name string) (err error)",
       "classification": "convenience_alias",
       "reason": "편의 메서드를 완전한 형식 지정 작업으로 합칩니다. 독립 RPC를 만들지 않습니다.",
@@ -15203,6 +15524,22 @@
       "wireExposed": true,
       "sdkExposed": true,
       "fullMethod": "/flexmodule.discord.v2.Helper/UserVoiceState"
+    },
+    {
+      "name": "VoiceGatewayDispatch",
+      "sourceRange": "discordgo/voice.go:178-189",
+      "sourceSignature": "func (s *Session) VoiceGatewayDispatch(e *Event) error",
+      "classification": "backend_internal_control_helper",
+      "reason": "Host-only private voice credential dispatch into P5 native engine; raw Event/session/token data must never become a module RPC/DTO.",
+      "notes": [
+        "Local P3/P5 SDK integration only. Existing 153-operation module contract is unchanged."
+      ],
+      "officialEvidence": [],
+      "protoOperation": null,
+      "typeRoots": [],
+      "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
+      "wireExposed": false,
+      "sdkExposed": false
     },
     {
       "name": "VoiceRegions",

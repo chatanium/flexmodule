@@ -10883,7 +10883,7 @@ func (x *PollExpireResponse) GetValue() *Message {
 	return nil
 }
 
-// Source: discordgo/wsapi.go:470-472
+// Source: discordgo/wsapi.go:490-492
 type RequestGuildMembersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	GuildId       string                 `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3" json:"guild_id,omitempty"`
@@ -10968,7 +10968,7 @@ func (x *RequestGuildMembersRequest) GetOptions() *RequestOptions {
 	return nil
 }
 
-// Source: discordgo/wsapi.go:481-483
+// Source: discordgo/wsapi.go:501-503
 type RequestGuildMembersListRequest struct {
 	state         protoimpl.MessageState                 `protogen:"open.v1"`
 	GuildId       string                                 `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3" json:"guild_id,omitempty"`
@@ -12650,7 +12650,7 @@ func (x *ThreadsPrivateJoinedArchivedResponse) GetValue() *ThreadsList {
 	return nil
 }
 
-// Source: discordgo/wsapi.go:422-446
+// Source: discordgo/wsapi.go:465-467
 type UpdateStatusComplexRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Usd           *UpdateStatusData      `protobuf:"bytes,1,opt,name=usd,proto3" json:"usd,omitempty"`

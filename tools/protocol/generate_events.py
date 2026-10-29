@@ -17,7 +17,7 @@ def snake(name):
     return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
-def emit():
+def emit(mapping_only=False):
     catalog = json.loads((INVENTORY / "source-events.json").read_text())
     ast = json.loads((INVENTORY / "source-ast.json").read_text())
     types = {t["Name"]: t for t in ast["Types"] if t["File"].startswith("discordgo/")}
@@ -103,10 +103,12 @@ def emit():
     for name, value in sorted(wrappers.items()):
         schema.extend(["message " + name + " {", "  oneof kind {", "    " + value + " value = 1;", "    google.protobuf.NullValue null = 2;", "  }", "}"])
     schema.extend([""] + messages + [""])
-    (ROOT / "proto/discord-v2/events.proto").write_text("\n".join(schema))
+    if not mapping_only:
+        (ROOT / "proto/discord-v2/events.proto").write_text("\n".join(schema))
     artifact = {"sourceCount": len(rows), "moduleFacingCount": len(active), "hostOnlyOrLegacyCount": len(rows) - len(active), "sourceProvenance": catalog.get("sourceProvenance"), "contract": "P1 boundary policies applied to the complete reviewed current SDK inventory; historical counts are not limits; no aliases or raw fallback", "events": mapping}
     (ROOT / "tools/protocol/event-mapping.json").write_text(json.dumps(artifact, indent=2, ensure_ascii=False) + "\n")
-    emit_registry(active)
+    if not mapping_only:
+        emit_registry(active)
 
 
 def emit_registry(rows):
@@ -138,4 +140,7 @@ def emit_registry(rows):
 
 
 if __name__ == "__main__":
-    emit()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--mapping-only", action="store_true", help="Refresh source mapping JSON without emitting shared protobuf/Go contracts")
+    emit(mapping_only=parser.parse_args().mapping_only)

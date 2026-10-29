@@ -1196,7 +1196,7 @@ func (*PartialInteractionData_MessageComponent) isPartialInteractionData_Data() 
 
 func (*PartialInteractionData_ModalSubmit) isPartialInteractionData_Data() {}
 
-// discordgo/structs.go:2186; safe domain snapshot/request.
+// discordgo/structs.go:2194; safe domain snapshot/request.
 type APIErrorMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -1250,7 +1250,7 @@ func (x *APIErrorMessage) GetMessage() string {
 	return ""
 }
 
-// discordgo/structs.go:2186; recursive ingress presence view.
+// discordgo/structs.go:2194; recursive ingress presence view.
 type PartialAPIErrorMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -1412,7 +1412,7 @@ func (x *PartialActionsRow) GetId() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:2226; safe domain snapshot/request.
+// discordgo/structs.go:2234; safe domain snapshot/request.
 type Activity struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Name  *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -1564,7 +1564,7 @@ func (x *Activity) GetFlags() uint64 {
 	return 0
 }
 
-// discordgo/structs.go:2226; recursive ingress presence view.
+// discordgo/structs.go:2234; recursive ingress presence view.
 type PartialActivity struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Name  *core_v2.NullableString `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -1716,7 +1716,7 @@ func (x *PartialActivity) GetFlags() *DomainNullableUint64 {
 	return nil
 }
 
-// discordgo/structs.go:580; safe domain snapshot/request.
+// discordgo/structs.go:588; safe domain snapshot/request.
 type AddedThreadMember struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ThreadMember  *ThreadMember          `protobuf:"bytes,1,opt,name=thread_member,json=threadMember,proto3" json:"thread_member,omitempty"`
@@ -1777,7 +1777,7 @@ func (x *AddedThreadMember) GetPresence() *Presence {
 	return nil
 }
 
-// discordgo/structs.go:580; recursive ingress presence view.
+// discordgo/structs.go:588; recursive ingress presence view.
 type PartialAddedThreadMember struct {
 	state         protoimpl.MessageState             `protogen:"open.v1"`
 	ThreadMember  *DomainNullablePartialThreadMember `protobuf:"bytes,1,opt,name=thread_member,json=threadMember,proto3" json:"thread_member,omitempty"`
@@ -1838,7 +1838,7 @@ func (x *PartialAddedThreadMember) GetPresence() *DomainNullablePartialPresence 
 	return nil
 }
 
-// discordgo/structs.go:165; safe domain snapshot/request.
+// discordgo/structs.go:173; safe domain snapshot/request.
 type Application struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	Id                  *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -2028,7 +2028,7 @@ func (x *Application) GetIntegrationTypesConfig() *DomainUint64ToApplicationInte
 	return nil
 }
 
-// discordgo/structs.go:165; recursive ingress presence view.
+// discordgo/structs.go:173; recursive ingress presence view.
 type PartialApplication struct {
 	state               protoimpl.MessageState                                  `protogen:"open.v1"`
 	Id                  *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -3694,7 +3694,7 @@ func (x *PartialApplicationCommandPermissionsList) GetPermissions() *DomainNulla
 	return nil
 }
 
-// discordgo/structs.go:154; safe domain snapshot/request.
+// discordgo/structs.go:162; safe domain snapshot/request.
 type ApplicationInstallParams struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Scopes *DomainStringList      `protobuf:"bytes,1,opt,name=scopes,proto3" json:"scopes,omitempty"`
@@ -3748,7 +3748,7 @@ func (x *ApplicationInstallParams) GetPermissions() string {
 	return ""
 }
 
-// discordgo/structs.go:154; recursive ingress presence view.
+// discordgo/structs.go:162; recursive ingress presence view.
 type PartialApplicationInstallParams struct {
 	state  protoimpl.MessageState                                  `protogen:"open.v1"`
 	Scopes *DomainNullableDomainFlexmoduleCoreV2NullableStringList `protobuf:"bytes,1,opt,name=scopes,proto3" json:"scopes,omitempty"`
@@ -3802,7 +3802,7 @@ func (x *PartialApplicationInstallParams) GetPermissions() *core_v2.NullableStri
 	return nil
 }
 
-// discordgo/structs.go:160; safe domain snapshot/request.
+// discordgo/structs.go:168; safe domain snapshot/request.
 type ApplicationIntegrationTypeConfig struct {
 	state               protoimpl.MessageState    `protogen:"open.v1"`
 	OAuth2InstallParams *ApplicationInstallParams `protobuf:"bytes,1,opt,name=o_auth2_install_params,json=oAuth2InstallParams,proto3" json:"o_auth2_install_params,omitempty"`
@@ -3847,7 +3847,7 @@ func (x *ApplicationIntegrationTypeConfig) GetOAuth2InstallParams() *Application
 	return nil
 }
 
-// discordgo/structs.go:160; recursive ingress presence view.
+// discordgo/structs.go:168; recursive ingress presence view.
 type PartialApplicationIntegrationTypeConfig struct {
 	state               protoimpl.MessageState                         `protogen:"open.v1"`
 	OAuth2InstallParams *DomainNullablePartialApplicationInstallParams `protobuf:"bytes,1,opt,name=o_auth2_install_params,json=oAuth2InstallParams,proto3" json:"o_auth2_install_params,omitempty"`
@@ -3892,7 +3892,7 @@ func (x *PartialApplicationIntegrationTypeConfig) GetOAuth2InstallParams() *Doma
 	return nil
 }
 
-// discordgo/structs.go:213; safe domain snapshot/request.
+// discordgo/structs.go:221; safe domain snapshot/request.
 type ApplicationRoleConnection struct {
 	state            protoimpl.MessageState   `protogen:"open.v1"`
 	PlatformName     *string                  `protobuf:"bytes,1,opt,name=platform_name,json=platformName,proto3,oneof" json:"platform_name,omitempty"`
@@ -3953,7 +3953,7 @@ func (x *ApplicationRoleConnection) GetMetadata() *DomainStringToStringMap {
 	return nil
 }
 
-// discordgo/structs.go:213; recursive ingress presence view.
+// discordgo/structs.go:221; recursive ingress presence view.
 type PartialApplicationRoleConnection struct {
 	state            protoimpl.MessageState                                         `protogen:"open.v1"`
 	PlatformName     *core_v2.NullableString                                        `protobuf:"bytes,1,opt,name=platform_name,json=platformName,proto3" json:"platform_name,omitempty"`
@@ -4014,7 +4014,7 @@ func (x *PartialApplicationRoleConnection) GetMetadata() *DomainNullableDomainSt
 	return nil
 }
 
-// discordgo/structs.go:203; safe domain snapshot/request.
+// discordgo/structs.go:211; safe domain snapshot/request.
 type ApplicationRoleConnectionMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source ApplicationRoleConnectionMetadataType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -4100,7 +4100,7 @@ func (x *ApplicationRoleConnectionMetadata) GetDescriptionLocalizations() *Domai
 	return nil
 }
 
-// discordgo/structs.go:203; recursive ingress presence view.
+// discordgo/structs.go:211; recursive ingress presence view.
 type PartialApplicationRoleConnectionMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source ApplicationRoleConnectionMetadataType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -4186,7 +4186,7 @@ func (x *PartialApplicationRoleConnectionMetadata) GetDescriptionLocalizations()
 	return nil
 }
 
-// discordgo/structs.go:1536; safe domain snapshot/request.
+// discordgo/structs.go:1544; safe domain snapshot/request.
 type Assets struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	LargeImageId  *string                `protobuf:"bytes,1,opt,name=large_image_id,json=largeImageId,proto3,oneof" json:"large_image_id,omitempty"`
@@ -4255,7 +4255,7 @@ func (x *Assets) GetSmallText() string {
 	return ""
 }
 
-// discordgo/structs.go:1536; recursive ingress presence view.
+// discordgo/structs.go:1544; recursive ingress presence view.
 type PartialAssets struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	LargeImageId  *core_v2.NullableString `protobuf:"bytes,1,opt,name=large_image_id,json=largeImageId,proto3" json:"large_image_id,omitempty"`
@@ -4324,7 +4324,7 @@ func (x *PartialAssets) GetSmallText() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:1844; safe domain snapshot/request.
+// discordgo/structs.go:1852; safe domain snapshot/request.
 type AuditLogChange struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source string alias AuditLogChangeKey; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -4386,7 +4386,7 @@ func (x *AuditLogChange) GetNewValue() *core_v2.JSONValue {
 	return nil
 }
 
-// discordgo/structs.go:1844; recursive ingress presence view.
+// discordgo/structs.go:1852; recursive ingress presence view.
 type PartialAuditLogChange struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source string alias AuditLogChangeKey; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -4448,7 +4448,7 @@ func (x *PartialAuditLogChange) GetNewValue() *DomainNullableJSONValue {
 	return nil
 }
 
-// discordgo/structs.go:1833; safe domain snapshot/request.
+// discordgo/structs.go:1841; safe domain snapshot/request.
 type AuditLogEntry struct {
 	state    protoimpl.MessageState    `protogen:"open.v1"`
 	TargetId *string                   `protobuf:"bytes,1,opt,name=target_id,json=targetId,proto3,oneof" json:"target_id,omitempty"`
@@ -4542,7 +4542,7 @@ func (x *AuditLogEntry) GetReason() string {
 	return ""
 }
 
-// discordgo/structs.go:1833; recursive ingress presence view.
+// discordgo/structs.go:1841; recursive ingress presence view.
 type PartialAuditLogEntry struct {
 	state    protoimpl.MessageState                                       `protogen:"open.v1"`
 	TargetId *core_v2.NullableString                                      `protobuf:"bytes,1,opt,name=target_id,json=targetId,proto3" json:"target_id,omitempty"`
@@ -4636,7 +4636,7 @@ func (x *PartialAuditLogEntry) GetReason() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2002; safe domain snapshot/request.
+// discordgo/structs.go:2010; safe domain snapshot/request.
 type AuditLogOptions struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	DeleteMemberDays *string                `protobuf:"bytes,1,opt,name=delete_member_days,json=deleteMemberDays,proto3,oneof" json:"delete_member_days,omitempty"`
@@ -4770,7 +4770,7 @@ func (x *AuditLogOptions) GetIntegrationType() string {
 	return ""
 }
 
-// discordgo/structs.go:2002; recursive ingress presence view.
+// discordgo/structs.go:2010; recursive ingress presence view.
 type PartialAuditLogOptions struct {
 	state            protoimpl.MessageState  `protogen:"open.v1"`
 	DeleteMemberDays *core_v2.NullableString `protobuf:"bytes,1,opt,name=delete_member_days,json=deleteMemberDays,proto3" json:"delete_member_days,omitempty"`
@@ -4904,7 +4904,7 @@ func (x *PartialAuditLogOptions) GetIntegrationType() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:1811; safe domain snapshot/request.
+// discordgo/structs.go:1819; safe domain snapshot/request.
 type AutoModerationAction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source AutoModerationActionType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -4958,7 +4958,7 @@ func (x *AutoModerationAction) GetMetadata() *AutoModerationActionMetadata {
 	return nil
 }
 
-// discordgo/structs.go:1811; recursive ingress presence view.
+// discordgo/structs.go:1819; recursive ingress presence view.
 type PartialAutoModerationAction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source AutoModerationActionType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -5012,7 +5012,7 @@ func (x *PartialAutoModerationAction) GetMetadata() *DomainNullablePartialAutoMo
 	return nil
 }
 
-// discordgo/structs.go:1796; safe domain snapshot/request.
+// discordgo/structs.go:1804; safe domain snapshot/request.
 type AutoModerationActionMetadata struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	ChannelId *string                `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3,oneof" json:"channel_id,omitempty"`
@@ -5074,7 +5074,7 @@ func (x *AutoModerationActionMetadata) GetCustomMessage() string {
 	return ""
 }
 
-// discordgo/structs.go:1796; recursive ingress presence view.
+// discordgo/structs.go:1804; recursive ingress presence view.
 type PartialAutoModerationActionMetadata struct {
 	state     protoimpl.MessageState  `protogen:"open.v1"`
 	ChannelId *core_v2.NullableString `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
@@ -5136,7 +5136,7 @@ func (x *PartialAutoModerationActionMetadata) GetCustomMessage() *core_v2.Nullab
 	return nil
 }
 
-// discordgo/structs.go:1719; safe domain snapshot/request.
+// discordgo/structs.go:1727; safe domain snapshot/request.
 type AutoModerationRule struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	Id        *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -5263,7 +5263,7 @@ func (x *AutoModerationRule) GetExemptChannels() *DomainStringList {
 	return nil
 }
 
-// discordgo/structs.go:1719; recursive ingress presence view.
+// discordgo/structs.go:1727; recursive ingress presence view.
 type PartialAutoModerationRule struct {
 	state     protoimpl.MessageState  `protogen:"open.v1"`
 	Id        *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -5390,7 +5390,7 @@ func (x *PartialAutoModerationRule) GetExemptChannels() *DomainNullableDomainFle
 	return nil
 }
 
-// discordgo/structs.go:1764; safe domain snapshot/request.
+// discordgo/structs.go:1772; safe domain snapshot/request.
 type AutoModerationTriggerMetadata struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	KeywordFilter *DomainStringList      `protobuf:"bytes,1,opt,name=keyword_filter,json=keywordFilter,proto3" json:"keyword_filter,omitempty"`
@@ -5468,7 +5468,7 @@ func (x *AutoModerationTriggerMetadata) GetMentionTotalLimit() int64 {
 	return 0
 }
 
-// discordgo/structs.go:1764; recursive ingress presence view.
+// discordgo/structs.go:1772; recursive ingress presence view.
 type PartialAutoModerationTriggerMetadata struct {
 	state         protoimpl.MessageState                                  `protogen:"open.v1"`
 	KeywordFilter *DomainNullableDomainFlexmoduleCoreV2NullableStringList `protobuf:"bytes,1,opt,name=keyword_filter,json=keywordFilter,proto3" json:"keyword_filter,omitempty"`
@@ -5752,7 +5752,7 @@ func (x *PartialButton) GetId() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:362; safe domain snapshot/request.
+// discordgo/structs.go:370; safe domain snapshot/request.
 type Channel struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	Id      *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -6049,7 +6049,7 @@ func (x *Channel) GetDefaultForumLayout() int64 {
 	return 0
 }
 
-// discordgo/structs.go:362; recursive ingress presence view.
+// discordgo/structs.go:370; recursive ingress presence view.
 type PartialChannel struct {
 	state   protoimpl.MessageState  `protogen:"open.v1"`
 	Id      *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -6346,7 +6346,7 @@ func (x *PartialChannel) GetDefaultForumLayout() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:474; safe domain snapshot/request.
+// discordgo/structs.go:482; safe domain snapshot/request.
 type ChannelEdit struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Name  *string                 `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -6552,7 +6552,7 @@ func (x *ChannelEdit) GetAppliedTags() *DomainStringList {
 	return nil
 }
 
-// discordgo/structs.go:474; recursive ingress presence view.
+// discordgo/structs.go:482; recursive ingress presence view.
 type PartialChannelEdit struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Name  *core_v2.NullableString `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -6758,7 +6758,7 @@ func (x *PartialChannelEdit) GetAppliedTags() *DomainNullableDomainFlexmoduleCor
 	return nil
 }
 
-// discordgo/structs.go:506; safe domain snapshot/request.
+// discordgo/structs.go:514; safe domain snapshot/request.
 type ChannelFollow struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	ChannelId     *string                `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3,oneof" json:"channel_id,omitempty"`
@@ -6811,7 +6811,7 @@ func (x *ChannelFollow) GetWebhookId() string {
 	return ""
 }
 
-// discordgo/structs.go:506; recursive ingress presence view.
+// discordgo/structs.go:514; recursive ingress presence view.
 type PartialChannelFollow struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	ChannelId     *core_v2.NullableString `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
@@ -6864,7 +6864,7 @@ func (x *PartialChannelFollow) GetWebhookId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2634; safe domain snapshot/request.
+// discordgo/structs.go:2642; safe domain snapshot/request.
 type ChannelMessagePinsList struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Items         *DomainMessagePinList  `protobuf:"bytes,1,opt,name=items,proto3" json:"items,omitempty"`
@@ -6917,7 +6917,7 @@ func (x *ChannelMessagePinsList) GetHasMore() bool {
 	return false
 }
 
-// discordgo/structs.go:2634; recursive ingress presence view.
+// discordgo/structs.go:2642; recursive ingress presence view.
 type PartialChannelMessagePinsList struct {
 	state         protoimpl.MessageState                                   `protogen:"open.v1"`
 	Items         *DomainNullableDomainDomainNullablePartialMessagePinList `protobuf:"bytes,1,opt,name=items,proto3" json:"items,omitempty"`
@@ -6970,7 +6970,7 @@ func (x *PartialChannelMessagePinsList) GetHasMore() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:1653; safe domain snapshot/request.
+// discordgo/structs.go:1661; safe domain snapshot/request.
 type ClientStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source string alias Status; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -7034,7 +7034,7 @@ func (x *ClientStatus) GetWeb() string {
 	return ""
 }
 
-// discordgo/structs.go:1653; recursive ingress presence view.
+// discordgo/structs.go:1661; recursive ingress presence view.
 type PartialClientStatus struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source string alias Status; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -7516,7 +7516,7 @@ func (x *PartialContainer) GetComponents() *DomainNullableDomainDomainNullablePa
 	return nil
 }
 
-// discordgo/structs.go:605; safe domain snapshot/request.
+// discordgo/structs.go:613; safe domain snapshot/request.
 type Emoji struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -7617,7 +7617,7 @@ func (x *Emoji) GetAvailable() bool {
 	return false
 }
 
-// discordgo/structs.go:605; recursive ingress presence view.
+// discordgo/structs.go:613; recursive ingress presence view.
 type PartialEmoji struct {
 	state         protoimpl.MessageState                                  `protogen:"open.v1"`
 	Id            *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -7718,7 +7718,7 @@ func (x *PartialEmoji) GetAvailable() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:646; safe domain snapshot/request.
+// discordgo/structs.go:654; safe domain snapshot/request.
 type EmojiParams struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -7779,7 +7779,7 @@ func (x *EmojiParams) GetRoles() *DomainStringList {
 	return nil
 }
 
-// discordgo/structs.go:646; recursive ingress presence view.
+// discordgo/structs.go:654; recursive ingress presence view.
 type PartialEmojiParams struct {
 	state         protoimpl.MessageState                                  `protogen:"open.v1"`
 	Name          *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -7840,7 +7840,7 @@ func (x *PartialEmojiParams) GetRoles() *DomainNullableDomainFlexmoduleCoreV2Nul
 	return nil
 }
 
-// discordgo/structs.go:2538; safe domain snapshot/request.
+// discordgo/structs.go:2546; safe domain snapshot/request.
 type Entitlement struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -7968,7 +7968,7 @@ func (x *Entitlement) GetSubscriptionId() string {
 	return ""
 }
 
-// discordgo/structs.go:2538; recursive ingress presence view.
+// discordgo/structs.go:2546; recursive ingress presence view.
 type PartialEntitlement struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Id            *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -8096,7 +8096,7 @@ func (x *PartialEntitlement) GetSubscriptionId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2601; safe domain snapshot/request.
+// discordgo/structs.go:2609; safe domain snapshot/request.
 type EntitlementFilterOptions struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	UserId *string                `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
@@ -8192,7 +8192,7 @@ func (x *EntitlementFilterOptions) GetExcludeEnded() bool {
 	return false
 }
 
-// discordgo/structs.go:2601; recursive ingress presence view.
+// discordgo/structs.go:2609; recursive ingress presence view.
 type PartialEntitlementFilterOptions struct {
 	state  protoimpl.MessageState                                  `protogen:"open.v1"`
 	UserId *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -8288,7 +8288,7 @@ func (x *PartialEntitlementFilterOptions) GetExcludeEnded() *DomainNullableBool 
 	return nil
 }
 
-// discordgo/structs.go:2589; safe domain snapshot/request.
+// discordgo/structs.go:2597; safe domain snapshot/request.
 type EntitlementTest struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	Skuid   *string                `protobuf:"bytes,1,opt,name=skuid,proto3,oneof" json:"skuid,omitempty"`
@@ -8350,7 +8350,7 @@ func (x *EntitlementTest) GetOwnerType() int64 {
 	return 0
 }
 
-// discordgo/structs.go:2589; recursive ingress presence view.
+// discordgo/structs.go:2597; recursive ingress presence view.
 type PartialEntitlementTest struct {
 	state   protoimpl.MessageState  `protogen:"open.v1"`
 	Skuid   *core_v2.NullableString `protobuf:"bytes,1,opt,name=skuid,proto3" json:"skuid,omitempty"`
@@ -8712,7 +8712,7 @@ func (x *PartialFileUpload) GetValues() *DomainNullableDomainFlexmoduleCoreV2Nul
 	return nil
 }
 
-// discordgo/structs.go:588; safe domain snapshot/request.
+// discordgo/structs.go:596; safe domain snapshot/request.
 type ForumDefaultReaction struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	EmojiId       *string                `protobuf:"bytes,1,opt,name=emoji_id,json=emojiId,proto3,oneof" json:"emoji_id,omitempty"`
@@ -8765,7 +8765,7 @@ func (x *ForumDefaultReaction) GetEmojiName() string {
 	return ""
 }
 
-// discordgo/structs.go:588; recursive ingress presence view.
+// discordgo/structs.go:596; recursive ingress presence view.
 type PartialForumDefaultReaction struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	EmojiId       *core_v2.NullableString `protobuf:"bytes,1,opt,name=emoji_id,json=emojiId,proto3" json:"emoji_id,omitempty"`
@@ -8818,7 +8818,7 @@ func (x *PartialForumDefaultReaction) GetEmojiName() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:596; safe domain snapshot/request.
+// discordgo/structs.go:604; safe domain snapshot/request.
 type ForumTag struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -8895,7 +8895,7 @@ func (x *ForumTag) GetEmojiName() string {
 	return ""
 }
 
-// discordgo/structs.go:596; recursive ingress presence view.
+// discordgo/structs.go:604; recursive ingress presence view.
 type PartialForumTag struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Id            *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -8972,7 +8972,7 @@ func (x *PartialForumTag) GetEmojiName() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2201; safe domain snapshot/request.
+// discordgo/structs.go:2209; safe domain snapshot/request.
 type GatewayBotResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Url   *string                `protobuf:"bytes,1,opt,name=url,proto3,oneof" json:"url,omitempty"`
@@ -9034,7 +9034,7 @@ func (x *GatewayBotResponse) GetSessionStartLimit() *SessionInformation {
 	return nil
 }
 
-// discordgo/structs.go:2201; recursive ingress presence view.
+// discordgo/structs.go:2209; recursive ingress presence view.
 type PartialGatewayBotResponse struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Url   *core_v2.NullableString `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
@@ -9096,7 +9096,7 @@ func (x *PartialGatewayBotResponse) GetSessionStartLimit() *DomainNullablePartia
 	return nil
 }
 
-// discordgo/structs.go:2217; safe domain snapshot/request.
+// discordgo/structs.go:2225; safe domain snapshot/request.
 type GatewayStatusUpdate struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -9166,7 +9166,7 @@ func (x *GatewayStatusUpdate) GetAfk() bool {
 	return false
 }
 
-// discordgo/structs.go:2217; recursive ingress presence view.
+// discordgo/structs.go:2225; recursive ingress presence view.
 type PartialGatewayStatusUpdate struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -9236,7 +9236,7 @@ func (x *PartialGatewayStatusUpdate) GetAfk() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:765; safe domain snapshot/request.
+// discordgo/structs.go:773; safe domain snapshot/request.
 type Guild struct {
 	state        protoimpl.MessageState `protogen:"open.v1"`
 	Id           *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -9674,7 +9674,7 @@ func (x *Guild) GetStageInstances() *DomainStageInstanceList {
 	return nil
 }
 
-// discordgo/structs.go:765; recursive ingress presence view.
+// discordgo/structs.go:773; recursive ingress presence view.
 type PartialGuild struct {
 	state        protoimpl.MessageState  `protogen:"open.v1"`
 	Id           *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -10250,7 +10250,7 @@ func (x *PartialGuildApplicationCommandPermissions) GetPermissions() *DomainNull
 	return nil
 }
 
-// discordgo/structs.go:1824; safe domain snapshot/request.
+// discordgo/structs.go:1832; safe domain snapshot/request.
 type GuildAuditLog struct {
 	state           protoimpl.MessageState   `protogen:"open.v1"`
 	Webhooks        *DomainWebhookList       `protobuf:"bytes,1,opt,name=webhooks,proto3" json:"webhooks,omitempty"`
@@ -10319,7 +10319,7 @@ func (x *GuildAuditLog) GetIntegrations() *DomainIntegrationList {
 	return nil
 }
 
-// discordgo/structs.go:1824; recursive ingress presence view.
+// discordgo/structs.go:1832; recursive ingress presence view.
 type PartialGuildAuditLog struct {
 	state           protoimpl.MessageState                                      `protogen:"open.v1"`
 	Webhooks        *DomainNullableDomainDomainNullablePartialWebhookList       `protobuf:"bytes,1,opt,name=webhooks,proto3" json:"webhooks,omitempty"`
@@ -10388,7 +10388,7 @@ func (x *PartialGuildAuditLog) GetIntegrations() *DomainNullableDomainDomainNull
 	return nil
 }
 
-// discordgo/structs.go:1713; safe domain snapshot/request.
+// discordgo/structs.go:1721; safe domain snapshot/request.
 type GuildBan struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Reason        *string                `protobuf:"bytes,1,opt,name=reason,proto3,oneof" json:"reason,omitempty"`
@@ -10441,7 +10441,7 @@ func (x *GuildBan) GetUser() *User {
 	return nil
 }
 
-// discordgo/structs.go:1713; recursive ingress presence view.
+// discordgo/structs.go:1721; recursive ingress presence view.
 type PartialGuildBan struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	Reason        *core_v2.NullableString    `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
@@ -10738,7 +10738,7 @@ func (x *PartialGuildChannelCreateData) GetNsfw() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:1817; safe domain snapshot/request.
+// discordgo/structs.go:1825; safe domain snapshot/request.
 type GuildEmbed struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enabled       *bool                  `protobuf:"varint,1,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`
@@ -10791,7 +10791,7 @@ func (x *GuildEmbed) GetChannelId() string {
 	return ""
 }
 
-// discordgo/structs.go:1817; recursive ingress presence view.
+// discordgo/structs.go:1825; recursive ingress presence view.
 type PartialGuildEmbed struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Enabled       *DomainNullableBool     `protobuf:"bytes,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
@@ -10844,7 +10844,7 @@ func (x *PartialGuildEmbed) GetChannelId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2172; safe domain snapshot/request.
+// discordgo/structs.go:2180; safe domain snapshot/request.
 type GuildMemberAddParams struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	CredentialRef *core_v2.CredentialRef `protobuf:"bytes,1,opt,name=credential_ref,json=credentialRef,proto3" json:"credential_ref,omitempty"`
@@ -10921,7 +10921,7 @@ func (x *GuildMemberAddParams) GetDeaf() bool {
 	return false
 }
 
-// discordgo/structs.go:2172; recursive ingress presence view.
+// discordgo/structs.go:2180; recursive ingress presence view.
 type PartialGuildMemberAddParams struct {
 	state         protoimpl.MessageState                                  `protogen:"open.v1"`
 	CredentialRef *DomainNullableCredentialRef                            `protobuf:"bytes,1,opt,name=credential_ref,json=credentialRef,proto3" json:"credential_ref,omitempty"`
@@ -10998,7 +10998,7 @@ func (x *PartialGuildMemberAddParams) GetDeaf() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:2116; safe domain snapshot/request.
+// discordgo/structs.go:2124; safe domain snapshot/request.
 type GuildMemberParams struct {
 	state     protoimpl.MessageState  `protogen:"open.v1"`
 	Nick      *string                 `protobuf:"bytes,1,opt,name=nick,proto3,oneof" json:"nick,omitempty"`
@@ -11084,7 +11084,7 @@ func (x *GuildMemberParams) GetCommunicationDisabledUntil() *core_v2.NullableTim
 	return nil
 }
 
-// discordgo/structs.go:2116; recursive ingress presence view.
+// discordgo/structs.go:2124; recursive ingress presence view.
 type PartialGuildMemberParams struct {
 	state     protoimpl.MessageState                                  `protogen:"open.v1"`
 	Nick      *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=nick,proto3" json:"nick,omitempty"`
@@ -11170,7 +11170,7 @@ func (x *PartialGuildMemberParams) GetCommunicationDisabledUntil() *core_v2.Null
 	return nil
 }
 
-// discordgo/structs.go:1131; safe domain snapshot/request.
+// discordgo/structs.go:1139; safe domain snapshot/request.
 type GuildOnboarding struct {
 	state             protoimpl.MessageState           `protogen:"open.v1"`
 	GuildId           *string                          `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3,oneof" json:"guild_id,omitempty"`
@@ -11248,7 +11248,7 @@ func (x *GuildOnboarding) GetMode() int64 {
 	return 0
 }
 
-// discordgo/structs.go:1131; recursive ingress presence view.
+// discordgo/structs.go:1139; recursive ingress presence view.
 type PartialGuildOnboarding struct {
 	state             protoimpl.MessageState                                              `protogen:"open.v1"`
 	GuildId           *core_v2.NullableString                                             `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3" json:"guild_id,omitempty"`
@@ -11326,7 +11326,7 @@ func (x *PartialGuildOnboarding) GetMode() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:1160; safe domain snapshot/request.
+// discordgo/structs.go:1168; safe domain snapshot/request.
 type GuildOnboardingPrompt struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -11420,7 +11420,7 @@ func (x *GuildOnboardingPrompt) GetInOnboarding() bool {
 	return false
 }
 
-// discordgo/structs.go:1160; recursive ingress presence view.
+// discordgo/structs.go:1168; recursive ingress presence view.
 type PartialGuildOnboardingPrompt struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Id    *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -11514,7 +11514,7 @@ func (x *PartialGuildOnboardingPrompt) GetInOnboarding() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:1188; safe domain snapshot/request.
+// discordgo/structs.go:1196; safe domain snapshot/request.
 type GuildOnboardingPromptOption struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -11623,7 +11623,7 @@ func (x *GuildOnboardingPromptOption) GetEmojiAnimated() bool {
 	return false
 }
 
-// discordgo/structs.go:1188; recursive ingress presence view.
+// discordgo/structs.go:1196; recursive ingress presence view.
 type PartialGuildOnboardingPromptOption struct {
 	state         protoimpl.MessageState                                  `protogen:"open.v1"`
 	Id            *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -11732,7 +11732,7 @@ func (x *PartialGuildOnboardingPromptOption) GetEmojiAnimated() *DomainNullableB
 	return nil
 }
 
-// discordgo/structs.go:1357; safe domain snapshot/request.
+// discordgo/structs.go:1365; safe domain snapshot/request.
 type GuildParams struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Name   *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -11935,7 +11935,7 @@ func (x *GuildParams) GetPremiumProgressBarEnabled() bool {
 	return false
 }
 
-// discordgo/structs.go:1357; recursive ingress presence view.
+// discordgo/structs.go:1365; recursive ingress presence view.
 type PartialGuildParams struct {
 	state  protoimpl.MessageState  `protogen:"open.v1"`
 	Name   *core_v2.NullableString `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -12138,7 +12138,7 @@ func (x *PartialGuildParams) GetPremiumProgressBarEnabled() *DomainNullableBool 
 	return nil
 }
 
-// discordgo/structs.go:931; safe domain snapshot/request.
+// discordgo/structs.go:939; safe domain snapshot/request.
 type GuildPreview struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Id              *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -12257,7 +12257,7 @@ func (x *GuildPreview) GetDescription() string {
 	return ""
 }
 
-// discordgo/structs.go:931; recursive ingress presence view.
+// discordgo/structs.go:939; recursive ingress presence view.
 type PartialGuildPreview struct {
 	state           protoimpl.MessageState                                  `protogen:"open.v1"`
 	Id              *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -12376,7 +12376,7 @@ func (x *PartialGuildPreview) GetDescription() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:1707; safe domain snapshot/request.
+// discordgo/structs.go:1715; safe domain snapshot/request.
 type GuildRole struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Role          *Role                  `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
@@ -12429,7 +12429,7 @@ func (x *GuildRole) GetGuildId() string {
 	return ""
 }
 
-// discordgo/structs.go:1707; recursive ingress presence view.
+// discordgo/structs.go:1715; recursive ingress presence view.
 type PartialGuildRole struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	Role          *DomainNullablePartialRole `protobuf:"bytes,1,opt,name=role,proto3" json:"role,omitempty"`
@@ -12482,7 +12482,7 @@ func (x *PartialGuildRole) GetGuildId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:976; safe domain snapshot/request.
+// discordgo/structs.go:984; safe domain snapshot/request.
 type GuildScheduledEvent struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Id          *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -12653,7 +12653,7 @@ func (x *GuildScheduledEvent) GetImage() string {
 	return ""
 }
 
-// discordgo/structs.go:976; recursive ingress presence view.
+// discordgo/structs.go:984; recursive ingress presence view.
 type PartialGuildScheduledEvent struct {
 	state       protoimpl.MessageState  `protogen:"open.v1"`
 	Id          *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -12824,7 +12824,7 @@ func (x *PartialGuildScheduledEvent) GetImage() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:1062; safe domain snapshot/request.
+// discordgo/structs.go:1070; safe domain snapshot/request.
 type GuildScheduledEventEntityMetadata struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Location      *string                `protobuf:"bytes,1,opt,name=location,proto3,oneof" json:"location,omitempty"`
@@ -12869,7 +12869,7 @@ func (x *GuildScheduledEventEntityMetadata) GetLocation() string {
 	return ""
 }
 
-// discordgo/structs.go:1062; recursive ingress presence view.
+// discordgo/structs.go:1070; recursive ingress presence view.
 type PartialGuildScheduledEventEntityMetadata struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Location      *core_v2.NullableString `protobuf:"bytes,1,opt,name=location,proto3" json:"location,omitempty"`
@@ -12914,7 +12914,7 @@ func (x *PartialGuildScheduledEventEntityMetadata) GetLocation() *core_v2.Nullab
 	return nil
 }
 
-// discordgo/structs.go:1017; safe domain snapshot/request.
+// discordgo/structs.go:1025; safe domain snapshot/request.
 type GuildScheduledEventParams struct {
 	state       protoimpl.MessageState  `protogen:"open.v1"`
 	ChannelId   *core_v2.NullableString `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
@@ -13036,7 +13036,7 @@ func (x *GuildScheduledEventParams) GetImage() string {
 	return ""
 }
 
-// discordgo/structs.go:1017; recursive ingress presence view.
+// discordgo/structs.go:1025; recursive ingress presence view.
 type PartialGuildScheduledEventParams struct {
 	state       protoimpl.MessageState  `protogen:"open.v1"`
 	ChannelId   *core_v2.NullableString `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
@@ -13158,7 +13158,7 @@ func (x *PartialGuildScheduledEventParams) GetImage() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:1111; safe domain snapshot/request.
+// discordgo/structs.go:1119; safe domain snapshot/request.
 type GuildScheduledEventUser struct {
 	state                 protoimpl.MessageState `protogen:"open.v1"`
 	GuildScheduledEventId *string                `protobuf:"bytes,1,opt,name=guild_scheduled_event_id,json=guildScheduledEventId,proto3,oneof" json:"guild_scheduled_event_id,omitempty"`
@@ -13219,7 +13219,7 @@ func (x *GuildScheduledEventUser) GetMember() *Member {
 	return nil
 }
 
-// discordgo/structs.go:1111; recursive ingress presence view.
+// discordgo/structs.go:1119; recursive ingress presence view.
 type PartialGuildScheduledEventUser struct {
 	state                 protoimpl.MessageState       `protogen:"open.v1"`
 	GuildScheduledEventId *core_v2.NullableString      `protobuf:"bytes,1,opt,name=guild_scheduled_event_id,json=guildScheduledEventId,proto3" json:"guild_scheduled_event_id,omitempty"`
@@ -13280,7 +13280,7 @@ func (x *PartialGuildScheduledEventUser) GetMember() *DomainNullablePartialMembe
 	return nil
 }
 
-// discordgo/structs.go:1221; safe domain snapshot/request.
+// discordgo/structs.go:1229; safe domain snapshot/request.
 type GuildTemplate struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Code        *string                `protobuf:"bytes,1,opt,name=code,proto3,oneof" json:"code,omitempty"`
@@ -13408,7 +13408,7 @@ func (x *GuildTemplate) GetIsDirty() bool {
 	return false
 }
 
-// discordgo/structs.go:1221; recursive ingress presence view.
+// discordgo/structs.go:1229; recursive ingress presence view.
 type PartialGuildTemplate struct {
 	state       protoimpl.MessageState  `protogen:"open.v1"`
 	Code        *core_v2.NullableString `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`
@@ -13536,7 +13536,7 @@ func (x *PartialGuildTemplate) GetIsDirty() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:1257; safe domain snapshot/request.
+// discordgo/structs.go:1265; safe domain snapshot/request.
 type GuildTemplateParams struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -13589,7 +13589,7 @@ func (x *GuildTemplateParams) GetDescription() string {
 	return ""
 }
 
-// discordgo/structs.go:1257; recursive ingress presence view.
+// discordgo/structs.go:1265; recursive ingress presence view.
 type PartialGuildTemplateParams struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Name          *core_v2.NullableString `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -13642,7 +13642,7 @@ func (x *PartialGuildTemplateParams) GetDescription() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2325; safe domain snapshot/request.
+// discordgo/structs.go:2333; safe domain snapshot/request.
 type IdentifyProperties struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Os              *string                `protobuf:"bytes,1,opt,name=os,proto3,oneof" json:"os,omitempty"`
@@ -13719,7 +13719,7 @@ func (x *IdentifyProperties) GetReferringDomain() string {
 	return ""
 }
 
-// discordgo/structs.go:2325; recursive ingress presence view.
+// discordgo/structs.go:2333; recursive ingress presence view.
 type PartialIdentifyProperties struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
 	Os              *core_v2.NullableString `protobuf:"bytes,1,opt,name=os,proto3" json:"os,omitempty"`
@@ -13796,7 +13796,7 @@ func (x *PartialIdentifyProperties) GetReferringDomain() *core_v2.NullableString
 	return nil
 }
 
-// discordgo/structs.go:229; safe domain snapshot/request.
+// discordgo/structs.go:237; safe domain snapshot/request.
 type Integration struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
 	Id              *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -13932,7 +13932,7 @@ func (x *Integration) GetSyncedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-// discordgo/structs.go:229; recursive ingress presence view.
+// discordgo/structs.go:237; recursive ingress presence view.
 type PartialIntegration struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
 	Id              *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -14068,7 +14068,7 @@ func (x *PartialIntegration) GetSyncedAt() *core_v2.NullableTimestamp {
 	return nil
 }
 
-// discordgo/structs.go:256; safe domain snapshot/request.
+// discordgo/structs.go:264; safe domain snapshot/request.
 type IntegrationAccount struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -14121,7 +14121,7 @@ func (x *IntegrationAccount) GetName() string {
 	return ""
 }
 
-// discordgo/structs.go:256; recursive ingress presence view.
+// discordgo/structs.go:264; recursive ingress presence view.
 type PartialIntegrationAccount struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Id            *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -14908,7 +14908,7 @@ func (x *PartialInteractionResponseData) GetTitle() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:282; safe domain snapshot/request.
+// discordgo/structs.go:290; safe domain snapshot/request.
 type Invite struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	Guild   *Guild                 `protobuf:"bytes,1,opt,name=guild,proto3" json:"guild,omitempty"`
@@ -15089,7 +15089,7 @@ func (x *Invite) GetExpiresAt() *timestamppb.Timestamp {
 	return nil
 }
 
-// discordgo/structs.go:282; recursive ingress presence view.
+// discordgo/structs.go:290; recursive ingress presence view.
 type PartialInvite struct {
 	state   protoimpl.MessageState        `protogen:"open.v1"`
 	Guild   *DomainNullablePartialGuild   `protobuf:"bytes,1,opt,name=guild,proto3" json:"guild,omitempty"`
@@ -15640,7 +15640,7 @@ func (x *PartialMediaGalleryItem) GetSpoiler() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:1561; safe domain snapshot/request.
+// discordgo/structs.go:1569; safe domain snapshot/request.
 type Member struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	GuildId *string                `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3,oneof" json:"guild_id,omitempty"`
@@ -15794,7 +15794,7 @@ func (x *Member) GetCommunicationDisabledUntil() *timestamppb.Timestamp {
 	return nil
 }
 
-// discordgo/structs.go:1561; recursive ingress presence view.
+// discordgo/structs.go:1569; recursive ingress presence view.
 type PartialMember struct {
 	state   protoimpl.MessageState  `protogen:"open.v1"`
 	GuildId *core_v2.NullableString `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3" json:"guild_id,omitempty"`
@@ -16526,7 +16526,7 @@ func (x *PartialMessage) GetPoll() *DomainNullablePartialPoll {
 	return nil
 }
 
-// discordgo/message.go:467; safe domain snapshot/request.
+// discordgo/message.go:472; safe domain snapshot/request.
 type MessageActivity struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source MessageActivityType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -16580,7 +16580,7 @@ func (x *MessageActivity) GetPartyId() string {
 	return ""
 }
 
-// discordgo/message.go:467; recursive ingress presence view.
+// discordgo/message.go:472; recursive ingress presence view.
 type PartialMessageActivity struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source MessageActivityType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -16634,7 +16634,7 @@ func (x *PartialMessageActivity) GetPartyId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/message.go:334; safe domain snapshot/request.
+// discordgo/message.go:339; safe domain snapshot/request.
 type MessageAllowedMentions struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Parse         *DomainStringList      `protobuf:"bytes,1,opt,name=parse,proto3" json:"parse,omitempty"`
@@ -16703,7 +16703,7 @@ func (x *MessageAllowedMentions) GetRepliedUser() bool {
 	return false
 }
 
-// discordgo/message.go:334; recursive ingress presence view.
+// discordgo/message.go:339; recursive ingress presence view.
 type PartialMessageAllowedMentions struct {
 	state         protoimpl.MessageState                                  `protogen:"open.v1"`
 	Parse         *DomainNullableDomainFlexmoduleCoreV2NullableStringList `protobuf:"bytes,1,opt,name=parse,proto3" json:"parse,omitempty"`
@@ -16772,7 +16772,7 @@ func (x *PartialMessageAllowedMentions) GetRepliedUser() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/message.go:484; safe domain snapshot/request.
+// discordgo/message.go:489; safe domain snapshot/request.
 type MessageApplication struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -16849,7 +16849,7 @@ func (x *MessageApplication) GetName() string {
 	return ""
 }
 
-// discordgo/message.go:484; recursive ingress presence view.
+// discordgo/message.go:489; recursive ingress presence view.
 type PartialMessageApplication struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Id            *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -16926,7 +16926,7 @@ func (x *PartialMessageApplication) GetName() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/message.go:354; safe domain snapshot/request.
+// discordgo/message.go:359; safe domain snapshot/request.
 type MessageAttachment struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Id          *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -17064,7 +17064,7 @@ func (x *MessageAttachment) GetFlags() uint64 {
 	return 0
 }
 
-// discordgo/message.go:354; recursive ingress presence view.
+// discordgo/message.go:359; recursive ingress presence view.
 type PartialMessageAttachment struct {
 	state       protoimpl.MessageState  `protogen:"open.v1"`
 	Id          *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -17342,7 +17342,7 @@ func (x *PartialMessageComponentInteractionData) GetValues() *DomainNullableDoma
 	return nil
 }
 
-// discordgo/message.go:266; safe domain snapshot/request.
+// discordgo/message.go:271; safe domain snapshot/request.
 type MessageEdit struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
 	Id              string                  `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -17452,7 +17452,7 @@ func (x *MessageEdit) GetAttachments() *AttachmentEditList {
 	return nil
 }
 
-// discordgo/message.go:266; recursive ingress presence view.
+// discordgo/message.go:271; recursive ingress presence view.
 type PartialMessageEdit struct {
 	state           protoimpl.MessageState                                         `protogen:"open.v1"`
 	Id              *core_v2.NullableString                                        `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -17562,7 +17562,7 @@ func (x *PartialMessageEdit) GetAttachments() *DomainNullableAttachmentEditList 
 	return nil
 }
 
-// discordgo/message.go:429; safe domain snapshot/request.
+// discordgo/message.go:434; safe domain snapshot/request.
 type MessageEmbed struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Url   *string                `protobuf:"bytes,1,opt,name=url,proto3,oneof" json:"url,omitempty"`
@@ -17705,7 +17705,7 @@ func (x *MessageEmbed) GetFields() *DomainMessageEmbedFieldList {
 	return nil
 }
 
-// discordgo/message.go:429; recursive ingress presence view.
+// discordgo/message.go:434; recursive ingress presence view.
 type PartialMessageEmbed struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Url   *core_v2.NullableString `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
@@ -17848,7 +17848,7 @@ func (x *PartialMessageEmbed) GetFields() *DomainNullableDomainDomainNullablePar
 	return nil
 }
 
-// discordgo/message.go:414; safe domain snapshot/request.
+// discordgo/message.go:419; safe domain snapshot/request.
 type MessageEmbedAuthor struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Url           *string                `protobuf:"bytes,1,opt,name=url,proto3,oneof" json:"url,omitempty"`
@@ -17917,7 +17917,7 @@ func (x *MessageEmbedAuthor) GetProxyIconUrl() string {
 	return ""
 }
 
-// discordgo/message.go:414; recursive ingress presence view.
+// discordgo/message.go:419; recursive ingress presence view.
 type PartialMessageEmbedAuthor struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Url           *core_v2.NullableString `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
@@ -17986,7 +17986,7 @@ func (x *PartialMessageEmbedAuthor) GetProxyIconUrl() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/message.go:422; safe domain snapshot/request.
+// discordgo/message.go:427; safe domain snapshot/request.
 type MessageEmbedField struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -18047,7 +18047,7 @@ func (x *MessageEmbedField) GetInline() bool {
 	return false
 }
 
-// discordgo/message.go:422; recursive ingress presence view.
+// discordgo/message.go:427; recursive ingress presence view.
 type PartialMessageEmbedField struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Name          *core_v2.NullableString `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -18108,7 +18108,7 @@ func (x *PartialMessageEmbedField) GetInline() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/message.go:378; safe domain snapshot/request.
+// discordgo/message.go:383; safe domain snapshot/request.
 type MessageEmbedFooter struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Text          *string                `protobuf:"bytes,1,opt,name=text,proto3,oneof" json:"text,omitempty"`
@@ -18169,7 +18169,7 @@ func (x *MessageEmbedFooter) GetProxyIconUrl() string {
 	return ""
 }
 
-// discordgo/message.go:378; recursive ingress presence view.
+// discordgo/message.go:383; recursive ingress presence view.
 type PartialMessageEmbedFooter struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Text          *core_v2.NullableString `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
@@ -18230,7 +18230,7 @@ func (x *PartialMessageEmbedFooter) GetProxyIconUrl() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/message.go:385; safe domain snapshot/request.
+// discordgo/message.go:390; safe domain snapshot/request.
 type MessageEmbedImage struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	Url      *string                `protobuf:"bytes,1,opt,name=url,proto3,oneof" json:"url,omitempty"`
@@ -18301,7 +18301,7 @@ func (x *MessageEmbedImage) GetHeight() int64 {
 	return 0
 }
 
-// discordgo/message.go:385; recursive ingress presence view.
+// discordgo/message.go:390; recursive ingress presence view.
 type PartialMessageEmbedImage struct {
 	state    protoimpl.MessageState  `protogen:"open.v1"`
 	Url      *core_v2.NullableString `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
@@ -18372,7 +18372,7 @@ func (x *PartialMessageEmbedImage) GetHeight() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/message.go:408; safe domain snapshot/request.
+// discordgo/message.go:413; safe domain snapshot/request.
 type MessageEmbedProvider struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Url           *string                `protobuf:"bytes,1,opt,name=url,proto3,oneof" json:"url,omitempty"`
@@ -18425,7 +18425,7 @@ func (x *MessageEmbedProvider) GetName() string {
 	return ""
 }
 
-// discordgo/message.go:408; recursive ingress presence view.
+// discordgo/message.go:413; recursive ingress presence view.
 type PartialMessageEmbedProvider struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Url           *core_v2.NullableString `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
@@ -18478,7 +18478,7 @@ func (x *PartialMessageEmbedProvider) GetName() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/message.go:393; safe domain snapshot/request.
+// discordgo/message.go:398; safe domain snapshot/request.
 type MessageEmbedThumbnail struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	Url      *string                `protobuf:"bytes,1,opt,name=url,proto3,oneof" json:"url,omitempty"`
@@ -18549,7 +18549,7 @@ func (x *MessageEmbedThumbnail) GetHeight() int64 {
 	return 0
 }
 
-// discordgo/message.go:393; recursive ingress presence view.
+// discordgo/message.go:398; recursive ingress presence view.
 type PartialMessageEmbedThumbnail struct {
 	state    protoimpl.MessageState  `protogen:"open.v1"`
 	Url      *core_v2.NullableString `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
@@ -18620,7 +18620,7 @@ func (x *PartialMessageEmbedThumbnail) GetHeight() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/message.go:401; safe domain snapshot/request.
+// discordgo/message.go:406; safe domain snapshot/request.
 type MessageEmbedVideo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Url   *string                `protobuf:"bytes,1,opt,name=url,proto3,oneof" json:"url,omitempty"`
@@ -18683,7 +18683,7 @@ func (x *MessageEmbedVideo) GetHeight() int64 {
 	return 0
 }
 
-// discordgo/message.go:401; recursive ingress presence view.
+// discordgo/message.go:406; recursive ingress presence view.
 type PartialMessageEmbedVideo struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Url   *core_v2.NullableString `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`
@@ -18746,7 +18746,7 @@ func (x *PartialMessageEmbedVideo) GetHeight() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/message.go:609; safe domain snapshot/request.
+// discordgo/message.go:614; safe domain snapshot/request.
 type MessageInteraction struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -18824,7 +18824,7 @@ func (x *MessageInteraction) GetMember() *Member {
 	return nil
 }
 
-// discordgo/message.go:609; recursive ingress presence view.
+// discordgo/message.go:614; recursive ingress presence view.
 type PartialMessageInteraction struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Id    *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -18902,7 +18902,7 @@ func (x *PartialMessageInteraction) GetMember() *DomainNullablePartialMember {
 	return nil
 }
 
-// discordgo/message.go:620; safe domain snapshot/request.
+// discordgo/message.go:625; safe domain snapshot/request.
 type MessageInteractionMetadata struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -18996,7 +18996,7 @@ func (x *MessageInteractionMetadata) GetTriggeringInteractionMetadata() *Message
 	return nil
 }
 
-// discordgo/message.go:620; recursive ingress presence view.
+// discordgo/message.go:625; recursive ingress presence view.
 type PartialMessageInteractionMetadata struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Id    *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -19090,7 +19090,7 @@ func (x *PartialMessageInteractionMetadata) GetTriggeringInteractionMetadata() *
 	return nil
 }
 
-// discordgo/structs.go:2625; safe domain snapshot/request.
+// discordgo/structs.go:2633; safe domain snapshot/request.
 type MessagePin struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// UTC protobuf Timestamp, validate seconds/nanos; zero time never replaced with now.
@@ -19144,7 +19144,7 @@ func (x *MessagePin) GetMessage() *Message {
 	return nil
 }
 
-// discordgo/structs.go:2625; recursive ingress presence view.
+// discordgo/structs.go:2633; recursive ingress presence view.
 type PartialMessagePin struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// UTC protobuf Timestamp, validate seconds/nanos; zero time never replaced with now.
@@ -19198,7 +19198,7 @@ func (x *PartialMessagePin) GetMessage() *DomainNullablePartialMessage {
 	return nil
 }
 
-// discordgo/structs.go:2192; safe domain snapshot/request.
+// discordgo/structs.go:2200; safe domain snapshot/request.
 type MessageReaction struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        *string                `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`
@@ -19275,7 +19275,7 @@ func (x *MessageReaction) GetGuildId() string {
 	return ""
 }
 
-// discordgo/structs.go:2192; recursive ingress presence view.
+// discordgo/structs.go:2200; recursive ingress presence view.
 type PartialMessageReaction struct {
 	state         protoimpl.MessageState      `protogen:"open.v1"`
 	UserId        *core_v2.NullableString     `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
@@ -19352,7 +19352,7 @@ func (x *PartialMessageReaction) GetGuildId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/message.go:460; safe domain snapshot/request.
+// discordgo/message.go:465; safe domain snapshot/request.
 type MessageReactions struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -19414,7 +19414,7 @@ func (x *MessageReactions) GetEmoji() *Emoji {
 	return nil
 }
 
-// discordgo/message.go:460; recursive ingress presence view.
+// discordgo/message.go:465; recursive ingress presence view.
 type PartialMessageReactions struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -19476,7 +19476,7 @@ func (x *PartialMessageReactions) GetEmoji() *DomainNullablePartialEmoji {
 	return nil
 }
 
-// discordgo/message.go:509; safe domain snapshot/request.
+// discordgo/message.go:514; safe domain snapshot/request.
 type MessageReference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source MessageReferenceType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -19554,7 +19554,7 @@ func (x *MessageReference) GetFailIfNotExists() bool {
 	return false
 }
 
-// discordgo/message.go:509; recursive ingress presence view.
+// discordgo/message.go:514; recursive ingress presence view.
 type PartialMessageReference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source MessageReferenceType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -19632,7 +19632,7 @@ func (x *PartialMessageReference) GetFailIfNotExists() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/message.go:245; safe domain snapshot/request.
+// discordgo/message.go:250; safe domain snapshot/request.
 type MessageSend struct {
 	state           protoimpl.MessageState  `protogen:"open.v1"`
 	Content         *string                 `protobuf:"bytes,1,opt,name=content,proto3,oneof" json:"content,omitempty"`
@@ -19750,7 +19750,7 @@ func (x *MessageSend) GetPoll() *Poll {
 	return nil
 }
 
-// discordgo/message.go:245; recursive ingress presence view.
+// discordgo/message.go:250; recursive ingress presence view.
 type PartialMessageSend struct {
 	state           protoimpl.MessageState                                         `protogen:"open.v1"`
 	Content         *core_v2.NullableString                                        `protobuf:"bytes,1,opt,name=content,proto3" json:"content,omitempty"`
@@ -19868,7 +19868,7 @@ func (x *PartialMessageSend) GetPoll() *DomainNullablePartialPoll {
 	return nil
 }
 
-// discordgo/message.go:494; safe domain snapshot/request.
+// discordgo/message.go:499; safe domain snapshot/request.
 type MessageSnapshot struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Message       *Message               `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
@@ -19913,7 +19913,7 @@ func (x *MessageSnapshot) GetMessage() *Message {
 	return nil
 }
 
-// discordgo/message.go:494; recursive ingress presence view.
+// discordgo/message.go:499; recursive ingress presence view.
 type PartialMessageSnapshot struct {
 	state         protoimpl.MessageState        `protogen:"open.v1"`
 	Message       *DomainNullablePartialMessage `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
@@ -20080,7 +20080,7 @@ func (x *PartialModalSubmitInteractionData) GetResolved() *DomainNullablePartial
 	return nil
 }
 
-// discordgo/structs.go:2284; safe domain snapshot/request.
+// discordgo/structs.go:2292; safe domain snapshot/request.
 type Party struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -20133,7 +20133,7 @@ func (x *Party) GetSize() *DomainSint64List {
 	return nil
 }
 
-// discordgo/structs.go:2284; recursive ingress presence view.
+// discordgo/structs.go:2292; recursive ingress presence view.
 type PartialParty struct {
 	state         protoimpl.MessageState                        `protogen:"open.v1"`
 	Id            *core_v2.NullableString                       `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -20186,7 +20186,7 @@ func (x *PartialParty) GetSize() *DomainNullableDomainDomainNullableSint64List {
 	return nil
 }
 
-// discordgo/structs.go:522; safe domain snapshot/request.
+// discordgo/structs.go:530; safe domain snapshot/request.
 type PermissionOverwrite struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -20258,7 +20258,7 @@ func (x *PermissionOverwrite) GetAllow() string {
 	return ""
 }
 
-// discordgo/structs.go:522; recursive ingress presence view.
+// discordgo/structs.go:530; recursive ingress presence view.
 type PartialPermissionOverwrite struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Id    *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -20330,7 +20330,7 @@ func (x *PartialPermissionOverwrite) GetAllow() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2411; safe domain snapshot/request.
+// discordgo/structs.go:2419; safe domain snapshot/request.
 type Poll struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Question         *PollMedia             `protobuf:"bytes,1,opt,name=question,proto3" json:"question,omitempty"`
@@ -20426,7 +20426,7 @@ func (x *Poll) GetExpiry() *timestamppb.Timestamp {
 	return nil
 }
 
-// discordgo/structs.go:2411; recursive ingress presence view.
+// discordgo/structs.go:2419; recursive ingress presence view.
 type PartialPoll struct {
 	state            protoimpl.MessageState                                   `protogen:"open.v1"`
 	Question         *DomainNullablePartialPollMedia                          `protobuf:"bytes,1,opt,name=question,proto3" json:"question,omitempty"`
@@ -20522,7 +20522,7 @@ func (x *PartialPoll) GetExpiry() *core_v2.NullableTimestamp {
 	return nil
 }
 
-// discordgo/structs.go:2391; safe domain snapshot/request.
+// discordgo/structs.go:2399; safe domain snapshot/request.
 type PollAnswer struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -20576,7 +20576,7 @@ func (x *PollAnswer) GetMedia() *PollMedia {
 	return nil
 }
 
-// discordgo/structs.go:2391; recursive ingress presence view.
+// discordgo/structs.go:2399; recursive ingress presence view.
 type PartialPollAnswer struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -20630,7 +20630,7 @@ func (x *PartialPollAnswer) GetMedia() *DomainNullablePartialPollMedia {
 	return nil
 }
 
-// discordgo/structs.go:2398; safe domain snapshot/request.
+// discordgo/structs.go:2406; safe domain snapshot/request.
 type PollAnswerCount struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -20693,7 +20693,7 @@ func (x *PollAnswerCount) GetMeVoted() bool {
 	return false
 }
 
-// discordgo/structs.go:2398; recursive ingress presence view.
+// discordgo/structs.go:2406; recursive ingress presence view.
 type PartialPollAnswerCount struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -20756,7 +20756,7 @@ func (x *PartialPollAnswerCount) GetMeVoted() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:2385; safe domain snapshot/request.
+// discordgo/structs.go:2393; safe domain snapshot/request.
 type PollMedia struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Text          *string                `protobuf:"bytes,1,opt,name=text,proto3,oneof" json:"text,omitempty"`
@@ -20809,7 +20809,7 @@ func (x *PollMedia) GetEmoji() *ComponentEmoji {
 	return nil
 }
 
-// discordgo/structs.go:2385; recursive ingress presence view.
+// discordgo/structs.go:2393; recursive ingress presence view.
 type PartialPollMedia struct {
 	state         protoimpl.MessageState               `protogen:"open.v1"`
 	Text          *core_v2.NullableString              `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
@@ -20862,7 +20862,7 @@ func (x *PartialPollMedia) GetEmoji() *DomainNullablePartialComponentEmoji {
 	return nil
 }
 
-// discordgo/structs.go:2405; safe domain snapshot/request.
+// discordgo/structs.go:2413; safe domain snapshot/request.
 type PollResults struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	Finalized     *bool                      `protobuf:"varint,1,opt,name=finalized,proto3,oneof" json:"finalized,omitempty"`
@@ -20915,7 +20915,7 @@ func (x *PollResults) GetAnswerCounts() *DomainPollAnswerCountList {
 	return nil
 }
 
-// discordgo/structs.go:2405; recursive ingress presence view.
+// discordgo/structs.go:2413; recursive ingress presence view.
 type PartialPollResults struct {
 	state         protoimpl.MessageState                                        `protogen:"open.v1"`
 	Finalized     *DomainNullableBool                                           `protobuf:"bytes,1,opt,name=finalized,proto3" json:"finalized,omitempty"`
@@ -20968,7 +20968,7 @@ func (x *PartialPollResults) GetAnswerCounts() *DomainNullableDomainDomainNullab
 	return nil
 }
 
-// discordgo/structs.go:1506; safe domain snapshot/request.
+// discordgo/structs.go:1514; safe domain snapshot/request.
 type Presence struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	User  *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
@@ -21047,7 +21047,7 @@ func (x *Presence) GetClientStatus() *ClientStatus {
 	return nil
 }
 
-// discordgo/structs.go:1506; recursive ingress presence view.
+// discordgo/structs.go:1514; recursive ingress presence view.
 type PartialPresence struct {
 	state protoimpl.MessageState     `protogen:"open.v1"`
 	User  *DomainNullablePartialUser `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
@@ -21126,7 +21126,7 @@ func (x *PartialPresence) GetClientStatus() *DomainNullablePartialClientStatus {
 	return nil
 }
 
-// discordgo/structs.go:1700; safe domain snapshot/request.
+// discordgo/structs.go:1708; safe domain snapshot/request.
 type ReadState struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -21188,7 +21188,7 @@ func (x *ReadState) GetId() string {
 	return ""
 }
 
-// discordgo/structs.go:1700; recursive ingress presence view.
+// discordgo/structs.go:1708; recursive ingress presence view.
 type PartialReadState struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -21250,7 +21250,7 @@ func (x *PartialReadState) GetId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:1381; safe domain snapshot/request.
+// discordgo/structs.go:1389; safe domain snapshot/request.
 type Role struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Id          *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -21379,7 +21379,7 @@ func (x *Role) GetFlags() uint64 {
 	return 0
 }
 
-// discordgo/structs.go:1381; recursive ingress presence view.
+// discordgo/structs.go:1389; recursive ingress presence view.
 type PartialRole struct {
 	state       protoimpl.MessageState  `protogen:"open.v1"`
 	Id          *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -21508,7 +21508,7 @@ func (x *PartialRole) GetFlags() *DomainNullableUint64 {
 	return nil
 }
 
-// discordgo/structs.go:1454; safe domain snapshot/request.
+// discordgo/structs.go:1462; safe domain snapshot/request.
 type RoleParams struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Name  *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -21603,7 +21603,7 @@ func (x *RoleParams) GetIcon() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:1454; recursive ingress presence view.
+// discordgo/structs.go:1462; recursive ingress presence view.
 type PartialRoleParams struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Name  *core_v2.NullableString `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -21698,7 +21698,7 @@ func (x *PartialRoleParams) GetIcon() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2454; safe domain snapshot/request.
+// discordgo/structs.go:2462; safe domain snapshot/request.
 type SKU struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -21785,7 +21785,7 @@ func (x *SKU) GetFlags() uint64 {
 	return 0
 }
 
-// discordgo/structs.go:2454; recursive ingress presence view.
+// discordgo/structs.go:2462; recursive ingress presence view.
 type PartialSKU struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Id    *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -21872,7 +21872,7 @@ func (x *PartialSKU) GetFlags() *DomainNullableUint64 {
 	return nil
 }
 
-// discordgo/structs.go:2291; safe domain snapshot/request.
+// discordgo/structs.go:2299; safe domain snapshot/request.
 type Secrets struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Join          *string                `protobuf:"bytes,1,opt,name=join,proto3,oneof" json:"join,omitempty"`
@@ -21933,7 +21933,7 @@ func (x *Secrets) GetMatch() string {
 	return ""
 }
 
-// discordgo/structs.go:2291; recursive ingress presence view.
+// discordgo/structs.go:2299; recursive ingress presence view.
 type PartialSecrets struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Join          *core_v2.NullableString `protobuf:"bytes,1,opt,name=join,proto3" json:"join,omitempty"`
@@ -22780,7 +22780,7 @@ func (x *PartialSeparator) GetSpacing() *DomainNullableUint64 {
 	return nil
 }
 
-// discordgo/structs.go:2208; safe domain snapshot/request.
+// discordgo/structs.go:2216; safe domain snapshot/request.
 type SessionInformation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -22853,7 +22853,7 @@ func (x *SessionInformation) GetMaxConcurrency() int64 {
 	return 0
 }
 
-// discordgo/structs.go:2208; recursive ingress presence view.
+// discordgo/structs.go:2216; recursive ingress presence view.
 type PartialSessionInformation struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -22926,7 +22926,7 @@ func (x *PartialSessionInformation) GetMaxConcurrency() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:2335; safe domain snapshot/request.
+// discordgo/structs.go:2343; safe domain snapshot/request.
 type StageInstance struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	Id        *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -23020,7 +23020,7 @@ func (x *StageInstance) GetGuildScheduledEventId() string {
 	return ""
 }
 
-// discordgo/structs.go:2335; recursive ingress presence view.
+// discordgo/structs.go:2343; recursive ingress presence view.
 type PartialStageInstance struct {
 	state     protoimpl.MessageState  `protogen:"open.v1"`
 	Id        *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -23114,7 +23114,7 @@ func (x *PartialStageInstance) GetGuildScheduledEventId() *core_v2.NullableStrin
 	return nil
 }
 
-// discordgo/structs.go:2354; safe domain snapshot/request.
+// discordgo/structs.go:2362; safe domain snapshot/request.
 type StageInstanceParams struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	ChannelId *string                `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3,oneof" json:"channel_id,omitempty"`
@@ -23184,7 +23184,7 @@ func (x *StageInstanceParams) GetSendStartNotification() bool {
 	return false
 }
 
-// discordgo/structs.go:2354; recursive ingress presence view.
+// discordgo/structs.go:2362; recursive ingress presence view.
 type PartialStageInstanceParams struct {
 	state     protoimpl.MessageState  `protogen:"open.v1"`
 	ChannelId *core_v2.NullableString `protobuf:"bytes,1,opt,name=channel_id,json=channelId,proto3" json:"channel_id,omitempty"`
@@ -23254,7 +23254,7 @@ func (x *PartialStageInstanceParams) GetSendStartNotification() *DomainNullableB
 	return nil
 }
 
-// discordgo/structs.go:678; safe domain snapshot/request.
+// discordgo/structs.go:686; safe domain snapshot/request.
 type Sticker struct {
 	state       protoimpl.MessageState `protogen:"open.v1"`
 	Id          *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -23382,7 +23382,7 @@ func (x *Sticker) GetSortValue() int64 {
 	return 0
 }
 
-// discordgo/structs.go:678; recursive ingress presence view.
+// discordgo/structs.go:686; recursive ingress presence view.
 type PartialSticker struct {
 	state       protoimpl.MessageState  `protogen:"open.v1"`
 	Id          *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -23510,7 +23510,7 @@ func (x *PartialSticker) GetSortValue() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:693; safe domain snapshot/request.
+// discordgo/structs.go:701; safe domain snapshot/request.
 type StickerItem struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -23572,7 +23572,7 @@ func (x *StickerItem) GetFormatType() int64 {
 	return 0
 }
 
-// discordgo/structs.go:693; recursive ingress presence view.
+// discordgo/structs.go:701; recursive ingress presence view.
 type PartialStickerItem struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Id    *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -23634,7 +23634,7 @@ func (x *PartialStickerItem) GetFormatType() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:700; safe domain snapshot/request.
+// discordgo/structs.go:708; safe domain snapshot/request.
 type StickerPack struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Id             *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -23727,7 +23727,7 @@ func (x *StickerPack) GetBannerAssetId() string {
 	return ""
 }
 
-// discordgo/structs.go:700; recursive ingress presence view.
+// discordgo/structs.go:708; recursive ingress presence view.
 type PartialStickerPack struct {
 	state          protoimpl.MessageState                                `protogen:"open.v1"`
 	Id             *core_v2.NullableString                               `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -23820,7 +23820,7 @@ func (x *PartialStickerPack) GetBannerAssetId() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:2477; safe domain snapshot/request.
+// discordgo/structs.go:2485; safe domain snapshot/request.
 type Subscription struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
 	Id             *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -23941,7 +23941,7 @@ func (x *Subscription) GetCountry() string {
 	return ""
 }
 
-// discordgo/structs.go:2477; recursive ingress presence view.
+// discordgo/structs.go:2485; recursive ingress presence view.
 type PartialSubscription struct {
 	state          protoimpl.MessageState                                  `protogen:"open.v1"`
 	Id             *core_v2.NullableString                                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -24688,7 +24688,7 @@ func (x *PartialTextInput) GetId() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:557; safe domain snapshot/request.
+// discordgo/structs.go:565; safe domain snapshot/request.
 type ThreadMember struct {
 	state  protoimpl.MessageState `protogen:"open.v1"`
 	Id     *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -24767,7 +24767,7 @@ func (x *ThreadMember) GetMember() *Member {
 	return nil
 }
 
-// discordgo/structs.go:557; recursive ingress presence view.
+// discordgo/structs.go:565; recursive ingress presence view.
 type PartialThreadMember struct {
 	state  protoimpl.MessageState  `protogen:"open.v1"`
 	Id     *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -24846,7 +24846,7 @@ func (x *PartialThreadMember) GetMember() *DomainNullablePartialMember {
 	return nil
 }
 
-// discordgo/structs.go:542; safe domain snapshot/request.
+// discordgo/structs.go:550; safe domain snapshot/request.
 type ThreadMetadata struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	Archived *bool                  `protobuf:"varint,1,opt,name=archived,proto3,oneof" json:"archived,omitempty"`
@@ -24925,7 +24925,7 @@ func (x *ThreadMetadata) GetInvitable() bool {
 	return false
 }
 
-// discordgo/structs.go:542; recursive ingress presence view.
+// discordgo/structs.go:550; recursive ingress presence view.
 type PartialThreadMetadata struct {
 	state    protoimpl.MessageState `protogen:"open.v1"`
 	Archived *DomainNullableBool    `protobuf:"bytes,1,opt,name=archived,proto3" json:"archived,omitempty"`
@@ -25004,7 +25004,7 @@ func (x *PartialThreadMetadata) GetInvitable() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:530; safe domain snapshot/request.
+// discordgo/structs.go:538; safe domain snapshot/request.
 type ThreadStart struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Name  *string                `protobuf:"bytes,1,opt,name=name,proto3,oneof" json:"name,omitempty"`
@@ -25092,7 +25092,7 @@ func (x *ThreadStart) GetAppliedTags() *DomainStringList {
 	return nil
 }
 
-// discordgo/structs.go:530; recursive ingress presence view.
+// discordgo/structs.go:538; recursive ingress presence view.
 type PartialThreadStart struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Name  *core_v2.NullableString `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -25180,7 +25180,7 @@ func (x *PartialThreadStart) GetAppliedTags() *DomainNullableDomainFlexmoduleCor
 	return nil
 }
 
-// discordgo/structs.go:573; safe domain snapshot/request.
+// discordgo/structs.go:581; safe domain snapshot/request.
 type ThreadsList struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Threads       *DomainChannelList      `protobuf:"bytes,1,opt,name=threads,proto3" json:"threads,omitempty"`
@@ -25241,7 +25241,7 @@ func (x *ThreadsList) GetHasMore() bool {
 	return false
 }
 
-// discordgo/structs.go:573; recursive ingress presence view.
+// discordgo/structs.go:581; recursive ingress presence view.
 type PartialThreadsList struct {
 	state         protoimpl.MessageState                                     `protogen:"open.v1"`
 	Threads       *DomainNullableDomainDomainNullablePartialChannelList      `protobuf:"bytes,1,opt,name=threads,proto3" json:"threads,omitempty"`
@@ -25442,7 +25442,7 @@ func (x *PartialThumbnail) GetSpoiler() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:1515; safe domain snapshot/request.
+// discordgo/structs.go:1523; safe domain snapshot/request.
 type TimeStamps struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Signed 64-bit Unix milliseconds, retain source unit.
@@ -25497,7 +25497,7 @@ func (x *TimeStamps) GetStartTimestamp() int64 {
 	return 0
 }
 
-// discordgo/structs.go:1515; recursive ingress presence view.
+// discordgo/structs.go:1523; recursive ingress presence view.
 type PartialTimeStamps struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Signed 64-bit Unix milliseconds, retain source unit.
@@ -25552,7 +25552,7 @@ func (x *PartialTimeStamps) GetStartTimestamp() *DomainNullableSint64 {
 	return nil
 }
 
-// discordgo/structs.go:1673; safe domain snapshot/request.
+// discordgo/structs.go:1681; safe domain snapshot/request.
 type TooManyRequests struct {
 	state   protoimpl.MessageState `protogen:"open.v1"`
 	Bucket  *string                `protobuf:"bytes,1,opt,name=bucket,proto3,oneof" json:"bucket,omitempty"`
@@ -25614,7 +25614,7 @@ func (x *TooManyRequests) GetRetryAfter() int64 {
 	return 0
 }
 
-// discordgo/structs.go:1673; recursive ingress presence view.
+// discordgo/structs.go:1681; recursive ingress presence view.
 type PartialTooManyRequests struct {
 	state   protoimpl.MessageState  `protogen:"open.v1"`
 	Bucket  *core_v2.NullableString `protobuf:"bytes,1,opt,name=bucket,proto3" json:"bucket,omitempty"`
@@ -25766,7 +25766,7 @@ func (x *PartialUnfurledMediaItem) GetUrl() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/wsapi.go:333; safe domain snapshot/request.
+// discordgo/wsapi.go:376; safe domain snapshot/request.
 type UpdateStatusData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -25836,7 +25836,7 @@ func (x *UpdateStatusData) GetStatus() string {
 	return ""
 }
 
-// discordgo/wsapi.go:333; recursive ingress presence view.
+// discordgo/wsapi.go:376; recursive ingress presence view.
 type PartialUpdateStatusData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -26260,7 +26260,7 @@ func (x *PartialUser) GetPrimaryGuild() *DomainNullablePartialUserPrimaryGuild {
 	return nil
 }
 
-// discordgo/structs.go:220; safe domain snapshot/request.
+// discordgo/structs.go:228; safe domain snapshot/request.
 type UserConnection struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -26337,7 +26337,7 @@ func (x *UserConnection) GetIntegrations() *DomainIntegrationList {
 	return nil
 }
 
-// discordgo/structs.go:220; recursive ingress presence view.
+// discordgo/structs.go:228; recursive ingress presence view.
 type PartialUserConnection struct {
 	state         protoimpl.MessageState                                    `protogen:"open.v1"`
 	Id            *core_v2.NullableString                                   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -26414,7 +26414,7 @@ func (x *PartialUserConnection) GetIntegrations() *DomainNullableDomainDomainNul
 	return nil
 }
 
-// discordgo/structs.go:1303; safe domain snapshot/request.
+// discordgo/structs.go:1311; safe domain snapshot/request.
 type UserGuild struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Id    *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -26518,7 +26518,7 @@ func (x *UserGuild) GetApproximatePresenceCount() int64 {
 	return 0
 }
 
-// discordgo/structs.go:1303; recursive ingress presence view.
+// discordgo/structs.go:1311; recursive ingress presence view.
 type PartialUserGuild struct {
 	state protoimpl.MessageState  `protogen:"open.v1"`
 	Id    *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -26760,7 +26760,7 @@ func (x *PartialUserPrimaryGuild) GetBadge() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/structs.go:263; safe domain snapshot/request.
+// discordgo/structs.go:271; safe domain snapshot/request.
 type VoiceRegion struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *string                `protobuf:"bytes,1,opt,name=id,proto3,oneof" json:"id,omitempty"`
@@ -26837,7 +26837,7 @@ func (x *VoiceRegion) GetCustom() bool {
 	return false
 }
 
-// discordgo/structs.go:263; recursive ingress presence view.
+// discordgo/structs.go:271; recursive ingress presence view.
 type PartialVoiceRegion struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Id            *core_v2.NullableString `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -26914,7 +26914,7 @@ func (x *PartialVoiceRegion) GetCustom() *DomainNullableBool {
 	return nil
 }
 
-// discordgo/structs.go:1489; safe domain snapshot/request.
+// discordgo/structs.go:1497; safe domain snapshot/request.
 type VoiceState struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
 	GuildId    *string                `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3,oneof" json:"guild_id,omitempty"`
@@ -27048,7 +27048,7 @@ func (x *VoiceState) GetRequestToSpeakTimestamp() *timestamppb.Timestamp {
 	return nil
 }
 
-// discordgo/structs.go:1489; recursive ingress presence view.
+// discordgo/structs.go:1497; recursive ingress presence view.
 type PartialVoiceState struct {
 	state      protoimpl.MessageState       `protogen:"open.v1"`
 	GuildId    *core_v2.NullableString      `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3" json:"guild_id,omitempty"`

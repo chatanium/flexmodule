@@ -6,6 +6,10 @@
     "event.go",
     "eventhandlers.go",
     "events.go",
+    "gateway_context.go",
+    "gateway_dispatch.go",
+    "gateway_ingress.go",
+    "gateway_payload.go",
     "interactions.go",
     "locales.go",
     "logging.go",
@@ -18,17 +22,25 @@
     "user.go",
     "util.go",
     "voice.go",
+    "voice_disabled.go",
+    "voice_gateway.go",
+    "voice_nocgo.go",
+    "voice_opus.go",
+    "voice_packet.go",
+    "voice_protocol.go",
+    "voice_transport.go",
+    "voice_udp.go",
     "webhook.go",
     "wsapi.go"
   ],
-  "count": 232,
+  "count": 240,
   "methods": [
     {
       "name": "AddHandler",
       "signature": "func (s *Session) AddHandler(handler interface{}) func()",
-      "source": "discordgo/event.go:120",
-      "endLine": 129,
-      "documentation": "// AddHandler allows you to add an event handler that will be fired anytime\n// the Discord WSAPI event that matches the function fires.\n// The first parameter is a *Session, and the second parameter is a pointer\n// to a struct corresponding to the event for which you want to listen.\n//\n// eg:\n//     Session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {\n//     })\n//\n// or:\n//     Session.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {\n//     })\n//\n// List of events can be found at this page, with corresponding names in the\n// library for each event: https://discord.com/developers/docs/topics/gateway#event-names\n// There are also synthetic events fired by the library internally which are\n// available for handling, like Connect, Disconnect, and RateLimit.\n// events.go contains all of the Discord WSAPI and synthetic events that can be handled.\n//\n// The return value of this method is a function, that when called will remove the\n// event handler.",
+      "source": "discordgo/event.go:122",
+      "endLine": 131,
+      "documentation": "// AddHandler allows you to add an event handler that will be fired anytime\n// the Discord WSAPI event that matches the function fires.\n// The first parameter is a *Session, and the second parameter is a pointer\n// to a struct corresponding to the event for which you want to listen.\n//\n// eg:\n//\n//\tSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {\n//\t})\n//\n// or:\n//\n//\tSession.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {\n//\t})\n//\n// List of events can be found at this page, with corresponding names in the\n// library for each event: https://discord.com/developers/docs/topics/gateway#event-names\n// There are also synthetic events fired by the library internally which are\n// available for handling, like Connect, Disconnect, and RateLimit.\n// events.go contains all of the Discord WSAPI and synthetic events that can be handled.\n//\n// The return value of this method is a function, that when called will remove the\n// event handler.",
       "body": "\n\teh := handlerForInterface(handler)\n\n\tif eh == nil {\n\t\ts.log(LogError, \"Invalid handler type, handler will never be called\")\n\t\treturn func() {}\n\t}\n\n\treturn s.addEventHandler(eh)\n",
       "arguments": [
         {
@@ -53,8 +65,8 @@
     {
       "name": "AddHandlerOnce",
       "signature": "func (s *Session) AddHandlerOnce(handler interface{}) func()",
-      "source": "discordgo/event.go:134",
-      "endLine": 143,
+      "source": "discordgo/event.go:136",
+      "endLine": 145,
       "documentation": "// AddHandlerOnce allows you to add an event handler that will be fired the next time\n// the Discord WSAPI event that matches the function fires.\n// See AddHandler for more details.",
       "body": "\n\teh := handlerForInterface(handler)\n\n\tif eh == nil {\n\t\ts.log(LogError, \"Invalid handler type, handler will never be called\")\n\t\treturn func() {}\n\t}\n\n\treturn s.addEventHandlerOnce(eh)\n",
       "arguments": [
@@ -3604,15 +3616,24 @@
       ]
     },
     {
-      "name": "ChannelVoiceJoin",
-      "signature": "func (s *Session) ChannelVoiceJoin(gID, cID string, mute, deaf bool) (voice *VoiceConnection, err error)",
-      "source": "discordgo/wsapi.go:721",
-      "endLine": 758,
-      "documentation": "// ChannelVoiceJoin joins the session user to a voice channel.\n//\n//    gID     : Guild ID of the channel to join.\n//    cID     : Channel ID of the channel to join.\n//    mute    : If true, you will be set to muted upon joining.\n//    deaf    : If true, you will be set to deafened upon joining.",
-      "body": "\n\n\ts.log(LogInformational, \"called\")\n\n\ts.RLock()\n\tvoice, _ = s.VoiceConnections[gID]\n\ts.RUnlock()\n\n\tif voice == nil {\n\t\tvoice = &VoiceConnection{}\n\t\ts.Lock()\n\t\ts.VoiceConnections[gID] = voice\n\t\ts.Unlock()\n\t}\n\n\tvoice.Lock()\n\tvoice.GuildID = gID\n\tvoice.ChannelID = cID\n\tvoice.deaf = deaf\n\tvoice.mute = mute\n\tvoice.session = s\n\tvoice.Unlock()\n\n\terr = s.ChannelVoiceJoinManual(gID, cID, mute, deaf)\n\tif err != nil {\n\t\treturn\n\t}\n\n\t// doesn't exactly work perfect yet.. TODO\n\terr = voice.waitUntilConnected()\n\tif err != nil {\n\t\ts.log(LogWarning, \"error waiting for voice to connect, %s\", err)\n\t\tvoice.Close()\n\t\treturn\n\t}\n\n\treturn\n",
+      "name": "ChannelVoiceJoinContext",
+      "signature": "func (s *Session) ChannelVoiceJoinContext(ctx context.Context, guildID, channelID string, mute, deaf bool, config VoiceConfig) (*VoiceConnection, error)",
+      "source": "discordgo/voice.go:118",
+      "endLine": 174,
+      "documentation": "// ChannelVoiceJoinContext reserves a fresh connection. It never reuses or moves\n// another channel's connection, resumes a lost transport, or retries a frame.",
+      "body": "\n\tif !VoiceAvailable() {\n\t\treturn nil, ErrVoiceUnavailable\n\t}\n\tif err := config.Validate(); err != nil {\n\t\treturn nil, err\n\t}\n\tif guildID == \"\" || channelID == \"\" {\n\t\treturn nil, errors.New(\"guild and channel required\")\n\t}\n\tif err := ctx.Err(); err != nil {\n\t\treturn nil, err\n\t}\n\ts.RLock()\n\tstate := s.State\n\ts.RUnlock()\n\tif state == nil {\n\t\treturn nil, errors.New(\"voice requires main Gateway identity\")\n\t}\n\tstate.RLock()\n\tuser := state.User\n\tuserID := \"\"\n\tif user != nil {\n\t\tuserID = user.ID\n\t}\n\tstate.RUnlock()\n\tif userID == \"\" {\n\t\treturn nil, errors.New(\"voice requires authenticated bot identity\")\n\t}\n\tv := &VoiceConnection{session: s, config: config, GuildID: guildID, ChannelID: channelID, UserID: userID, mute: mute, deaf: deaf, credentials: make(chan struct{}, 1)}\n\ts.Lock()\n\tif s.VoiceConnections == nil {\n\t\ts.VoiceConnections = make(map[string]*VoiceConnection)\n\t}\n\tif s.VoiceConnections[guildID] != nil {\n\t\ts.Unlock()\n\t\treturn nil, errors.New(\"voice guild already reserved\")\n\t}\n\tengine, err := newVoiceEngine(v)\n\tif err != nil {\n\t\ts.Unlock()\n\t\treturn nil, err\n\t}\n\tv.engine = engine\n\ts.VoiceConnections[guildID] = v\n\ts.Unlock()\n\tjoinCtx, cancel := context.WithTimeout(ctx, config.HandshakeTimeout)\n\tdefer cancel()\n\terr = engine.run(joinCtx)\n\tif err != nil {\n\t\tcleanup, c := context.WithTimeout(context.Background(), config.CloseTimeout)\n\t\tdefer c()\n\t\tcleanupErr := v.DisconnectContext(cleanup)\n\t\treturn nil, errors.Join(err, cleanupErr)\n\t}\n\treturn v, nil\n",
       "arguments": [
         {
-          "name": "gID",
+          "name": "ctx",
+          "type": "context.Context",
+          "variadic": false,
+          "references": [],
+          "externalReferences": [
+            "context.Context"
+          ]
+        },
+        {
+          "name": "guildID",
           "type": "string",
           "variadic": false,
           "references": [
@@ -3621,7 +3642,7 @@
           "externalReferences": []
         },
         {
-          "name": "cID",
+          "name": "channelID",
           "type": "string",
           "variadic": false,
           "references": [
@@ -3646,11 +3667,20 @@
             "bool"
           ],
           "externalReferences": []
+        },
+        {
+          "name": "config",
+          "type": "VoiceConfig",
+          "variadic": false,
+          "references": [
+            "VoiceConfig"
+          ],
+          "externalReferences": []
         }
       ],
       "results": [
         {
-          "name": "voice",
+          "name": "",
           "type": "*VoiceConnection",
           "variadic": false,
           "references": [
@@ -3659,7 +3689,7 @@
           "externalReferences": []
         },
         {
-          "name": "err",
+          "name": "",
           "type": "error",
           "variadic": false,
           "references": [
@@ -3672,11 +3702,11 @@
     },
     {
       "name": "ChannelVoiceJoinManual",
-      "signature": "func (s *Session) ChannelVoiceJoinManual(gID, cID string, mute, deaf bool) (err error)",
-      "source": "discordgo/wsapi.go:768",
-      "endLine": 785,
-      "documentation": "// ChannelVoiceJoinManual initiates a voice session to a voice channel, but does not complete it.\n//\n// This should only be used when the VoiceServerUpdate will be intercepted and used elsewhere.\n//\n//    gID     : Guild ID of the channel to join.\n//    cID     : Channel ID of the channel to join, leave empty to disconnect.\n//    mute    : If true, you will be set to muted upon joining.\n//    deaf    : If true, you will be set to deafened upon joining.",
-      "body": "\n\n\ts.log(LogInformational, \"called\")\n\n\tvar channelID *string\n\tif cID == \"\" {\n\t\tchannelID = nil\n\t} else {\n\t\tchannelID = &cID\n\t}\n\n\t// Send the request to Discord that we want to join the voice channel\n\tdata := voiceChannelJoinOp{4, voiceChannelJoinData{&gID, channelID, mute, deaf}}\n\ts.wsMutex.Lock()\n\terr = s.wsConn.WriteJSON(data)\n\ts.wsMutex.Unlock()\n\treturn\n",
+      "signature": "func (s *Session) ChannelVoiceJoinManual(gID, cID string, mute, deaf bool) error",
+      "source": "discordgo/wsapi.go:712",
+      "endLine": 714,
+      "documentation": "// ChannelVoiceJoinManual initiates a voice session to a voice channel, but does not complete it.\n//\n// This should only be used when the VoiceServerUpdate will be intercepted and used elsewhere.\n//\n//\tgID     : Guild ID of the channel to join.\n//\tcID     : Channel ID of the channel to join, leave empty to disconnect.\n//\tmute    : If true, you will be set to muted upon joining.\n//\tdeaf    : If true, you will be set to deafened upon joining.",
+      "body": "\n\treturn s.ChannelVoiceJoinManualContext(context.Background(), gID, cID, mute, deaf)\n",
       "arguments": [
         {
           "name": "gID",
@@ -3717,7 +3747,74 @@
       ],
       "results": [
         {
-          "name": "err",
+          "name": "",
+          "type": "error",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "endpointExpressions": []
+    },
+    {
+      "name": "ChannelVoiceJoinManualContext",
+      "signature": "func (s *Session) ChannelVoiceJoinManualContext(ctx context.Context, gID, cID string, mute, deaf bool) error",
+      "source": "discordgo/gateway_context.go:210",
+      "endLine": 216,
+      "documentation": "// ChannelVoiceJoinManualContext sends the typed voice-state update on the\n// shared main Gateway, for a host-owned voice transport. Empty cID disconnects\n// with JSON null. It neither opens a voice socket nor retries the update.",
+      "body": "\n\tvar channelID *string\n\tif cID != \"\" {\n\t\tchannelID = &cID\n\t}\n\treturn s.gatewayWrite(ctx, nil, voiceChannelJoinOp{4, voiceChannelJoinData{&gID, channelID, mute, deaf}})\n",
+      "arguments": [
+        {
+          "name": "ctx",
+          "type": "context.Context",
+          "variadic": false,
+          "references": [],
+          "externalReferences": [
+            "context.Context"
+          ]
+        },
+        {
+          "name": "gID",
+          "type": "string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "cID",
+          "type": "string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "mute",
+          "type": "bool",
+          "variadic": false,
+          "references": [
+            "bool"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "deaf",
+          "type": "bool",
+          "variadic": false,
+          "references": [
+            "bool"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "results": [
+        {
+          "name": "",
           "type": "error",
           "variadic": false,
           "references": [
@@ -3783,9 +3880,9 @@
     {
       "name": "Close",
       "signature": "func (s *Session) Close() error",
-      "source": "discordgo/wsapi.go:953",
-      "endLine": 955,
-      "documentation": "// Close closes a websocket and stops all listening/heartbeat goroutines.\n// TODO: Add support for Voice WS/UDP",
+      "source": "discordgo/wsapi.go:802",
+      "endLine": 804,
+      "documentation": "// Close closes the main websocket and stops all voice generations.",
       "body": "\n\treturn s.CloseWithCode(websocket.CloseNormalClosure)\n",
       "arguments": [],
       "results": [
@@ -3803,11 +3900,11 @@
     },
     {
       "name": "CloseWithCode",
-      "signature": "func (s *Session) CloseWithCode(closeCode int) (err error)",
-      "source": "discordgo/wsapi.go:960",
-      "endLine": 1006,
-      "documentation": "// CloseWithCode closes a websocket using the provided closeCode and stops all\n// listening/heartbeat goroutines.\n// TODO: Add support for Voice WS/UDP connections",
-      "body": "\n\n\ts.log(LogInformational, \"called\")\n\ts.Lock()\n\n\ts.DataReady = false\n\n\tif s.listening != nil {\n\t\ts.log(LogInformational, \"closing listening channel\")\n\t\tclose(s.listening)\n\t\ts.listening = nil\n\t}\n\n\t// TODO: Close all active Voice Connections too\n\t// this should force stop any reconnecting voice channels too\n\n\tif s.wsConn != nil {\n\n\t\ts.log(LogInformational, \"sending close frame\")\n\t\t// To cleanly close a connection, a client should send a close\n\t\t// frame and wait for the server to close the connection.\n\t\ts.wsMutex.Lock()\n\t\terr := s.wsConn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(closeCode, \"\"))\n\t\ts.wsMutex.Unlock()\n\t\tif err != nil {\n\t\t\ts.log(LogInformational, \"error closing websocket, %s\", err)\n\t\t}\n\n\t\t// TODO: Wait for Discord to actually close the connection.\n\t\ttime.Sleep(1 * time.Second)\n\n\t\ts.log(LogInformational, \"closing gateway websocket\")\n\t\terr = s.wsConn.Close()\n\t\tif err != nil {\n\t\t\ts.log(LogInformational, \"error closing websocket, %s\", err)\n\t\t}\n\n\t\ts.wsConn = nil\n\t}\n\n\ts.Unlock()\n\n\ts.log(LogInformational, \"emit disconnect event\")\n\ts.handleEvent(disconnectEventType, &Disconnect{})\n\n\treturn\n",
+      "signature": "func (s *Session) CloseWithCode(closeCode int) error",
+      "source": "discordgo/wsapi.go:808",
+      "endLine": 841,
+      "documentation": "// CloseWithCode closes a websocket using the provided closeCode and stops all\n// listening/heartbeat goroutines.",
+      "body": "\n\ts.wsLifecycle.Lock()\n\ts.Lock()\n\ts.DataReady = false\n\tif s.listening != nil {\n\t\tclose(s.listening)\n\t\ts.listening = nil\n\t}\n\tconn := s.wsConn\n\ts.wsConn = nil\n\tvoices := make([]*VoiceConnection, 0, len(s.VoiceConnections))\n\tfor _, voice := range s.VoiceConnections {\n\t\tvoices = append(voices, voice)\n\t}\n\ts.Unlock()\n\tfor _, voice := range voices {\n\t\tvoice.engine.stop(ErrVoiceClosed)\n\t}\n\tvar err error\n\tif conn != nil {\n\t\t// Bound both gate acquisition and the close frame. A stuck writer is\n\t\t// interrupted by Close even if it used a background context.\n\t\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\t\terr = s.gatewayWriteFrame(ctx, conn, websocket.CloseMessage, websocket.FormatCloseMessage(closeCode, \"\"), nil)\n\t\tcancel()\n\t\tcloseErr := conn.Close()\n\t\tif err == nil {\n\t\t\terr = closeErr\n\t\t}\n\t}\n\ts.wsLifecycle.Unlock()\n\ts.handleEvent(disconnectEventType, &Disconnect{})\n\treturn err\n",
       "arguments": [
         {
           "name": "closeCode",
@@ -3821,7 +3918,56 @@
       ],
       "results": [
         {
-          "name": "err",
+          "name": "",
+          "type": "error",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "endpointExpressions": []
+    },
+    {
+      "name": "ConfigureGatewayIngress",
+      "signature": "func (s *Session) ConfigureGatewayIngress(frameMaxBytes, decodedMaxBytes int64, onFatal func(error)) error",
+      "source": "discordgo/gateway_ingress.go:31",
+      "endLine": 54,
+      "documentation": "// ConfigureGatewayIngress installs finite wire/decompressed byte bounds and a\n// host-only fatal callback before opening. It rejects an open or opening session\n// rather than waiting for its handshake. onFatal receives only ErrGatewayIngress\n// after the actual socket has been closed; invalid ingress never auto-reconnects.\n// Callbacks must be bounded and must not reconfigure, detach or open/close the\n// session recursively. SetDispatchObserver(nil) disables and joins both callback\n// kinds, so a host should cancel its lifetime before detaching during shutdown.",
+      "body": "\n\tmaxInt := int64(^uint(0) >> 1)\n\tif frameMaxBytes <= 0 || decodedMaxBytes <= 0 || frameMaxBytes >= maxInt || decodedMaxBytes >= maxInt {\n\t\treturn errors.New(\"Gateway ingress limits must be positive finite byte counts\")\n\t}\n\tif !s.wsLifecycle.tryLock() {\n\t\treturn ErrWSAlreadyOpen\n\t}\n\tdefer s.wsLifecycle.Unlock()\n\ts.Lock()\n\tif s.wsConn != nil {\n\t\ts.Unlock()\n\t\treturn ErrWSAlreadyOpen\n\t}\n\ts.gatewayFrameMaxBytes = frameMaxBytes\n\ts.gatewayDecodedMaxBytes = decodedMaxBytes\n\ts.gatewayFaulted = false\n\ts.Unlock()\n\ts.dispatchMu.Lock()\n\ts.gatewayFatal = onFatal\n\ts.gatewayCallbacksDetached = false\n\ts.dispatchMu.Unlock()\n\treturn nil\n",
+      "arguments": [
+        {
+          "name": "frameMaxBytes",
+          "type": "int64",
+          "variadic": false,
+          "references": [
+            "int64"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "decodedMaxBytes",
+          "type": "int64",
+          "variadic": false,
+          "references": [
+            "int64"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "onFatal",
+          "type": "func(error)",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "results": [
+        {
+          "name": "",
           "type": "error",
           "variadic": false,
           "references": [
@@ -4615,11 +4761,11 @@
     },
     {
       "name": "GatewayWriteStruct",
-      "signature": "func (s *Session) GatewayWriteStruct(data interface{}) (err error)",
-      "source": "discordgo/wsapi.go:528",
-      "endLine": 540,
+      "signature": "func (s *Session) GatewayWriteStruct(data interface{}) error",
+      "source": "discordgo/wsapi.go:542",
+      "endLine": 544,
       "documentation": "// GatewayWriteStruct allows for sending raw gateway structs over the gateway.",
-      "body": "\n\ts.RLock()\n\tdefer s.RUnlock()\n\tif s.wsConn == nil {\n\t\treturn ErrWSNotFound\n\t}\n\n\ts.wsMutex.Lock()\n\terr = s.wsConn.WriteJSON(data)\n\ts.wsMutex.Unlock()\n\n\treturn err\n",
+      "body": "\n\treturn s.gatewayWrite(context.Background(), nil, data)\n",
       "arguments": [
         {
           "name": "data",
@@ -4631,7 +4777,7 @@
       ],
       "results": [
         {
-          "name": "err",
+          "name": "",
           "type": "error",
           "variadic": false,
           "references": [
@@ -8993,10 +9139,10 @@
     {
       "name": "HeartbeatLatency",
       "signature": "func (s *Session) HeartbeatLatency() time.Duration",
-      "source": "discordgo/wsapi.go:278",
-      "endLine": 282,
+      "source": "discordgo/wsapi.go:311",
+      "endLine": 315,
       "documentation": "// HeartbeatLatency returns the latency between heartbeat acknowledgement and heartbeat send.",
-      "body": "\n\n\treturn s.LastHeartbeatAck.Sub(s.LastHeartbeatSent)\n\n",
+      "body": "\n\ts.RLock()\n\tdefer s.RUnlock()\n\treturn s.LastHeartbeatAck.Sub(s.LastHeartbeatSent)\n",
       "arguments": [],
       "results": [
         {
@@ -9987,14 +10133,45 @@
     {
       "name": "Open",
       "signature": "func (s *Session) Open() error",
-      "source": "discordgo/wsapi.go:50",
-      "endLine": 215,
+      "source": "discordgo/wsapi.go:47",
+      "endLine": 49,
       "documentation": "// Open creates a websocket connection to Discord.\n// See: https://discord.com/developers/docs/topics/gateway#connecting",
-      "body": "\n\ts.log(LogInformational, \"called\")\n\n\tvar err error\n\n\t// Prevent Open or other major Session functions from\n\t// being called while Open is still running.\n\ts.Lock()\n\tdefer s.Unlock()\n\n\t// If the websock is already open, bail out here.\n\tif s.wsConn != nil {\n\t\treturn ErrWSAlreadyOpen\n\t}\n\n\tsequence := atomic.LoadInt64(s.sequence)\n\n\tvar gateway string\n\t// Get the gateway to use for the Websocket connection\n\tif sequence != 0 && s.sessionID != \"\" && s.resumeGatewayURL != \"\" {\n\t\ts.log(LogDebug, \"using resume gateway %s\", s.resumeGatewayURL)\n\t\tgateway = s.resumeGatewayURL\n\t} else {\n\t\tif s.gateway == \"\" {\n\t\t\ts.gateway, err = s.Gateway()\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t}\n\n\t\tgateway = s.gateway\n\t}\n\n\t// Add the version and encoding to the URL\n\tgateway += \"?v=\" + APIVersion + \"&encoding=json\"\n\n\t// Connect to the Gateway\n\ts.log(LogInformational, \"connecting to gateway %s\", gateway)\n\theader := http.Header{}\n\theader.Add(\"accept-encoding\", \"zlib\")\n\ts.wsConn, _, err = s.Dialer.Dial(gateway, header)\n\tif err != nil {\n\t\ts.log(LogError, \"error connecting to gateway %s, %s\", s.gateway, err)\n\t\ts.gateway = \"\" // clear cached gateway\n\t\ts.wsConn = nil // Just to be safe.\n\t\treturn err\n\t}\n\n\ts.wsConn.SetCloseHandler(func(code int, text string) error {\n\t\treturn nil\n\t})\n\n\tdefer func() {\n\t\t// because of this, all code below must set err to the error\n\t\t// when exiting with an error :)  Maybe someone has a better\n\t\t// way :)\n\t\tif err != nil {\n\t\t\ts.wsConn.Close()\n\t\t\ts.wsConn = nil\n\t\t}\n\t}()\n\n\t// The first response from Discord should be an Op 10 (Hello) Packet.\n\t// When processed by onEvent the heartbeat goroutine will be started.\n\tmt, m, err := s.wsConn.ReadMessage()\n\tif err != nil {\n\t\treturn err\n\t}\n\te, err := s.onEvent(mt, m)\n\tif err != nil {\n\t\treturn err\n\t}\n\tif e.Operation != 10 {\n\t\terr = fmt.Errorf(\"expecting Op 10, got Op %d instead\", e.Operation)\n\t\treturn err\n\t}\n\ts.log(LogInformational, \"Op 10 Hello Packet received from Discord\")\n\ts.LastHeartbeatAck = time.Now().UTC()\n\tvar h helloOp\n\tif err = json.Unmarshal(e.RawData, &h); err != nil {\n\t\terr = fmt.Errorf(\"error unmarshalling helloOp, %s\", err)\n\t\treturn err\n\t}\n\n\t// Now we send either an Op 2 Identity if this is a brand new\n\t// connection or Op 6 Resume if we are resuming an existing connection.\n\tif s.sessionID == \"\" && sequence == 0 {\n\n\t\t// Send Op 2 Identity Packet\n\t\terr = s.identify()\n\t\tif err != nil {\n\t\t\terr = fmt.Errorf(\"error sending identify packet to gateway, %s, %s\", s.gateway, err)\n\t\t\treturn err\n\t\t}\n\n\t} else {\n\n\t\t// Send Op 6 Resume Packet\n\t\tp := resumePacket{}\n\t\tp.Op = 6\n\t\tp.Data.Token = s.Token\n\t\tp.Data.SessionID = s.sessionID\n\t\tp.Data.Sequence = sequence\n\n\t\ts.log(LogInformational, \"sending resume packet to gateway\")\n\t\ts.wsMutex.Lock()\n\t\terr = s.wsConn.WriteJSON(p)\n\t\ts.wsMutex.Unlock()\n\t\tif err != nil {\n\t\t\terr = fmt.Errorf(\"error sending gateway resume packet, %s, %s\", s.gateway, err)\n\t\t\treturn err\n\t\t}\n\n\t}\n\n\t// A basic state is a hard requirement for Voice.\n\t// We create it here so the below READY/RESUMED packet can populate\n\t// the state :)\n\t// XXX: Move to New() func?\n\tif s.State == nil {\n\t\tstate := NewState()\n\t\tstate.TrackChannels = false\n\t\tstate.TrackEmojis = false\n\t\tstate.TrackMembers = false\n\t\tstate.TrackRoles = false\n\t\tstate.TrackVoice = false\n\t\ts.State = state\n\t}\n\n\t// Now Discord should send us a READY or RESUMED packet.\n\tmt, m, err = s.wsConn.ReadMessage()\n\tif err != nil {\n\t\treturn err\n\t}\n\te, err = s.onEvent(mt, m)\n\tif err != nil {\n\t\treturn err\n\t}\n\tif e.Type != `READY` && e.Type != `RESUMED` {\n\t\t// This is not fatal, but it does not follow their API documentation.\n\t\ts.log(LogWarning, \"Expected READY/RESUMED, instead got:\\n%#v\\n\", e)\n\t}\n\ts.log(LogInformational, \"First Packet:\\n%#v\\n\", e)\n\n\ts.log(LogInformational, \"We are now connected to Discord, emitting connect event\")\n\ts.handleEvent(connectEventType, &Connect{})\n\n\t// A VoiceConnections map is a hard requirement for Voice.\n\t// XXX: can this be moved to when opening a voice connection?\n\tif s.VoiceConnections == nil {\n\t\ts.log(LogInformational, \"creating new VoiceConnections map\")\n\t\ts.VoiceConnections = make(map[string]*VoiceConnection)\n\t}\n\n\t// Create listening chan outside of listen, as it needs to happen inside the\n\t// mutex lock and needs to exist before calling heartbeat and listen\n\t// go rountines.\n\ts.listening = make(chan interface{})\n\n\t// Start sending heartbeats and reading messages from Discord.\n\tgo s.heartbeat(s.wsConn, s.listening, h.HeartbeatInterval)\n\tgo s.listen(s.wsConn, s.listening)\n\n\ts.log(LogInformational, \"exiting\")\n\treturn nil\n",
+      "body": "\n\treturn s.OpenContext(context.Background())\n",
       "arguments": [],
       "results": [
         {
           "name": "",
+          "type": "error",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "endpointExpressions": []
+    },
+    {
+      "name": "OpenContext",
+      "signature": "func (s *Session) OpenContext(ctx context.Context) (err error)",
+      "source": "discordgo/wsapi.go:54",
+      "endLine": 230,
+      "documentation": "// OpenContext establishes one main Gateway connection. Cancellation applies to\n// discovery, dialing and the complete Hello/Identify/Ready handshake, not to the\n// lifetime of a successfully opened session. No mutation is automatically resent.",
+      "body": "\n\tif err = s.wsLifecycle.lockContext(ctx); err != nil {\n\t\treturn err\n\t}\n\tdefer s.wsLifecycle.Unlock()\n\ts.RLock()\n\talreadyOpen := s.wsConn != nil\n\tframeMax, faulted := s.gatewayFrameMaxBytes, s.gatewayFaulted\n\tgateway, sessionID, resumeURL := s.gateway, s.sessionID, s.resumeGatewayURL\n\ts.RUnlock()\n\tif alreadyOpen {\n\t\treturn ErrWSAlreadyOpen\n\t}\n\tif faulted {\n\t\treturn ErrGatewayIngress\n\t}\n\tif frameMax <= 0 {\n\t\treturn errors.New(\"Gateway ingress limits are not configured\")\n\t}\n\tsequence := atomic.LoadInt64(s.sequence)\n\tif sequence != 0 && sessionID != \"\" && resumeURL != \"\" {\n\t\tgateway = resumeURL\n\t} else if gateway == \"\" {\n\t\tgateway, err = s.gatewayContext(ctx)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\ts.Lock()\n\t\ts.gateway = gateway\n\t\ts.Unlock()\n\t}\n\ttarget, err := gatewayURL(gateway)\n\tif err != nil {\n\t\treturn err\n\t}\n\theader := http.Header{}\n\theader.Add(\"accept-encoding\", \"zlib\")\n\tconn, response, err := s.Dialer.DialContext(ctx, target, header)\n\tif err != nil {\n\t\tif response != nil && response.Body != nil {\n\t\t\tresponse.Body.Close()\n\t\t}\n\t\ts.Lock()\n\t\ts.gateway = \"\"\n\t\ts.Unlock()\n\t\treturn err\n\t}\n\tconn.SetReadLimit(frameMax)\n\tconn.SetCloseHandler(func(int, string) error { return nil })\n\t// Gorilla's default ping handler writes a pong; route that writer through\n\t// the same gate as every explicit main Gateway write.\n\tconn.SetPingHandler(func(data string) error {\n\t\tpingCtx, cancel := context.WithTimeout(context.Background(), time.Second)\n\t\tdefer cancel()\n\t\treturn s.gatewayWriteFrame(pingCtx, conn, websocket.PongMessage, []byte(data), nil)\n\t})\n\tfinish := cancelGatewayIO(ctx, conn)\n\tdefer func() {\n\t\tfinish()\n\t\tif err != nil && !errors.Is(err, ErrGatewayIngress) {\n\t\t\terr = gatewayContextError(ctx, err)\n\t\t}\n\t\tif err != nil {\n\t\t\tif errors.Is(err, ErrGatewayIngress) {\n\t\t\t\ts.failGatewayIngress(conn)\n\t\t\t}\n\t\t\tconn.Close()\n\t\t\ts.Lock()\n\t\t\tif s.wsConn == conn {\n\t\t\t\ts.wsConn = nil\n\t\t\t}\n\t\t\ts.Unlock()\n\t\t}\n\t}()\n\tdeadline, _ := ctx.Deadline()\n\tif err = conn.SetReadDeadline(deadline); err != nil {\n\t\treturn err\n\t}\n\tmt, message, err := conn.ReadMessage()\n\tif err != nil {\n\t\treturn gatewayReadError(err)\n\t}\n\thello, err := s.decodeGatewayEvent(mt, message)\n\tif err != nil {\n\t\treturn err\n\t}\n\tif hello.Operation != 10 {\n\t\treturn ErrGatewayIngress\n\t}\n\tvar h helloOp\n\tif err = json.Unmarshal(hello.RawData, &h); err != nil {\n\t\treturn ErrGatewayIngress\n\t}\n\tif h.HeartbeatInterval <= 0 || h.HeartbeatInterval > time.Duration(1<<63-1)/time.Millisecond {\n\t\treturn ErrGatewayIngress\n\t}\n\ts.Lock()\n\ts.LastHeartbeatAck = time.Now().UTC()\n\t// A basic state/current user is also required by standalone voice users.\n\tif s.State == nil {\n\t\ts.State = NewState()\n\t\ts.State.TrackChannels = false\n\t\ts.State.TrackEmojis = false\n\t\ts.State.TrackMembers = false\n\t\ts.State.TrackRoles = false\n\t\ts.State.TrackVoice = false\n\t}\n\ts.Unlock()\n\tif sessionID == \"\" && sequence == 0 {\n\t\terr = s.identifyContext(ctx, conn)\n\t} else {\n\t\tp := resumePacket{}\n\t\tp.Op = 6\n\t\tp.Data.Token = s.Token\n\t\tp.Data.SessionID = sessionID\n\t\tp.Data.Sequence = sequence\n\t\terr = s.gatewayWrite(ctx, conn, p)\n\t}\n\tif err != nil {\n\t\treturn err\n\t}\n\t// Publish only after Identify/Resume has been sent. No session lock is\n\t// held across socket I/O or the ordered host observer.\n\ts.Lock()\n\ts.wsConn = conn\n\ts.Unlock()\n\tfor {\n\t\tmt, message, err = conn.ReadMessage()\n\t\tif err != nil {\n\t\t\treturn gatewayReadError(err)\n\t\t}\n\t\tevent, decodeErr := s.decodeGatewayEvent(mt, message)\n\t\tif decodeErr != nil {\n\t\t\treturn decodeErr\n\t\t}\n\t\tswitch event.Operation {\n\t\tcase 0:\n\t\t\tif _, err = s.onGatewayEvent(event); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\tcase 1:\n\t\t\tif err = s.gatewayWrite(ctx, conn, heartbeatOp{1, atomic.LoadInt64(s.sequence)}); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\tcase 11:\n\t\t\ts.Lock()\n\t\t\ts.LastHeartbeatAck = time.Now().UTC()\n\t\t\ts.Unlock()\n\t\tdefault:\n\t\t\t// Invalid sessions/reconnect requests during this attempt are\n\t\t\t// failures, not permission to resend Identify behind the caller.\n\t\t\treturn errors.New(\"Gateway handshake interrupted\")\n\t\t}\n\t\tif event.Operation == 0 && (event.Type == \"READY\" || event.Type == \"RESUMED\") {\n\t\t\tbreak\n\t\t}\n\t}\n\t// Join any racing cancellation before removing handshake deadlines.\n\tfinish()\n\tif err = ctx.Err(); err != nil {\n\t\treturn err\n\t}\n\tif err = conn.SetReadDeadline(time.Time{}); err != nil {\n\t\treturn err\n\t}\n\ts.Lock()\n\tif s.VoiceConnections == nil {\n\t\ts.VoiceConnections = make(map[string]*VoiceConnection)\n\t}\n\tlistening := make(chan interface{})\n\ts.listening = listening\n\ts.Unlock()\n\ts.handleEvent(connectEventType, &Connect{})\n\tgo s.heartbeat(conn, listening, h.HeartbeatInterval)\n\tgo s.listen(conn, listening)\n\treturn nil\n",
+      "arguments": [
+        {
+          "name": "ctx",
+          "type": "context.Context",
+          "variadic": false,
+          "references": [],
+          "externalReferences": [
+            "context.Context"
+          ]
+        }
+      ],
+      "results": [
+        {
+          "name": "err",
           "type": "error",
           "variadic": false,
           "references": [
@@ -10184,10 +10361,10 @@
     {
       "name": "RequestGuildMembers",
       "signature": "func (s *Session) RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error",
-      "source": "discordgo/wsapi.go:470",
-      "endLine": 472,
+      "source": "discordgo/wsapi.go:490",
+      "endLine": 492,
       "documentation": "// RequestGuildMembers requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Single Guild ID to request members of\n// query     : String that username starts with, leave empty to return all members\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members",
-      "body": "\n\treturn s.RequestGuildMembersBatch([]string{guildID}, query, limit, nonce, presences)\n",
+      "body": "\n\treturn s.RequestGuildMembersContext(context.Background(), guildID, query, limit, nonce, presences)\n",
       "arguments": [
         {
           "name": "guildID",
@@ -10250,11 +10427,11 @@
     },
     {
       "name": "RequestGuildMembersBatch",
-      "signature": "func (s *Session) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) (err error)",
-      "source": "discordgo/wsapi.go:494",
-      "endLine": 504,
+      "signature": "func (s *Session) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) error",
+      "source": "discordgo/wsapi.go:514",
+      "endLine": 521,
       "documentation": "// RequestGuildMembersBatch requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Slice of guild IDs to request members of\n// query     : String that username starts with, leave empty to return all members\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members\n//\n// NOTE: this function is deprecated, please use RequestGuildMembers instead",
-      "body": "\n\tdata := requestGuildMembersData{\n\t\tGuildIDs:  guildIDs,\n\t\tQuery:     &query,\n\t\tLimit:     limit,\n\t\tNonce:     nonce,\n\t\tPresences: presences,\n\t}\n\terr = s.requestGuildMembers(data)\n\treturn\n",
+      "body": "\n\tfor _, guildID := range guildIDs {\n\t\tif err := s.RequestGuildMembers(guildID, query, limit, nonce, presences); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n",
       "arguments": [
         {
           "name": "guildIDs",
@@ -10304,7 +10481,7 @@
       ],
       "results": [
         {
-          "name": "err",
+          "name": "",
           "type": "error",
           "variadic": false,
           "references": [
@@ -10317,11 +10494,11 @@
     },
     {
       "name": "RequestGuildMembersBatchList",
-      "signature": "func (s *Session) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) (err error)",
-      "source": "discordgo/wsapi.go:515",
-      "endLine": 525,
+      "signature": "func (s *Session) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) error",
+      "source": "discordgo/wsapi.go:532",
+      "endLine": 539,
       "documentation": "// RequestGuildMembersBatchList requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Slice of guild IDs to request members of\n// userIDs   : IDs of users to fetch\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members\n//\n// NOTE: this function is deprecated, please use RequestGuildMembersList instead",
-      "body": "\n\tdata := requestGuildMembersData{\n\t\tGuildIDs:  guildIDs,\n\t\tUserIDs:   &userIDs,\n\t\tLimit:     limit,\n\t\tNonce:     nonce,\n\t\tPresences: presences,\n\t}\n\terr = s.requestGuildMembers(data)\n\treturn\n",
+      "body": "\n\tfor _, guildID := range guildIDs {\n\t\tif err := s.RequestGuildMembersList(guildID, userIDs, limit, nonce, presences); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n",
       "arguments": [
         {
           "name": "guildIDs",
@@ -10371,7 +10548,83 @@
       ],
       "results": [
         {
-          "name": "err",
+          "name": "",
+          "type": "error",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "endpointExpressions": []
+    },
+    {
+      "name": "RequestGuildMembersContext",
+      "signature": "func (s *Session) RequestGuildMembersContext(ctx context.Context, guildID, query string, limit int, nonce string, presences bool) error",
+      "source": "discordgo/gateway_context.go:194",
+      "endLine": 196,
+      "documentation": "// RequestGuildMembersContext requests members of exactly one guild, with the\n// original query/limit/nonce semantics. It never retries the mutation.",
+      "body": "\n\treturn s.gatewayWrite(ctx, nil, requestGuildMembersOp{8, requestGuildMembersData{GuildID: guildID, Query: &query, Limit: limit, Nonce: nonce, Presences: presences}})\n",
+      "arguments": [
+        {
+          "name": "ctx",
+          "type": "context.Context",
+          "variadic": false,
+          "references": [],
+          "externalReferences": [
+            "context.Context"
+          ]
+        },
+        {
+          "name": "guildID",
+          "type": "string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "query",
+          "type": "string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "variadic": false,
+          "references": [
+            "int"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "nonce",
+          "type": "string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "presences",
+          "type": "bool",
+          "variadic": false,
+          "references": [
+            "bool"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "results": [
+        {
+          "name": "",
           "type": "error",
           "variadic": false,
           "references": [
@@ -10385,11 +10638,87 @@
     {
       "name": "RequestGuildMembersList",
       "signature": "func (s *Session) RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error",
-      "source": "discordgo/wsapi.go:481",
-      "endLine": 483,
+      "source": "discordgo/wsapi.go:501",
+      "endLine": 503,
       "documentation": "// RequestGuildMembersList requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Single Guild ID to request members of\n// userIDs   : IDs of users to fetch\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members",
-      "body": "\n\treturn s.RequestGuildMembersBatchList([]string{guildID}, userIDs, limit, nonce, presences)\n",
+      "body": "\n\treturn s.RequestGuildMembersListContext(context.Background(), guildID, userIDs, limit, nonce, presences)\n",
       "arguments": [
+        {
+          "name": "guildID",
+          "type": "string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "userIDs",
+          "type": "[]string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "variadic": false,
+          "references": [
+            "int"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "nonce",
+          "type": "string",
+          "variadic": false,
+          "references": [
+            "string"
+          ],
+          "externalReferences": []
+        },
+        {
+          "name": "presences",
+          "type": "bool",
+          "variadic": false,
+          "references": [
+            "bool"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "results": [
+        {
+          "name": "",
+          "type": "error",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "endpointExpressions": []
+    },
+    {
+      "name": "RequestGuildMembersListContext",
+      "signature": "func (s *Session) RequestGuildMembersListContext(ctx context.Context, guildID string, userIDs []string, limit int, nonce string, presences bool) error",
+      "source": "discordgo/gateway_context.go:200",
+      "endLine": 205,
+      "documentation": "// RequestGuildMembersListContext is the user-ID selector variant of the same\n// single-guild operation; an empty list remains a present list, not a query.",
+      "body": "\n\tif userIDs == nil {\n\t\tuserIDs = []string{}\n\t}\n\treturn s.gatewayWrite(ctx, nil, requestGuildMembersOp{8, requestGuildMembersData{GuildID: guildID, UserIDs: &userIDs, Limit: limit, Nonce: nonce, Presences: presences}})\n",
+      "arguments": [
+        {
+          "name": "ctx",
+          "type": "context.Context",
+          "variadic": false,
+          "references": [],
+          "externalReferences": [
+            "context.Context"
+          ]
+        },
         {
           "name": "guildID",
           "type": "string",
@@ -10623,7 +10952,7 @@
       "source": "discordgo/restapi.go:196",
       "endLine": 316,
       "documentation": "// RequestWithLockedBucket makes a request using a bucket that's already been locked",
-      "body": "\n\tif s.Debug {\n\t\tlog.Printf(\"API REQUEST %8s :: %s\\n\", method, urlStr)\n\t\tlog.Printf(\"API REQUEST  PAYLOAD :: [%s]\\n\", string(b))\n\t}\n\n\treq, err := http.NewRequest(method, urlStr, bytes.NewBuffer(b))\n\tif err != nil {\n\t\tbucket.Release(nil)\n\t\treturn\n\t}\n\n\t// Not used on initial login..\n\t// TODO: Verify if a login, otherwise complain about no-token\n\tif s.Token != \"\" {\n\t\treq.Header.Set(\"authorization\", s.Token)\n\t}\n\n\t// Discord's API returns a 400 Bad Request is Content-Type is set, but the\n\t// request body is empty.\n\tif b != nil {\n\t\treq.Header.Set(\"Content-Type\", contentType)\n\t}\n\n\t// TODO: Make a configurable static variable.\n\treq.Header.Set(\"User-Agent\", s.UserAgent)\n\n\tcfg := newRequestConfig(s, req)\n\tfor _, opt := range options {\n\t\topt(cfg)\n\t}\n\treq = cfg.Request\n\n\tif s.Debug {\n\t\tfor k, v := range req.Header {\n\t\t\tlog.Printf(\"API REQUEST   HEADER :: [%s] = %+v\\n\", k, v)\n\t\t}\n\t}\n\n\tresp, err := cfg.Client.Do(req)\n\tif err != nil {\n\t\tbucket.Release(nil)\n\t\treturn\n\t}\n\tdefer func() {\n\t\terr2 := resp.Body.Close()\n\t\tif s.Debug && err2 != nil {\n\t\t\tlog.Println(\"error closing resp body\")\n\t\t}\n\t}()\n\n\terr = bucket.Release(resp.Header)\n\tif err != nil {\n\t\treturn\n\t}\n\n\tresponse, err = ioutil.ReadAll(resp.Body)\n\tif err != nil {\n\t\treturn\n\t}\n\n\tif s.Debug {\n\n\t\tlog.Printf(\"API RESPONSE  STATUS :: %s\\n\", resp.Status)\n\t\tfor k, v := range resp.Header {\n\t\t\tlog.Printf(\"API RESPONSE  HEADER :: [%s] = %+v\\n\", k, v)\n\t\t}\n\t\tlog.Printf(\"API RESPONSE    BODY :: [%s]\\n\\n\\n\", response)\n\t}\n\n\tswitch resp.StatusCode {\n\tcase http.StatusOK:\n\tcase http.StatusCreated:\n\tcase http.StatusNoContent:\n\tcase http.StatusInternalServerError:\n\t\tfallthrough\n\tcase http.StatusServiceUnavailable:\n\t\tfallthrough\n\tcase http.StatusGatewayTimeout:\n\t\tfallthrough\n\tcase http.StatusBadGateway:\n\t\t// Retry sending request if possible\n\t\tif sequence < cfg.MaxRestRetries {\n\n\t\t\ts.log(LogInformational, \"%s Failed (%s), Retrying...\", urlStr, resp.Status)\n\t\t\tresponse, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence+1, options...)\n\t\t} else {\n\t\t\terr = fmt.Errorf(\"Exceeded Max retries HTTP %s, %s\", resp.Status, response)\n\t\t}\n\tcase http.StatusTooManyRequests:\n\t\trl := TooManyRequests{}\n\t\terr = Unmarshal(response, &rl)\n\t\tif err != nil {\n\t\t\ts.log(LogError, \"rate limit unmarshal error, %s\", err)\n\t\t\treturn\n\t\t}\n\n\t\tif cfg.ShouldRetryOnRateLimit {\n\t\t\ts.log(LogInformational, \"Rate Limiting %s, retry in %v\", urlStr, rl.RetryAfter)\n\t\t\ts.handleEvent(rateLimitEventType, &RateLimit{TooManyRequests: &rl, URL: urlStr})\n\n\t\t\ttime.Sleep(rl.RetryAfter)\n\t\t\t// we can make the above smarter\n\t\t\t// this method can cause longer delays than required\n\n\t\t\tresponse, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence, options...)\n\t\t} else {\n\t\t\terr = &RateLimitError{&RateLimit{TooManyRequests: &rl, URL: urlStr}}\n\t\t}\n\tcase http.StatusUnauthorized:\n\t\tif strings.Index(s.Token, \"Bot \") != 0 {\n\t\t\ts.log(LogInformational, ErrUnauthorized.Error())\n\t\t\terr = ErrUnauthorized\n\t\t}\n\t\tfallthrough\n\tdefault: // Error condition\n\t\terr = newRestError(req, resp, response)\n\t}\n\n\treturn\n",
+      "body": "\n\tif s.Debug {\n\t\tlog.Printf(\"API REQUEST %8s :: %s\\n\", method, urlStr)\n\t\tlog.Printf(\"API REQUEST  PAYLOAD :: [%s]\\n\", string(b))\n\t}\n\n\treq, err := http.NewRequest(method, urlStr, bytes.NewBuffer(b))\n\tif err != nil {\n\t\tbucket.Release(nil)\n\t\treturn\n\t}\n\n\t// Not used on initial login..\n\t// TODO: Verify if a login, otherwise complain about no-token\n\tif s.Token != \"\" {\n\t\treq.Header.Set(\"authorization\", s.Token)\n\t}\n\n\t// Discord's API returns a 400 Bad Request is Content-Type is set, but the\n\t// request body is empty.\n\tif b != nil {\n\t\treq.Header.Set(\"Content-Type\", contentType)\n\t}\n\n\t// TODO: Make a configurable static variable.\n\treq.Header.Set(\"User-Agent\", s.UserAgent)\n\n\tcfg := newRequestConfig(s, req)\n\tfor _, opt := range options {\n\t\topt(cfg)\n\t}\n\treq = cfg.Request\n\n\tif s.Debug {\n\t\tfor k, v := range req.Header {\n\t\t\tlog.Printf(\"API REQUEST   HEADER :: [%s] = %+v\\n\", k, v)\n\t\t}\n\t}\n\n\tresp, err := cfg.Client.Do(req)\n\tif err != nil {\n\t\tbucket.Release(nil)\n\t\treturn\n\t}\n\tdefer func() {\n\t\terr2 := resp.Body.Close()\n\t\tif s.Debug && err2 != nil {\n\t\t\tlog.Println(\"error closing resp body\")\n\t\t}\n\t}()\n\n\terr = bucket.Release(resp.Header)\n\tif err != nil {\n\t\treturn\n\t}\n\n\tresponse, err = ioutil.ReadAll(resp.Body)\n\tif err != nil {\n\t\treturn\n\t}\n\n\tif s.Debug {\n\n\t\tlog.Printf(\"API RESPONSE  STATUS :: %s\\n\", resp.Status)\n\t\tfor k, v := range resp.Header {\n\t\t\tlog.Printf(\"API RESPONSE  HEADER :: [%s] = %+v\\n\", k, v)\n\t\t}\n\t\tlog.Printf(\"API RESPONSE    BODY :: [%s]\\n\\n\\n\", response)\n\t}\n\n\tswitch resp.StatusCode {\n\tcase http.StatusOK:\n\tcase http.StatusCreated:\n\tcase http.StatusNoContent:\n\tcase http.StatusInternalServerError:\n\t\tfallthrough\n\tcase http.StatusServiceUnavailable:\n\t\tfallthrough\n\tcase http.StatusGatewayTimeout:\n\t\tfallthrough\n\tcase http.StatusBadGateway:\n\t\t// Retry sending request if possible\n\t\tif sequence < cfg.MaxRestRetries {\n\n\t\t\ts.log(LogInformational, \"%s Failed (%s), Retrying...\", urlStr, resp.Status)\n\t\t\tresponse, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence+1, options...)\n\t\t} else {\n\t\t\terr = fmt.Errorf(\"Exceeded Max retries HTTP %s, %s\", resp.Status, response)\n\t\t}\n\tcase http.StatusTooManyRequests:\n\t\trl := TooManyRequests{}\n\t\terr = Unmarshal(response, &rl)\n\t\tif err != nil {\n\t\t\ts.log(LogError, \"rate limit unmarshal error, %s\", err)\n\t\t\treturn\n\t\t}\n\n\t\tif cfg.ShouldRetryOnRateLimit {\n\t\t\ts.log(LogInformational, \"Rate Limiting %s, retry in %v\", urlStr, rl.RetryAfter)\n\t\t\ts.handleEvent(rateLimitEventType, &RateLimit{TooManyRequests: &rl, URL: urlStr})\n\n\t\t\ttime.Sleep(rl.RetryAfter)\n\t\t\t// we can make the above smarter\n\t\t\t// this method can cause longer delays than required\n\n\t\t\tresponse, err = s.RequestWithLockedBucket(method, urlStr, contentType, b, s.Ratelimiter.LockBucketObject(bucket), sequence, options...)\n\t\t} else {\n\t\t\terr = &RateLimitError{&RateLimit{TooManyRequests: &rl, URL: urlStr}}\n\t\t}\n\tcase http.StatusUnauthorized:\n\t\tif strings.Index(s.Token, \"Bot \") != 0 {\n\t\t\ts.log(LogInformational, \"%s\", ErrUnauthorized.Error())\n\t\t\terr = ErrUnauthorized\n\t\t}\n\t\tfallthrough\n\tdefault: // Error condition\n\t\terr = newRestError(req, resp, response)\n\t}\n\n\treturn\n",
       "arguments": [
         {
           "name": "method",
@@ -10752,6 +11081,29 @@
       "endpointExpressions": [
         "EndpointApplicationSKUs"
       ]
+    },
+    {
+      "name": "SetDispatchObserver",
+      "signature": "func (s *Session) SetDispatchObserver(observer func(*Session, *Event, error))",
+      "source": "discordgo/gateway_dispatch.go:17",
+      "endLine": 22,
+      "documentation": "// SetDispatchObserver installs the single host ingress observer. Passing nil\n// detaches ingress/fatal callbacks and joins all callbacks already in flight.\n// For each Discord opcode-0 dispatch it runs synchronously, in receive order,\n// after internal state application and before ordinary SDK handlers. No Session,\n// State or handler lock is held while calling it. It includes host-private voice\n// events, not synthetic/raw duplicate events. RawData retains the exact d JSON;\n// Struct has detached BeforeUpdate/BeforeDelete only when actually cached.\n//\n// The host must bound its callback and project/enqueue synchronously; it must not\n// invoke module code, mutate the event/cache, reconfigure/detach callbacks, or\n// open/close this session from a callback. Decode errors are reported rather than silently projected as zero\n// values. Raw events and credentials must never cross the module boundary.",
+      "body": "\n\ts.dispatchMu.Lock()\n\ts.dispatchObserver = observer\n\ts.gatewayCallbacksDetached = observer == nil\n\ts.dispatchMu.Unlock()\n",
+      "arguments": [
+        {
+          "name": "observer",
+          "type": "func(*Session, *Event, error)",
+          "variadic": false,
+          "references": [
+            "Event",
+            "Session",
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "results": [],
+      "endpointExpressions": []
     },
     {
       "name": "StageInstance",
@@ -11848,8 +12200,8 @@
     {
       "name": "UpdateCustomStatus",
       "signature": "func (s *Session) UpdateCustomStatus(state string) (err error)",
-      "source": "discordgo/wsapi.go:404",
-      "endLine": 419,
+      "source": "discordgo/wsapi.go:447",
+      "endLine": 462,
       "documentation": "// UpdateCustomStatus is used to update the user's custom status.\n// If state!=\"\" then set the custom status.\n// Else, set user to active and remove the custom status.",
       "body": "\n\tdata := UpdateStatusData{\n\t\tStatus: \"online\",\n\t}\n\n\tif state != \"\" {\n\t\t// Discord requires a non-empty activity name, therefore we provide \"Custom Status\" as a placeholder.\n\t\tdata.Activities = []*Activity{{\n\t\t\tName:  \"Custom Status\",\n\t\t\tType:  ActivityTypeCustom,\n\t\t\tState: state,\n\t\t}}\n\t}\n\n\treturn s.UpdateStatusComplex(data)\n",
       "arguments": [
@@ -11879,8 +12231,8 @@
     {
       "name": "UpdateGameStatus",
       "signature": "func (s *Session) UpdateGameStatus(idle int, name string) (err error)",
-      "source": "discordgo/wsapi.go:369",
-      "endLine": 371,
+      "source": "discordgo/wsapi.go:412",
+      "endLine": 414,
       "documentation": "// UpdateGameStatus is used to update the user's status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set game.\n// if otherwise, set status to active, and no activity.",
       "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, ActivityTypeGame, name, \"\"))\n",
       "arguments": [
@@ -11919,8 +12271,8 @@
     {
       "name": "UpdateListeningStatus",
       "signature": "func (s *Session) UpdateListeningStatus(name string) (err error)",
-      "source": "discordgo/wsapi.go:397",
-      "endLine": 399,
+      "source": "discordgo/wsapi.go:440",
+      "endLine": 442,
       "documentation": "// UpdateListeningStatus is used to set the user to \"Listening to...\"\n// If name!=\"\" then set to what user is listening to\n// Else, set user to active and no activity.",
       "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(0, ActivityTypeListening, name, \"\"))\n",
       "arguments": [
@@ -11949,11 +12301,11 @@
     },
     {
       "name": "UpdateStatusComplex",
-      "signature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) (err error)",
-      "source": "discordgo/wsapi.go:422",
-      "endLine": 446,
+      "signature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) error",
+      "source": "discordgo/wsapi.go:465",
+      "endLine": 467,
       "documentation": "// UpdateStatusComplex allows for sending the raw status update data untouched by discordgo.",
-      "body": "\n\t// The comment does say \"untouched by discordgo\", but we might need to lie a bit here.\n\t// The Discord documentation lists `activities` as being nullable, but in practice this\n\t// doesn't seem to be the case. I had filed an issue about this at\n\t// https://github.com/discord/discord-api-docs/issues/2559, but as of writing this\n\t// haven't had any movement on it, so at this point I'm assuming this is an error,\n\t// and am fixing this bug accordingly. Because sending `null` for `activities` instantly\n\t// disconnects us, I think that disallowing it from being sent in `UpdateStatusComplex`\n\t// isn't that big of an issue.\n\tif usd.Activities == nil {\n\t\tusd.Activities = make([]*Activity, 0)\n\t}\n\n\ts.RLock()\n\tdefer s.RUnlock()\n\tif s.wsConn == nil {\n\t\treturn ErrWSNotFound\n\t}\n\n\ts.wsMutex.Lock()\n\terr = s.wsConn.WriteJSON(updateStatusOp{3, usd})\n\ts.wsMutex.Unlock()\n\n\treturn\n",
+      "body": "\n\treturn s.UpdateStatusComplexContext(context.Background(), usd)\n",
       "arguments": [
         {
           "name": "usd",
@@ -11967,7 +12319,47 @@
       ],
       "results": [
         {
-          "name": "err",
+          "name": "",
+          "type": "error",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "endpointExpressions": []
+    },
+    {
+      "name": "UpdateStatusComplexContext",
+      "signature": "func (s *Session) UpdateStatusComplexContext(ctx context.Context, usd UpdateStatusData) error",
+      "source": "discordgo/gateway_context.go:185",
+      "endLine": 190,
+      "documentation": "// UpdateStatusComplexContext sends one status update. Success means the socket\n// write completed, not that Discord acknowledged the new status. A canceled\n// in-flight write closes its connection because its remote outcome is unknown.",
+      "body": "\n\tif usd.Activities == nil {\n\t\tusd.Activities = []*Activity{}\n\t}\n\treturn s.gatewayWrite(ctx, nil, updateStatusOp{3, usd})\n",
+      "arguments": [
+        {
+          "name": "ctx",
+          "type": "context.Context",
+          "variadic": false,
+          "references": [],
+          "externalReferences": [
+            "context.Context"
+          ]
+        },
+        {
+          "name": "usd",
+          "type": "UpdateStatusData",
+          "variadic": false,
+          "references": [
+            "UpdateStatusData"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "results": [
+        {
+          "name": "",
           "type": "error",
           "variadic": false,
           "references": [
@@ -11981,8 +12373,8 @@
     {
       "name": "UpdateStreamingStatus",
       "signature": "func (s *Session) UpdateStreamingStatus(idle int, name string, url string) (err error)",
-      "source": "discordgo/wsapi.go:386",
-      "endLine": 392,
+      "source": "discordgo/wsapi.go:429",
+      "endLine": 435,
       "documentation": "// UpdateStreamingStatus is used to update the user's streaming status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set game.\n// If name!=\"\" and url!=\"\" then set the status type to streaming with the URL set.\n// if otherwise, set status to active, and no game.",
       "body": "\n\tgameType := ActivityTypeGame\n\tif url != \"\" {\n\t\tgameType = ActivityTypeStreaming\n\t}\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, gameType, name, url))\n",
       "arguments": [
@@ -12030,8 +12422,8 @@
     {
       "name": "UpdateWatchStatus",
       "signature": "func (s *Session) UpdateWatchStatus(idle int, name string) (err error)",
-      "source": "discordgo/wsapi.go:377",
-      "endLine": 379,
+      "source": "discordgo/wsapi.go:420",
+      "endLine": 422,
       "documentation": "// UpdateWatchStatus is used to update the user's watch status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set movie/stream.\n// if otherwise, set status to active, and no activity.",
       "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, ActivityTypeWatching, name, \"\"))\n",
       "arguments": [
@@ -12726,6 +13118,37 @@
       "endpointExpressions": [
         "EndpointGuildMemberVoiceState"
       ]
+    },
+    {
+      "name": "VoiceGatewayDispatch",
+      "signature": "func (s *Session) VoiceGatewayDispatch(e *Event) error",
+      "source": "discordgo/voice.go:178",
+      "endLine": 189,
+      "documentation": "// VoiceGatewayDispatch consumes host-private main Gateway voice events. Hosts\n// may call this from their ordered raw observer; it performs no network I/O.",
+      "body": "\n\tif e == nil {\n\t\treturn nil\n\t}\n\tswitch x := e.Struct.(type) {\n\tcase *VoiceStateUpdate:\n\t\treturn s.acceptVoiceState(x)\n\tcase *VoiceServerUpdate:\n\t\treturn s.acceptVoiceServer(x)\n\t}\n\treturn nil\n",
+      "arguments": [
+        {
+          "name": "e",
+          "type": "*Event",
+          "variadic": false,
+          "references": [
+            "Event"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "results": [
+        {
+          "name": "",
+          "type": "error",
+          "variadic": false,
+          "references": [
+            "error"
+          ],
+          "externalReferences": []
+        }
+      ],
+      "endpointExpressions": []
     },
     {
       "name": "VoiceRegions",
@@ -13590,95 +14013,304 @@
   "sourceProvenance": {
     "sdkCommit": "f43dd94faaacd5b163e9e783f14b5bd8be639fc9",
     "sdkVersion": "v0.29.1-0.20260214123928-f43dd94faaac",
-    "sdkTree": "40cefda1705b8dad207b3cf9b9888348eca865a7",
     "officialSource": "https://github.com/bwmarrin/discordgo/tree/f43dd94faaacd5b163e9e783f14b5bd8be639fc9",
-    "sourceImport": "Exact official upstream source; untagged pin, not claimed stable. Independent Go module/example ownership edits are not source-package inputs.",
+    "sourceImport": "Pinned upstream f43dd94 plus deliberate local P3 context-bound Gateway, strict ingress, ordered observer and official Stage registration patches, and local P5 bounded native DAVE voice cutover. NOT unmodified upstream or a claimed upstream release. Independent module/example manifest edits are outside this SDK-package census.",
     "catalogKind": "Reviewed source inventory only; not protobuf/converter/runtime verification",
+    "sdkUpstreamTree": "40cefda1705b8dad207b3cf9b9888348eca865a7",
+    "sourceRevision": "f43dd94faaacd5b163e9e783f14b5bd8be639fc9+local-P3-Gateway+local-P5-native-voice",
+    "sdkCommitScope": "sdkCommit/sdkVersion/sdkUpstreamTree identify the pinned upstream base only, not the patched local source tree.",
+    "localSourcePatches": {
+      "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
+      "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
+    },
+    "sourcePackageSHA256": "443acf8109c18439d2a056fded068ee1d046d32cf7273e3267f52cc8d653c68d",
+    "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
     "extraction": "go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
     "sourceFiles": [
       {
         "path": "discordgo/components.go",
-        "sha256": "c6a81575ef04f16b8afeb0a49086be9390313f459d76f4f51df090a8f5f738b9"
+        "sha256": "c6a81575ef04f16b8afeb0a49086be9390313f459d76f4f51df090a8f5f738b9",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/discord.go",
-        "sha256": "8164f8230833443607fdfd615d31074d4c9d7ba7094bda3a23f2b67efe84f9ce"
+        "sha256": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/endpoints.go",
-        "sha256": "6a1fead9bb505b551b7cc8576c770e4d36ff5baada435a9a7866e5dd7fa1df4b"
+        "sha256": "5f496f57ad583a8a5e8073690103e3eb77d2dec12787a79d71f4d969b8db494f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/event.go",
-        "sha256": "52d8f287c407ba969fc7fcebd5e9b3ea3ae5b699e07587b927f334e0f29aa1d8"
+        "sha256": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/eventhandlers.go",
-        "sha256": "8b5f1b10bdc0c70cceaf9980773099b0f7aa873c8fea36335b84f5a663d15f3b"
+        "sha256": "11e720d86f3eb457206adde87b585e5d8fec5e5b67bd06f61732d2ef334111b7",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/events.go",
-        "sha256": "b4998b7b303b3aa9291d93b3177115a45756d58f8e409cc8fe57260c9431c123"
+        "sha256": "b4998b7b303b3aa9291d93b3177115a45756d58f8e409cc8fe57260c9431c123",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_context.go",
+        "sha256": "4cccbe39e0bb7e175ed2fd4ed89649f93668134e00f1fade2eaa989852958c71",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_dispatch.go",
+        "sha256": "d2bb7736498513b99a0085bba11a76c2f1273cf2d88d0ea8bf7db8d6628af52f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_ingress.go",
+        "sha256": "379b96636bbfa4bf574e039fd05332a6289bfa8879ae129a786a068e735158d0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_payload.go",
+        "sha256": "443ff2e9c6df3aa13c295ff9450abbd7811652ee7bd26483f46122200f409496",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/interactions.go",
-        "sha256": "fafd9ef3fb5396df8cb273537bc284250052cde804c968f46d0d6e65756f3a71"
+        "sha256": "fafd9ef3fb5396df8cb273537bc284250052cde804c968f46d0d6e65756f3a71",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/locales.go",
-        "sha256": "e84d174a37df048769ade0c068732e4f0c5aaae23cbfa6dba061815510052d9f"
+        "sha256": "e84d174a37df048769ade0c068732e4f0c5aaae23cbfa6dba061815510052d9f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79"
+        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/message.go",
-        "sha256": "25d5497055ef9305ca6fe0fd0cd92b71574402ce3a7f1f8238b3232f627e283c"
+        "sha256": "b1b29d909be56f9daf87ef095a9315491e666afc943fb743586bafdfea9a0471",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc"
+        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/ratelimit.go",
-        "sha256": "d0fdceee0dbb764bbad5c7a2c998d502d918204384d637a5e9605a2de7abe1d1"
+        "sha256": "d0fdceee0dbb764bbad5c7a2c998d502d918204384d637a5e9605a2de7abe1d1",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/restapi.go",
-        "sha256": "cd10081ae18488460926b061415fc7962d472b376f5b3814595cf733d3165cf7"
+        "sha256": "44664bc0e12355514ce2635cf189e91752f61ffa9c505e41e7d9853f94329afb",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/state.go",
-        "sha256": "b6e79789b27a6514ab816bd0d23ebc2c857c8be3fa122e4be2d1fe3f06eef6b9"
+        "sha256": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/structs.go",
-        "sha256": "a5ce4990c96341264d58abb5a2fc2e4ad17bbb454189de6b660bac4c0a78aea6"
+        "sha256": "8aff34dc9d04d4e5bd6cbcd50efa7c47aeddcfa89e0010822b8b5fbb1c2112a0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/user.go",
-        "sha256": "630fafca4237f15bba22cf452879cfbcab30e59c9934069f11fcd0c469d75ed4"
+        "sha256": "630fafca4237f15bba22cf452879cfbcab30e59c9934069f11fcd0c469d75ed4",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/util.go",
-        "sha256": "99641a9261c2be5dd74fd717c889f076150164647c99a70aae64fdbdd800807f"
+        "sha256": "99641a9261c2be5dd74fd717c889f076150164647c99a70aae64fdbdd800807f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/voice.go",
-        "sha256": "55530d81d6c38f641cd2f38008951aa6ef1e24ae611cccbed62047c93739f30e"
+        "sha256": "1e39dad8077b6f7f5e41485249c1e5635140284b0444f1725c3e5ceecc5a9f32",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_disabled.go",
+        "sha256": "ccda5e563a220bc2077c698dd19b00d9a0f539f030d921e0acf6f2e2d3d0d346",
+        "buildConstraint": "!voice",
+        "buildProfiles": [
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_gateway.go",
+        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
+      },
+      {
+        "path": "discordgo/voice_nocgo.go",
+        "sha256": "b880d0316f0801a76ca3b97b961e8ca71ffb0af382a989ff45412bd7d591abad",
+        "buildConstraint": "voice && !cgo",
+        "buildProfiles": []
+      },
+      {
+        "path": "discordgo/voice_opus.go",
+        "sha256": "64d3cbc3d8ce521da88c2536b1c26603009e724d55d2b2b72fdb1f9b650553b0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_packet.go",
+        "sha256": "f742bbca0c00e12c9a9e292fe07d4cf3114c20252b12fc71faecf216dfab04a4",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_protocol.go",
+        "sha256": "dcd87f9d22000318711cb233a579e0c5448c574d46e432024cafccf1cae4d2ac",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_transport.go",
+        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
+      },
+      {
+        "path": "discordgo/voice_udp.go",
+        "sha256": "d53b5401844b898dc989bc81913ee07d650b692a8a21acd609f06a864cfdb759",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
       },
       {
         "path": "discordgo/webhook.go",
-        "sha256": "dcec5083aa0c411e26d6f64c09ca0c4cb6a75747a72ca99d8cebcaee38acdce6"
+        "sha256": "dcec5083aa0c411e26d6f64c09ca0c4cb6a75747a72ca99d8cebcaee38acdce6",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/wsapi.go",
-        "sha256": "4ee5efc87cb3c3b0982b337dd6f1241afa87ba132143c6d6f132cc7d5f005840"
+        "sha256": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       }
     ],
-    "rawSHA256": "b6199a202fff12792684e44166501d3ed4411caa05f6e6289403629aa6e9ec21",
+    "rawSHA256": "eff63962705df3a6a03d25653df7a8fdbaa5f2d8de70624e5f2b1ee210b52316",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   }

@@ -186,7 +186,7 @@ def alias_projection(method, canonical):
             "execution": "sequential, empty input makes zero calls, stop on first error/cancellation, no rollback or automatic retry" if name in {"RequestGuildMembersBatch", "RequestGuildMembersBatchList"} else "one canonical call"}
 
 
-def generate():
+def generate(mapping_only=False):
     api = json.loads((INVENTORY / "source-api.json").read_text())
     source = json.loads((INVENTORY / "source-methods.json").read_text())
     closure = json.loads((INVENTORY / "source-type-closure.json").read_text())
@@ -386,6 +386,8 @@ func OperationByName(name string) (OperationDescriptor, bool) {
         "tools/protocol/api-mapping.json": json.dumps(mapping, ensure_ascii=False, indent=2) + "\n",
     }
     for filename, content in outputs.items():
+        if mapping_only and filename != "tools/protocol/api-mapping.json":
+            continue
         path = ROOT / filename
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(content)
@@ -393,4 +395,7 @@ func OperationByName(name string) (OperationDescriptor, bool) {
 
 
 if __name__ == "__main__":
-    generate()
+    import argparse
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--mapping-only", action="store_true", help="Refresh source mapping JSON without emitting shared protobuf/Go contracts")
+    generate(mapping_only=parser.parse_args().mapping_only)

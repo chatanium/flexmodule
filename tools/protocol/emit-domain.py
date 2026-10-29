@@ -5,6 +5,7 @@ Run from the repository root: python3 tools/protocol/emit-domain.py
 No compiler, network, runtime reflection, or JSON conversion is involved. The JSON
 input is a SOURCE inventory; domain-mapping.json is the explicit converter plan.
 """
+import argparse
 import json
 import re
 from pathlib import Path
@@ -29,6 +30,10 @@ def snake(name):
     name = re.sub(r"([A-Z]+)([A-Z][a-z])", r"\1_\2", name)
     return identifier(re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", name).lower(), "source field " + name)
 
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument("--mapping-only", action="store_true", help="Refresh source mapping JSON without emitting shared protobuf contracts")
+args = parser.parse_args()
 
 ast = load("source-ast.json")
 closure = load("source-type-closure.json")
@@ -402,6 +407,15 @@ for item in legacy["messages"]:
     target = MAPPED[current_name]
     fields = []
     for old in item.get("protoFields", []):
+        retired = ast["RetiredTypeFields"].get(current_name, {})
+        retired_names = [field for field in retired if normalize(field) == normalize(old)]
+        if retired_names:
+            if len(retired_names) != 1:
+                raise ValueError(f"Ambiguous retired legacy field {name}.{old}")
+            source_name = retired_names[0]
+            decision = retired[source_name]
+            fields.append({"legacy_field": old, "source_field": source_name, "classification": decision["classification"], "wire_field": None, "wire_type": None, "decision": decision["decision"]})
+            continue
         if TYPES[current_name]["Kind"] != "struct":
             fields.append({"legacy_field": old, "classification": "safe-wrapper" if name == "MessageComponent" else "inline", "wire_type": target["wire_type"], "decision": "Exhaustive component oneof replaces v1 payload." if name == "MessageComponent" else "Inline underlying value, preserving numeric/string/mask meaning; no unnecessary scalar message."})
             continue
@@ -458,7 +472,8 @@ artifact = {
     "wrappers": [{"wire_type": n, "shape": list(shape)} for n, shape in sorted(WRAPPERS.items())],
     "added_boundary_fields": [{"wire_type": "FileAttachment", "wire_field": "description", "classification": "safe-wrapper", "decision": "P1 optional upload description, absent versus explicit empty preserved."}, {"wire_type": "AttachmentEditEntry", "classification": "safe-wrapper", "decision": "P1 source oneof and optional metadata; index 0 selected is valid; each new index exactly once."}],
 }
-(ROOT / "proto/discord-v2").mkdir(parents=True, exist_ok=True)
-(ROOT / "proto/discord-v2/domain.proto").write_text("\n".join(lines))
+if not args.mapping_only:
+    (ROOT / "proto/discord-v2").mkdir(parents=True, exist_ok=True)
+    (ROOT / "proto/discord-v2/domain.proto").write_text("\n".join(lines))
 (ROOT / "tools/protocol/domain-mapping.json").write_text(json.dumps(artifact, ensure_ascii=False, indent=2) + "\n")
-print(f"Wrote domain.proto and domain-mapping.json: {len(MAPPED)} source types, {sum(len(t['fields']) for t in MAPPED.values())} fields, {len(legacy_mapping)} legacy messages, {len(ast['SchemaEnums'])} legacy enums.")
+print(f"Wrote {'domain-mapping.json' if args.mapping_only else 'domain.proto and domain-mapping.json'}: {len(MAPPED)} source types, {sum(len(t['fields']) for t in MAPPED.values())} fields, {len(legacy_mapping)} legacy messages, {len(ast['SchemaEnums'])} legacy enums.")

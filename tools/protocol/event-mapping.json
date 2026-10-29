@@ -5,95 +5,304 @@
   "sourceProvenance": {
     "sdkCommit": "f43dd94faaacd5b163e9e783f14b5bd8be639fc9",
     "sdkVersion": "v0.29.1-0.20260214123928-f43dd94faaac",
-    "sdkTree": "40cefda1705b8dad207b3cf9b9888348eca865a7",
     "officialSource": "https://github.com/bwmarrin/discordgo/tree/f43dd94faaacd5b163e9e783f14b5bd8be639fc9",
-    "sourceImport": "Exact official upstream source; untagged pin, not claimed stable. Independent Go module/example ownership edits are not source-package inputs.",
+    "sourceImport": "Pinned upstream f43dd94 plus deliberate local P3 context-bound Gateway, strict ingress, ordered observer and official Stage registration patches, and local P5 bounded native DAVE voice cutover. NOT unmodified upstream or a claimed upstream release. Independent module/example manifest edits are outside this SDK-package census.",
     "catalogKind": "Reviewed source inventory only; not protobuf/converter/runtime verification",
+    "sdkUpstreamTree": "40cefda1705b8dad207b3cf9b9888348eca865a7",
+    "sourceRevision": "f43dd94faaacd5b163e9e783f14b5bd8be639fc9+local-P3-Gateway+local-P5-native-voice",
+    "sdkCommitScope": "sdkCommit/sdkVersion/sdkUpstreamTree identify the pinned upstream base only, not the patched local source tree.",
+    "localSourcePatches": {
+      "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
+      "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
+    },
+    "sourcePackageSHA256": "443acf8109c18439d2a056fded068ee1d046d32cf7273e3267f52cc8d653c68d",
+    "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
     "extraction": "go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
     "sourceFiles": [
       {
         "path": "discordgo/components.go",
-        "sha256": "c6a81575ef04f16b8afeb0a49086be9390313f459d76f4f51df090a8f5f738b9"
+        "sha256": "c6a81575ef04f16b8afeb0a49086be9390313f459d76f4f51df090a8f5f738b9",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/discord.go",
-        "sha256": "8164f8230833443607fdfd615d31074d4c9d7ba7094bda3a23f2b67efe84f9ce"
+        "sha256": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/endpoints.go",
-        "sha256": "6a1fead9bb505b551b7cc8576c770e4d36ff5baada435a9a7866e5dd7fa1df4b"
+        "sha256": "5f496f57ad583a8a5e8073690103e3eb77d2dec12787a79d71f4d969b8db494f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/event.go",
-        "sha256": "52d8f287c407ba969fc7fcebd5e9b3ea3ae5b699e07587b927f334e0f29aa1d8"
+        "sha256": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/eventhandlers.go",
-        "sha256": "8b5f1b10bdc0c70cceaf9980773099b0f7aa873c8fea36335b84f5a663d15f3b"
+        "sha256": "11e720d86f3eb457206adde87b585e5d8fec5e5b67bd06f61732d2ef334111b7",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/events.go",
-        "sha256": "b4998b7b303b3aa9291d93b3177115a45756d58f8e409cc8fe57260c9431c123"
+        "sha256": "b4998b7b303b3aa9291d93b3177115a45756d58f8e409cc8fe57260c9431c123",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_context.go",
+        "sha256": "4cccbe39e0bb7e175ed2fd4ed89649f93668134e00f1fade2eaa989852958c71",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_dispatch.go",
+        "sha256": "d2bb7736498513b99a0085bba11a76c2f1273cf2d88d0ea8bf7db8d6628af52f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_ingress.go",
+        "sha256": "379b96636bbfa4bf574e039fd05332a6289bfa8879ae129a786a068e735158d0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/gateway_payload.go",
+        "sha256": "443ff2e9c6df3aa13c295ff9450abbd7811652ee7bd26483f46122200f409496",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/interactions.go",
-        "sha256": "fafd9ef3fb5396df8cb273537bc284250052cde804c968f46d0d6e65756f3a71"
+        "sha256": "fafd9ef3fb5396df8cb273537bc284250052cde804c968f46d0d6e65756f3a71",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/locales.go",
-        "sha256": "e84d174a37df048769ade0c068732e4f0c5aaae23cbfa6dba061815510052d9f"
+        "sha256": "e84d174a37df048769ade0c068732e4f0c5aaae23cbfa6dba061815510052d9f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79"
+        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/message.go",
-        "sha256": "25d5497055ef9305ca6fe0fd0cd92b71574402ce3a7f1f8238b3232f627e283c"
+        "sha256": "b1b29d909be56f9daf87ef095a9315491e666afc943fb743586bafdfea9a0471",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc"
+        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/ratelimit.go",
-        "sha256": "d0fdceee0dbb764bbad5c7a2c998d502d918204384d637a5e9605a2de7abe1d1"
+        "sha256": "d0fdceee0dbb764bbad5c7a2c998d502d918204384d637a5e9605a2de7abe1d1",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/restapi.go",
-        "sha256": "cd10081ae18488460926b061415fc7962d472b376f5b3814595cf733d3165cf7"
+        "sha256": "44664bc0e12355514ce2635cf189e91752f61ffa9c505e41e7d9853f94329afb",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/state.go",
-        "sha256": "b6e79789b27a6514ab816bd0d23ebc2c857c8be3fa122e4be2d1fe3f06eef6b9"
+        "sha256": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/structs.go",
-        "sha256": "a5ce4990c96341264d58abb5a2fc2e4ad17bbb454189de6b660bac4c0a78aea6"
+        "sha256": "8aff34dc9d04d4e5bd6cbcd50efa7c47aeddcfa89e0010822b8b5fbb1c2112a0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/user.go",
-        "sha256": "630fafca4237f15bba22cf452879cfbcab30e59c9934069f11fcd0c469d75ed4"
+        "sha256": "630fafca4237f15bba22cf452879cfbcab30e59c9934069f11fcd0c469d75ed4",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/util.go",
-        "sha256": "99641a9261c2be5dd74fd717c889f076150164647c99a70aae64fdbdd800807f"
+        "sha256": "99641a9261c2be5dd74fd717c889f076150164647c99a70aae64fdbdd800807f",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/voice.go",
-        "sha256": "55530d81d6c38f641cd2f38008951aa6ef1e24ae611cccbed62047c93739f30e"
+        "sha256": "1e39dad8077b6f7f5e41485249c1e5635140284b0444f1725c3e5ceecc5a9f32",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_disabled.go",
+        "sha256": "ccda5e563a220bc2077c698dd19b00d9a0f539f030d921e0acf6f2e2d3d0d346",
+        "buildConstraint": "!voice",
+        "buildProfiles": [
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_gateway.go",
+        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
+      },
+      {
+        "path": "discordgo/voice_nocgo.go",
+        "sha256": "b880d0316f0801a76ca3b97b961e8ca71ffb0af382a989ff45412bd7d591abad",
+        "buildConstraint": "voice && !cgo",
+        "buildProfiles": []
+      },
+      {
+        "path": "discordgo/voice_opus.go",
+        "sha256": "64d3cbc3d8ce521da88c2536b1c26603009e724d55d2b2b72fdb1f9b650553b0",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_packet.go",
+        "sha256": "f742bbca0c00e12c9a9e292fe07d4cf3114c20252b12fc71faecf216dfab04a4",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_protocol.go",
+        "sha256": "dcd87f9d22000318711cb233a579e0c5448c574d46e432024cafccf1cae4d2ac",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
+      },
+      {
+        "path": "discordgo/voice_transport.go",
+        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
+      },
+      {
+        "path": "discordgo/voice_udp.go",
+        "sha256": "d53b5401844b898dc989bc81913ee07d650b692a8a21acd609f06a864cfdb759",
+        "buildConstraint": "voice && cgo",
+        "buildProfiles": [
+          "native_voice"
+        ]
       },
       {
         "path": "discordgo/webhook.go",
-        "sha256": "dcec5083aa0c411e26d6f64c09ca0c4cb6a75747a72ca99d8cebcaee38acdce6"
+        "sha256": "dcec5083aa0c411e26d6f64c09ca0c4cb6a75747a72ca99d8cebcaee38acdce6",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       },
       {
         "path": "discordgo/wsapi.go",
-        "sha256": "4ee5efc87cb3c3b0982b337dd6f1241afa87ba132143c6d6f132cc7d5f005840"
+        "sha256": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07",
+        "buildConstraint": "",
+        "buildProfiles": [
+          "native_voice",
+          "ordinary"
+        ]
       }
     ],
-    "rawSHA256": "b6199a202fff12792684e44166501d3ed4411caa05f6e6289403629aa6e9ec21",
+    "rawSHA256": "eff63962705df3a6a03d25653df7a8fdbaa5f2d8de70624e5f2b1ee210b52316",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   },
@@ -5213,7 +5422,7 @@
       "classification": "host-only-or-legacy"
     },
     {
-      "sourceName": "STAGE_INSTANCE_EVENT_CREATE",
+      "sourceName": "STAGE_INSTANCE_CREATE",
       "canonicalName": "STAGE_INSTANCE_CREATE",
       "sourceType": "StageInstanceEventCreate",
       "source": "discordgo/eventhandlers.go:67; discordgo/events.go:213-215",
@@ -5222,7 +5431,7 @@
       "officialIntents": [
         "GUILDS"
       ],
-      "policy": "로컬 등록 이름을 공식 canonical 이름으로 수정하며 기존 잘못된 이름의 alias는 유지하지 않습니다.",
+      "policy": "Local P3 SDK source now registers the official uppercase STAGE_INSTANCE_* name. No obsolete STAGE_INSTANCE_EVENT_* alias is retained.",
       "constantSource": "discordgo/eventhandlers.go:67",
       "handlerType": "stageInstanceEventCreateEventHandler",
       "handlerSource": "discordgo/eventhandlers.go:1207",
@@ -5281,7 +5490,7 @@
       "presence": "nullable recursive Partial domain fields; absent wrapper=absent, oneof null=null, value preserves zero/false/empty; Before snapshots only if actually cached"
     },
     {
-      "sourceName": "STAGE_INSTANCE_EVENT_DELETE",
+      "sourceName": "STAGE_INSTANCE_DELETE",
       "canonicalName": "STAGE_INSTANCE_DELETE",
       "sourceType": "StageInstanceEventDelete",
       "source": "discordgo/eventhandlers.go:68; discordgo/events.go:223-225",
@@ -5290,7 +5499,7 @@
       "officialIntents": [
         "GUILDS"
       ],
-      "policy": "로컬 등록 이름을 공식 canonical 이름으로 수정하며 기존 잘못된 이름의 alias는 유지하지 않습니다.",
+      "policy": "Local P3 SDK source now registers the official uppercase STAGE_INSTANCE_* name. No obsolete STAGE_INSTANCE_EVENT_* alias is retained.",
       "constantSource": "discordgo/eventhandlers.go:68",
       "handlerType": "stageInstanceEventDeleteEventHandler",
       "handlerSource": "discordgo/eventhandlers.go:1227",
@@ -5349,7 +5558,7 @@
       "presence": "nullable recursive Partial domain fields; absent wrapper=absent, oneof null=null, value preserves zero/false/empty; Before snapshots only if actually cached"
     },
     {
-      "sourceName": "STAGE_INSTANCE_EVENT_UPDATE",
+      "sourceName": "STAGE_INSTANCE_UPDATE",
       "canonicalName": "STAGE_INSTANCE_UPDATE",
       "sourceType": "StageInstanceEventUpdate",
       "source": "discordgo/eventhandlers.go:69; discordgo/events.go:218-220",
@@ -5358,7 +5567,7 @@
       "officialIntents": [
         "GUILDS"
       ],
-      "policy": "로컬 등록 이름을 공식 canonical 이름으로 수정하며 기존 잘못된 이름의 alias는 유지하지 않습니다.",
+      "policy": "Local P3 SDK source now registers the official uppercase STAGE_INSTANCE_* name. No obsolete STAGE_INSTANCE_EVENT_* alias is retained.",
       "constantSource": "discordgo/eventhandlers.go:69",
       "handlerType": "stageInstanceEventUpdateEventHandler",
       "handlerSource": "discordgo/eventhandlers.go:1247",

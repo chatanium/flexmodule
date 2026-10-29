@@ -116,14 +116,14 @@ message PartialInteractionData {
   }
 }
 
-// discordgo/structs.go:2186; safe domain snapshot/request.
+// discordgo/structs.go:2194; safe domain snapshot/request.
 message APIErrorMessage {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 code = 1;
   optional string message = 2;
 }
 
-// discordgo/structs.go:2186; recursive ingress presence view.
+// discordgo/structs.go:2194; recursive ingress presence view.
 message PartialAPIErrorMessage {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 code = 1;
@@ -144,7 +144,7 @@ message PartialActionsRow {
   DomainNullableSint64 id = 2;
 }
 
-// discordgo/structs.go:2226; safe domain snapshot/request.
+// discordgo/structs.go:2234; safe domain snapshot/request.
 message Activity {
   optional string name = 1;
   // Source ActivityType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -165,7 +165,7 @@ message Activity {
   optional uint64 flags = 14;
 }
 
-// discordgo/structs.go:2226; recursive ingress presence view.
+// discordgo/structs.go:2234; recursive ingress presence view.
 message PartialActivity {
   flexmodule.core.v2.NullableString name = 1;
   // Source ActivityType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -186,21 +186,21 @@ message PartialActivity {
   DomainNullableUint64 flags = 14;
 }
 
-// discordgo/structs.go:580; safe domain snapshot/request.
+// discordgo/structs.go:588; safe domain snapshot/request.
 message AddedThreadMember {
   ThreadMember thread_member = 1;
   Member member = 2;
   Presence presence = 3;
 }
 
-// discordgo/structs.go:580; recursive ingress presence view.
+// discordgo/structs.go:588; recursive ingress presence view.
 message PartialAddedThreadMember {
   DomainNullablePartialThreadMember thread_member = 1;
   DomainNullablePartialMember member = 2;
   DomainNullablePartialPresence presence = 3;
 }
 
-// discordgo/structs.go:165; safe domain snapshot/request.
+// discordgo/structs.go:173; safe domain snapshot/request.
 message Application {
   optional string id = 1;
   optional string name = 2;
@@ -224,7 +224,7 @@ message Application {
   DomainUint64ToApplicationIntegrationTypeConfigMap integration_types_config = 19;
 }
 
-// discordgo/structs.go:165; recursive ingress presence view.
+// discordgo/structs.go:173; recursive ingress presence view.
 message PartialApplication {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -440,45 +440,45 @@ message PartialApplicationCommandPermissionsList {
   DomainNullableDomainDomainNullablePartialApplicationCommandPermissionsList permissions = 1;
 }
 
-// discordgo/structs.go:154; safe domain snapshot/request.
+// discordgo/structs.go:162; safe domain snapshot/request.
 message ApplicationInstallParams {
   DomainStringList scopes = 1;
   // Nonnegative decimal permission bitmask; SDK int64 range 0..9223372036854775807; preserve absent/null/zero.
   optional string permissions = 2;
 }
 
-// discordgo/structs.go:154; recursive ingress presence view.
+// discordgo/structs.go:162; recursive ingress presence view.
 message PartialApplicationInstallParams {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList scopes = 1;
   // Nonnegative decimal permission bitmask; SDK int64 range 0..9223372036854775807; preserve absent/null/zero.
   flexmodule.core.v2.NullableString permissions = 2;
 }
 
-// discordgo/structs.go:160; safe domain snapshot/request.
+// discordgo/structs.go:168; safe domain snapshot/request.
 message ApplicationIntegrationTypeConfig {
   ApplicationInstallParams o_auth2_install_params = 1;
 }
 
-// discordgo/structs.go:160; recursive ingress presence view.
+// discordgo/structs.go:168; recursive ingress presence view.
 message PartialApplicationIntegrationTypeConfig {
   DomainNullablePartialApplicationInstallParams o_auth2_install_params = 1;
 }
 
-// discordgo/structs.go:213; safe domain snapshot/request.
+// discordgo/structs.go:221; safe domain snapshot/request.
 message ApplicationRoleConnection {
   optional string platform_name = 1;
   optional string platform_username = 2;
   DomainStringToStringMap metadata = 3;
 }
 
-// discordgo/structs.go:213; recursive ingress presence view.
+// discordgo/structs.go:221; recursive ingress presence view.
 message PartialApplicationRoleConnection {
   flexmodule.core.v2.NullableString platform_name = 1;
   flexmodule.core.v2.NullableString platform_username = 2;
   DomainNullableDomainStringToFlexmoduleCoreV2NullableStringMap metadata = 3;
 }
 
-// discordgo/structs.go:203; safe domain snapshot/request.
+// discordgo/structs.go:211; safe domain snapshot/request.
 message ApplicationRoleConnectionMetadata {
   // Source ApplicationRoleConnectionMetadataType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 type = 1;
@@ -489,7 +489,7 @@ message ApplicationRoleConnectionMetadata {
   DomainStringToStringMap description_localizations = 6;
 }
 
-// discordgo/structs.go:203; recursive ingress presence view.
+// discordgo/structs.go:211; recursive ingress presence view.
 message PartialApplicationRoleConnectionMetadata {
   // Source ApplicationRoleConnectionMetadataType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 type = 1;
@@ -500,7 +500,7 @@ message PartialApplicationRoleConnectionMetadata {
   DomainNullableDomainStringToFlexmoduleCoreV2NullableStringMap description_localizations = 6;
 }
 
-// discordgo/structs.go:1536; safe domain snapshot/request.
+// discordgo/structs.go:1544; safe domain snapshot/request.
 message Assets {
   optional string large_image_id = 1;
   optional string small_image_id = 2;
@@ -508,7 +508,7 @@ message Assets {
   optional string small_text = 4;
 }
 
-// discordgo/structs.go:1536; recursive ingress presence view.
+// discordgo/structs.go:1544; recursive ingress presence view.
 message PartialAssets {
   flexmodule.core.v2.NullableString large_image_id = 1;
   flexmodule.core.v2.NullableString small_image_id = 2;
@@ -516,7 +516,7 @@ message PartialAssets {
   flexmodule.core.v2.NullableString small_text = 4;
 }
 
-// discordgo/structs.go:1844; safe domain snapshot/request.
+// discordgo/structs.go:1852; safe domain snapshot/request.
 message AuditLogChange {
   // Source string alias AuditLogChangeKey; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
   optional string key = 1;
@@ -524,7 +524,7 @@ message AuditLogChange {
   flexmodule.core.v2.JSONValue new_value = 3;
 }
 
-// discordgo/structs.go:1844; recursive ingress presence view.
+// discordgo/structs.go:1852; recursive ingress presence view.
 message PartialAuditLogChange {
   // Source string alias AuditLogChangeKey; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
   flexmodule.core.v2.NullableString key = 1;
@@ -532,7 +532,7 @@ message PartialAuditLogChange {
   DomainNullableJSONValue new_value = 3;
 }
 
-// discordgo/structs.go:1833; safe domain snapshot/request.
+// discordgo/structs.go:1841; safe domain snapshot/request.
 message AuditLogEntry {
   optional string target_id = 1;
   DomainAuditLogChangeList changes = 2;
@@ -544,7 +544,7 @@ message AuditLogEntry {
   optional string reason = 7;
 }
 
-// discordgo/structs.go:1833; recursive ingress presence view.
+// discordgo/structs.go:1841; recursive ingress presence view.
 message PartialAuditLogEntry {
   flexmodule.core.v2.NullableString target_id = 1;
   DomainNullableDomainDomainNullablePartialAuditLogChangeList changes = 2;
@@ -556,7 +556,7 @@ message PartialAuditLogEntry {
   flexmodule.core.v2.NullableString reason = 7;
 }
 
-// discordgo/structs.go:2002; safe domain snapshot/request.
+// discordgo/structs.go:2010; safe domain snapshot/request.
 message AuditLogOptions {
   optional string delete_member_days = 1;
   optional string members_removed = 2;
@@ -573,7 +573,7 @@ message AuditLogOptions {
   optional string integration_type = 12;
 }
 
-// discordgo/structs.go:2002; recursive ingress presence view.
+// discordgo/structs.go:2010; recursive ingress presence view.
 message PartialAuditLogOptions {
   flexmodule.core.v2.NullableString delete_member_days = 1;
   flexmodule.core.v2.NullableString members_removed = 2;
@@ -590,21 +590,21 @@ message PartialAuditLogOptions {
   flexmodule.core.v2.NullableString integration_type = 12;
 }
 
-// discordgo/structs.go:1811; safe domain snapshot/request.
+// discordgo/structs.go:1819; safe domain snapshot/request.
 message AutoModerationAction {
   // Source AutoModerationActionType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 type = 1;
   AutoModerationActionMetadata metadata = 2;
 }
 
-// discordgo/structs.go:1811; recursive ingress presence view.
+// discordgo/structs.go:1819; recursive ingress presence view.
 message PartialAutoModerationAction {
   // Source AutoModerationActionType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 type = 1;
   DomainNullablePartialAutoModerationActionMetadata metadata = 2;
 }
 
-// discordgo/structs.go:1796; safe domain snapshot/request.
+// discordgo/structs.go:1804; safe domain snapshot/request.
 message AutoModerationActionMetadata {
   optional string channel_id = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -612,7 +612,7 @@ message AutoModerationActionMetadata {
   optional string custom_message = 3;
 }
 
-// discordgo/structs.go:1796; recursive ingress presence view.
+// discordgo/structs.go:1804; recursive ingress presence view.
 message PartialAutoModerationActionMetadata {
   flexmodule.core.v2.NullableString channel_id = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -620,7 +620,7 @@ message PartialAutoModerationActionMetadata {
   flexmodule.core.v2.NullableString custom_message = 3;
 }
 
-// discordgo/structs.go:1719; safe domain snapshot/request.
+// discordgo/structs.go:1727; safe domain snapshot/request.
 message AutoModerationRule {
   optional string id = 1;
   optional string guild_id = 2;
@@ -637,7 +637,7 @@ message AutoModerationRule {
   DomainStringList exempt_channels = 11;
 }
 
-// discordgo/structs.go:1719; recursive ingress presence view.
+// discordgo/structs.go:1727; recursive ingress presence view.
 message PartialAutoModerationRule {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString guild_id = 2;
@@ -654,7 +654,7 @@ message PartialAutoModerationRule {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList exempt_channels = 11;
 }
 
-// discordgo/structs.go:1764; safe domain snapshot/request.
+// discordgo/structs.go:1772; safe domain snapshot/request.
 message AutoModerationTriggerMetadata {
   DomainStringList keyword_filter = 1;
   DomainStringList regex_patterns = 2;
@@ -664,7 +664,7 @@ message AutoModerationTriggerMetadata {
   optional sint64 mention_total_limit = 5;
 }
 
-// discordgo/structs.go:1764; recursive ingress presence view.
+// discordgo/structs.go:1772; recursive ingress presence view.
 message PartialAutoModerationTriggerMetadata {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList keyword_filter = 1;
   DomainNullableDomainFlexmoduleCoreV2NullableStringList regex_patterns = 2;
@@ -702,7 +702,7 @@ message PartialButton {
   DomainNullableSint64 id = 8;
 }
 
-// discordgo/structs.go:362; safe domain snapshot/request.
+// discordgo/structs.go:370; safe domain snapshot/request.
 message Channel {
   optional string id = 1;
   optional string guild_id = 2;
@@ -749,7 +749,7 @@ message Channel {
   optional sint64 default_forum_layout = 31;
 }
 
-// discordgo/structs.go:362; recursive ingress presence view.
+// discordgo/structs.go:370; recursive ingress presence view.
 message PartialChannel {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString guild_id = 2;
@@ -796,7 +796,7 @@ message PartialChannel {
   DomainNullableSint64 default_forum_layout = 31;
 }
 
-// discordgo/structs.go:474; safe domain snapshot/request.
+// discordgo/structs.go:482; safe domain snapshot/request.
 message ChannelEdit {
   optional string name = 1;
   flexmodule.core.v2.NullableString topic = 2;
@@ -829,7 +829,7 @@ message ChannelEdit {
   DomainStringList applied_tags = 20;
 }
 
-// discordgo/structs.go:474; recursive ingress presence view.
+// discordgo/structs.go:482; recursive ingress presence view.
 message PartialChannelEdit {
   flexmodule.core.v2.NullableString name = 1;
   flexmodule.core.v2.NullableString topic = 2;
@@ -862,31 +862,31 @@ message PartialChannelEdit {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList applied_tags = 20;
 }
 
-// discordgo/structs.go:506; safe domain snapshot/request.
+// discordgo/structs.go:514; safe domain snapshot/request.
 message ChannelFollow {
   optional string channel_id = 1;
   optional string webhook_id = 2;
 }
 
-// discordgo/structs.go:506; recursive ingress presence view.
+// discordgo/structs.go:514; recursive ingress presence view.
 message PartialChannelFollow {
   flexmodule.core.v2.NullableString channel_id = 1;
   flexmodule.core.v2.NullableString webhook_id = 2;
 }
 
-// discordgo/structs.go:2634; safe domain snapshot/request.
+// discordgo/structs.go:2642; safe domain snapshot/request.
 message ChannelMessagePinsList {
   DomainMessagePinList items = 1;
   optional bool has_more = 2;
 }
 
-// discordgo/structs.go:2634; recursive ingress presence view.
+// discordgo/structs.go:2642; recursive ingress presence view.
 message PartialChannelMessagePinsList {
   DomainNullableDomainDomainNullablePartialMessagePinList items = 1;
   DomainNullableBool has_more = 2;
 }
 
-// discordgo/structs.go:1653; safe domain snapshot/request.
+// discordgo/structs.go:1661; safe domain snapshot/request.
 message ClientStatus {
   // Source string alias Status; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
   optional string desktop = 1;
@@ -896,7 +896,7 @@ message ClientStatus {
   optional string web = 3;
 }
 
-// discordgo/structs.go:1653; recursive ingress presence view.
+// discordgo/structs.go:1661; recursive ingress presence view.
 message PartialClientStatus {
   // Source string alias Status; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
   flexmodule.core.v2.NullableString desktop = 1;
@@ -958,7 +958,7 @@ message PartialContainer {
   DomainNullableDomainDomainNullablePartialMessageComponentList components = 4;
 }
 
-// discordgo/structs.go:605; safe domain snapshot/request.
+// discordgo/structs.go:613; safe domain snapshot/request.
 message Emoji {
   optional string id = 1;
   optional string name = 2;
@@ -970,7 +970,7 @@ message Emoji {
   optional bool available = 8;
 }
 
-// discordgo/structs.go:605; recursive ingress presence view.
+// discordgo/structs.go:613; recursive ingress presence view.
 message PartialEmoji {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -982,21 +982,21 @@ message PartialEmoji {
   DomainNullableBool available = 8;
 }
 
-// discordgo/structs.go:646; safe domain snapshot/request.
+// discordgo/structs.go:654; safe domain snapshot/request.
 message EmojiParams {
   optional string name = 1;
   optional string image = 2;
   DomainStringList roles = 3;
 }
 
-// discordgo/structs.go:646; recursive ingress presence view.
+// discordgo/structs.go:654; recursive ingress presence view.
 message PartialEmojiParams {
   flexmodule.core.v2.NullableString name = 1;
   flexmodule.core.v2.NullableString image = 2;
   DomainNullableDomainFlexmoduleCoreV2NullableStringList roles = 3;
 }
 
-// discordgo/structs.go:2538; safe domain snapshot/request.
+// discordgo/structs.go:2546; safe domain snapshot/request.
 message Entitlement {
   optional string id = 1;
   optional string skuid = 2;
@@ -1014,7 +1014,7 @@ message Entitlement {
   optional string subscription_id = 11;
 }
 
-// discordgo/structs.go:2538; recursive ingress presence view.
+// discordgo/structs.go:2546; recursive ingress presence view.
 message PartialEntitlement {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString skuid = 2;
@@ -1032,7 +1032,7 @@ message PartialEntitlement {
   flexmodule.core.v2.NullableString subscription_id = 11;
 }
 
-// discordgo/structs.go:2601; safe domain snapshot/request.
+// discordgo/structs.go:2609; safe domain snapshot/request.
 message EntitlementFilterOptions {
   optional string user_id = 1;
   DomainStringList sku_ids = 2;
@@ -1046,7 +1046,7 @@ message EntitlementFilterOptions {
   optional bool exclude_ended = 7;
 }
 
-// discordgo/structs.go:2601; recursive ingress presence view.
+// discordgo/structs.go:2609; recursive ingress presence view.
 message PartialEntitlementFilterOptions {
   flexmodule.core.v2.NullableString user_id = 1;
   DomainNullableDomainFlexmoduleCoreV2NullableStringList sku_ids = 2;
@@ -1060,7 +1060,7 @@ message PartialEntitlementFilterOptions {
   DomainNullableBool exclude_ended = 7;
 }
 
-// discordgo/structs.go:2589; safe domain snapshot/request.
+// discordgo/structs.go:2597; safe domain snapshot/request.
 message EntitlementTest {
   optional string skuid = 1;
   optional string owner_id = 2;
@@ -1068,7 +1068,7 @@ message EntitlementTest {
   optional sint64 owner_type = 3;
 }
 
-// discordgo/structs.go:2589; recursive ingress presence view.
+// discordgo/structs.go:2597; recursive ingress presence view.
 message PartialEntitlementTest {
   flexmodule.core.v2.NullableString skuid = 1;
   flexmodule.core.v2.NullableString owner_id = 2;
@@ -1118,19 +1118,19 @@ message PartialFileUpload {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList values = 6;
 }
 
-// discordgo/structs.go:588; safe domain snapshot/request.
+// discordgo/structs.go:596; safe domain snapshot/request.
 message ForumDefaultReaction {
   optional string emoji_id = 1;
   optional string emoji_name = 2;
 }
 
-// discordgo/structs.go:588; recursive ingress presence view.
+// discordgo/structs.go:596; recursive ingress presence view.
 message PartialForumDefaultReaction {
   flexmodule.core.v2.NullableString emoji_id = 1;
   flexmodule.core.v2.NullableString emoji_name = 2;
 }
 
-// discordgo/structs.go:596; safe domain snapshot/request.
+// discordgo/structs.go:604; safe domain snapshot/request.
 message ForumTag {
   optional string id = 1;
   optional string name = 2;
@@ -1139,7 +1139,7 @@ message ForumTag {
   optional string emoji_name = 5;
 }
 
-// discordgo/structs.go:596; recursive ingress presence view.
+// discordgo/structs.go:604; recursive ingress presence view.
 message PartialForumTag {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -1148,7 +1148,7 @@ message PartialForumTag {
   flexmodule.core.v2.NullableString emoji_name = 5;
 }
 
-// discordgo/structs.go:2201; safe domain snapshot/request.
+// discordgo/structs.go:2209; safe domain snapshot/request.
 message GatewayBotResponse {
   optional string url = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -1156,7 +1156,7 @@ message GatewayBotResponse {
   SessionInformation session_start_limit = 3;
 }
 
-// discordgo/structs.go:2201; recursive ingress presence view.
+// discordgo/structs.go:2209; recursive ingress presence view.
 message PartialGatewayBotResponse {
   flexmodule.core.v2.NullableString url = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -1164,7 +1164,7 @@ message PartialGatewayBotResponse {
   DomainNullablePartialSessionInformation session_start_limit = 3;
 }
 
-// discordgo/structs.go:2217; safe domain snapshot/request.
+// discordgo/structs.go:2225; safe domain snapshot/request.
 message GatewayStatusUpdate {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 since = 1;
@@ -1173,7 +1173,7 @@ message GatewayStatusUpdate {
   optional bool afk = 4;
 }
 
-// discordgo/structs.go:2217; recursive ingress presence view.
+// discordgo/structs.go:2225; recursive ingress presence view.
 message PartialGatewayStatusUpdate {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 since = 1;
@@ -1182,7 +1182,7 @@ message PartialGatewayStatusUpdate {
   DomainNullableBool afk = 4;
 }
 
-// discordgo/structs.go:765; safe domain snapshot/request.
+// discordgo/structs.go:773; safe domain snapshot/request.
 message Guild {
   optional string id = 1;
   optional string name = 2;
@@ -1251,7 +1251,7 @@ message Guild {
   DomainStageInstanceList stage_instances = 48;
 }
 
-// discordgo/structs.go:765; recursive ingress presence view.
+// discordgo/structs.go:773; recursive ingress presence view.
 message PartialGuild {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -1336,7 +1336,7 @@ message PartialGuildApplicationCommandPermissions {
   DomainNullableDomainDomainNullablePartialApplicationCommandPermissionsList permissions = 4;
 }
 
-// discordgo/structs.go:1824; safe domain snapshot/request.
+// discordgo/structs.go:1832; safe domain snapshot/request.
 message GuildAuditLog {
   DomainWebhookList webhooks = 1;
   DomainUserList users = 2;
@@ -1344,7 +1344,7 @@ message GuildAuditLog {
   DomainIntegrationList integrations = 4;
 }
 
-// discordgo/structs.go:1824; recursive ingress presence view.
+// discordgo/structs.go:1832; recursive ingress presence view.
 message PartialGuildAuditLog {
   DomainNullableDomainDomainNullablePartialWebhookList webhooks = 1;
   DomainNullableDomainDomainNullablePartialUserList users = 2;
@@ -1352,13 +1352,13 @@ message PartialGuildAuditLog {
   DomainNullableDomainDomainNullablePartialIntegrationList integrations = 4;
 }
 
-// discordgo/structs.go:1713; safe domain snapshot/request.
+// discordgo/structs.go:1721; safe domain snapshot/request.
 message GuildBan {
   optional string reason = 1;
   User user = 2;
 }
 
-// discordgo/structs.go:1713; recursive ingress presence view.
+// discordgo/structs.go:1721; recursive ingress presence view.
 message PartialGuildBan {
   flexmodule.core.v2.NullableString reason = 1;
   DomainNullablePartialUser user = 2;
@@ -1402,19 +1402,19 @@ message PartialGuildChannelCreateData {
   DomainNullableBool nsfw = 10;
 }
 
-// discordgo/structs.go:1817; safe domain snapshot/request.
+// discordgo/structs.go:1825; safe domain snapshot/request.
 message GuildEmbed {
   optional bool enabled = 1;
   optional string channel_id = 2;
 }
 
-// discordgo/structs.go:1817; recursive ingress presence view.
+// discordgo/structs.go:1825; recursive ingress presence view.
 message PartialGuildEmbed {
   DomainNullableBool enabled = 1;
   flexmodule.core.v2.NullableString channel_id = 2;
 }
 
-// discordgo/structs.go:2172; safe domain snapshot/request.
+// discordgo/structs.go:2180; safe domain snapshot/request.
 message GuildMemberAddParams {
   flexmodule.core.v2.CredentialRef credential_ref = 1;
   optional string nick = 2;
@@ -1423,7 +1423,7 @@ message GuildMemberAddParams {
   optional bool deaf = 5;
 }
 
-// discordgo/structs.go:2172; recursive ingress presence view.
+// discordgo/structs.go:2180; recursive ingress presence view.
 message PartialGuildMemberAddParams {
   DomainNullableCredentialRef credential_ref = 1;
   flexmodule.core.v2.NullableString nick = 2;
@@ -1432,7 +1432,7 @@ message PartialGuildMemberAddParams {
   DomainNullableBool deaf = 5;
 }
 
-// discordgo/structs.go:2116; safe domain snapshot/request.
+// discordgo/structs.go:2124; safe domain snapshot/request.
 message GuildMemberParams {
   optional string nick = 1;
   DomainStringList roles = 2;
@@ -1443,7 +1443,7 @@ message GuildMemberParams {
   flexmodule.core.v2.NullableTimestamp communication_disabled_until = 6;
 }
 
-// discordgo/structs.go:2116; recursive ingress presence view.
+// discordgo/structs.go:2124; recursive ingress presence view.
 message PartialGuildMemberParams {
   flexmodule.core.v2.NullableString nick = 1;
   DomainNullableDomainFlexmoduleCoreV2NullableStringList roles = 2;
@@ -1454,7 +1454,7 @@ message PartialGuildMemberParams {
   flexmodule.core.v2.NullableTimestamp communication_disabled_until = 6;
 }
 
-// discordgo/structs.go:1131; safe domain snapshot/request.
+// discordgo/structs.go:1139; safe domain snapshot/request.
 message GuildOnboarding {
   optional string guild_id = 1;
   DomainGuildOnboardingPromptList prompts = 2;
@@ -1464,7 +1464,7 @@ message GuildOnboarding {
   optional sint64 mode = 5;
 }
 
-// discordgo/structs.go:1131; recursive ingress presence view.
+// discordgo/structs.go:1139; recursive ingress presence view.
 message PartialGuildOnboarding {
   flexmodule.core.v2.NullableString guild_id = 1;
   DomainNullableDomainDomainNullablePartialGuildOnboardingPromptList prompts = 2;
@@ -1474,7 +1474,7 @@ message PartialGuildOnboarding {
   DomainNullableSint64 mode = 5;
 }
 
-// discordgo/structs.go:1160; safe domain snapshot/request.
+// discordgo/structs.go:1168; safe domain snapshot/request.
 message GuildOnboardingPrompt {
   optional string id = 1;
   // Source GuildOnboardingPromptType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -1486,7 +1486,7 @@ message GuildOnboardingPrompt {
   optional bool in_onboarding = 7;
 }
 
-// discordgo/structs.go:1160; recursive ingress presence view.
+// discordgo/structs.go:1168; recursive ingress presence view.
 message PartialGuildOnboardingPrompt {
   flexmodule.core.v2.NullableString id = 1;
   // Source GuildOnboardingPromptType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -1498,7 +1498,7 @@ message PartialGuildOnboardingPrompt {
   DomainNullableBool in_onboarding = 7;
 }
 
-// discordgo/structs.go:1188; safe domain snapshot/request.
+// discordgo/structs.go:1196; safe domain snapshot/request.
 message GuildOnboardingPromptOption {
   optional string id = 1;
   DomainStringList channel_ids = 2;
@@ -1511,7 +1511,7 @@ message GuildOnboardingPromptOption {
   optional bool emoji_animated = 9;
 }
 
-// discordgo/structs.go:1188; recursive ingress presence view.
+// discordgo/structs.go:1196; recursive ingress presence view.
 message PartialGuildOnboardingPromptOption {
   flexmodule.core.v2.NullableString id = 1;
   DomainNullableDomainFlexmoduleCoreV2NullableStringList channel_ids = 2;
@@ -1524,7 +1524,7 @@ message PartialGuildOnboardingPromptOption {
   DomainNullableBool emoji_animated = 9;
 }
 
-// discordgo/structs.go:1357; safe domain snapshot/request.
+// discordgo/structs.go:1365; safe domain snapshot/request.
 message GuildParams {
   optional string name = 1;
   optional string region = 2;
@@ -1554,7 +1554,7 @@ message GuildParams {
   optional bool premium_progress_bar_enabled = 20;
 }
 
-// discordgo/structs.go:1357; recursive ingress presence view.
+// discordgo/structs.go:1365; recursive ingress presence view.
 message PartialGuildParams {
   flexmodule.core.v2.NullableString name = 1;
   flexmodule.core.v2.NullableString region = 2;
@@ -1584,7 +1584,7 @@ message PartialGuildParams {
   DomainNullableBool premium_progress_bar_enabled = 20;
 }
 
-// discordgo/structs.go:931; safe domain snapshot/request.
+// discordgo/structs.go:939; safe domain snapshot/request.
 message GuildPreview {
   optional string id = 1;
   optional string name = 2;
@@ -1600,7 +1600,7 @@ message GuildPreview {
   optional string description = 10;
 }
 
-// discordgo/structs.go:931; recursive ingress presence view.
+// discordgo/structs.go:939; recursive ingress presence view.
 message PartialGuildPreview {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -1616,19 +1616,19 @@ message PartialGuildPreview {
   flexmodule.core.v2.NullableString description = 10;
 }
 
-// discordgo/structs.go:1707; safe domain snapshot/request.
+// discordgo/structs.go:1715; safe domain snapshot/request.
 message GuildRole {
   Role role = 1;
   optional string guild_id = 2;
 }
 
-// discordgo/structs.go:1707; recursive ingress presence view.
+// discordgo/structs.go:1715; recursive ingress presence view.
 message PartialGuildRole {
   DomainNullablePartialRole role = 1;
   flexmodule.core.v2.NullableString guild_id = 2;
 }
 
-// discordgo/structs.go:976; safe domain snapshot/request.
+// discordgo/structs.go:984; safe domain snapshot/request.
 message GuildScheduledEvent {
   optional string id = 1;
   optional string guild_id = 2;
@@ -1654,7 +1654,7 @@ message GuildScheduledEvent {
   optional string image = 16;
 }
 
-// discordgo/structs.go:976; recursive ingress presence view.
+// discordgo/structs.go:984; recursive ingress presence view.
 message PartialGuildScheduledEvent {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString guild_id = 2;
@@ -1680,17 +1680,17 @@ message PartialGuildScheduledEvent {
   flexmodule.core.v2.NullableString image = 16;
 }
 
-// discordgo/structs.go:1062; safe domain snapshot/request.
+// discordgo/structs.go:1070; safe domain snapshot/request.
 message GuildScheduledEventEntityMetadata {
   optional string location = 1;
 }
 
-// discordgo/structs.go:1062; recursive ingress presence view.
+// discordgo/structs.go:1070; recursive ingress presence view.
 message PartialGuildScheduledEventEntityMetadata {
   flexmodule.core.v2.NullableString location = 1;
 }
 
-// discordgo/structs.go:1017; safe domain snapshot/request.
+// discordgo/structs.go:1025; safe domain snapshot/request.
 message GuildScheduledEventParams {
   flexmodule.core.v2.NullableString channel_id = 1;
   optional string name = 2;
@@ -1709,7 +1709,7 @@ message GuildScheduledEventParams {
   optional string image = 10;
 }
 
-// discordgo/structs.go:1017; recursive ingress presence view.
+// discordgo/structs.go:1025; recursive ingress presence view.
 message PartialGuildScheduledEventParams {
   flexmodule.core.v2.NullableString channel_id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -1728,21 +1728,21 @@ message PartialGuildScheduledEventParams {
   flexmodule.core.v2.NullableString image = 10;
 }
 
-// discordgo/structs.go:1111; safe domain snapshot/request.
+// discordgo/structs.go:1119; safe domain snapshot/request.
 message GuildScheduledEventUser {
   optional string guild_scheduled_event_id = 1;
   User user = 2;
   Member member = 3;
 }
 
-// discordgo/structs.go:1111; recursive ingress presence view.
+// discordgo/structs.go:1119; recursive ingress presence view.
 message PartialGuildScheduledEventUser {
   flexmodule.core.v2.NullableString guild_scheduled_event_id = 1;
   DomainNullablePartialUser user = 2;
   DomainNullablePartialMember member = 3;
 }
 
-// discordgo/structs.go:1221; safe domain snapshot/request.
+// discordgo/structs.go:1229; safe domain snapshot/request.
 message GuildTemplate {
   optional string code = 1;
   optional string name = 2;
@@ -1760,7 +1760,7 @@ message GuildTemplate {
   optional bool is_dirty = 11;
 }
 
-// discordgo/structs.go:1221; recursive ingress presence view.
+// discordgo/structs.go:1229; recursive ingress presence view.
 message PartialGuildTemplate {
   flexmodule.core.v2.NullableString code = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -1778,19 +1778,19 @@ message PartialGuildTemplate {
   DomainNullableBool is_dirty = 11;
 }
 
-// discordgo/structs.go:1257; safe domain snapshot/request.
+// discordgo/structs.go:1265; safe domain snapshot/request.
 message GuildTemplateParams {
   optional string name = 1;
   optional string description = 2;
 }
 
-// discordgo/structs.go:1257; recursive ingress presence view.
+// discordgo/structs.go:1265; recursive ingress presence view.
 message PartialGuildTemplateParams {
   flexmodule.core.v2.NullableString name = 1;
   flexmodule.core.v2.NullableString description = 2;
 }
 
-// discordgo/structs.go:2325; safe domain snapshot/request.
+// discordgo/structs.go:2333; safe domain snapshot/request.
 message IdentifyProperties {
   optional string os = 1;
   optional string browser = 2;
@@ -1799,7 +1799,7 @@ message IdentifyProperties {
   optional string referring_domain = 5;
 }
 
-// discordgo/structs.go:2325; recursive ingress presence view.
+// discordgo/structs.go:2333; recursive ingress presence view.
 message PartialIdentifyProperties {
   flexmodule.core.v2.NullableString os = 1;
   flexmodule.core.v2.NullableString browser = 2;
@@ -1808,7 +1808,7 @@ message PartialIdentifyProperties {
   flexmodule.core.v2.NullableString referring_domain = 5;
 }
 
-// discordgo/structs.go:229; safe domain snapshot/request.
+// discordgo/structs.go:237; safe domain snapshot/request.
 message Integration {
   optional string id = 1;
   optional string name = 2;
@@ -1827,7 +1827,7 @@ message Integration {
   google.protobuf.Timestamp synced_at = 12;
 }
 
-// discordgo/structs.go:229; recursive ingress presence view.
+// discordgo/structs.go:237; recursive ingress presence view.
 message PartialIntegration {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -1846,13 +1846,13 @@ message PartialIntegration {
   flexmodule.core.v2.NullableTimestamp synced_at = 12;
 }
 
-// discordgo/structs.go:256; safe domain snapshot/request.
+// discordgo/structs.go:264; safe domain snapshot/request.
 message IntegrationAccount {
   optional string id = 1;
   optional string name = 2;
 }
 
-// discordgo/structs.go:256; recursive ingress presence view.
+// discordgo/structs.go:264; recursive ingress presence view.
 message PartialIntegrationAccount {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -1960,7 +1960,7 @@ message PartialInteractionResponseData {
   flexmodule.core.v2.NullableString title = 12;
 }
 
-// discordgo/structs.go:282; safe domain snapshot/request.
+// discordgo/structs.go:290; safe domain snapshot/request.
 message Invite {
   Guild guild = 1;
   Channel channel = 2;
@@ -1989,7 +1989,7 @@ message Invite {
   google.protobuf.Timestamp expires_at = 17;
 }
 
-// discordgo/structs.go:282; recursive ingress presence view.
+// discordgo/structs.go:290; recursive ingress presence view.
 message PartialInvite {
   DomainNullablePartialGuild guild = 1;
   DomainNullablePartialChannel channel = 2;
@@ -2064,7 +2064,7 @@ message PartialMediaGalleryItem {
   DomainNullableBool spoiler = 3;
 }
 
-// discordgo/structs.go:1561; safe domain snapshot/request.
+// discordgo/structs.go:1569; safe domain snapshot/request.
 message Member {
   optional string guild_id = 1;
   // UTC protobuf Timestamp, validate seconds/nanos; zero time never replaced with now.
@@ -2087,7 +2087,7 @@ message Member {
   google.protobuf.Timestamp communication_disabled_until = 14;
 }
 
-// discordgo/structs.go:1561; recursive ingress presence view.
+// discordgo/structs.go:1569; recursive ingress presence view.
 message PartialMember {
   flexmodule.core.v2.NullableString guild_id = 1;
   // UTC protobuf Timestamp, validate seconds/nanos; zero time never replaced with now.
@@ -2188,21 +2188,21 @@ message PartialMessage {
   DomainNullablePartialPoll poll = 31;
 }
 
-// discordgo/message.go:467; safe domain snapshot/request.
+// discordgo/message.go:472; safe domain snapshot/request.
 message MessageActivity {
   // Source MessageActivityType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 type = 1;
   optional string party_id = 2;
 }
 
-// discordgo/message.go:467; recursive ingress presence view.
+// discordgo/message.go:472; recursive ingress presence view.
 message PartialMessageActivity {
   // Source MessageActivityType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 type = 1;
   flexmodule.core.v2.NullableString party_id = 2;
 }
 
-// discordgo/message.go:334; safe domain snapshot/request.
+// discordgo/message.go:339; safe domain snapshot/request.
 message MessageAllowedMentions {
   DomainStringList parse = 1;
   DomainStringList roles = 2;
@@ -2210,7 +2210,7 @@ message MessageAllowedMentions {
   optional bool replied_user = 4;
 }
 
-// discordgo/message.go:334; recursive ingress presence view.
+// discordgo/message.go:339; recursive ingress presence view.
 message PartialMessageAllowedMentions {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList parse = 1;
   DomainNullableDomainFlexmoduleCoreV2NullableStringList roles = 2;
@@ -2218,7 +2218,7 @@ message PartialMessageAllowedMentions {
   DomainNullableBool replied_user = 4;
 }
 
-// discordgo/message.go:484; safe domain snapshot/request.
+// discordgo/message.go:489; safe domain snapshot/request.
 message MessageApplication {
   optional string id = 1;
   optional string cover_image = 2;
@@ -2227,7 +2227,7 @@ message MessageApplication {
   optional string name = 5;
 }
 
-// discordgo/message.go:484; recursive ingress presence view.
+// discordgo/message.go:489; recursive ingress presence view.
 message PartialMessageApplication {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString cover_image = 2;
@@ -2236,7 +2236,7 @@ message PartialMessageApplication {
   flexmodule.core.v2.NullableString name = 5;
 }
 
-// discordgo/message.go:354; safe domain snapshot/request.
+// discordgo/message.go:359; safe domain snapshot/request.
 message MessageAttachment {
   optional string id = 1;
   optional string url = 2;
@@ -2257,7 +2257,7 @@ message MessageAttachment {
   optional uint64 flags = 12;
 }
 
-// discordgo/message.go:354; recursive ingress presence view.
+// discordgo/message.go:359; recursive ingress presence view.
 message PartialMessageAttachment {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString url = 2;
@@ -2296,7 +2296,7 @@ message PartialMessageComponentInteractionData {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList values = 4;
 }
 
-// discordgo/message.go:266; safe domain snapshot/request.
+// discordgo/message.go:271; safe domain snapshot/request.
 message MessageEdit {
   string id = 1;
   string channel_id = 2;
@@ -2310,7 +2310,7 @@ message MessageEdit {
   AttachmentEditList attachments = 9;
 }
 
-// discordgo/message.go:266; recursive ingress presence view.
+// discordgo/message.go:271; recursive ingress presence view.
 message PartialMessageEdit {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString channel_id = 2;
@@ -2324,7 +2324,7 @@ message PartialMessageEdit {
   DomainNullableAttachmentEditList attachments = 9;
 }
 
-// discordgo/message.go:429; safe domain snapshot/request.
+// discordgo/message.go:434; safe domain snapshot/request.
 message MessageEmbed {
   optional string url = 1;
   // Source string alias EmbedType; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -2343,7 +2343,7 @@ message MessageEmbed {
   DomainMessageEmbedFieldList fields = 13;
 }
 
-// discordgo/message.go:429; recursive ingress presence view.
+// discordgo/message.go:434; recursive ingress presence view.
 message PartialMessageEmbed {
   flexmodule.core.v2.NullableString url = 1;
   // Source string alias EmbedType; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -2362,7 +2362,7 @@ message PartialMessageEmbed {
   DomainNullableDomainDomainNullablePartialMessageEmbedFieldList fields = 13;
 }
 
-// discordgo/message.go:414; safe domain snapshot/request.
+// discordgo/message.go:419; safe domain snapshot/request.
 message MessageEmbedAuthor {
   optional string url = 1;
   optional string name = 2;
@@ -2370,7 +2370,7 @@ message MessageEmbedAuthor {
   optional string proxy_icon_url = 4;
 }
 
-// discordgo/message.go:414; recursive ingress presence view.
+// discordgo/message.go:419; recursive ingress presence view.
 message PartialMessageEmbedAuthor {
   flexmodule.core.v2.NullableString url = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -2378,35 +2378,35 @@ message PartialMessageEmbedAuthor {
   flexmodule.core.v2.NullableString proxy_icon_url = 4;
 }
 
-// discordgo/message.go:422; safe domain snapshot/request.
+// discordgo/message.go:427; safe domain snapshot/request.
 message MessageEmbedField {
   optional string name = 1;
   optional string value = 2;
   optional bool inline = 3;
 }
 
-// discordgo/message.go:422; recursive ingress presence view.
+// discordgo/message.go:427; recursive ingress presence view.
 message PartialMessageEmbedField {
   flexmodule.core.v2.NullableString name = 1;
   flexmodule.core.v2.NullableString value = 2;
   DomainNullableBool inline = 3;
 }
 
-// discordgo/message.go:378; safe domain snapshot/request.
+// discordgo/message.go:383; safe domain snapshot/request.
 message MessageEmbedFooter {
   optional string text = 1;
   optional string icon_url = 2;
   optional string proxy_icon_url = 3;
 }
 
-// discordgo/message.go:378; recursive ingress presence view.
+// discordgo/message.go:383; recursive ingress presence view.
 message PartialMessageEmbedFooter {
   flexmodule.core.v2.NullableString text = 1;
   flexmodule.core.v2.NullableString icon_url = 2;
   flexmodule.core.v2.NullableString proxy_icon_url = 3;
 }
 
-// discordgo/message.go:385; safe domain snapshot/request.
+// discordgo/message.go:390; safe domain snapshot/request.
 message MessageEmbedImage {
   optional string url = 1;
   optional string proxy_url = 2;
@@ -2416,7 +2416,7 @@ message MessageEmbedImage {
   optional sint64 height = 4;
 }
 
-// discordgo/message.go:385; recursive ingress presence view.
+// discordgo/message.go:390; recursive ingress presence view.
 message PartialMessageEmbedImage {
   flexmodule.core.v2.NullableString url = 1;
   flexmodule.core.v2.NullableString proxy_url = 2;
@@ -2426,19 +2426,19 @@ message PartialMessageEmbedImage {
   DomainNullableSint64 height = 4;
 }
 
-// discordgo/message.go:408; safe domain snapshot/request.
+// discordgo/message.go:413; safe domain snapshot/request.
 message MessageEmbedProvider {
   optional string url = 1;
   optional string name = 2;
 }
 
-// discordgo/message.go:408; recursive ingress presence view.
+// discordgo/message.go:413; recursive ingress presence view.
 message PartialMessageEmbedProvider {
   flexmodule.core.v2.NullableString url = 1;
   flexmodule.core.v2.NullableString name = 2;
 }
 
-// discordgo/message.go:393; safe domain snapshot/request.
+// discordgo/message.go:398; safe domain snapshot/request.
 message MessageEmbedThumbnail {
   optional string url = 1;
   optional string proxy_url = 2;
@@ -2448,7 +2448,7 @@ message MessageEmbedThumbnail {
   optional sint64 height = 4;
 }
 
-// discordgo/message.go:393; recursive ingress presence view.
+// discordgo/message.go:398; recursive ingress presence view.
 message PartialMessageEmbedThumbnail {
   flexmodule.core.v2.NullableString url = 1;
   flexmodule.core.v2.NullableString proxy_url = 2;
@@ -2458,7 +2458,7 @@ message PartialMessageEmbedThumbnail {
   DomainNullableSint64 height = 4;
 }
 
-// discordgo/message.go:401; safe domain snapshot/request.
+// discordgo/message.go:406; safe domain snapshot/request.
 message MessageEmbedVideo {
   optional string url = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2467,7 +2467,7 @@ message MessageEmbedVideo {
   optional sint64 height = 3;
 }
 
-// discordgo/message.go:401; recursive ingress presence view.
+// discordgo/message.go:406; recursive ingress presence view.
 message PartialMessageEmbedVideo {
   flexmodule.core.v2.NullableString url = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2476,7 +2476,7 @@ message PartialMessageEmbedVideo {
   DomainNullableSint64 height = 3;
 }
 
-// discordgo/message.go:609; safe domain snapshot/request.
+// discordgo/message.go:614; safe domain snapshot/request.
 message MessageInteraction {
   optional string id = 1;
   // Source InteractionType underlying uint8; preserve actual values and unknown representable numeric values with no ordinal offset; Source range 0..255; checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2486,7 +2486,7 @@ message MessageInteraction {
   Member member = 5;
 }
 
-// discordgo/message.go:609; recursive ingress presence view.
+// discordgo/message.go:614; recursive ingress presence view.
 message PartialMessageInteraction {
   flexmodule.core.v2.NullableString id = 1;
   // Source InteractionType underlying uint8; preserve actual values and unknown representable numeric values with no ordinal offset; Source range 0..255; checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2496,7 +2496,7 @@ message PartialMessageInteraction {
   DomainNullablePartialMember member = 5;
 }
 
-// discordgo/message.go:620; safe domain snapshot/request.
+// discordgo/message.go:625; safe domain snapshot/request.
 message MessageInteractionMetadata {
   optional string id = 1;
   // Source InteractionType underlying uint8; preserve actual values and unknown representable numeric values with no ordinal offset; Source range 0..255; checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2508,7 +2508,7 @@ message MessageInteractionMetadata {
   MessageInteractionMetadata triggering_interaction_metadata = 7;
 }
 
-// discordgo/message.go:620; recursive ingress presence view.
+// discordgo/message.go:625; recursive ingress presence view.
 message PartialMessageInteractionMetadata {
   flexmodule.core.v2.NullableString id = 1;
   // Source InteractionType underlying uint8; preserve actual values and unknown representable numeric values with no ordinal offset; Source range 0..255; checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2520,21 +2520,21 @@ message PartialMessageInteractionMetadata {
   DomainNullablePartialMessageInteractionMetadata triggering_interaction_metadata = 7;
 }
 
-// discordgo/structs.go:2625; safe domain snapshot/request.
+// discordgo/structs.go:2633; safe domain snapshot/request.
 message MessagePin {
   // UTC protobuf Timestamp, validate seconds/nanos; zero time never replaced with now.
   google.protobuf.Timestamp pinned_at = 1;
   Message message = 2;
 }
 
-// discordgo/structs.go:2625; recursive ingress presence view.
+// discordgo/structs.go:2633; recursive ingress presence view.
 message PartialMessagePin {
   // UTC protobuf Timestamp, validate seconds/nanos; zero time never replaced with now.
   flexmodule.core.v2.NullableTimestamp pinned_at = 1;
   DomainNullablePartialMessage message = 2;
 }
 
-// discordgo/structs.go:2192; safe domain snapshot/request.
+// discordgo/structs.go:2200; safe domain snapshot/request.
 message MessageReaction {
   optional string user_id = 1;
   optional string message_id = 2;
@@ -2543,7 +2543,7 @@ message MessageReaction {
   optional string guild_id = 5;
 }
 
-// discordgo/structs.go:2192; recursive ingress presence view.
+// discordgo/structs.go:2200; recursive ingress presence view.
 message PartialMessageReaction {
   flexmodule.core.v2.NullableString user_id = 1;
   flexmodule.core.v2.NullableString message_id = 2;
@@ -2552,7 +2552,7 @@ message PartialMessageReaction {
   flexmodule.core.v2.NullableString guild_id = 5;
 }
 
-// discordgo/message.go:460; safe domain snapshot/request.
+// discordgo/message.go:465; safe domain snapshot/request.
 message MessageReactions {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 count = 1;
@@ -2560,7 +2560,7 @@ message MessageReactions {
   Emoji emoji = 3;
 }
 
-// discordgo/message.go:460; recursive ingress presence view.
+// discordgo/message.go:465; recursive ingress presence view.
 message PartialMessageReactions {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 count = 1;
@@ -2568,7 +2568,7 @@ message PartialMessageReactions {
   DomainNullablePartialEmoji emoji = 3;
 }
 
-// discordgo/message.go:509; safe domain snapshot/request.
+// discordgo/message.go:514; safe domain snapshot/request.
 message MessageReference {
   // Source MessageReferenceType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 type = 1;
@@ -2578,7 +2578,7 @@ message MessageReference {
   optional bool fail_if_not_exists = 5;
 }
 
-// discordgo/message.go:509; recursive ingress presence view.
+// discordgo/message.go:514; recursive ingress presence view.
 message PartialMessageReference {
   // Source MessageReferenceType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 type = 1;
@@ -2588,7 +2588,7 @@ message PartialMessageReference {
   DomainNullableBool fail_if_not_exists = 5;
 }
 
-// discordgo/message.go:245; safe domain snapshot/request.
+// discordgo/message.go:250; safe domain snapshot/request.
 message MessageSend {
   optional string content = 1;
   EmbedList embeds = 2;
@@ -2603,7 +2603,7 @@ message MessageSend {
   Poll poll = 10;
 }
 
-// discordgo/message.go:245; recursive ingress presence view.
+// discordgo/message.go:250; recursive ingress presence view.
 message PartialMessageSend {
   flexmodule.core.v2.NullableString content = 1;
   DomainNullableDomainDomainNullablePartialMessageEmbedList embeds = 2;
@@ -2618,12 +2618,12 @@ message PartialMessageSend {
   DomainNullablePartialPoll poll = 10;
 }
 
-// discordgo/message.go:494; safe domain snapshot/request.
+// discordgo/message.go:499; safe domain snapshot/request.
 message MessageSnapshot {
   Message message = 1;
 }
 
-// discordgo/message.go:494; recursive ingress presence view.
+// discordgo/message.go:499; recursive ingress presence view.
 message PartialMessageSnapshot {
   DomainNullablePartialMessage message = 1;
 }
@@ -2642,19 +2642,19 @@ message PartialModalSubmitInteractionData {
   DomainNullablePartialComponentInteractionDataResolved resolved = 3;
 }
 
-// discordgo/structs.go:2284; safe domain snapshot/request.
+// discordgo/structs.go:2292; safe domain snapshot/request.
 message Party {
   optional string id = 1;
   DomainSint64List size = 2;
 }
 
-// discordgo/structs.go:2284; recursive ingress presence view.
+// discordgo/structs.go:2292; recursive ingress presence view.
 message PartialParty {
   flexmodule.core.v2.NullableString id = 1;
   DomainNullableDomainDomainNullableSint64List size = 2;
 }
 
-// discordgo/structs.go:522; safe domain snapshot/request.
+// discordgo/structs.go:530; safe domain snapshot/request.
 message PermissionOverwrite {
   optional string id = 1;
   // Source PermissionOverwriteType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2665,7 +2665,7 @@ message PermissionOverwrite {
   optional string allow = 4;
 }
 
-// discordgo/structs.go:522; recursive ingress presence view.
+// discordgo/structs.go:530; recursive ingress presence view.
 message PartialPermissionOverwrite {
   flexmodule.core.v2.NullableString id = 1;
   // Source PermissionOverwriteType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2676,7 +2676,7 @@ message PartialPermissionOverwrite {
   flexmodule.core.v2.NullableString allow = 4;
 }
 
-// discordgo/structs.go:2411; safe domain snapshot/request.
+// discordgo/structs.go:2419; safe domain snapshot/request.
 message Poll {
   PollMedia question = 1;
   DomainPollAnswerList answers = 2;
@@ -2690,7 +2690,7 @@ message Poll {
   google.protobuf.Timestamp expiry = 7;
 }
 
-// discordgo/structs.go:2411; recursive ingress presence view.
+// discordgo/structs.go:2419; recursive ingress presence view.
 message PartialPoll {
   DomainNullablePartialPollMedia question = 1;
   DomainNullableDomainDomainNullablePartialPollAnswerList answers = 2;
@@ -2704,21 +2704,21 @@ message PartialPoll {
   flexmodule.core.v2.NullableTimestamp expiry = 7;
 }
 
-// discordgo/structs.go:2391; safe domain snapshot/request.
+// discordgo/structs.go:2399; safe domain snapshot/request.
 message PollAnswer {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 answer_id = 1;
   PollMedia media = 2;
 }
 
-// discordgo/structs.go:2391; recursive ingress presence view.
+// discordgo/structs.go:2399; recursive ingress presence view.
 message PartialPollAnswer {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 answer_id = 1;
   DomainNullablePartialPollMedia media = 2;
 }
 
-// discordgo/structs.go:2398; safe domain snapshot/request.
+// discordgo/structs.go:2406; safe domain snapshot/request.
 message PollAnswerCount {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 id = 1;
@@ -2727,7 +2727,7 @@ message PollAnswerCount {
   optional bool me_voted = 3;
 }
 
-// discordgo/structs.go:2398; recursive ingress presence view.
+// discordgo/structs.go:2406; recursive ingress presence view.
 message PartialPollAnswerCount {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 id = 1;
@@ -2736,31 +2736,31 @@ message PartialPollAnswerCount {
   DomainNullableBool me_voted = 3;
 }
 
-// discordgo/structs.go:2385; safe domain snapshot/request.
+// discordgo/structs.go:2393; safe domain snapshot/request.
 message PollMedia {
   optional string text = 1;
   ComponentEmoji emoji = 2;
 }
 
-// discordgo/structs.go:2385; recursive ingress presence view.
+// discordgo/structs.go:2393; recursive ingress presence view.
 message PartialPollMedia {
   flexmodule.core.v2.NullableString text = 1;
   DomainNullablePartialComponentEmoji emoji = 2;
 }
 
-// discordgo/structs.go:2405; safe domain snapshot/request.
+// discordgo/structs.go:2413; safe domain snapshot/request.
 message PollResults {
   optional bool finalized = 1;
   DomainPollAnswerCountList answer_counts = 2;
 }
 
-// discordgo/structs.go:2405; recursive ingress presence view.
+// discordgo/structs.go:2413; recursive ingress presence view.
 message PartialPollResults {
   DomainNullableBool finalized = 1;
   DomainNullableDomainDomainNullablePartialPollAnswerCountList answer_counts = 2;
 }
 
-// discordgo/structs.go:1506; safe domain snapshot/request.
+// discordgo/structs.go:1514; safe domain snapshot/request.
 message Presence {
   User user = 1;
   // Source string alias Status; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -2771,7 +2771,7 @@ message Presence {
   ClientStatus client_status = 5;
 }
 
-// discordgo/structs.go:1506; recursive ingress presence view.
+// discordgo/structs.go:1514; recursive ingress presence view.
 message PartialPresence {
   DomainNullablePartialUser user = 1;
   // Source string alias Status; retain original string (including valid empty/default); never cast a numeric ordinal to a rune.
@@ -2782,7 +2782,7 @@ message PartialPresence {
   DomainNullablePartialClientStatus client_status = 5;
 }
 
-// discordgo/structs.go:1700; safe domain snapshot/request.
+// discordgo/structs.go:1708; safe domain snapshot/request.
 message ReadState {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 mention_count = 1;
@@ -2790,7 +2790,7 @@ message ReadState {
   optional string id = 3;
 }
 
-// discordgo/structs.go:1700; recursive ingress presence view.
+// discordgo/structs.go:1708; recursive ingress presence view.
 message PartialReadState {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 mention_count = 1;
@@ -2798,7 +2798,7 @@ message PartialReadState {
   flexmodule.core.v2.NullableString id = 3;
 }
 
-// discordgo/structs.go:1381; safe domain snapshot/request.
+// discordgo/structs.go:1389; safe domain snapshot/request.
 message Role {
   optional string id = 1;
   optional string name = 2;
@@ -2817,7 +2817,7 @@ message Role {
   optional uint64 flags = 11;
 }
 
-// discordgo/structs.go:1381; recursive ingress presence view.
+// discordgo/structs.go:1389; recursive ingress presence view.
 message PartialRole {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -2836,7 +2836,7 @@ message PartialRole {
   DomainNullableUint64 flags = 11;
 }
 
-// discordgo/structs.go:1454; safe domain snapshot/request.
+// discordgo/structs.go:1462; safe domain snapshot/request.
 message RoleParams {
   optional string name = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2849,7 +2849,7 @@ message RoleParams {
   flexmodule.core.v2.NullableString icon = 7;
 }
 
-// discordgo/structs.go:1454; recursive ingress presence view.
+// discordgo/structs.go:1462; recursive ingress presence view.
 message PartialRoleParams {
   flexmodule.core.v2.NullableString name = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2862,7 +2862,7 @@ message PartialRoleParams {
   flexmodule.core.v2.NullableString icon = 7;
 }
 
-// discordgo/structs.go:2454; safe domain snapshot/request.
+// discordgo/structs.go:2462; safe domain snapshot/request.
 message SKU {
   optional string id = 1;
   // Source SKUType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2874,7 +2874,7 @@ message SKU {
   optional uint64 flags = 6;
 }
 
-// discordgo/structs.go:2454; recursive ingress presence view.
+// discordgo/structs.go:2462; recursive ingress presence view.
 message PartialSKU {
   flexmodule.core.v2.NullableString id = 1;
   // Source SKUType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -2886,14 +2886,14 @@ message PartialSKU {
   DomainNullableUint64 flags = 6;
 }
 
-// discordgo/structs.go:2291; safe domain snapshot/request.
+// discordgo/structs.go:2299; safe domain snapshot/request.
 message Secrets {
   optional string join = 1;
   optional string spectate = 2;
   optional string match = 3;
 }
 
-// discordgo/structs.go:2291; recursive ingress presence view.
+// discordgo/structs.go:2299; recursive ingress presence view.
 message PartialSecrets {
   flexmodule.core.v2.NullableString join = 1;
   flexmodule.core.v2.NullableString spectate = 2;
@@ -3006,7 +3006,7 @@ message PartialSeparator {
   DomainNullableUint64 spacing = 3;
 }
 
-// discordgo/structs.go:2208; safe domain snapshot/request.
+// discordgo/structs.go:2216; safe domain snapshot/request.
 message SessionInformation {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 total = 1;
@@ -3018,7 +3018,7 @@ message SessionInformation {
   optional sint64 max_concurrency = 4;
 }
 
-// discordgo/structs.go:2208; recursive ingress presence view.
+// discordgo/structs.go:2216; recursive ingress presence view.
 message PartialSessionInformation {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 total = 1;
@@ -3030,7 +3030,7 @@ message PartialSessionInformation {
   DomainNullableSint64 max_concurrency = 4;
 }
 
-// discordgo/structs.go:2335; safe domain snapshot/request.
+// discordgo/structs.go:2343; safe domain snapshot/request.
 message StageInstance {
   optional string id = 1;
   optional string guild_id = 2;
@@ -3042,7 +3042,7 @@ message StageInstance {
   optional string guild_scheduled_event_id = 7;
 }
 
-// discordgo/structs.go:2335; recursive ingress presence view.
+// discordgo/structs.go:2343; recursive ingress presence view.
 message PartialStageInstance {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString guild_id = 2;
@@ -3054,7 +3054,7 @@ message PartialStageInstance {
   flexmodule.core.v2.NullableString guild_scheduled_event_id = 7;
 }
 
-// discordgo/structs.go:2354; safe domain snapshot/request.
+// discordgo/structs.go:2362; safe domain snapshot/request.
 message StageInstanceParams {
   optional string channel_id = 1;
   optional string topic = 2;
@@ -3063,7 +3063,7 @@ message StageInstanceParams {
   optional bool send_start_notification = 4;
 }
 
-// discordgo/structs.go:2354; recursive ingress presence view.
+// discordgo/structs.go:2362; recursive ingress presence view.
 message PartialStageInstanceParams {
   flexmodule.core.v2.NullableString channel_id = 1;
   flexmodule.core.v2.NullableString topic = 2;
@@ -3072,7 +3072,7 @@ message PartialStageInstanceParams {
   DomainNullableBool send_start_notification = 4;
 }
 
-// discordgo/structs.go:678; safe domain snapshot/request.
+// discordgo/structs.go:686; safe domain snapshot/request.
 message Sticker {
   optional string id = 1;
   optional string pack_id = 2;
@@ -3090,7 +3090,7 @@ message Sticker {
   optional sint64 sort_value = 11;
 }
 
-// discordgo/structs.go:678; recursive ingress presence view.
+// discordgo/structs.go:686; recursive ingress presence view.
 message PartialSticker {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString pack_id = 2;
@@ -3108,7 +3108,7 @@ message PartialSticker {
   DomainNullableSint64 sort_value = 11;
 }
 
-// discordgo/structs.go:693; safe domain snapshot/request.
+// discordgo/structs.go:701; safe domain snapshot/request.
 message StickerItem {
   optional string id = 1;
   optional string name = 2;
@@ -3116,7 +3116,7 @@ message StickerItem {
   optional sint64 format_type = 3;
 }
 
-// discordgo/structs.go:693; recursive ingress presence view.
+// discordgo/structs.go:701; recursive ingress presence view.
 message PartialStickerItem {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -3124,7 +3124,7 @@ message PartialStickerItem {
   DomainNullableSint64 format_type = 3;
 }
 
-// discordgo/structs.go:700; safe domain snapshot/request.
+// discordgo/structs.go:708; safe domain snapshot/request.
 message StickerPack {
   optional string id = 1;
   DomainStickerList stickers = 2;
@@ -3135,7 +3135,7 @@ message StickerPack {
   optional string banner_asset_id = 7;
 }
 
-// discordgo/structs.go:700; recursive ingress presence view.
+// discordgo/structs.go:708; recursive ingress presence view.
 message PartialStickerPack {
   flexmodule.core.v2.NullableString id = 1;
   DomainNullableDomainDomainNullablePartialStickerList stickers = 2;
@@ -3146,7 +3146,7 @@ message PartialStickerPack {
   flexmodule.core.v2.NullableString banner_asset_id = 7;
 }
 
-// discordgo/structs.go:2477; safe domain snapshot/request.
+// discordgo/structs.go:2485; safe domain snapshot/request.
 message Subscription {
   optional string id = 1;
   optional string user_id = 2;
@@ -3164,7 +3164,7 @@ message Subscription {
   optional string country = 10;
 }
 
-// discordgo/structs.go:2477; recursive ingress presence view.
+// discordgo/structs.go:2485; recursive ingress presence view.
 message PartialSubscription {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString user_id = 2;
@@ -3264,7 +3264,7 @@ message PartialTextInput {
   DomainNullableSint64 id = 9;
 }
 
-// discordgo/structs.go:557; safe domain snapshot/request.
+// discordgo/structs.go:565; safe domain snapshot/request.
 message ThreadMember {
   optional string id = 1;
   optional string user_id = 2;
@@ -3275,7 +3275,7 @@ message ThreadMember {
   Member member = 5;
 }
 
-// discordgo/structs.go:557; recursive ingress presence view.
+// discordgo/structs.go:565; recursive ingress presence view.
 message PartialThreadMember {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString user_id = 2;
@@ -3286,7 +3286,7 @@ message PartialThreadMember {
   DomainNullablePartialMember member = 5;
 }
 
-// discordgo/structs.go:542; safe domain snapshot/request.
+// discordgo/structs.go:550; safe domain snapshot/request.
 message ThreadMetadata {
   optional bool archived = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -3297,7 +3297,7 @@ message ThreadMetadata {
   optional bool invitable = 5;
 }
 
-// discordgo/structs.go:542; recursive ingress presence view.
+// discordgo/structs.go:550; recursive ingress presence view.
 message PartialThreadMetadata {
   DomainNullableBool archived = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -3308,7 +3308,7 @@ message PartialThreadMetadata {
   DomainNullableBool invitable = 5;
 }
 
-// discordgo/structs.go:530; safe domain snapshot/request.
+// discordgo/structs.go:538; safe domain snapshot/request.
 message ThreadStart {
   optional string name = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -3321,7 +3321,7 @@ message ThreadStart {
   DomainStringList applied_tags = 6;
 }
 
-// discordgo/structs.go:530; recursive ingress presence view.
+// discordgo/structs.go:538; recursive ingress presence view.
 message PartialThreadStart {
   flexmodule.core.v2.NullableString name = 1;
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -3334,14 +3334,14 @@ message PartialThreadStart {
   DomainNullableDomainFlexmoduleCoreV2NullableStringList applied_tags = 6;
 }
 
-// discordgo/structs.go:573; safe domain snapshot/request.
+// discordgo/structs.go:581; safe domain snapshot/request.
 message ThreadsList {
   DomainChannelList threads = 1;
   DomainThreadMemberList members = 2;
   optional bool has_more = 3;
 }
 
-// discordgo/structs.go:573; recursive ingress presence view.
+// discordgo/structs.go:581; recursive ingress presence view.
 message PartialThreadsList {
   DomainNullableDomainDomainNullablePartialChannelList threads = 1;
   DomainNullableDomainDomainNullablePartialThreadMemberList members = 2;
@@ -3366,7 +3366,7 @@ message PartialThumbnail {
   DomainNullableBool spoiler = 4;
 }
 
-// discordgo/structs.go:1515; safe domain snapshot/request.
+// discordgo/structs.go:1523; safe domain snapshot/request.
 message TimeStamps {
   // Signed 64-bit Unix milliseconds, retain source unit.
   optional sint64 end_timestamp = 1;
@@ -3374,7 +3374,7 @@ message TimeStamps {
   optional sint64 start_timestamp = 2;
 }
 
-// discordgo/structs.go:1515; recursive ingress presence view.
+// discordgo/structs.go:1523; recursive ingress presence view.
 message PartialTimeStamps {
   // Signed 64-bit Unix milliseconds, retain source unit.
   DomainNullableSint64 end_timestamp = 1;
@@ -3382,7 +3382,7 @@ message PartialTimeStamps {
   DomainNullableSint64 start_timestamp = 2;
 }
 
-// discordgo/structs.go:1673; safe domain snapshot/request.
+// discordgo/structs.go:1681; safe domain snapshot/request.
 message TooManyRequests {
   optional string bucket = 1;
   optional string message = 2;
@@ -3390,7 +3390,7 @@ message TooManyRequests {
   optional sint64 retry_after = 3;
 }
 
-// discordgo/structs.go:1673; recursive ingress presence view.
+// discordgo/structs.go:1681; recursive ingress presence view.
 message PartialTooManyRequests {
   flexmodule.core.v2.NullableString bucket = 1;
   flexmodule.core.v2.NullableString message = 2;
@@ -3408,7 +3408,7 @@ message PartialUnfurledMediaItem {
   flexmodule.core.v2.NullableString url = 1;
 }
 
-// discordgo/wsapi.go:333; safe domain snapshot/request.
+// discordgo/wsapi.go:376; safe domain snapshot/request.
 message UpdateStatusData {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 idle_since = 1;
@@ -3417,7 +3417,7 @@ message UpdateStatusData {
   optional string status = 4;
 }
 
-// discordgo/wsapi.go:333; recursive ingress presence view.
+// discordgo/wsapi.go:376; recursive ingress presence view.
 message PartialUpdateStatusData {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 idle_since = 1;
@@ -3476,7 +3476,7 @@ message PartialUser {
   DomainNullablePartialUserPrimaryGuild primary_guild = 18;
 }
 
-// discordgo/structs.go:220; safe domain snapshot/request.
+// discordgo/structs.go:228; safe domain snapshot/request.
 message UserConnection {
   optional string id = 1;
   optional string name = 2;
@@ -3485,7 +3485,7 @@ message UserConnection {
   DomainIntegrationList integrations = 5;
 }
 
-// discordgo/structs.go:220; recursive ingress presence view.
+// discordgo/structs.go:228; recursive ingress presence view.
 message PartialUserConnection {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -3494,7 +3494,7 @@ message PartialUserConnection {
   DomainNullableDomainDomainNullablePartialIntegrationList integrations = 5;
 }
 
-// discordgo/structs.go:1303; safe domain snapshot/request.
+// discordgo/structs.go:1311; safe domain snapshot/request.
 message UserGuild {
   optional string id = 1;
   optional string name = 2;
@@ -3509,7 +3509,7 @@ message UserGuild {
   optional sint64 approximate_presence_count = 8;
 }
 
-// discordgo/structs.go:1303; recursive ingress presence view.
+// discordgo/structs.go:1311; recursive ingress presence view.
 message PartialUserGuild {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -3540,7 +3540,7 @@ message PartialUserPrimaryGuild {
   flexmodule.core.v2.NullableString badge = 4;
 }
 
-// discordgo/structs.go:263; safe domain snapshot/request.
+// discordgo/structs.go:271; safe domain snapshot/request.
 message VoiceRegion {
   optional string id = 1;
   optional string name = 2;
@@ -3549,7 +3549,7 @@ message VoiceRegion {
   optional bool custom = 5;
 }
 
-// discordgo/structs.go:263; recursive ingress presence view.
+// discordgo/structs.go:271; recursive ingress presence view.
 message PartialVoiceRegion {
   flexmodule.core.v2.NullableString id = 1;
   flexmodule.core.v2.NullableString name = 2;
@@ -3558,7 +3558,7 @@ message PartialVoiceRegion {
   DomainNullableBool custom = 5;
 }
 
-// discordgo/structs.go:1489; safe domain snapshot/request.
+// discordgo/structs.go:1497; safe domain snapshot/request.
 message VoiceState {
   optional string guild_id = 1;
   optional string channel_id = 2;
@@ -3575,7 +3575,7 @@ message VoiceState {
   google.protobuf.Timestamp request_to_speak_timestamp = 13;
 }
 
-// discordgo/structs.go:1489; recursive ingress presence view.
+// discordgo/structs.go:1497; recursive ingress presence view.
 message PartialVoiceState {
   flexmodule.core.v2.NullableString guild_id = 1;
   flexmodule.core.v2.NullableString channel_id = 2;

@@ -14,6 +14,7 @@ import (
 	"flag"
 	"fmt"
 	"go/ast"
+	"go/build"
 	"go/parser"
 	"go/printer"
 	"go/token"
@@ -43,6 +44,7 @@ type sourceType struct {
 	Kind               string
 	File               string
 	Line               int
+	Column             int
 	End                int
 	Fields             []field
 	InterfaceMethods   []field `json:",omitempty"`
@@ -93,8 +95,16 @@ type event struct {
 }
 
 type sourceFile struct {
-	Path   string `json:"path"`
-	SHA256 string `json:"sha256"`
+	Path            string   `json:"path"`
+	SHA256          string   `json:"sha256"`
+	BuildConstraint string   `json:"buildConstraint"`
+	BuildProfiles   []string `json:"buildProfiles"`
+}
+
+type publicDeclaration struct {
+	Name            string   `json:"name"`
+	Receiver        string   `json:"receiver"`
+	Implementations []method `json:"implementations"`
 }
 
 type catalog struct {
@@ -105,6 +115,7 @@ type catalog struct {
 	Events               []event             `json:"events"`
 	PolymorphicExpansion map[string][]string `json:"polymorphicExpansion"`
 	EndpointDeclarations map[string]string   `json:"endpointDeclarations"`
+	PublicDeclarations   []publicDeclaration `json:"publicDeclarations"`
 }
 
 type input struct {
@@ -277,7 +288,7 @@ func extractType(in input, spec *ast.TypeSpec, doc *ast.CommentGroup, scope stri
 		doc = spec.Doc
 	}
 	refs, ext := references(spec.Type)
-	return sourceType{Name: spec.Name.Name, Kind: kind, File: in.name, Line: positions.Position(spec.Pos()).Line, End: positions.Position(spec.End()).Line, Fields: fields, InterfaceMethods: interfaceMethods, Exported: spec.Name.IsExported(), Alias: spec.Assign.IsValid(), Scope: scope, Documentation: documentation(doc), Declaration: text(in, spec.Pos(), spec.End()), References: refs, ExternalReferences: ext}
+	return sourceType{Name: spec.Name.Name, Kind: kind, File: in.name, Line: positions.Position(spec.Pos()).Line, Column: positions.Position(spec.Pos()).Column, End: positions.Position(spec.End()).Line, Fields: fields, InterfaceMethods: interfaceMethods, Exported: spec.Name.IsExported(), Alias: spec.Assign.IsValid(), Scope: scope, Documentation: documentation(doc), Declaration: text(in, spec.Pos(), spec.End()), References: refs, ExternalReferences: ext}
 }
 
 func arguments(list *ast.FieldList) []argument {
@@ -329,6 +340,17 @@ func main() {
 		fail("read SDK: %v", err)
 	}
 	result := catalog{Types: []sourceType{}, NestedTypes: []sourceType{}, Methods: []method{}, Events: []event{}, PolymorphicExpansion: map[string][]string{"MessageComponent": {}, "InteractionData": {}}, EndpointDeclarations: map[string]string{}}
+	profiles := map[string]build.Context{}
+	for _, name := range []string{"ordinary", "native_voice"} {
+		ctx := build.Default
+		ctx.GOOS, ctx.GOARCH, ctx.Compiler = "linux", "amd64", "gc"
+		ctx.BuildTags, ctx.ToolTags = nil, nil
+		ctx.CgoEnabled = name == "native_voice"
+		if ctx.CgoEnabled {
+			ctx.BuildTags = []string{"voice"}
+		}
+		profiles[name] = ctx
+	}
 	inputs := []input{}
 	for _, entry := range entries {
 		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".go") || strings.HasSuffix(entry.Name(), "_test.go") {
@@ -347,12 +369,35 @@ func main() {
 			fail("unexpected package %s in %s", file.Name.Name, name)
 		}
 		hash := sha256.Sum256(data)
-		result.SourceFiles = append(result.SourceFiles, sourceFile{Path: name, SHA256: hex.EncodeToString(hash[:])})
+		constraint := ""
+		for _, group := range file.Comments {
+			if group.Pos() > file.Package {
+				break
+			}
+			for _, comment := range group.List {
+				if strings.HasPrefix(comment.Text, "//go:build ") {
+					constraint = strings.TrimPrefix(comment.Text, "//go:build ")
+				}
+			}
+		}
+		active := []string{}
+		for profile, ctx := range profiles {
+			match, err := ctx.MatchFile(*sdk, entry.Name())
+			if err != nil {
+				fail("build constraint %s: %v", name, err)
+			}
+			if match {
+				active = append(active, profile)
+			}
+		}
+		sort.Strings(active)
+		result.SourceFiles = append(result.SourceFiles, sourceFile{Path: name, SHA256: hex.EncodeToString(hash[:]), BuildConstraint: constraint, BuildProfiles: active})
 		inputs = append(inputs, input{name: name, data: data, file: file})
 	}
 	constants, constantSources := map[string]string{}, map[string]string{}
 	handlers := map[string]*event{}
 	functions := map[string]map[string]*ast.FuncDecl{}
+	public := map[string]*publicDeclaration{}
 	for _, in := range inputs {
 		for _, decl := range in.file.Decls {
 			switch d := decl.(type) {
@@ -390,6 +435,13 @@ func main() {
 				}
 			case *ast.FuncDecl:
 				recv := receiver(d)
+				if d.Name.IsExported() && (recv == "" || ast.IsExported(recv)) {
+					key := recv + "." + d.Name.Name
+					if public[key] == nil {
+						public[key] = &publicDeclaration{Name: d.Name.Name, Receiver: recv, Implementations: []method{}}
+					}
+					public[key].Implementations = append(public[key].Implementations, extractMethod(in, d))
+				}
 				if recv == "Session" && d.Name.IsExported() {
 					result.Methods = append(result.Methods, extractMethod(in, d))
 				}
@@ -495,7 +547,7 @@ func main() {
 			if named[expr.Pos()] {
 				return true
 			}
-			spec := &ast.TypeSpec{Name: &ast.Ident{Name: "anonymous@" + location(expr.Pos()), NamePos: expr.Pos()}, Type: expr}
+			spec := &ast.TypeSpec{Name: &ast.Ident{Name: "anonymous@" + location(expr.Pos()) + ":" + strconv.Itoa(positions.Position(expr.Pos()).Column), NamePos: expr.Pos()}, Type: expr}
 			result.NestedTypes = append(result.NestedTypes, extractType(in, spec, nil, "anonymous"))
 			return true
 		})
@@ -508,6 +560,9 @@ func main() {
 		if a.Line != b.Line {
 			return a.Line < b.Line
 		}
+		if a.Column != b.Column {
+			return a.Column < b.Column
+		}
 		return a.Name < b.Name
 	})
 	for _, h := range handlers {
@@ -519,6 +574,13 @@ func main() {
 		}
 		result.Events = append(result.Events, *h)
 	}
+	for _, declaration := range public {
+		result.PublicDeclarations = append(result.PublicDeclarations, *declaration)
+	}
+	sort.Slice(result.PublicDeclarations, func(i, j int) bool {
+		a, b := result.PublicDeclarations[i], result.PublicDeclarations[j]
+		return a.Receiver+"."+a.Name < b.Receiver+"."+b.Name
+	})
 	sort.Slice(result.Types, func(i, j int) bool { return result.Types[i].Name < result.Types[j].Name })
 	sort.Slice(result.Methods, func(i, j int) bool { return result.Methods[i].Name < result.Methods[j].Name })
 	sort.Slice(result.Events, func(i, j int) bool { return result.Events[i].SourceName < result.Events[j].SourceName })
