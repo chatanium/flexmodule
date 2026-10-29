@@ -11,6 +11,36 @@ A = json.loads((ROOT/'tools/protocol/inventory/source-ast.json').read_text())
 T = {t['Name']:t for t in A['Types'] if t['File'].startswith('discordgo/') and t.get('Scope','package')=='package'}
 D = {t['source_type']:t for t in M['types']}
 W = {w['wire_type']:w['shape'] for w in M['wrappers']}
+# These fields are omitted from the SDK alias struct specifically because its
+# source-reviewed custom UnmarshalJSON decodes the polymorphic field itself.
+# Other json:"-" fields (live Channel caches and file Readers) stay excluded.
+CUSTOM_JSON_KEYS={
+    ('Message','Components'):'components',
+    ('ModalSubmitInteractionData','Components'):'components',
+}
+CUSTOM_JSON_VALUES={
+    ('Activity','CreatedAt'):('ingressUnixMilliseconds','google.protobuf.Timestamp','Unix milliseconds, checked protobuf timestamp; no nanosecond multiplication overflow'),
+    ('Activity','ApplicationID'):('ingressNumberString','string','Exact json.Number text from numeric or quoted numeric source; never binary64'),
+    ('TimeStamps','StartTimestamp'):('ingressExactInt64','sint64','Exact integral Unix milliseconds; reject fractional loss and signed-range overflow'),
+    ('TimeStamps','EndTimestamp'):('ingressExactInt64','sint64','Exact integral Unix milliseconds; reject fractional loss and signed-range overflow'),
+    ('TooManyRequests','RetryAfter'):('ingressSecondsDuration','sint64','JSON seconds to exact Go nanoseconds; reject unrepresentable fractions or overflow'),
+}
+HIDDEN_JSON_EXCLUSIONS={
+    ('Channel','Messages'):'Host cache snapshot only; never synthesize from gateway JSON',
+    ('Channel','Members'):'Host thread-member cache snapshot only; never synthesize from gateway JSON',
+    ('MessageSend','Files'):'Reader-backed multipart input; require explicit uploaded references',
+    ('MessageEdit','Files'):'Reader-backed multipart input; require explicit uploaded references',
+    ('WebhookParams','Files'):'Reader-backed multipart input; require explicit uploaded references',
+    ('WebhookEdit','Files'):'Reader-backed multipart input; require explicit uploaded references',
+    ('InteractionResponseData','Files'):'Reader-backed multipart input; require explicit uploaded references',
+    ('MessageSend','File'):'Singular SDK convenience replaced by canonical typed Files view',
+    ('MessageSend','Embed'):'Singular SDK convenience replaced by canonical typed Embeds view',
+    ('MessageEdit','Embed'):'Singular SDK convenience replaced by canonical presence-aware Embeds view',
+}
+hidden_fields={(n,f['source_field']) for n,t in D.items() for f in t.get('fields',[]) if re.search(r'json:"-(?:,|")',f.get('source_json_tag') or '')}
+unreviewed_hidden=hidden_fields-set(CUSTOM_JSON_KEYS)-set(HIDDEN_JSON_EXCLUSIONS)
+if unreviewed_hidden:
+    raise ValueError('Review new SDK hidden/custom JSON fields before generation: '+repr(sorted(unreviewed_hidden)))
 P = {}
 for file in ['domain','events']:
     text=(ROOT/f'proto/discord-v2/{file}.pb.go').read_text()
@@ -307,9 +337,22 @@ for n,t in D.items():
 
 writego('conversions_generated.go',out)
 artifact={'generator':'python3 tools/protocol/generate-conversions.py','source_inventory':'domain-mapping.json','historical_baseline':M['historical_baseline'],'legacy_messages':M['legacy_messages'],'legacy_enums':M['legacy_enums'],'source_provenance':M['source_provenance'],'additional_api_closure':M['api_reachable_types'],'additional_combined_closure':M['combined_reachable_types'],'types':[],'events':[]}
+artifact['custom_json_review']={
+    'hidden_field_decisions':[{'source_type':n,'source_field':field,'json_key':CUSTOM_JSON_KEYS.get((n,field)),'decision':'Source-reviewed custom polymorphic JSON decoder' if (n,field) in CUSTOM_JSON_KEYS else HIDDEN_JSON_EXCLUSIONS[n,field]} for n,field in sorted(hidden_fields)],
+    'component_codecs':[{'source_type':n,'discriminators':values,'marshal_discriminator_key':'type','polymorphic_nested_keys':{'ActionsRow':['components'],'Section':['components','accessory'],'Container':['components'],'Label':['component']}.get(n,[]),'decision':'Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized'} for n,values in M['component_discriminators'].items()],
+    'interaction_data':{'json_key':'data','parent_key':'type','families':{'2':'ApplicationCommandInteractionData','4':'ApplicationCommandInteractionData','3':'MessageComponentInteractionData','5':'ModalSubmitInteractionData'},'decision':'Parent-discriminated raw projection; SDK accessors receive concrete value variants'},
+    'request_marshal_boundaries':{'GuildMemberParams':['channel_id','communication_disabled_until'],'GuildScheduledEventParams':['channel_id'],'decision':'Source custom null sentinels replaced by explicit presence-aware nullable views; no guessed SDK empty/zero normalization'},
+}
 def field_receipt(n,f):
     result={'source_field':f['source_field'],'wire_field':f['wire_field'],'classification':f['classification'],'decision':f['decision'],'safe_go_field':viewfield(n,f),'safe_go_type':fieldtype(n,f) if n in views else gtype(f['source_type']),'wire_type':f['wire_type'],'partial_wire_type':f.get('partial_wire_type'),'numeric_contract':f.get('numeric_contract'),'implementation':'static checked to/from field conversion; recursive typed ingress'}
     name=f['source_field']
+    if (n,name) in CUSTOM_JSON_KEYS:
+        result['trusted_ingress_json_key']=CUSTOM_JSON_KEYS[n,name]
+        result['source_codec']='discordgo.'+n+'.UnmarshalJSON'
+    if (n,name) in CUSTOM_JSON_VALUES:
+        helper,value_type,decision=CUSTOM_JSON_VALUES[n,name]
+        result['source_codec']='discordgo.'+n+'.UnmarshalJSON'
+        result['trusted_ingress_value_codec']={'helper':helper,'value_wire_type':value_type,'decision':decision}
     if n in {'Session','State','Identify'}:
         result.update(safe_go_field=None,safe_go_type=None,implementation='runtime-owned execution object; intentionally no reconstruction converter')
     elif n=='File':
@@ -446,6 +489,28 @@ def decode(w,node,target,path,parent='parent'):
         emit(f'{value},{error}:=c.nodeSnapshot{w}({node},{path},{parent});if {error}!=nil{{return nil,{error}}};{target}={value}')
     else:raise ValueError(('unclassified ingress type',w))
 
+def decode_source_field(owner,field,w,node,target,path,parent='parent'):
+    codec=CUSTOM_JSON_VALUES.get((owner,field['source_field']))
+    if codec is None:
+        decode(w,node,target,path,parent)
+        return
+    helper,value_type,_=codec
+    value,error=fresh('codecValue'),fresh('codecError')
+    shape=allshapes.get(w)
+    if shape and shape[0]=='nullable':
+        if shape[1]!=value_type:raise ValueError(('custom codec nullable type drift',owner,field['source_field'],w))
+        pkg,name=nodepkg(w)
+        emit(f'if {node}!=nil{{')
+        emit(f'if {node}.null{{')
+        emit(f'{target}=&{pkg}.{name}{{Kind:&{pkg}.{name}_NullValue{{}}}}')
+        emit('}else{')
+        emit(f'{value},{error}:={helper}({node},c,{path});if {error}!=nil{{return nil,{error}}}')
+        emit(f'{target}=&{pkg}.{name}{{Kind:&{pkg}.{name}_Value{{Value:{value}}}}}')
+        emit('}}')
+    else:
+        if w!=value_type:raise ValueError(('custom codec value type drift',owner,field['source_field'],w))
+        emit(f'{value},{error}:={helper}({node},c,{path});if {error}!=nil{{return nil,{error}}};{target}={value}')
+
 for w in sorted(needed):
     if w not in allshapes:continue
     shape=allshapes[w];pkg,name=nodepkg(w)
@@ -478,7 +543,9 @@ for w in sorted(needed):
         emit('dst.Values[key]=value};return dst,nil')
     emit('}')
 
-def jsonkey(f):
+def jsonkey(f,owner=None):
+    custom=CUSTOM_JSON_KEYS.get((owner or f.get('owner'),f.get('source_field',f.get('Name'))))
+    if custom is not None:return custom
     tag=f.get('source_json_tag',f.get('Tag',''))
     match=re.search(r'json:"([^",]+)',tag)
     return match[1] if match else f.get('source_field',f.get('Name'))
@@ -489,7 +556,7 @@ def promotedkeys(n,active=None):
     active=active|{n};keys=[]
     for f in sourcefields(n):
         if f.get('Embedded') and not f['Tag']:keys+=promotedkeys(f['Type'].lstrip('*'),active)
-        elif jsonkey(f)!='-':keys.append(jsonkey(f))
+        elif jsonkey(f,n)!='-':keys.append(jsonkey(f,n))
     return list(dict.fromkeys(keys))
 
 for n,t in D.items():
@@ -498,11 +565,11 @@ for n,t in D.items():
     if n=='AuditLogChange':emit('if err:=validateAuditIngressKey(n,c,path);err!=nil{return nil,err}')
     if n in {'Interaction','ApplicationCommandOption','ApplicationCommandInteractionDataOption'}:
         emit('kind,err:=ingressKind(n,"type",c,path);if err!=nil{return nil,err};_ = kind')
-    directkeys=[jsonkey(f) for f in sourcefields(n) if not(f.get('Embedded') and not f['Tag']) and jsonkey(f)!='-']
+    directkeys=[jsonkey(f,n) for f in sourcefields(n) if not(f.get('Embedded') and not f['Tag']) and jsonkey(f,n)!='-']
     for f in t['fields']:
         w=f.get('partial_wire_type')
         if not w:continue
-        fn=f['source_field'];sf=next(x for x in sourcefields(n) if x['Name']==fn);embedded=sf.get('Embedded') and not sf['Tag'];key=jsonkey(f);path=f'fieldPath(path,"{fn}")';wf=P['Partial'+n][f['wire_field']][0]
+        fn=f['source_field'];sf=next(x for x in sourcefields(n) if x['Name']==fn);embedded=sf.get('Embedded') and not sf['Tag'];key=jsonkey(f,n);path=f'fieldPath(path,"{fn}")';wf=P['Partial'+n][f['wire_field']][0]
         if key=='-':continue
         emit('{')
         if embedded:
@@ -523,11 +590,11 @@ for n,t in D.items():
             # Range validation against the real source backing type, separately
             # from the wider protobuf representation.
             b=bare(f['source_type'].lstrip('*'))
-            if b in {'int','int64','int32','uint','uint8','uint16','uint32','uint64','time.Duration'} and f['wire_type'] not in {'string','flexmodule.core.v2.NullableString'}:
+            if (n,fn) not in CUSTOM_JSON_VALUES and b in {'int','int64','int32','uint','uint8','uint16','uint32','uint64','time.Duration'} and f['wire_type'] not in {'string','flexmodule.core.v2.NullableString'}:
                 primitive='int64' if b in {'int','time.Duration'} else 'uint64' if b=='uint' else b
                 emit(f'if item!=nil&&!item.null{{if _,err:=ingressNumericScalar[{primitive}](item,c,{path});err!=nil{{return nil,err}}}}')
             parent='kind' if (n=='Interaction' and fn=='Data') or (n in {'ApplicationCommandOption','ApplicationCommandInteractionDataOption'} and fn in {'Value','Choices'}) else 'parent'
-            decode(w,'item','dst.'+wf,path,parent)
+            decode_source_field(n,f,w,'item','dst.'+wf,path,parent)
         emit('}')
     if n in {'ModalSubmitInteractionData','InteractionResponseData'}:
         emit('if err:=validateIngressModal(n.get("components"),false,c,fieldPath(path,"Components"));err!=nil{return nil,err}')
@@ -564,11 +631,11 @@ for n,t in D.items():
     if n=='AuditLogChange':emit('if err:=validateAuditIngressKey(n,c,path);err!=nil{return nil,err}')
     if n in {'Interaction','ApplicationCommandOption','ApplicationCommandInteractionDataOption'}:
         emit('kind,err:=ingressKind(n,"type",c,path);if err!=nil{return nil,err};_ = kind')
-    directkeys=[jsonkey(f) for f in sourcefields(n) if not(f.get('Embedded') and not f['Tag']) and jsonkey(f)!='-']
+    directkeys=[jsonkey(f,n) for f in sourcefields(n) if not(f.get('Embedded') and not f['Tag']) and jsonkey(f,n)!='-']
     for f in t['fields']:
         w=f.get('wire_type')
         if not w:continue
-        fn=f['source_field'];sf=next(x for x in sourcefields(n) if x['Name']==fn);embedded=sf.get('Embedded') and not sf['Tag'];key=jsonkey(f);path=f'fieldPath(path,"{fn}")';wf,wt=P[n][f['wire_field']]
+        fn=f['source_field'];sf=next(x for x in sourcefields(n) if x['Name']==fn);embedded=sf.get('Embedded') and not sf['Tag'];key=jsonkey(f,n);path=f'fieldPath(path,"{fn}")';wf,wt=P[n][f['wire_field']]
         if key=='-':continue
         emit('{')
         if embedded:
@@ -587,13 +654,13 @@ for n,t in D.items():
             if not nullable and w!='flexmodule.core.v2.JSONValue':emit('if !item.null{')
             if fn in {'Permissions','AppPermissions','DefaultMemberPermissions','Allow','Deny'} and f['source_type'].lstrip('*') in {'int','int64','string'}:emit(f'if err:=ingressPermission(item,c,{path});err!=nil{{return nil,err}}')
             b=bare(f['source_type'].lstrip('*'))
-            if b in {'int','int64','int32','uint','uint8','uint16','uint32','uint64','time.Duration'} and w not in {'string','flexmodule.core.v2.NullableString'}:
+            if (n,fn) not in CUSTOM_JSON_VALUES and b in {'int','int64','int32','uint','uint8','uint16','uint32','uint64','time.Duration'} and w not in {'string','flexmodule.core.v2.NullableString'}:
                 primitive='int64' if b in {'int','time.Duration'} else 'uint64' if b=='uint' else b
                 emit(f'if !item.null{{if _,err:=ingressNumericScalar[{primitive}](item,c,{path});err!=nil{{return nil,err}}}}')
             parent='kind' if (n=='Interaction' and fn=='Data') or (n in {'ApplicationCommandOption','ApplicationCommandInteractionDataOption'} and fn in {'Value','Choices'}) else 'parent'
             if w in {'string','bool','sint64','sint32','uint32','uint64','double'} and wt.startswith('*'):
-                emit('var value '+wiretype(w));decode(w,'item','value',path,parent);emit('dst.'+wf+'=&value')
-            else:decode(w,'item','dst.'+wf,path,parent)
+                emit('var value '+wiretype(w));decode_source_field(n,f,w,'item','value',path,parent);emit('dst.'+wf+'=&value')
+            else:decode_source_field(n,f,w,'item','dst.'+wf,path,parent)
             if not nullable and w!='flexmodule.core.v2.JSONValue':emit('}')
         emit('}}')
     if n in {'ModalSubmitInteractionData','InteractionResponseData'}:emit('if err:=validateIngressModal(n.get("components"),false,c,fieldPath(path,"Components"));err!=nil{return nil,err}')
@@ -620,7 +687,7 @@ for e in activeevents:
     n=e['sourceType'];pn=e['projection']
     emit(f'func Project{pn}(ctx context.Context,raw []byte,source *discordgo.{n},encoder core.CredentialEncoder,policy ProjectionPolicy)(*wire.{pn},error){{c:=newConversion("StructToProto","{pn}");c.ctx=ctx;c.encoder=encoder;c.policy=policy;c.projecting=true;n,err:=parseIngress(raw,c);if err!=nil{{return nil,err}};dst:=&wire.{pn}{{}}')
     sfields=sourcefields(n)
-    directkeys=[jsonkey(f) for f in sfields if not(f.get('Embedded') and not f['Tag']) and jsonkey(f)!='-' and f['Name'] not in {'BeforeUpdate','BeforeDelete'}]
+    directkeys=[jsonkey(f,n) for f in sfields if not(f.get('Embedded') and not f['Tag']) and jsonkey(f,n)!='-' and f['Name'] not in {'BeforeUpdate','BeforeDelete'}]
     for f in e['fields']:
         if f['classification']=='runtime-only-removed':continue
         name=f['sourceField'];wf=P[pn][f['wireField']][0];path=json.dumps(name)
@@ -629,12 +696,12 @@ for e in activeevents:
             emit(f'if source!=nil && source.{name}!=nil{{v,err:=c.to{base}(source.{name},{path});if err!=nil{{return nil,err}};dst.{wf}=v}}')
             continue
         sf=next(x for x in sfields if x['Name']==name)
-        if jsonkey(sf)=='-':continue
+        if jsonkey(sf,n)=='-':continue
         emit('{')
         if sf.get('Embedded') and not sf['Tag']:
             keys=[k for k in promotedkeys(sf['Type'].lstrip('*')) if k not in directkeys];args=','.join(json.dumps(k) for k in keys);excluded=','.join(json.dumps(k) for k in directkeys)
             emit(f'var item *ingressNode;if n.has({args}){{item=n.without({excluded})}}')
-        else:emit('item:=n.get('+json.dumps(jsonkey(sf))+')')
+        else:emit('item:=n.get('+json.dumps(jsonkey(sf,n))+')')
         decode(f['wireType'],'item','dst.'+wf,path,'0')
         emit('}')
     emit('return dst,nil}')

@@ -12279,7 +12279,13 @@
           "wire_type": "google.protobuf.Timestamp",
           "partial_wire_type": "flexmodule.core.v2.NullableTimestamp",
           "numeric_contract": "UTC protobuf Timestamp, validate seconds/nanos; zero time never replaced with now.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_codec": "discordgo.Activity.UnmarshalJSON",
+          "trusted_ingress_value_codec": {
+            "helper": "ingressUnixMilliseconds",
+            "value_wire_type": "google.protobuf.Timestamp",
+            "decision": "Unix milliseconds, checked protobuf timestamp; no nanosecond multiplication overflow"
+          }
         },
         {
           "source_field": "ApplicationID",
@@ -12291,7 +12297,13 @@
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_codec": "discordgo.Activity.UnmarshalJSON",
+          "trusted_ingress_value_codec": {
+            "helper": "ingressNumberString",
+            "value_wire_type": "string",
+            "decision": "Exact json.Number text from numeric or quoted numeric source; never binary64"
+          }
         },
         {
           "source_field": "State",
@@ -20193,7 +20205,9 @@
           "wire_type": "ComponentList",
           "partial_wire_type": "DomainNullableDomainDomainNullablePartialMessageComponentList",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "trusted_ingress_json_key": "components",
+          "source_codec": "discordgo.Message.UnmarshalJSON"
         },
         {
           "source_field": "Embeds",
@@ -22110,7 +22124,9 @@
           "wire_type": "ComponentList",
           "partial_wire_type": "DomainNullableDomainDomainNullablePartialMessageComponentList",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "trusted_ingress_json_key": "components",
+          "source_codec": "discordgo.ModalSubmitInteractionData.UnmarshalJSON"
         },
         {
           "source_field": "Resolved",
@@ -25419,7 +25435,13 @@
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Signed 64-bit Unix milliseconds, retain source unit.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_codec": "discordgo.TimeStamps.UnmarshalJSON",
+          "trusted_ingress_value_codec": {
+            "helper": "ingressExactInt64",
+            "value_wire_type": "sint64",
+            "decision": "Exact integral Unix milliseconds; reject fractional loss and signed-range overflow"
+          }
         },
         {
           "source_field": "StartTimestamp",
@@ -25431,7 +25453,13 @@
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Signed 64-bit Unix milliseconds, retain source unit.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_codec": "discordgo.TimeStamps.UnmarshalJSON",
+          "trusted_ingress_value_codec": {
+            "helper": "ingressExactInt64",
+            "value_wire_type": "sint64",
+            "decision": "Exact integral Unix milliseconds; reject fractional loss and signed-range overflow"
+          }
         }
       ]
     },
@@ -25478,7 +25506,13 @@
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Signed 64-bit nanoseconds (Go time.Duration); endpoint validates nonnegative durations.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_codec": "discordgo.TooManyRequests.UnmarshalJSON",
+          "trusted_ingress_value_codec": {
+            "helper": "ingressSecondsDuration",
+            "value_wire_type": "sint64",
+            "decision": "JSON seconds to exact Go nanoseconds; reject unrepresentable fractions or overflow"
+          }
         }
       ]
     },
@@ -28745,5 +28779,234 @@
       ],
       "before_fields": []
     }
-  ]
+  ],
+  "custom_json_review": {
+    "hidden_field_decisions": [
+      {
+        "source_type": "Channel",
+        "source_field": "Members",
+        "json_key": null,
+        "decision": "Host thread-member cache snapshot only; never synthesize from gateway JSON"
+      },
+      {
+        "source_type": "Channel",
+        "source_field": "Messages",
+        "json_key": null,
+        "decision": "Host cache snapshot only; never synthesize from gateway JSON"
+      },
+      {
+        "source_type": "InteractionResponseData",
+        "source_field": "Files",
+        "json_key": null,
+        "decision": "Reader-backed multipart input; require explicit uploaded references"
+      },
+      {
+        "source_type": "Message",
+        "source_field": "Components",
+        "json_key": "components",
+        "decision": "Source-reviewed custom polymorphic JSON decoder"
+      },
+      {
+        "source_type": "MessageEdit",
+        "source_field": "Embed",
+        "json_key": null,
+        "decision": "Singular SDK convenience replaced by canonical presence-aware Embeds view"
+      },
+      {
+        "source_type": "MessageEdit",
+        "source_field": "Files",
+        "json_key": null,
+        "decision": "Reader-backed multipart input; require explicit uploaded references"
+      },
+      {
+        "source_type": "MessageSend",
+        "source_field": "Embed",
+        "json_key": null,
+        "decision": "Singular SDK convenience replaced by canonical typed Embeds view"
+      },
+      {
+        "source_type": "MessageSend",
+        "source_field": "File",
+        "json_key": null,
+        "decision": "Singular SDK convenience replaced by canonical typed Files view"
+      },
+      {
+        "source_type": "MessageSend",
+        "source_field": "Files",
+        "json_key": null,
+        "decision": "Reader-backed multipart input; require explicit uploaded references"
+      },
+      {
+        "source_type": "ModalSubmitInteractionData",
+        "source_field": "Components",
+        "json_key": "components",
+        "decision": "Source-reviewed custom polymorphic JSON decoder"
+      },
+      {
+        "source_type": "WebhookEdit",
+        "source_field": "Files",
+        "json_key": null,
+        "decision": "Reader-backed multipart input; require explicit uploaded references"
+      },
+      {
+        "source_type": "WebhookParams",
+        "source_field": "Files",
+        "json_key": null,
+        "decision": "Reader-backed multipart input; require explicit uploaded references"
+      }
+    ],
+    "component_codecs": [
+      {
+        "source_type": "ActionsRow",
+        "discriminators": [
+          1
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [
+          "components"
+        ],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "Button",
+        "discriminators": [
+          2
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "SelectMenu",
+        "discriminators": [
+          3,
+          5,
+          6,
+          7,
+          8
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "TextInput",
+        "discriminators": [
+          4
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "Section",
+        "discriminators": [
+          9
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [
+          "components",
+          "accessory"
+        ],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "TextDisplay",
+        "discriminators": [
+          10
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "Thumbnail",
+        "discriminators": [
+          11
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "MediaGallery",
+        "discriminators": [
+          12
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "FileComponent",
+        "discriminators": [
+          13
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "Separator",
+        "discriminators": [
+          14
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "Container",
+        "discriminators": [
+          17
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [
+          "components"
+        ],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "Label",
+        "discriminators": [
+          18
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [
+          "component"
+        ],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      },
+      {
+        "source_type": "FileUpload",
+        "discriminators": [
+          19
+        ],
+        "marshal_discriminator_key": "type",
+        "polymorphic_nested_keys": [],
+        "decision": "Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized"
+      }
+    ],
+    "interaction_data": {
+      "json_key": "data",
+      "parent_key": "type",
+      "families": {
+        "2": "ApplicationCommandInteractionData",
+        "4": "ApplicationCommandInteractionData",
+        "3": "MessageComponentInteractionData",
+        "5": "ModalSubmitInteractionData"
+      },
+      "decision": "Parent-discriminated raw projection; SDK accessors receive concrete value variants"
+    },
+    "request_marshal_boundaries": {
+      "GuildMemberParams": [
+        "channel_id",
+        "communication_disabled_until"
+      ],
+      "GuildScheduledEventParams": [
+        "channel_id"
+      ],
+      "decision": "Source custom null sentinels replaced by explicit presence-aware nullable views; no guessed SDK empty/zero normalization"
+    }
+  }
 }

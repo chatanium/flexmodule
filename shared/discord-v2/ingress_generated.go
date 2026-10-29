@@ -4967,19 +4967,31 @@ func (c *conversion) nodePartialActivity(n *ingressNode, path string, parent int
 	}
 	{
 		item := n.get("created_at")
-		decodedValue2597, decodeError2598 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CreatedAt"), parent)
-		if decodeError2598 != nil {
-			return nil, decodeError2598
+		if item != nil {
+			if item.null {
+				dst.CreatedAt = &corewire.NullableTimestamp{Kind: &corewire.NullableTimestamp_NullValue{}}
+			} else {
+				codecValue2597, codecError2598 := ingressUnixMilliseconds(item, c, fieldPath(path, "CreatedAt"))
+				if codecError2598 != nil {
+					return nil, codecError2598
+				}
+				dst.CreatedAt = &corewire.NullableTimestamp{Kind: &corewire.NullableTimestamp_Value{Value: codecValue2597}}
+			}
 		}
-		dst.CreatedAt = decodedValue2597
 	}
 	{
 		item := n.get("application_id")
-		decodedValue2599, decodeError2600 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ApplicationID"), parent)
-		if decodeError2600 != nil {
-			return nil, decodeError2600
+		if item != nil {
+			if item.null {
+				dst.ApplicationId = &corewire.NullableString{Kind: &corewire.NullableString_NullValue{}}
+			} else {
+				codecValue2599, codecError2600 := ingressNumberString(item, c, fieldPath(path, "ApplicationID"))
+				if codecError2600 != nil {
+					return nil, codecError2600
+				}
+				dst.ApplicationId = &corewire.NullableString{Kind: &corewire.NullableString_Value{Value: codecValue2599}}
+			}
 		}
-		dst.ApplicationId = decodedValue2599
 	}
 	{
 		item := n.get("state")
@@ -10716,36 +10728,44 @@ func (c *conversion) nodePartialMessage(n *ingressNode, path string, parent int6
 		dst.Attachments = decodedValue3699
 	}
 	{
-		item := n.get("embeds")
-		decodedValue3701, decodeError3702 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
+		item := n.get("components")
+		decodedValue3701, decodeError3702 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
 		if decodeError3702 != nil {
 			return nil, decodeError3702
 		}
-		dst.Embeds = decodedValue3701
+		dst.Components = decodedValue3701
 	}
 	{
-		item := n.get("mentions")
-		decodedValue3703, decodeError3704 := c.nodeDomainNullableDomainDomainNullablePartialUserList(item, fieldPath(path, "Mentions"), parent)
+		item := n.get("embeds")
+		decodedValue3703, decodeError3704 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
 		if decodeError3704 != nil {
 			return nil, decodeError3704
 		}
-		dst.Mentions = decodedValue3703
+		dst.Embeds = decodedValue3703
 	}
 	{
-		item := n.get("reactions")
-		decodedValue3705, decodeError3706 := c.nodeDomainNullableDomainDomainNullablePartialMessageReactionsList(item, fieldPath(path, "Reactions"), parent)
+		item := n.get("mentions")
+		decodedValue3705, decodeError3706 := c.nodeDomainNullableDomainDomainNullablePartialUserList(item, fieldPath(path, "Mentions"), parent)
 		if decodeError3706 != nil {
 			return nil, decodeError3706
 		}
-		dst.Reactions = decodedValue3705
+		dst.Mentions = decodedValue3705
 	}
 	{
-		item := n.get("pinned")
-		decodedValue3707, decodeError3708 := c.nodeDomainNullableBool(item, fieldPath(path, "Pinned"), parent)
+		item := n.get("reactions")
+		decodedValue3707, decodeError3708 := c.nodeDomainNullableDomainDomainNullablePartialMessageReactionsList(item, fieldPath(path, "Reactions"), parent)
 		if decodeError3708 != nil {
 			return nil, decodeError3708
 		}
-		dst.Pinned = decodedValue3707
+		dst.Reactions = decodedValue3707
+	}
+	{
+		item := n.get("pinned")
+		decodedValue3709, decodeError3710 := c.nodeDomainNullableBool(item, fieldPath(path, "Pinned"), parent)
+		if decodeError3710 != nil {
+			return nil, decodeError3710
+		}
+		dst.Pinned = decodedValue3709
 	}
 	{
 		item := n.get("type")
@@ -10754,91 +10774,91 @@ func (c *conversion) nodePartialMessage(n *ingressNode, path string, parent int6
 				return nil, err
 			}
 		}
-		decodedValue3709, decodeError3710 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError3710 != nil {
-			return nil, decodeError3710
-		}
-		dst.Type = decodedValue3709
-	}
-	{
-		item := n.get("webhook_id")
-		decodedValue3711, decodeError3712 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "WebhookID"), parent)
+		decodedValue3711, decodeError3712 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
 		if decodeError3712 != nil {
 			return nil, decodeError3712
 		}
-		dst.WebhookId = decodedValue3711
+		dst.Type = decodedValue3711
 	}
 	{
-		item := n.get("member")
-		decodedValue3713, decodeError3714 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
+		item := n.get("webhook_id")
+		decodedValue3713, decodeError3714 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "WebhookID"), parent)
 		if decodeError3714 != nil {
 			return nil, decodeError3714
 		}
-		dst.Member = decodedValue3713
+		dst.WebhookId = decodedValue3713
 	}
 	{
-		item := n.get("mention_channels")
-		decodedValue3715, decodeError3716 := c.nodeDomainNullableDomainDomainNullablePartialChannelList(item, fieldPath(path, "MentionChannels"), parent)
+		item := n.get("member")
+		decodedValue3715, decodeError3716 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
 		if decodeError3716 != nil {
 			return nil, decodeError3716
 		}
-		dst.MentionChannels = decodedValue3715
+		dst.Member = decodedValue3715
 	}
 	{
-		item := n.get("activity")
-		decodedValue3717, decodeError3718 := c.nodeDomainNullablePartialMessageActivity(item, fieldPath(path, "Activity"), parent)
+		item := n.get("mention_channels")
+		decodedValue3717, decodeError3718 := c.nodeDomainNullableDomainDomainNullablePartialChannelList(item, fieldPath(path, "MentionChannels"), parent)
 		if decodeError3718 != nil {
 			return nil, decodeError3718
 		}
-		dst.Activity = decodedValue3717
+		dst.MentionChannels = decodedValue3717
 	}
 	{
-		item := n.get("application")
-		decodedValue3719, decodeError3720 := c.nodeDomainNullablePartialMessageApplication(item, fieldPath(path, "Application"), parent)
+		item := n.get("activity")
+		decodedValue3719, decodeError3720 := c.nodeDomainNullablePartialMessageActivity(item, fieldPath(path, "Activity"), parent)
 		if decodeError3720 != nil {
 			return nil, decodeError3720
 		}
-		dst.Application = decodedValue3719
+		dst.Activity = decodedValue3719
 	}
 	{
-		item := n.get("message_reference")
-		decodedValue3721, decodeError3722 := c.nodeDomainNullablePartialMessageReference(item, fieldPath(path, "MessageReference"), parent)
+		item := n.get("application")
+		decodedValue3721, decodeError3722 := c.nodeDomainNullablePartialMessageApplication(item, fieldPath(path, "Application"), parent)
 		if decodeError3722 != nil {
 			return nil, decodeError3722
 		}
-		dst.MessageReference = decodedValue3721
+		dst.Application = decodedValue3721
 	}
 	{
-		item := n.get("referenced_message")
-		decodedValue3723, decodeError3724 := c.nodeDomainNullablePartialMessage(item, fieldPath(path, "ReferencedMessage"), parent)
+		item := n.get("message_reference")
+		decodedValue3723, decodeError3724 := c.nodeDomainNullablePartialMessageReference(item, fieldPath(path, "MessageReference"), parent)
 		if decodeError3724 != nil {
 			return nil, decodeError3724
 		}
-		dst.ReferencedMessage = decodedValue3723
+		dst.MessageReference = decodedValue3723
 	}
 	{
-		item := n.get("message_snapshots")
-		decodedValue3725, decodeError3726 := c.nodeDomainNullableDomainDomainNullablePartialMessageSnapshotList(item, fieldPath(path, "MessageSnapshots"), parent)
+		item := n.get("referenced_message")
+		decodedValue3725, decodeError3726 := c.nodeDomainNullablePartialMessage(item, fieldPath(path, "ReferencedMessage"), parent)
 		if decodeError3726 != nil {
 			return nil, decodeError3726
 		}
-		dst.MessageSnapshots = decodedValue3725
+		dst.ReferencedMessage = decodedValue3725
 	}
 	{
-		item := n.get("interaction")
-		decodedValue3727, decodeError3728 := c.nodeDomainNullablePartialMessageInteraction(item, fieldPath(path, "Interaction"), parent)
+		item := n.get("message_snapshots")
+		decodedValue3727, decodeError3728 := c.nodeDomainNullableDomainDomainNullablePartialMessageSnapshotList(item, fieldPath(path, "MessageSnapshots"), parent)
 		if decodeError3728 != nil {
 			return nil, decodeError3728
 		}
-		dst.Interaction = decodedValue3727
+		dst.MessageSnapshots = decodedValue3727
 	}
 	{
-		item := n.get("interaction_metadata")
-		decodedValue3729, decodeError3730 := c.nodeDomainNullablePartialMessageInteractionMetadata(item, fieldPath(path, "InteractionMetadata"), parent)
+		item := n.get("interaction")
+		decodedValue3729, decodeError3730 := c.nodeDomainNullablePartialMessageInteraction(item, fieldPath(path, "Interaction"), parent)
 		if decodeError3730 != nil {
 			return nil, decodeError3730
 		}
-		dst.InteractionMetadata = decodedValue3729
+		dst.Interaction = decodedValue3729
+	}
+	{
+		item := n.get("interaction_metadata")
+		decodedValue3731, decodeError3732 := c.nodeDomainNullablePartialMessageInteractionMetadata(item, fieldPath(path, "InteractionMetadata"), parent)
+		if decodeError3732 != nil {
+			return nil, decodeError3732
+		}
+		dst.InteractionMetadata = decodedValue3731
 	}
 	{
 		item := n.get("flags")
@@ -10847,35 +10867,35 @@ func (c *conversion) nodePartialMessage(n *ingressNode, path string, parent int6
 				return nil, err
 			}
 		}
-		decodedValue3731, decodeError3732 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError3732 != nil {
-			return nil, decodeError3732
-		}
-		dst.Flags = decodedValue3731
-	}
-	{
-		item := n.get("thread")
-		decodedValue3733, decodeError3734 := c.nodeDomainNullablePartialChannel(item, fieldPath(path, "Thread"), parent)
+		decodedValue3733, decodeError3734 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
 		if decodeError3734 != nil {
 			return nil, decodeError3734
 		}
-		dst.Thread = decodedValue3733
+		dst.Flags = decodedValue3733
 	}
 	{
-		item := n.get("sticker_items")
-		decodedValue3735, decodeError3736 := c.nodeDomainNullableDomainDomainNullablePartialStickerItemList(item, fieldPath(path, "StickerItems"), parent)
+		item := n.get("thread")
+		decodedValue3735, decodeError3736 := c.nodeDomainNullablePartialChannel(item, fieldPath(path, "Thread"), parent)
 		if decodeError3736 != nil {
 			return nil, decodeError3736
 		}
-		dst.StickerItems = decodedValue3735
+		dst.Thread = decodedValue3735
 	}
 	{
-		item := n.get("poll")
-		decodedValue3737, decodeError3738 := c.nodeDomainNullablePartialPoll(item, fieldPath(path, "Poll"), parent)
+		item := n.get("sticker_items")
+		decodedValue3737, decodeError3738 := c.nodeDomainNullableDomainDomainNullablePartialStickerItemList(item, fieldPath(path, "StickerItems"), parent)
 		if decodeError3738 != nil {
 			return nil, decodeError3738
 		}
-		dst.Poll = decodedValue3737
+		dst.StickerItems = decodedValue3737
+	}
+	{
+		item := n.get("poll")
+		decodedValue3739, decodeError3740 := c.nodeDomainNullablePartialPoll(item, fieldPath(path, "Poll"), parent)
+		if decodeError3740 != nil {
+			return nil, decodeError3740
+		}
+		dst.Poll = decodedValue3739
 	}
 	return dst, nil
 }
@@ -10894,19 +10914,19 @@ func (c *conversion) nodePartialMessageActivity(n *ingressNode, path string, par
 				return nil, err
 			}
 		}
-		decodedValue3739, decodeError3740 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError3740 != nil {
-			return nil, decodeError3740
-		}
-		dst.Type = decodedValue3739
-	}
-	{
-		item := n.get("party_id")
-		decodedValue3741, decodeError3742 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "PartyID"), parent)
+		decodedValue3741, decodeError3742 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
 		if decodeError3742 != nil {
 			return nil, decodeError3742
 		}
-		dst.PartyId = decodedValue3741
+		dst.Type = decodedValue3741
+	}
+	{
+		item := n.get("party_id")
+		decodedValue3743, decodeError3744 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "PartyID"), parent)
+		if decodeError3744 != nil {
+			return nil, decodeError3744
+		}
+		dst.PartyId = decodedValue3743
 	}
 	return dst, nil
 }
@@ -10920,35 +10940,35 @@ func (c *conversion) nodePartialMessageAllowedMentions(n *ingressNode, path stri
 	dst := &wire.PartialMessageAllowedMentions{}
 	{
 		item := n.get("parse")
-		decodedValue3743, decodeError3744 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Parse"), parent)
-		if decodeError3744 != nil {
-			return nil, decodeError3744
-		}
-		dst.Parse = decodedValue3743
-	}
-	{
-		item := n.get("roles")
-		decodedValue3745, decodeError3746 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Roles"), parent)
+		decodedValue3745, decodeError3746 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Parse"), parent)
 		if decodeError3746 != nil {
 			return nil, decodeError3746
 		}
-		dst.Roles = decodedValue3745
+		dst.Parse = decodedValue3745
 	}
 	{
-		item := n.get("users")
-		decodedValue3747, decodeError3748 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Users"), parent)
+		item := n.get("roles")
+		decodedValue3747, decodeError3748 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Roles"), parent)
 		if decodeError3748 != nil {
 			return nil, decodeError3748
 		}
-		dst.Users = decodedValue3747
+		dst.Roles = decodedValue3747
 	}
 	{
-		item := n.get("replied_user")
-		decodedValue3749, decodeError3750 := c.nodeDomainNullableBool(item, fieldPath(path, "RepliedUser"), parent)
+		item := n.get("users")
+		decodedValue3749, decodeError3750 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Users"), parent)
 		if decodeError3750 != nil {
 			return nil, decodeError3750
 		}
-		dst.RepliedUser = decodedValue3749
+		dst.Users = decodedValue3749
+	}
+	{
+		item := n.get("replied_user")
+		decodedValue3751, decodeError3752 := c.nodeDomainNullableBool(item, fieldPath(path, "RepliedUser"), parent)
+		if decodeError3752 != nil {
+			return nil, decodeError3752
+		}
+		dst.RepliedUser = decodedValue3751
 	}
 	return dst, nil
 }
@@ -10962,43 +10982,43 @@ func (c *conversion) nodePartialMessageApplication(n *ingressNode, path string, 
 	dst := &wire.PartialMessageApplication{}
 	{
 		item := n.get("id")
-		decodedValue3751, decodeError3752 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError3752 != nil {
-			return nil, decodeError3752
-		}
-		dst.Id = decodedValue3751
-	}
-	{
-		item := n.get("cover_image")
-		decodedValue3753, decodeError3754 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CoverImage"), parent)
+		decodedValue3753, decodeError3754 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError3754 != nil {
 			return nil, decodeError3754
 		}
-		dst.CoverImage = decodedValue3753
+		dst.Id = decodedValue3753
 	}
 	{
-		item := n.get("description")
-		decodedValue3755, decodeError3756 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		item := n.get("cover_image")
+		decodedValue3755, decodeError3756 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CoverImage"), parent)
 		if decodeError3756 != nil {
 			return nil, decodeError3756
 		}
-		dst.Description = decodedValue3755
+		dst.CoverImage = decodedValue3755
 	}
 	{
-		item := n.get("icon")
-		decodedValue3757, decodeError3758 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+		item := n.get("description")
+		decodedValue3757, decodeError3758 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
 		if decodeError3758 != nil {
 			return nil, decodeError3758
 		}
-		dst.Icon = decodedValue3757
+		dst.Description = decodedValue3757
 	}
 	{
-		item := n.get("name")
-		decodedValue3759, decodeError3760 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		item := n.get("icon")
+		decodedValue3759, decodeError3760 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
 		if decodeError3760 != nil {
 			return nil, decodeError3760
 		}
-		dst.Name = decodedValue3759
+		dst.Icon = decodedValue3759
+	}
+	{
+		item := n.get("name")
+		decodedValue3761, decodeError3762 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		if decodeError3762 != nil {
+			return nil, decodeError3762
+		}
+		dst.Name = decodedValue3761
 	}
 	return dst, nil
 }
@@ -11012,43 +11032,43 @@ func (c *conversion) nodePartialMessageAttachment(n *ingressNode, path string, p
 	dst := &wire.PartialMessageAttachment{}
 	{
 		item := n.get("id")
-		decodedValue3761, decodeError3762 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError3762 != nil {
-			return nil, decodeError3762
-		}
-		dst.Id = decodedValue3761
-	}
-	{
-		item := n.get("url")
-		decodedValue3763, decodeError3764 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
+		decodedValue3763, decodeError3764 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError3764 != nil {
 			return nil, decodeError3764
 		}
-		dst.Url = decodedValue3763
+		dst.Id = decodedValue3763
 	}
 	{
-		item := n.get("proxy_url")
-		decodedValue3765, decodeError3766 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyURL"), parent)
+		item := n.get("url")
+		decodedValue3765, decodeError3766 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
 		if decodeError3766 != nil {
 			return nil, decodeError3766
 		}
-		dst.ProxyUrl = decodedValue3765
+		dst.Url = decodedValue3765
 	}
 	{
-		item := n.get("filename")
-		decodedValue3767, decodeError3768 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Filename"), parent)
+		item := n.get("proxy_url")
+		decodedValue3767, decodeError3768 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyURL"), parent)
 		if decodeError3768 != nil {
 			return nil, decodeError3768
 		}
-		dst.Filename = decodedValue3767
+		dst.ProxyUrl = decodedValue3767
 	}
 	{
-		item := n.get("content_type")
-		decodedValue3769, decodeError3770 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ContentType"), parent)
+		item := n.get("filename")
+		decodedValue3769, decodeError3770 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Filename"), parent)
 		if decodeError3770 != nil {
 			return nil, decodeError3770
 		}
-		dst.ContentType = decodedValue3769
+		dst.Filename = decodedValue3769
+	}
+	{
+		item := n.get("content_type")
+		decodedValue3771, decodeError3772 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ContentType"), parent)
+		if decodeError3772 != nil {
+			return nil, decodeError3772
+		}
+		dst.ContentType = decodedValue3771
 	}
 	{
 		item := n.get("width")
@@ -11057,11 +11077,11 @@ func (c *conversion) nodePartialMessageAttachment(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3771, decodeError3772 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
-		if decodeError3772 != nil {
-			return nil, decodeError3772
+		decodedValue3773, decodeError3774 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
+		if decodeError3774 != nil {
+			return nil, decodeError3774
 		}
-		dst.Width = decodedValue3771
+		dst.Width = decodedValue3773
 	}
 	{
 		item := n.get("height")
@@ -11070,11 +11090,11 @@ func (c *conversion) nodePartialMessageAttachment(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3773, decodeError3774 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
-		if decodeError3774 != nil {
-			return nil, decodeError3774
+		decodedValue3775, decodeError3776 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
+		if decodeError3776 != nil {
+			return nil, decodeError3776
 		}
-		dst.Height = decodedValue3773
+		dst.Height = decodedValue3775
 	}
 	{
 		item := n.get("size")
@@ -11083,35 +11103,35 @@ func (c *conversion) nodePartialMessageAttachment(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3775, decodeError3776 := c.nodeDomainNullableSint64(item, fieldPath(path, "Size"), parent)
-		if decodeError3776 != nil {
-			return nil, decodeError3776
-		}
-		dst.Size = decodedValue3775
-	}
-	{
-		item := n.get("ephemeral")
-		decodedValue3777, decodeError3778 := c.nodeDomainNullableBool(item, fieldPath(path, "Ephemeral"), parent)
+		decodedValue3777, decodeError3778 := c.nodeDomainNullableSint64(item, fieldPath(path, "Size"), parent)
 		if decodeError3778 != nil {
 			return nil, decodeError3778
 		}
-		dst.Ephemeral = decodedValue3777
+		dst.Size = decodedValue3777
 	}
 	{
-		item := n.get("duration_secs")
-		decodedValue3779, decodeError3780 := c.nodeDomainNullableDouble(item, fieldPath(path, "DurationSecs"), parent)
+		item := n.get("ephemeral")
+		decodedValue3779, decodeError3780 := c.nodeDomainNullableBool(item, fieldPath(path, "Ephemeral"), parent)
 		if decodeError3780 != nil {
 			return nil, decodeError3780
 		}
-		dst.DurationSecs = decodedValue3779
+		dst.Ephemeral = decodedValue3779
 	}
 	{
-		item := n.get("waveform")
-		decodedValue3781, decodeError3782 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Waveform"), parent)
+		item := n.get("duration_secs")
+		decodedValue3781, decodeError3782 := c.nodeDomainNullableDouble(item, fieldPath(path, "DurationSecs"), parent)
 		if decodeError3782 != nil {
 			return nil, decodeError3782
 		}
-		dst.Waveform = decodedValue3781
+		dst.DurationSecs = decodedValue3781
+	}
+	{
+		item := n.get("waveform")
+		decodedValue3783, decodeError3784 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Waveform"), parent)
+		if decodeError3784 != nil {
+			return nil, decodeError3784
+		}
+		dst.Waveform = decodedValue3783
 	}
 	{
 		item := n.get("flags")
@@ -11120,11 +11140,11 @@ func (c *conversion) nodePartialMessageAttachment(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3783, decodeError3784 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError3784 != nil {
-			return nil, decodeError3784
+		decodedValue3785, decodeError3786 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
+		if decodeError3786 != nil {
+			return nil, decodeError3786
 		}
-		dst.Flags = decodedValue3783
+		dst.Flags = decodedValue3785
 	}
 	return dst, nil
 }
@@ -11138,11 +11158,11 @@ func (c *conversion) nodePartialMessageComponentInteractionData(n *ingressNode, 
 	dst := &wire.PartialMessageComponentInteractionData{}
 	{
 		item := n.get("custom_id")
-		decodedValue3785, decodeError3786 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
-		if decodeError3786 != nil {
-			return nil, decodeError3786
+		decodedValue3787, decodeError3788 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
+		if decodeError3788 != nil {
+			return nil, decodeError3788
 		}
-		dst.CustomId = decodedValue3785
+		dst.CustomId = decodedValue3787
 	}
 	{
 		item := n.get("component_type")
@@ -11151,27 +11171,27 @@ func (c *conversion) nodePartialMessageComponentInteractionData(n *ingressNode, 
 				return nil, err
 			}
 		}
-		decodedValue3787, decodeError3788 := c.nodeDomainNullableUint64(item, fieldPath(path, "ComponentType"), parent)
-		if decodeError3788 != nil {
-			return nil, decodeError3788
-		}
-		dst.ComponentType = decodedValue3787
-	}
-	{
-		item := n.get("resolved")
-		decodedValue3789, decodeError3790 := c.nodeDomainNullablePartialComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
+		decodedValue3789, decodeError3790 := c.nodeDomainNullableUint64(item, fieldPath(path, "ComponentType"), parent)
 		if decodeError3790 != nil {
 			return nil, decodeError3790
 		}
-		dst.Resolved = decodedValue3789
+		dst.ComponentType = decodedValue3789
 	}
 	{
-		item := n.get("values")
-		decodedValue3791, decodeError3792 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Values"), parent)
+		item := n.get("resolved")
+		decodedValue3791, decodeError3792 := c.nodeDomainNullablePartialComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
 		if decodeError3792 != nil {
 			return nil, decodeError3792
 		}
-		dst.Values = decodedValue3791
+		dst.Resolved = decodedValue3791
+	}
+	{
+		item := n.get("values")
+		decodedValue3793, decodeError3794 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Values"), parent)
+		if decodeError3794 != nil {
+			return nil, decodeError3794
+		}
+		dst.Values = decodedValue3793
 	}
 	return dst, nil
 }
@@ -11185,35 +11205,35 @@ func (c *conversion) nodePartialMessageEdit(n *ingressNode, path string, parent 
 	dst := &wire.PartialMessageEdit{}
 	{
 		item := n.get("content")
-		decodedValue3793, decodeError3794 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-		if decodeError3794 != nil {
-			return nil, decodeError3794
-		}
-		dst.Content = decodedValue3793
-	}
-	{
-		item := n.get("components")
-		decodedValue3795, decodeError3796 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
+		decodedValue3795, decodeError3796 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
 		if decodeError3796 != nil {
 			return nil, decodeError3796
 		}
-		dst.Components = decodedValue3795
+		dst.Content = decodedValue3795
 	}
 	{
-		item := n.get("embeds")
-		decodedValue3797, decodeError3798 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
+		item := n.get("components")
+		decodedValue3797, decodeError3798 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
 		if decodeError3798 != nil {
 			return nil, decodeError3798
 		}
-		dst.Embeds = decodedValue3797
+		dst.Components = decodedValue3797
 	}
 	{
-		item := n.get("allowed_mentions")
-		decodedValue3799, decodeError3800 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+		item := n.get("embeds")
+		decodedValue3799, decodeError3800 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
 		if decodeError3800 != nil {
 			return nil, decodeError3800
 		}
-		dst.AllowedMentions = decodedValue3799
+		dst.Embeds = decodedValue3799
+	}
+	{
+		item := n.get("allowed_mentions")
+		decodedValue3801, decodeError3802 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+		if decodeError3802 != nil {
+			return nil, decodeError3802
+		}
+		dst.AllowedMentions = decodedValue3801
 	}
 	{
 		item := n.get("flags")
@@ -11222,35 +11242,35 @@ func (c *conversion) nodePartialMessageEdit(n *ingressNode, path string, parent 
 				return nil, err
 			}
 		}
-		decodedValue3801, decodeError3802 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError3802 != nil {
-			return nil, decodeError3802
-		}
-		dst.Flags = decodedValue3801
-	}
-	{
-		item := n.get("attachments")
-		decodedValue3803, decodeError3804 := c.nodeDomainNullableAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
+		decodedValue3803, decodeError3804 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
 		if decodeError3804 != nil {
 			return nil, decodeError3804
 		}
-		dst.Attachments = decodedValue3803
+		dst.Flags = decodedValue3803
 	}
 	{
-		item := n.get("ID")
-		decodedValue3805, decodeError3806 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		item := n.get("attachments")
+		decodedValue3805, decodeError3806 := c.nodeDomainNullableAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
 		if decodeError3806 != nil {
 			return nil, decodeError3806
 		}
-		dst.Id = decodedValue3805
+		dst.Attachments = decodedValue3805
 	}
 	{
-		item := n.get("Channel")
-		decodedValue3807, decodeError3808 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Channel"), parent)
+		item := n.get("ID")
+		decodedValue3807, decodeError3808 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError3808 != nil {
 			return nil, decodeError3808
 		}
-		dst.ChannelId = decodedValue3807
+		dst.Id = decodedValue3807
+	}
+	{
+		item := n.get("Channel")
+		decodedValue3809, decodeError3810 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Channel"), parent)
+		if decodeError3810 != nil {
+			return nil, decodeError3810
+		}
+		dst.ChannelId = decodedValue3809
 	}
 	return dst, nil
 }
@@ -11264,43 +11284,43 @@ func (c *conversion) nodePartialMessageEmbed(n *ingressNode, path string, parent
 	dst := &wire.PartialMessageEmbed{}
 	{
 		item := n.get("url")
-		decodedValue3809, decodeError3810 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
-		if decodeError3810 != nil {
-			return nil, decodeError3810
-		}
-		dst.Url = decodedValue3809
-	}
-	{
-		item := n.get("type")
-		decodedValue3811, decodeError3812 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Type"), parent)
+		decodedValue3811, decodeError3812 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
 		if decodeError3812 != nil {
 			return nil, decodeError3812
 		}
-		dst.Type = decodedValue3811
+		dst.Url = decodedValue3811
 	}
 	{
-		item := n.get("title")
-		decodedValue3813, decodeError3814 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Title"), parent)
+		item := n.get("type")
+		decodedValue3813, decodeError3814 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Type"), parent)
 		if decodeError3814 != nil {
 			return nil, decodeError3814
 		}
-		dst.Title = decodedValue3813
+		dst.Type = decodedValue3813
 	}
 	{
-		item := n.get("description")
-		decodedValue3815, decodeError3816 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		item := n.get("title")
+		decodedValue3815, decodeError3816 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Title"), parent)
 		if decodeError3816 != nil {
 			return nil, decodeError3816
 		}
-		dst.Description = decodedValue3815
+		dst.Title = decodedValue3815
 	}
 	{
-		item := n.get("timestamp")
-		decodedValue3817, decodeError3818 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Timestamp"), parent)
+		item := n.get("description")
+		decodedValue3817, decodeError3818 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
 		if decodeError3818 != nil {
 			return nil, decodeError3818
 		}
-		dst.Timestamp = decodedValue3817
+		dst.Description = decodedValue3817
+	}
+	{
+		item := n.get("timestamp")
+		decodedValue3819, decodeError3820 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Timestamp"), parent)
+		if decodeError3820 != nil {
+			return nil, decodeError3820
+		}
+		dst.Timestamp = decodedValue3819
 	}
 	{
 		item := n.get("color")
@@ -11309,67 +11329,67 @@ func (c *conversion) nodePartialMessageEmbed(n *ingressNode, path string, parent
 				return nil, err
 			}
 		}
-		decodedValue3819, decodeError3820 := c.nodeDomainNullableSint64(item, fieldPath(path, "Color"), parent)
-		if decodeError3820 != nil {
-			return nil, decodeError3820
-		}
-		dst.Color = decodedValue3819
-	}
-	{
-		item := n.get("footer")
-		decodedValue3821, decodeError3822 := c.nodeDomainNullablePartialMessageEmbedFooter(item, fieldPath(path, "Footer"), parent)
+		decodedValue3821, decodeError3822 := c.nodeDomainNullableSint64(item, fieldPath(path, "Color"), parent)
 		if decodeError3822 != nil {
 			return nil, decodeError3822
 		}
-		dst.Footer = decodedValue3821
+		dst.Color = decodedValue3821
 	}
 	{
-		item := n.get("image")
-		decodedValue3823, decodeError3824 := c.nodeDomainNullablePartialMessageEmbedImage(item, fieldPath(path, "Image"), parent)
+		item := n.get("footer")
+		decodedValue3823, decodeError3824 := c.nodeDomainNullablePartialMessageEmbedFooter(item, fieldPath(path, "Footer"), parent)
 		if decodeError3824 != nil {
 			return nil, decodeError3824
 		}
-		dst.Image = decodedValue3823
+		dst.Footer = decodedValue3823
 	}
 	{
-		item := n.get("thumbnail")
-		decodedValue3825, decodeError3826 := c.nodeDomainNullablePartialMessageEmbedThumbnail(item, fieldPath(path, "Thumbnail"), parent)
+		item := n.get("image")
+		decodedValue3825, decodeError3826 := c.nodeDomainNullablePartialMessageEmbedImage(item, fieldPath(path, "Image"), parent)
 		if decodeError3826 != nil {
 			return nil, decodeError3826
 		}
-		dst.Thumbnail = decodedValue3825
+		dst.Image = decodedValue3825
 	}
 	{
-		item := n.get("video")
-		decodedValue3827, decodeError3828 := c.nodeDomainNullablePartialMessageEmbedVideo(item, fieldPath(path, "Video"), parent)
+		item := n.get("thumbnail")
+		decodedValue3827, decodeError3828 := c.nodeDomainNullablePartialMessageEmbedThumbnail(item, fieldPath(path, "Thumbnail"), parent)
 		if decodeError3828 != nil {
 			return nil, decodeError3828
 		}
-		dst.Video = decodedValue3827
+		dst.Thumbnail = decodedValue3827
 	}
 	{
-		item := n.get("provider")
-		decodedValue3829, decodeError3830 := c.nodeDomainNullablePartialMessageEmbedProvider(item, fieldPath(path, "Provider"), parent)
+		item := n.get("video")
+		decodedValue3829, decodeError3830 := c.nodeDomainNullablePartialMessageEmbedVideo(item, fieldPath(path, "Video"), parent)
 		if decodeError3830 != nil {
 			return nil, decodeError3830
 		}
-		dst.Provider = decodedValue3829
+		dst.Video = decodedValue3829
 	}
 	{
-		item := n.get("author")
-		decodedValue3831, decodeError3832 := c.nodeDomainNullablePartialMessageEmbedAuthor(item, fieldPath(path, "Author"), parent)
+		item := n.get("provider")
+		decodedValue3831, decodeError3832 := c.nodeDomainNullablePartialMessageEmbedProvider(item, fieldPath(path, "Provider"), parent)
 		if decodeError3832 != nil {
 			return nil, decodeError3832
 		}
-		dst.Author = decodedValue3831
+		dst.Provider = decodedValue3831
 	}
 	{
-		item := n.get("fields")
-		decodedValue3833, decodeError3834 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedFieldList(item, fieldPath(path, "Fields"), parent)
+		item := n.get("author")
+		decodedValue3833, decodeError3834 := c.nodeDomainNullablePartialMessageEmbedAuthor(item, fieldPath(path, "Author"), parent)
 		if decodeError3834 != nil {
 			return nil, decodeError3834
 		}
-		dst.Fields = decodedValue3833
+		dst.Author = decodedValue3833
+	}
+	{
+		item := n.get("fields")
+		decodedValue3835, decodeError3836 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedFieldList(item, fieldPath(path, "Fields"), parent)
+		if decodeError3836 != nil {
+			return nil, decodeError3836
+		}
+		dst.Fields = decodedValue3835
 	}
 	return dst, nil
 }
@@ -11383,35 +11403,35 @@ func (c *conversion) nodePartialMessageEmbedAuthor(n *ingressNode, path string, 
 	dst := &wire.PartialMessageEmbedAuthor{}
 	{
 		item := n.get("url")
-		decodedValue3835, decodeError3836 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
-		if decodeError3836 != nil {
-			return nil, decodeError3836
-		}
-		dst.Url = decodedValue3835
-	}
-	{
-		item := n.get("name")
-		decodedValue3837, decodeError3838 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		decodedValue3837, decodeError3838 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
 		if decodeError3838 != nil {
 			return nil, decodeError3838
 		}
-		dst.Name = decodedValue3837
+		dst.Url = decodedValue3837
 	}
 	{
-		item := n.get("icon_url")
-		decodedValue3839, decodeError3840 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "IconURL"), parent)
+		item := n.get("name")
+		decodedValue3839, decodeError3840 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError3840 != nil {
 			return nil, decodeError3840
 		}
-		dst.IconUrl = decodedValue3839
+		dst.Name = decodedValue3839
 	}
 	{
-		item := n.get("proxy_icon_url")
-		decodedValue3841, decodeError3842 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyIconURL"), parent)
+		item := n.get("icon_url")
+		decodedValue3841, decodeError3842 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "IconURL"), parent)
 		if decodeError3842 != nil {
 			return nil, decodeError3842
 		}
-		dst.ProxyIconUrl = decodedValue3841
+		dst.IconUrl = decodedValue3841
+	}
+	{
+		item := n.get("proxy_icon_url")
+		decodedValue3843, decodeError3844 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyIconURL"), parent)
+		if decodeError3844 != nil {
+			return nil, decodeError3844
+		}
+		dst.ProxyIconUrl = decodedValue3843
 	}
 	return dst, nil
 }
@@ -11425,27 +11445,27 @@ func (c *conversion) nodePartialMessageEmbedField(n *ingressNode, path string, p
 	dst := &wire.PartialMessageEmbedField{}
 	{
 		item := n.get("name")
-		decodedValue3843, decodeError3844 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError3844 != nil {
-			return nil, decodeError3844
-		}
-		dst.Name = decodedValue3843
-	}
-	{
-		item := n.get("value")
-		decodedValue3845, decodeError3846 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Value"), parent)
+		decodedValue3845, decodeError3846 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError3846 != nil {
 			return nil, decodeError3846
 		}
-		dst.Value = decodedValue3845
+		dst.Name = decodedValue3845
 	}
 	{
-		item := n.get("inline")
-		decodedValue3847, decodeError3848 := c.nodeDomainNullableBool(item, fieldPath(path, "Inline"), parent)
+		item := n.get("value")
+		decodedValue3847, decodeError3848 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Value"), parent)
 		if decodeError3848 != nil {
 			return nil, decodeError3848
 		}
-		dst.Inline = decodedValue3847
+		dst.Value = decodedValue3847
+	}
+	{
+		item := n.get("inline")
+		decodedValue3849, decodeError3850 := c.nodeDomainNullableBool(item, fieldPath(path, "Inline"), parent)
+		if decodeError3850 != nil {
+			return nil, decodeError3850
+		}
+		dst.Inline = decodedValue3849
 	}
 	return dst, nil
 }
@@ -11459,27 +11479,27 @@ func (c *conversion) nodePartialMessageEmbedFooter(n *ingressNode, path string, 
 	dst := &wire.PartialMessageEmbedFooter{}
 	{
 		item := n.get("text")
-		decodedValue3849, decodeError3850 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Text"), parent)
-		if decodeError3850 != nil {
-			return nil, decodeError3850
-		}
-		dst.Text = decodedValue3849
-	}
-	{
-		item := n.get("icon_url")
-		decodedValue3851, decodeError3852 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "IconURL"), parent)
+		decodedValue3851, decodeError3852 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Text"), parent)
 		if decodeError3852 != nil {
 			return nil, decodeError3852
 		}
-		dst.IconUrl = decodedValue3851
+		dst.Text = decodedValue3851
 	}
 	{
-		item := n.get("proxy_icon_url")
-		decodedValue3853, decodeError3854 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyIconURL"), parent)
+		item := n.get("icon_url")
+		decodedValue3853, decodeError3854 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "IconURL"), parent)
 		if decodeError3854 != nil {
 			return nil, decodeError3854
 		}
-		dst.ProxyIconUrl = decodedValue3853
+		dst.IconUrl = decodedValue3853
+	}
+	{
+		item := n.get("proxy_icon_url")
+		decodedValue3855, decodeError3856 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyIconURL"), parent)
+		if decodeError3856 != nil {
+			return nil, decodeError3856
+		}
+		dst.ProxyIconUrl = decodedValue3855
 	}
 	return dst, nil
 }
@@ -11493,19 +11513,19 @@ func (c *conversion) nodePartialMessageEmbedImage(n *ingressNode, path string, p
 	dst := &wire.PartialMessageEmbedImage{}
 	{
 		item := n.get("url")
-		decodedValue3855, decodeError3856 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
-		if decodeError3856 != nil {
-			return nil, decodeError3856
-		}
-		dst.Url = decodedValue3855
-	}
-	{
-		item := n.get("proxy_url")
-		decodedValue3857, decodeError3858 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyURL"), parent)
+		decodedValue3857, decodeError3858 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
 		if decodeError3858 != nil {
 			return nil, decodeError3858
 		}
-		dst.ProxyUrl = decodedValue3857
+		dst.Url = decodedValue3857
+	}
+	{
+		item := n.get("proxy_url")
+		decodedValue3859, decodeError3860 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyURL"), parent)
+		if decodeError3860 != nil {
+			return nil, decodeError3860
+		}
+		dst.ProxyUrl = decodedValue3859
 	}
 	{
 		item := n.get("width")
@@ -11514,11 +11534,11 @@ func (c *conversion) nodePartialMessageEmbedImage(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3859, decodeError3860 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
-		if decodeError3860 != nil {
-			return nil, decodeError3860
+		decodedValue3861, decodeError3862 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
+		if decodeError3862 != nil {
+			return nil, decodeError3862
 		}
-		dst.Width = decodedValue3859
+		dst.Width = decodedValue3861
 	}
 	{
 		item := n.get("height")
@@ -11527,11 +11547,11 @@ func (c *conversion) nodePartialMessageEmbedImage(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3861, decodeError3862 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
-		if decodeError3862 != nil {
-			return nil, decodeError3862
+		decodedValue3863, decodeError3864 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
+		if decodeError3864 != nil {
+			return nil, decodeError3864
 		}
-		dst.Height = decodedValue3861
+		dst.Height = decodedValue3863
 	}
 	return dst, nil
 }
@@ -11545,19 +11565,19 @@ func (c *conversion) nodePartialMessageEmbedProvider(n *ingressNode, path string
 	dst := &wire.PartialMessageEmbedProvider{}
 	{
 		item := n.get("url")
-		decodedValue3863, decodeError3864 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
-		if decodeError3864 != nil {
-			return nil, decodeError3864
-		}
-		dst.Url = decodedValue3863
-	}
-	{
-		item := n.get("name")
-		decodedValue3865, decodeError3866 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		decodedValue3865, decodeError3866 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
 		if decodeError3866 != nil {
 			return nil, decodeError3866
 		}
-		dst.Name = decodedValue3865
+		dst.Url = decodedValue3865
+	}
+	{
+		item := n.get("name")
+		decodedValue3867, decodeError3868 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		if decodeError3868 != nil {
+			return nil, decodeError3868
+		}
+		dst.Name = decodedValue3867
 	}
 	return dst, nil
 }
@@ -11571,19 +11591,19 @@ func (c *conversion) nodePartialMessageEmbedThumbnail(n *ingressNode, path strin
 	dst := &wire.PartialMessageEmbedThumbnail{}
 	{
 		item := n.get("url")
-		decodedValue3867, decodeError3868 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
-		if decodeError3868 != nil {
-			return nil, decodeError3868
-		}
-		dst.Url = decodedValue3867
-	}
-	{
-		item := n.get("proxy_url")
-		decodedValue3869, decodeError3870 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyURL"), parent)
+		decodedValue3869, decodeError3870 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
 		if decodeError3870 != nil {
 			return nil, decodeError3870
 		}
-		dst.ProxyUrl = decodedValue3869
+		dst.Url = decodedValue3869
+	}
+	{
+		item := n.get("proxy_url")
+		decodedValue3871, decodeError3872 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ProxyURL"), parent)
+		if decodeError3872 != nil {
+			return nil, decodeError3872
+		}
+		dst.ProxyUrl = decodedValue3871
 	}
 	{
 		item := n.get("width")
@@ -11592,11 +11612,11 @@ func (c *conversion) nodePartialMessageEmbedThumbnail(n *ingressNode, path strin
 				return nil, err
 			}
 		}
-		decodedValue3871, decodeError3872 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
-		if decodeError3872 != nil {
-			return nil, decodeError3872
+		decodedValue3873, decodeError3874 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
+		if decodeError3874 != nil {
+			return nil, decodeError3874
 		}
-		dst.Width = decodedValue3871
+		dst.Width = decodedValue3873
 	}
 	{
 		item := n.get("height")
@@ -11605,11 +11625,11 @@ func (c *conversion) nodePartialMessageEmbedThumbnail(n *ingressNode, path strin
 				return nil, err
 			}
 		}
-		decodedValue3873, decodeError3874 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
-		if decodeError3874 != nil {
-			return nil, decodeError3874
+		decodedValue3875, decodeError3876 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
+		if decodeError3876 != nil {
+			return nil, decodeError3876
 		}
-		dst.Height = decodedValue3873
+		dst.Height = decodedValue3875
 	}
 	return dst, nil
 }
@@ -11623,11 +11643,11 @@ func (c *conversion) nodePartialMessageEmbedVideo(n *ingressNode, path string, p
 	dst := &wire.PartialMessageEmbedVideo{}
 	{
 		item := n.get("url")
-		decodedValue3875, decodeError3876 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
-		if decodeError3876 != nil {
-			return nil, decodeError3876
+		decodedValue3877, decodeError3878 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
+		if decodeError3878 != nil {
+			return nil, decodeError3878
 		}
-		dst.Url = decodedValue3875
+		dst.Url = decodedValue3877
 	}
 	{
 		item := n.get("width")
@@ -11636,11 +11656,11 @@ func (c *conversion) nodePartialMessageEmbedVideo(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3877, decodeError3878 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
-		if decodeError3878 != nil {
-			return nil, decodeError3878
+		decodedValue3879, decodeError3880 := c.nodeDomainNullableSint64(item, fieldPath(path, "Width"), parent)
+		if decodeError3880 != nil {
+			return nil, decodeError3880
 		}
-		dst.Width = decodedValue3877
+		dst.Width = decodedValue3879
 	}
 	{
 		item := n.get("height")
@@ -11649,11 +11669,11 @@ func (c *conversion) nodePartialMessageEmbedVideo(n *ingressNode, path string, p
 				return nil, err
 			}
 		}
-		decodedValue3879, decodeError3880 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
-		if decodeError3880 != nil {
-			return nil, decodeError3880
+		decodedValue3881, decodeError3882 := c.nodeDomainNullableSint64(item, fieldPath(path, "Height"), parent)
+		if decodeError3882 != nil {
+			return nil, decodeError3882
 		}
-		dst.Height = decodedValue3879
+		dst.Height = decodedValue3881
 	}
 	return dst, nil
 }
@@ -11667,11 +11687,11 @@ func (c *conversion) nodePartialMessageInteraction(n *ingressNode, path string, 
 	dst := &wire.PartialMessageInteraction{}
 	{
 		item := n.get("id")
-		decodedValue3881, decodeError3882 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError3882 != nil {
-			return nil, decodeError3882
+		decodedValue3883, decodeError3884 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError3884 != nil {
+			return nil, decodeError3884
 		}
-		dst.Id = decodedValue3881
+		dst.Id = decodedValue3883
 	}
 	{
 		item := n.get("type")
@@ -11680,35 +11700,35 @@ func (c *conversion) nodePartialMessageInteraction(n *ingressNode, path string, 
 				return nil, err
 			}
 		}
-		decodedValue3883, decodeError3884 := c.nodeDomainNullableUint32(item, fieldPath(path, "Type"), parent)
-		if decodeError3884 != nil {
-			return nil, decodeError3884
-		}
-		dst.Type = decodedValue3883
-	}
-	{
-		item := n.get("name")
-		decodedValue3885, decodeError3886 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		decodedValue3885, decodeError3886 := c.nodeDomainNullableUint32(item, fieldPath(path, "Type"), parent)
 		if decodeError3886 != nil {
 			return nil, decodeError3886
 		}
-		dst.Name = decodedValue3885
+		dst.Type = decodedValue3885
 	}
 	{
-		item := n.get("user")
-		decodedValue3887, decodeError3888 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
+		item := n.get("name")
+		decodedValue3887, decodeError3888 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError3888 != nil {
 			return nil, decodeError3888
 		}
-		dst.User = decodedValue3887
+		dst.Name = decodedValue3887
 	}
 	{
-		item := n.get("member")
-		decodedValue3889, decodeError3890 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
+		item := n.get("user")
+		decodedValue3889, decodeError3890 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
 		if decodeError3890 != nil {
 			return nil, decodeError3890
 		}
-		dst.Member = decodedValue3889
+		dst.User = decodedValue3889
+	}
+	{
+		item := n.get("member")
+		decodedValue3891, decodeError3892 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
+		if decodeError3892 != nil {
+			return nil, decodeError3892
+		}
+		dst.Member = decodedValue3891
 	}
 	return dst, nil
 }
@@ -11722,11 +11742,11 @@ func (c *conversion) nodePartialMessageInteractionMetadata(n *ingressNode, path 
 	dst := &wire.PartialMessageInteractionMetadata{}
 	{
 		item := n.get("id")
-		decodedValue3891, decodeError3892 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError3892 != nil {
-			return nil, decodeError3892
+		decodedValue3893, decodeError3894 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError3894 != nil {
+			return nil, decodeError3894
 		}
-		dst.Id = decodedValue3891
+		dst.Id = decodedValue3893
 	}
 	{
 		item := n.get("type")
@@ -11735,51 +11755,51 @@ func (c *conversion) nodePartialMessageInteractionMetadata(n *ingressNode, path 
 				return nil, err
 			}
 		}
-		decodedValue3893, decodeError3894 := c.nodeDomainNullableUint32(item, fieldPath(path, "Type"), parent)
-		if decodeError3894 != nil {
-			return nil, decodeError3894
-		}
-		dst.Type = decodedValue3893
-	}
-	{
-		item := n.get("user")
-		decodedValue3895, decodeError3896 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
+		decodedValue3895, decodeError3896 := c.nodeDomainNullableUint32(item, fieldPath(path, "Type"), parent)
 		if decodeError3896 != nil {
 			return nil, decodeError3896
 		}
-		dst.User = decodedValue3895
+		dst.Type = decodedValue3895
 	}
 	{
-		item := n.get("authorizing_integration_owners")
-		decodedValue3897, decodeError3898 := c.nodeDomainNullableDomainUint64ToFlexmoduleCoreV2NullableStringMap(item, fieldPath(path, "AuthorizingIntegrationOwners"), parent)
+		item := n.get("user")
+		decodedValue3897, decodeError3898 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
 		if decodeError3898 != nil {
 			return nil, decodeError3898
 		}
-		dst.AuthorizingIntegrationOwners = decodedValue3897
+		dst.User = decodedValue3897
 	}
 	{
-		item := n.get("original_response_message_id")
-		decodedValue3899, decodeError3900 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "OriginalResponseMessageID"), parent)
+		item := n.get("authorizing_integration_owners")
+		decodedValue3899, decodeError3900 := c.nodeDomainNullableDomainUint64ToFlexmoduleCoreV2NullableStringMap(item, fieldPath(path, "AuthorizingIntegrationOwners"), parent)
 		if decodeError3900 != nil {
 			return nil, decodeError3900
 		}
-		dst.OriginalResponseMessageId = decodedValue3899
+		dst.AuthorizingIntegrationOwners = decodedValue3899
 	}
 	{
-		item := n.get("interacted_message_id")
-		decodedValue3901, decodeError3902 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "InteractedMessageID"), parent)
+		item := n.get("original_response_message_id")
+		decodedValue3901, decodeError3902 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "OriginalResponseMessageID"), parent)
 		if decodeError3902 != nil {
 			return nil, decodeError3902
 		}
-		dst.InteractedMessageId = decodedValue3901
+		dst.OriginalResponseMessageId = decodedValue3901
 	}
 	{
-		item := n.get("triggering_interaction_metadata")
-		decodedValue3903, decodeError3904 := c.nodeDomainNullablePartialMessageInteractionMetadata(item, fieldPath(path, "TriggeringInteractionMetadata"), parent)
+		item := n.get("interacted_message_id")
+		decodedValue3903, decodeError3904 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "InteractedMessageID"), parent)
 		if decodeError3904 != nil {
 			return nil, decodeError3904
 		}
-		dst.TriggeringInteractionMetadata = decodedValue3903
+		dst.InteractedMessageId = decodedValue3903
+	}
+	{
+		item := n.get("triggering_interaction_metadata")
+		decodedValue3905, decodeError3906 := c.nodeDomainNullablePartialMessageInteractionMetadata(item, fieldPath(path, "TriggeringInteractionMetadata"), parent)
+		if decodeError3906 != nil {
+			return nil, decodeError3906
+		}
+		dst.TriggeringInteractionMetadata = decodedValue3905
 	}
 	return dst, nil
 }
@@ -11793,19 +11813,19 @@ func (c *conversion) nodePartialMessagePin(n *ingressNode, path string, parent i
 	dst := &wire.PartialMessagePin{}
 	{
 		item := n.get("pinned_at")
-		decodedValue3905, decodeError3906 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "PinnedAt"), parent)
-		if decodeError3906 != nil {
-			return nil, decodeError3906
-		}
-		dst.PinnedAt = decodedValue3905
-	}
-	{
-		item := n.get("message")
-		decodedValue3907, decodeError3908 := c.nodeDomainNullablePartialMessage(item, fieldPath(path, "Message"), parent)
+		decodedValue3907, decodeError3908 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "PinnedAt"), parent)
 		if decodeError3908 != nil {
 			return nil, decodeError3908
 		}
-		dst.Message = decodedValue3907
+		dst.PinnedAt = decodedValue3907
+	}
+	{
+		item := n.get("message")
+		decodedValue3909, decodeError3910 := c.nodeDomainNullablePartialMessage(item, fieldPath(path, "Message"), parent)
+		if decodeError3910 != nil {
+			return nil, decodeError3910
+		}
+		dst.Message = decodedValue3909
 	}
 	return dst, nil
 }
@@ -11819,43 +11839,43 @@ func (c *conversion) nodePartialMessageReaction(n *ingressNode, path string, par
 	dst := &wire.PartialMessageReaction{}
 	{
 		item := n.get("user_id")
-		decodedValue3909, decodeError3910 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
-		if decodeError3910 != nil {
-			return nil, decodeError3910
-		}
-		dst.UserId = decodedValue3909
-	}
-	{
-		item := n.get("message_id")
-		decodedValue3911, decodeError3912 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "MessageID"), parent)
+		decodedValue3911, decodeError3912 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
 		if decodeError3912 != nil {
 			return nil, decodeError3912
 		}
-		dst.MessageId = decodedValue3911
+		dst.UserId = decodedValue3911
 	}
 	{
-		item := n.get("emoji")
-		decodedValue3913, decodeError3914 := c.nodeDomainNullablePartialEmoji(item, fieldPath(path, "Emoji"), parent)
+		item := n.get("message_id")
+		decodedValue3913, decodeError3914 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "MessageID"), parent)
 		if decodeError3914 != nil {
 			return nil, decodeError3914
 		}
-		dst.Emoji = decodedValue3913
+		dst.MessageId = decodedValue3913
 	}
 	{
-		item := n.get("channel_id")
-		decodedValue3915, decodeError3916 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+		item := n.get("emoji")
+		decodedValue3915, decodeError3916 := c.nodeDomainNullablePartialEmoji(item, fieldPath(path, "Emoji"), parent)
 		if decodeError3916 != nil {
 			return nil, decodeError3916
 		}
-		dst.ChannelId = decodedValue3915
+		dst.Emoji = decodedValue3915
 	}
 	{
-		item := n.get("guild_id")
-		decodedValue3917, decodeError3918 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
+		item := n.get("channel_id")
+		decodedValue3917, decodeError3918 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
 		if decodeError3918 != nil {
 			return nil, decodeError3918
 		}
-		dst.GuildId = decodedValue3917
+		dst.ChannelId = decodedValue3917
+	}
+	{
+		item := n.get("guild_id")
+		decodedValue3919, decodeError3920 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
+		if decodeError3920 != nil {
+			return nil, decodeError3920
+		}
+		dst.GuildId = decodedValue3919
 	}
 	return dst, nil
 }
@@ -11874,27 +11894,27 @@ func (c *conversion) nodePartialMessageReactions(n *ingressNode, path string, pa
 				return nil, err
 			}
 		}
-		decodedValue3919, decodeError3920 := c.nodeDomainNullableSint64(item, fieldPath(path, "Count"), parent)
-		if decodeError3920 != nil {
-			return nil, decodeError3920
-		}
-		dst.Count = decodedValue3919
-	}
-	{
-		item := n.get("me")
-		decodedValue3921, decodeError3922 := c.nodeDomainNullableBool(item, fieldPath(path, "Me"), parent)
+		decodedValue3921, decodeError3922 := c.nodeDomainNullableSint64(item, fieldPath(path, "Count"), parent)
 		if decodeError3922 != nil {
 			return nil, decodeError3922
 		}
-		dst.Me = decodedValue3921
+		dst.Count = decodedValue3921
 	}
 	{
-		item := n.get("emoji")
-		decodedValue3923, decodeError3924 := c.nodeDomainNullablePartialEmoji(item, fieldPath(path, "Emoji"), parent)
+		item := n.get("me")
+		decodedValue3923, decodeError3924 := c.nodeDomainNullableBool(item, fieldPath(path, "Me"), parent)
 		if decodeError3924 != nil {
 			return nil, decodeError3924
 		}
-		dst.Emoji = decodedValue3923
+		dst.Me = decodedValue3923
+	}
+	{
+		item := n.get("emoji")
+		decodedValue3925, decodeError3926 := c.nodeDomainNullablePartialEmoji(item, fieldPath(path, "Emoji"), parent)
+		if decodeError3926 != nil {
+			return nil, decodeError3926
+		}
+		dst.Emoji = decodedValue3925
 	}
 	return dst, nil
 }
@@ -11913,43 +11933,43 @@ func (c *conversion) nodePartialMessageReference(n *ingressNode, path string, pa
 				return nil, err
 			}
 		}
-		decodedValue3925, decodeError3926 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError3926 != nil {
-			return nil, decodeError3926
-		}
-		dst.Type = decodedValue3925
-	}
-	{
-		item := n.get("message_id")
-		decodedValue3927, decodeError3928 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "MessageID"), parent)
+		decodedValue3927, decodeError3928 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
 		if decodeError3928 != nil {
 			return nil, decodeError3928
 		}
-		dst.MessageId = decodedValue3927
+		dst.Type = decodedValue3927
 	}
 	{
-		item := n.get("channel_id")
-		decodedValue3929, decodeError3930 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+		item := n.get("message_id")
+		decodedValue3929, decodeError3930 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "MessageID"), parent)
 		if decodeError3930 != nil {
 			return nil, decodeError3930
 		}
-		dst.ChannelId = decodedValue3929
+		dst.MessageId = decodedValue3929
 	}
 	{
-		item := n.get("guild_id")
-		decodedValue3931, decodeError3932 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
+		item := n.get("channel_id")
+		decodedValue3931, decodeError3932 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
 		if decodeError3932 != nil {
 			return nil, decodeError3932
 		}
-		dst.GuildId = decodedValue3931
+		dst.ChannelId = decodedValue3931
 	}
 	{
-		item := n.get("fail_if_not_exists")
-		decodedValue3933, decodeError3934 := c.nodeDomainNullableBool(item, fieldPath(path, "FailIfNotExists"), parent)
+		item := n.get("guild_id")
+		decodedValue3933, decodeError3934 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
 		if decodeError3934 != nil {
 			return nil, decodeError3934
 		}
-		dst.FailIfNotExists = decodedValue3933
+		dst.GuildId = decodedValue3933
+	}
+	{
+		item := n.get("fail_if_not_exists")
+		decodedValue3935, decodeError3936 := c.nodeDomainNullableBool(item, fieldPath(path, "FailIfNotExists"), parent)
+		if decodeError3936 != nil {
+			return nil, decodeError3936
+		}
+		dst.FailIfNotExists = decodedValue3935
 	}
 	return dst, nil
 }
@@ -11963,59 +11983,59 @@ func (c *conversion) nodePartialMessageSend(n *ingressNode, path string, parent 
 	dst := &wire.PartialMessageSend{}
 	{
 		item := n.get("content")
-		decodedValue3935, decodeError3936 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-		if decodeError3936 != nil {
-			return nil, decodeError3936
-		}
-		dst.Content = decodedValue3935
-	}
-	{
-		item := n.get("embeds")
-		decodedValue3937, decodeError3938 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
+		decodedValue3937, decodeError3938 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
 		if decodeError3938 != nil {
 			return nil, decodeError3938
 		}
-		dst.Embeds = decodedValue3937
+		dst.Content = decodedValue3937
 	}
 	{
-		item := n.get("tts")
-		decodedValue3939, decodeError3940 := c.nodeDomainNullableBool(item, fieldPath(path, "TTS"), parent)
+		item := n.get("embeds")
+		decodedValue3939, decodeError3940 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
 		if decodeError3940 != nil {
 			return nil, decodeError3940
 		}
-		dst.Tts = decodedValue3939
+		dst.Embeds = decodedValue3939
 	}
 	{
-		item := n.get("components")
-		decodedValue3941, decodeError3942 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
+		item := n.get("tts")
+		decodedValue3941, decodeError3942 := c.nodeDomainNullableBool(item, fieldPath(path, "TTS"), parent)
 		if decodeError3942 != nil {
 			return nil, decodeError3942
 		}
-		dst.Components = decodedValue3941
+		dst.Tts = decodedValue3941
 	}
 	{
-		item := n.get("allowed_mentions")
-		decodedValue3943, decodeError3944 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+		item := n.get("components")
+		decodedValue3943, decodeError3944 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
 		if decodeError3944 != nil {
 			return nil, decodeError3944
 		}
-		dst.AllowedMentions = decodedValue3943
+		dst.Components = decodedValue3943
 	}
 	{
-		item := n.get("message_reference")
-		decodedValue3945, decodeError3946 := c.nodeDomainNullablePartialMessageReference(item, fieldPath(path, "Reference"), parent)
+		item := n.get("allowed_mentions")
+		decodedValue3945, decodeError3946 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
 		if decodeError3946 != nil {
 			return nil, decodeError3946
 		}
-		dst.Reference = decodedValue3945
+		dst.AllowedMentions = decodedValue3945
 	}
 	{
-		item := n.get("sticker_ids")
-		decodedValue3947, decodeError3948 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "StickerIDs"), parent)
+		item := n.get("message_reference")
+		decodedValue3947, decodeError3948 := c.nodeDomainNullablePartialMessageReference(item, fieldPath(path, "Reference"), parent)
 		if decodeError3948 != nil {
 			return nil, decodeError3948
 		}
-		dst.StickerIds = decodedValue3947
+		dst.Reference = decodedValue3947
+	}
+	{
+		item := n.get("sticker_ids")
+		decodedValue3949, decodeError3950 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "StickerIDs"), parent)
+		if decodeError3950 != nil {
+			return nil, decodeError3950
+		}
+		dst.StickerIds = decodedValue3949
 	}
 	{
 		item := n.get("flags")
@@ -12024,19 +12044,19 @@ func (c *conversion) nodePartialMessageSend(n *ingressNode, path string, parent 
 				return nil, err
 			}
 		}
-		decodedValue3949, decodeError3950 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError3950 != nil {
-			return nil, decodeError3950
-		}
-		dst.Flags = decodedValue3949
-	}
-	{
-		item := n.get("poll")
-		decodedValue3951, decodeError3952 := c.nodeDomainNullablePartialPoll(item, fieldPath(path, "Poll"), parent)
+		decodedValue3951, decodeError3952 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
 		if decodeError3952 != nil {
 			return nil, decodeError3952
 		}
-		dst.Poll = decodedValue3951
+		dst.Flags = decodedValue3951
+	}
+	{
+		item := n.get("poll")
+		decodedValue3953, decodeError3954 := c.nodeDomainNullablePartialPoll(item, fieldPath(path, "Poll"), parent)
+		if decodeError3954 != nil {
+			return nil, decodeError3954
+		}
+		dst.Poll = decodedValue3953
 	}
 	return dst, nil
 }
@@ -12050,11 +12070,11 @@ func (c *conversion) nodePartialMessageSnapshot(n *ingressNode, path string, par
 	dst := &wire.PartialMessageSnapshot{}
 	{
 		item := n.get("message")
-		decodedValue3953, decodeError3954 := c.nodeDomainNullablePartialMessage(item, fieldPath(path, "Message"), parent)
-		if decodeError3954 != nil {
-			return nil, decodeError3954
+		decodedValue3955, decodeError3956 := c.nodeDomainNullablePartialMessage(item, fieldPath(path, "Message"), parent)
+		if decodeError3956 != nil {
+			return nil, decodeError3956
 		}
-		dst.Message = decodedValue3953
+		dst.Message = decodedValue3955
 	}
 	return dst, nil
 }
@@ -12068,19 +12088,27 @@ func (c *conversion) nodePartialModalSubmitInteractionData(n *ingressNode, path 
 	dst := &wire.PartialModalSubmitInteractionData{}
 	{
 		item := n.get("custom_id")
-		decodedValue3955, decodeError3956 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
-		if decodeError3956 != nil {
-			return nil, decodeError3956
-		}
-		dst.CustomId = decodedValue3955
-	}
-	{
-		item := n.get("resolved")
-		decodedValue3957, decodeError3958 := c.nodeDomainNullablePartialComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
+		decodedValue3957, decodeError3958 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
 		if decodeError3958 != nil {
 			return nil, decodeError3958
 		}
-		dst.Resolved = decodedValue3957
+		dst.CustomId = decodedValue3957
+	}
+	{
+		item := n.get("components")
+		decodedValue3959, decodeError3960 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
+		if decodeError3960 != nil {
+			return nil, decodeError3960
+		}
+		dst.Components = decodedValue3959
+	}
+	{
+		item := n.get("resolved")
+		decodedValue3961, decodeError3962 := c.nodeDomainNullablePartialComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
+		if decodeError3962 != nil {
+			return nil, decodeError3962
+		}
+		dst.Resolved = decodedValue3961
 	}
 	if err := validateIngressModal(n.get("components"), false, c, fieldPath(path, "Components")); err != nil {
 		return nil, err
@@ -12097,19 +12125,19 @@ func (c *conversion) nodePartialParty(n *ingressNode, path string, parent int64)
 	dst := &wire.PartialParty{}
 	{
 		item := n.get("id")
-		decodedValue3959, decodeError3960 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError3960 != nil {
-			return nil, decodeError3960
+		decodedValue3963, decodeError3964 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError3964 != nil {
+			return nil, decodeError3964
 		}
-		dst.Id = decodedValue3959
+		dst.Id = decodedValue3963
 	}
 	{
 		item := n.get("size")
-		decodedValue3961, decodeError3962 := c.nodeDomainNullableDomainDomainNullableSint64List(item, fieldPath(path, "Size"), parent)
-		if decodeError3962 != nil {
-			return nil, decodeError3962
+		decodedValue3965, decodeError3966 := c.nodeDomainNullableDomainDomainNullableSint64List(item, fieldPath(path, "Size"), parent)
+		if decodeError3966 != nil {
+			return nil, decodeError3966
 		}
-		dst.Size = decodedValue3961
+		dst.Size = decodedValue3965
 	}
 	return dst, nil
 }
@@ -12123,11 +12151,11 @@ func (c *conversion) nodePartialPermissionOverwrite(n *ingressNode, path string,
 	dst := &wire.PartialPermissionOverwrite{}
 	{
 		item := n.get("id")
-		decodedValue3963, decodeError3964 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError3964 != nil {
-			return nil, decodeError3964
+		decodedValue3967, decodeError3968 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError3968 != nil {
+			return nil, decodeError3968
 		}
-		dst.Id = decodedValue3963
+		dst.Id = decodedValue3967
 	}
 	{
 		item := n.get("type")
@@ -12136,33 +12164,33 @@ func (c *conversion) nodePartialPermissionOverwrite(n *ingressNode, path string,
 				return nil, err
 			}
 		}
-		decodedValue3965, decodeError3966 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError3966 != nil {
-			return nil, decodeError3966
+		decodedValue3969, decodeError3970 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
+		if decodeError3970 != nil {
+			return nil, decodeError3970
 		}
-		dst.Type = decodedValue3965
+		dst.Type = decodedValue3969
 	}
 	{
 		item := n.get("deny")
 		if err := ingressPermission(item, c, fieldPath(path, "Deny")); err != nil {
 			return nil, err
 		}
-		decodedValue3967, decodeError3968 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Deny"), parent)
-		if decodeError3968 != nil {
-			return nil, decodeError3968
+		decodedValue3971, decodeError3972 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Deny"), parent)
+		if decodeError3972 != nil {
+			return nil, decodeError3972
 		}
-		dst.Deny = decodedValue3967
+		dst.Deny = decodedValue3971
 	}
 	{
 		item := n.get("allow")
 		if err := ingressPermission(item, c, fieldPath(path, "Allow")); err != nil {
 			return nil, err
 		}
-		decodedValue3969, decodeError3970 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Allow"), parent)
-		if decodeError3970 != nil {
-			return nil, decodeError3970
+		decodedValue3973, decodeError3974 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Allow"), parent)
+		if decodeError3974 != nil {
+			return nil, decodeError3974
 		}
-		dst.Allow = decodedValue3969
+		dst.Allow = decodedValue3973
 	}
 	return dst, nil
 }
@@ -12176,27 +12204,27 @@ func (c *conversion) nodePartialPoll(n *ingressNode, path string, parent int64) 
 	dst := &wire.PartialPoll{}
 	{
 		item := n.get("question")
-		decodedValue3971, decodeError3972 := c.nodeDomainNullablePartialPollMedia(item, fieldPath(path, "Question"), parent)
-		if decodeError3972 != nil {
-			return nil, decodeError3972
-		}
-		dst.Question = decodedValue3971
-	}
-	{
-		item := n.get("answers")
-		decodedValue3973, decodeError3974 := c.nodeDomainNullableDomainDomainNullablePartialPollAnswerList(item, fieldPath(path, "Answers"), parent)
-		if decodeError3974 != nil {
-			return nil, decodeError3974
-		}
-		dst.Answers = decodedValue3973
-	}
-	{
-		item := n.get("allow_multiselect")
-		decodedValue3975, decodeError3976 := c.nodeDomainNullableBool(item, fieldPath(path, "AllowMultiselect"), parent)
+		decodedValue3975, decodeError3976 := c.nodeDomainNullablePartialPollMedia(item, fieldPath(path, "Question"), parent)
 		if decodeError3976 != nil {
 			return nil, decodeError3976
 		}
-		dst.AllowMultiselect = decodedValue3975
+		dst.Question = decodedValue3975
+	}
+	{
+		item := n.get("answers")
+		decodedValue3977, decodeError3978 := c.nodeDomainNullableDomainDomainNullablePartialPollAnswerList(item, fieldPath(path, "Answers"), parent)
+		if decodeError3978 != nil {
+			return nil, decodeError3978
+		}
+		dst.Answers = decodedValue3977
+	}
+	{
+		item := n.get("allow_multiselect")
+		decodedValue3979, decodeError3980 := c.nodeDomainNullableBool(item, fieldPath(path, "AllowMultiselect"), parent)
+		if decodeError3980 != nil {
+			return nil, decodeError3980
+		}
+		dst.AllowMultiselect = decodedValue3979
 	}
 	{
 		item := n.get("layout_type")
@@ -12205,11 +12233,11 @@ func (c *conversion) nodePartialPoll(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue3977, decodeError3978 := c.nodeDomainNullableSint64(item, fieldPath(path, "LayoutType"), parent)
-		if decodeError3978 != nil {
-			return nil, decodeError3978
+		decodedValue3981, decodeError3982 := c.nodeDomainNullableSint64(item, fieldPath(path, "LayoutType"), parent)
+		if decodeError3982 != nil {
+			return nil, decodeError3982
 		}
-		dst.LayoutType = decodedValue3977
+		dst.LayoutType = decodedValue3981
 	}
 	{
 		item := n.get("duration")
@@ -12218,27 +12246,27 @@ func (c *conversion) nodePartialPoll(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue3979, decodeError3980 := c.nodeDomainNullableSint64(item, fieldPath(path, "Duration"), parent)
-		if decodeError3980 != nil {
-			return nil, decodeError3980
-		}
-		dst.Duration = decodedValue3979
-	}
-	{
-		item := n.get("results")
-		decodedValue3981, decodeError3982 := c.nodeDomainNullablePartialPollResults(item, fieldPath(path, "Results"), parent)
-		if decodeError3982 != nil {
-			return nil, decodeError3982
-		}
-		dst.Results = decodedValue3981
-	}
-	{
-		item := n.get("expiry")
-		decodedValue3983, decodeError3984 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "Expiry"), parent)
+		decodedValue3983, decodeError3984 := c.nodeDomainNullableSint64(item, fieldPath(path, "Duration"), parent)
 		if decodeError3984 != nil {
 			return nil, decodeError3984
 		}
-		dst.Expiry = decodedValue3983
+		dst.Duration = decodedValue3983
+	}
+	{
+		item := n.get("results")
+		decodedValue3985, decodeError3986 := c.nodeDomainNullablePartialPollResults(item, fieldPath(path, "Results"), parent)
+		if decodeError3986 != nil {
+			return nil, decodeError3986
+		}
+		dst.Results = decodedValue3985
+	}
+	{
+		item := n.get("expiry")
+		decodedValue3987, decodeError3988 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "Expiry"), parent)
+		if decodeError3988 != nil {
+			return nil, decodeError3988
+		}
+		dst.Expiry = decodedValue3987
 	}
 	return dst, nil
 }
@@ -12257,19 +12285,19 @@ func (c *conversion) nodePartialPollAnswer(n *ingressNode, path string, parent i
 				return nil, err
 			}
 		}
-		decodedValue3985, decodeError3986 := c.nodeDomainNullableSint64(item, fieldPath(path, "AnswerID"), parent)
-		if decodeError3986 != nil {
-			return nil, decodeError3986
+		decodedValue3989, decodeError3990 := c.nodeDomainNullableSint64(item, fieldPath(path, "AnswerID"), parent)
+		if decodeError3990 != nil {
+			return nil, decodeError3990
 		}
-		dst.AnswerId = decodedValue3985
+		dst.AnswerId = decodedValue3989
 	}
 	{
 		item := n.get("poll_media")
-		decodedValue3987, decodeError3988 := c.nodeDomainNullablePartialPollMedia(item, fieldPath(path, "Media"), parent)
-		if decodeError3988 != nil {
-			return nil, decodeError3988
+		decodedValue3991, decodeError3992 := c.nodeDomainNullablePartialPollMedia(item, fieldPath(path, "Media"), parent)
+		if decodeError3992 != nil {
+			return nil, decodeError3992
 		}
-		dst.Media = decodedValue3987
+		dst.Media = decodedValue3991
 	}
 	return dst, nil
 }
@@ -12288,11 +12316,11 @@ func (c *conversion) nodePartialPollAnswerCount(n *ingressNode, path string, par
 				return nil, err
 			}
 		}
-		decodedValue3989, decodeError3990 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
-		if decodeError3990 != nil {
-			return nil, decodeError3990
+		decodedValue3993, decodeError3994 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
+		if decodeError3994 != nil {
+			return nil, decodeError3994
 		}
-		dst.Id = decodedValue3989
+		dst.Id = decodedValue3993
 	}
 	{
 		item := n.get("count")
@@ -12301,19 +12329,19 @@ func (c *conversion) nodePartialPollAnswerCount(n *ingressNode, path string, par
 				return nil, err
 			}
 		}
-		decodedValue3991, decodeError3992 := c.nodeDomainNullableSint64(item, fieldPath(path, "Count"), parent)
-		if decodeError3992 != nil {
-			return nil, decodeError3992
+		decodedValue3995, decodeError3996 := c.nodeDomainNullableSint64(item, fieldPath(path, "Count"), parent)
+		if decodeError3996 != nil {
+			return nil, decodeError3996
 		}
-		dst.Count = decodedValue3991
+		dst.Count = decodedValue3995
 	}
 	{
 		item := n.get("me_voted")
-		decodedValue3993, decodeError3994 := c.nodeDomainNullableBool(item, fieldPath(path, "MeVoted"), parent)
-		if decodeError3994 != nil {
-			return nil, decodeError3994
+		decodedValue3997, decodeError3998 := c.nodeDomainNullableBool(item, fieldPath(path, "MeVoted"), parent)
+		if decodeError3998 != nil {
+			return nil, decodeError3998
 		}
-		dst.MeVoted = decodedValue3993
+		dst.MeVoted = decodedValue3997
 	}
 	return dst, nil
 }
@@ -12327,19 +12355,19 @@ func (c *conversion) nodePartialPollMedia(n *ingressNode, path string, parent in
 	dst := &wire.PartialPollMedia{}
 	{
 		item := n.get("text")
-		decodedValue3995, decodeError3996 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Text"), parent)
-		if decodeError3996 != nil {
-			return nil, decodeError3996
+		decodedValue3999, decodeError4000 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Text"), parent)
+		if decodeError4000 != nil {
+			return nil, decodeError4000
 		}
-		dst.Text = decodedValue3995
+		dst.Text = decodedValue3999
 	}
 	{
 		item := n.get("emoji")
-		decodedValue3997, decodeError3998 := c.nodeDomainNullablePartialComponentEmoji(item, fieldPath(path, "Emoji"), parent)
-		if decodeError3998 != nil {
-			return nil, decodeError3998
+		decodedValue4001, decodeError4002 := c.nodeDomainNullablePartialComponentEmoji(item, fieldPath(path, "Emoji"), parent)
+		if decodeError4002 != nil {
+			return nil, decodeError4002
 		}
-		dst.Emoji = decodedValue3997
+		dst.Emoji = decodedValue4001
 	}
 	return dst, nil
 }
@@ -12353,19 +12381,19 @@ func (c *conversion) nodePartialPollResults(n *ingressNode, path string, parent 
 	dst := &wire.PartialPollResults{}
 	{
 		item := n.get("is_finalized")
-		decodedValue3999, decodeError4000 := c.nodeDomainNullableBool(item, fieldPath(path, "Finalized"), parent)
-		if decodeError4000 != nil {
-			return nil, decodeError4000
+		decodedValue4003, decodeError4004 := c.nodeDomainNullableBool(item, fieldPath(path, "Finalized"), parent)
+		if decodeError4004 != nil {
+			return nil, decodeError4004
 		}
-		dst.Finalized = decodedValue3999
+		dst.Finalized = decodedValue4003
 	}
 	{
 		item := n.get("answer_counts")
-		decodedValue4001, decodeError4002 := c.nodeDomainNullableDomainDomainNullablePartialPollAnswerCountList(item, fieldPath(path, "AnswerCounts"), parent)
-		if decodeError4002 != nil {
-			return nil, decodeError4002
+		decodedValue4005, decodeError4006 := c.nodeDomainNullableDomainDomainNullablePartialPollAnswerCountList(item, fieldPath(path, "AnswerCounts"), parent)
+		if decodeError4006 != nil {
+			return nil, decodeError4006
 		}
-		dst.AnswerCounts = decodedValue4001
+		dst.AnswerCounts = decodedValue4005
 	}
 	return dst, nil
 }
@@ -12379,27 +12407,27 @@ func (c *conversion) nodePartialPresence(n *ingressNode, path string, parent int
 	dst := &wire.PartialPresence{}
 	{
 		item := n.get("user")
-		decodedValue4003, decodeError4004 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
-		if decodeError4004 != nil {
-			return nil, decodeError4004
-		}
-		dst.User = decodedValue4003
-	}
-	{
-		item := n.get("status")
-		decodedValue4005, decodeError4006 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Status"), parent)
-		if decodeError4006 != nil {
-			return nil, decodeError4006
-		}
-		dst.Status = decodedValue4005
-	}
-	{
-		item := n.get("activities")
-		decodedValue4007, decodeError4008 := c.nodeDomainNullableDomainDomainNullablePartialActivityList(item, fieldPath(path, "Activities"), parent)
+		decodedValue4007, decodeError4008 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
 		if decodeError4008 != nil {
 			return nil, decodeError4008
 		}
-		dst.Activities = decodedValue4007
+		dst.User = decodedValue4007
+	}
+	{
+		item := n.get("status")
+		decodedValue4009, decodeError4010 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Status"), parent)
+		if decodeError4010 != nil {
+			return nil, decodeError4010
+		}
+		dst.Status = decodedValue4009
+	}
+	{
+		item := n.get("activities")
+		decodedValue4011, decodeError4012 := c.nodeDomainNullableDomainDomainNullablePartialActivityList(item, fieldPath(path, "Activities"), parent)
+		if decodeError4012 != nil {
+			return nil, decodeError4012
+		}
+		dst.Activities = decodedValue4011
 	}
 	{
 		item := n.get("since")
@@ -12408,19 +12436,19 @@ func (c *conversion) nodePartialPresence(n *ingressNode, path string, parent int
 				return nil, err
 			}
 		}
-		decodedValue4009, decodeError4010 := c.nodeDomainNullableSint64(item, fieldPath(path, "Since"), parent)
-		if decodeError4010 != nil {
-			return nil, decodeError4010
+		decodedValue4013, decodeError4014 := c.nodeDomainNullableSint64(item, fieldPath(path, "Since"), parent)
+		if decodeError4014 != nil {
+			return nil, decodeError4014
 		}
-		dst.Since = decodedValue4009
+		dst.Since = decodedValue4013
 	}
 	{
 		item := n.get("client_status")
-		decodedValue4011, decodeError4012 := c.nodeDomainNullablePartialClientStatus(item, fieldPath(path, "ClientStatus"), parent)
-		if decodeError4012 != nil {
-			return nil, decodeError4012
+		decodedValue4015, decodeError4016 := c.nodeDomainNullablePartialClientStatus(item, fieldPath(path, "ClientStatus"), parent)
+		if decodeError4016 != nil {
+			return nil, decodeError4016
 		}
-		dst.ClientStatus = decodedValue4011
+		dst.ClientStatus = decodedValue4015
 	}
 	return dst, nil
 }
@@ -12439,27 +12467,27 @@ func (c *conversion) nodePartialReadState(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4013, decodeError4014 := c.nodeDomainNullableSint64(item, fieldPath(path, "MentionCount"), parent)
-		if decodeError4014 != nil {
-			return nil, decodeError4014
-		}
-		dst.MentionCount = decodedValue4013
-	}
-	{
-		item := n.get("last_message_id")
-		decodedValue4015, decodeError4016 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "LastMessageID"), parent)
-		if decodeError4016 != nil {
-			return nil, decodeError4016
-		}
-		dst.LastMessageId = decodedValue4015
-	}
-	{
-		item := n.get("id")
-		decodedValue4017, decodeError4018 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		decodedValue4017, decodeError4018 := c.nodeDomainNullableSint64(item, fieldPath(path, "MentionCount"), parent)
 		if decodeError4018 != nil {
 			return nil, decodeError4018
 		}
-		dst.Id = decodedValue4017
+		dst.MentionCount = decodedValue4017
+	}
+	{
+		item := n.get("last_message_id")
+		decodedValue4019, decodeError4020 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "LastMessageID"), parent)
+		if decodeError4020 != nil {
+			return nil, decodeError4020
+		}
+		dst.LastMessageId = decodedValue4019
+	}
+	{
+		item := n.get("id")
+		decodedValue4021, decodeError4022 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError4022 != nil {
+			return nil, decodeError4022
+		}
+		dst.Id = decodedValue4021
 	}
 	return dst, nil
 }
@@ -12473,43 +12501,43 @@ func (c *conversion) nodePartialRole(n *ingressNode, path string, parent int64) 
 	dst := &wire.PartialRole{}
 	{
 		item := n.get("id")
-		decodedValue4019, decodeError4020 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4020 != nil {
-			return nil, decodeError4020
-		}
-		dst.Id = decodedValue4019
-	}
-	{
-		item := n.get("name")
-		decodedValue4021, decodeError4022 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4022 != nil {
-			return nil, decodeError4022
-		}
-		dst.Name = decodedValue4021
-	}
-	{
-		item := n.get("managed")
-		decodedValue4023, decodeError4024 := c.nodeDomainNullableBool(item, fieldPath(path, "Managed"), parent)
+		decodedValue4023, decodeError4024 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4024 != nil {
 			return nil, decodeError4024
 		}
-		dst.Managed = decodedValue4023
+		dst.Id = decodedValue4023
 	}
 	{
-		item := n.get("mentionable")
-		decodedValue4025, decodeError4026 := c.nodeDomainNullableBool(item, fieldPath(path, "Mentionable"), parent)
+		item := n.get("name")
+		decodedValue4025, decodeError4026 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError4026 != nil {
 			return nil, decodeError4026
 		}
-		dst.Mentionable = decodedValue4025
+		dst.Name = decodedValue4025
 	}
 	{
-		item := n.get("hoist")
-		decodedValue4027, decodeError4028 := c.nodeDomainNullableBool(item, fieldPath(path, "Hoist"), parent)
+		item := n.get("managed")
+		decodedValue4027, decodeError4028 := c.nodeDomainNullableBool(item, fieldPath(path, "Managed"), parent)
 		if decodeError4028 != nil {
 			return nil, decodeError4028
 		}
-		dst.Hoist = decodedValue4027
+		dst.Managed = decodedValue4027
+	}
+	{
+		item := n.get("mentionable")
+		decodedValue4029, decodeError4030 := c.nodeDomainNullableBool(item, fieldPath(path, "Mentionable"), parent)
+		if decodeError4030 != nil {
+			return nil, decodeError4030
+		}
+		dst.Mentionable = decodedValue4029
+	}
+	{
+		item := n.get("hoist")
+		decodedValue4031, decodeError4032 := c.nodeDomainNullableBool(item, fieldPath(path, "Hoist"), parent)
+		if decodeError4032 != nil {
+			return nil, decodeError4032
+		}
+		dst.Hoist = decodedValue4031
 	}
 	{
 		item := n.get("color")
@@ -12518,11 +12546,11 @@ func (c *conversion) nodePartialRole(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue4029, decodeError4030 := c.nodeDomainNullableSint64(item, fieldPath(path, "Color"), parent)
-		if decodeError4030 != nil {
-			return nil, decodeError4030
+		decodedValue4033, decodeError4034 := c.nodeDomainNullableSint64(item, fieldPath(path, "Color"), parent)
+		if decodeError4034 != nil {
+			return nil, decodeError4034
 		}
-		dst.Color = decodedValue4029
+		dst.Color = decodedValue4033
 	}
 	{
 		item := n.get("position")
@@ -12531,38 +12559,38 @@ func (c *conversion) nodePartialRole(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue4031, decodeError4032 := c.nodeDomainNullableSint64(item, fieldPath(path, "Position"), parent)
-		if decodeError4032 != nil {
-			return nil, decodeError4032
+		decodedValue4035, decodeError4036 := c.nodeDomainNullableSint64(item, fieldPath(path, "Position"), parent)
+		if decodeError4036 != nil {
+			return nil, decodeError4036
 		}
-		dst.Position = decodedValue4031
+		dst.Position = decodedValue4035
 	}
 	{
 		item := n.get("permissions")
 		if err := ingressPermission(item, c, fieldPath(path, "Permissions")); err != nil {
 			return nil, err
 		}
-		decodedValue4033, decodeError4034 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Permissions"), parent)
-		if decodeError4034 != nil {
-			return nil, decodeError4034
-		}
-		dst.Permissions = decodedValue4033
-	}
-	{
-		item := n.get("icon")
-		decodedValue4035, decodeError4036 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
-		if decodeError4036 != nil {
-			return nil, decodeError4036
-		}
-		dst.Icon = decodedValue4035
-	}
-	{
-		item := n.get("unicode_emoji")
-		decodedValue4037, decodeError4038 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UnicodeEmoji"), parent)
+		decodedValue4037, decodeError4038 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Permissions"), parent)
 		if decodeError4038 != nil {
 			return nil, decodeError4038
 		}
-		dst.UnicodeEmoji = decodedValue4037
+		dst.Permissions = decodedValue4037
+	}
+	{
+		item := n.get("icon")
+		decodedValue4039, decodeError4040 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+		if decodeError4040 != nil {
+			return nil, decodeError4040
+		}
+		dst.Icon = decodedValue4039
+	}
+	{
+		item := n.get("unicode_emoji")
+		decodedValue4041, decodeError4042 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UnicodeEmoji"), parent)
+		if decodeError4042 != nil {
+			return nil, decodeError4042
+		}
+		dst.UnicodeEmoji = decodedValue4041
 	}
 	{
 		item := n.get("flags")
@@ -12571,11 +12599,11 @@ func (c *conversion) nodePartialRole(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue4039, decodeError4040 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError4040 != nil {
-			return nil, decodeError4040
+		decodedValue4043, decodeError4044 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
+		if decodeError4044 != nil {
+			return nil, decodeError4044
 		}
-		dst.Flags = decodedValue4039
+		dst.Flags = decodedValue4043
 	}
 	return dst, nil
 }
@@ -12589,11 +12617,11 @@ func (c *conversion) nodePartialRoleParams(n *ingressNode, path string, parent i
 	dst := &wire.PartialRoleParams{}
 	{
 		item := n.get("name")
-		decodedValue4041, decodeError4042 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4042 != nil {
-			return nil, decodeError4042
+		decodedValue4045, decodeError4046 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		if decodeError4046 != nil {
+			return nil, decodeError4046
 		}
-		dst.Name = decodedValue4041
+		dst.Name = decodedValue4045
 	}
 	{
 		item := n.get("color")
@@ -12602,54 +12630,54 @@ func (c *conversion) nodePartialRoleParams(n *ingressNode, path string, parent i
 				return nil, err
 			}
 		}
-		decodedValue4043, decodeError4044 := c.nodeDomainNullableSint64(item, fieldPath(path, "Color"), parent)
-		if decodeError4044 != nil {
-			return nil, decodeError4044
+		decodedValue4047, decodeError4048 := c.nodeDomainNullableSint64(item, fieldPath(path, "Color"), parent)
+		if decodeError4048 != nil {
+			return nil, decodeError4048
 		}
-		dst.Color = decodedValue4043
+		dst.Color = decodedValue4047
 	}
 	{
 		item := n.get("hoist")
-		decodedValue4045, decodeError4046 := c.nodeDomainNullableBool(item, fieldPath(path, "Hoist"), parent)
-		if decodeError4046 != nil {
-			return nil, decodeError4046
+		decodedValue4049, decodeError4050 := c.nodeDomainNullableBool(item, fieldPath(path, "Hoist"), parent)
+		if decodeError4050 != nil {
+			return nil, decodeError4050
 		}
-		dst.Hoist = decodedValue4045
+		dst.Hoist = decodedValue4049
 	}
 	{
 		item := n.get("permissions")
 		if err := ingressPermission(item, c, fieldPath(path, "Permissions")); err != nil {
 			return nil, err
 		}
-		decodedValue4047, decodeError4048 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Permissions"), parent)
-		if decodeError4048 != nil {
-			return nil, decodeError4048
-		}
-		dst.Permissions = decodedValue4047
-	}
-	{
-		item := n.get("mentionable")
-		decodedValue4049, decodeError4050 := c.nodeDomainNullableBool(item, fieldPath(path, "Mentionable"), parent)
-		if decodeError4050 != nil {
-			return nil, decodeError4050
-		}
-		dst.Mentionable = decodedValue4049
-	}
-	{
-		item := n.get("unicode_emoji")
-		decodedValue4051, decodeError4052 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UnicodeEmoji"), parent)
+		decodedValue4051, decodeError4052 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Permissions"), parent)
 		if decodeError4052 != nil {
 			return nil, decodeError4052
 		}
-		dst.UnicodeEmoji = decodedValue4051
+		dst.Permissions = decodedValue4051
 	}
 	{
-		item := n.get("icon")
-		decodedValue4053, decodeError4054 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+		item := n.get("mentionable")
+		decodedValue4053, decodeError4054 := c.nodeDomainNullableBool(item, fieldPath(path, "Mentionable"), parent)
 		if decodeError4054 != nil {
 			return nil, decodeError4054
 		}
-		dst.Icon = decodedValue4053
+		dst.Mentionable = decodedValue4053
+	}
+	{
+		item := n.get("unicode_emoji")
+		decodedValue4055, decodeError4056 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UnicodeEmoji"), parent)
+		if decodeError4056 != nil {
+			return nil, decodeError4056
+		}
+		dst.UnicodeEmoji = decodedValue4055
+	}
+	{
+		item := n.get("icon")
+		decodedValue4057, decodeError4058 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+		if decodeError4058 != nil {
+			return nil, decodeError4058
+		}
+		dst.Icon = decodedValue4057
 	}
 	return dst, nil
 }
@@ -12663,11 +12691,11 @@ func (c *conversion) nodePartialSKU(n *ingressNode, path string, parent int64) (
 	dst := &wire.PartialSKU{}
 	{
 		item := n.get("id")
-		decodedValue4055, decodeError4056 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4056 != nil {
-			return nil, decodeError4056
+		decodedValue4059, decodeError4060 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError4060 != nil {
+			return nil, decodeError4060
 		}
-		dst.Id = decodedValue4055
+		dst.Id = decodedValue4059
 	}
 	{
 		item := n.get("type")
@@ -12676,35 +12704,35 @@ func (c *conversion) nodePartialSKU(n *ingressNode, path string, parent int64) (
 				return nil, err
 			}
 		}
-		decodedValue4057, decodeError4058 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError4058 != nil {
-			return nil, decodeError4058
-		}
-		dst.Type = decodedValue4057
-	}
-	{
-		item := n.get("application_id")
-		decodedValue4059, decodeError4060 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ApplicationID"), parent)
-		if decodeError4060 != nil {
-			return nil, decodeError4060
-		}
-		dst.ApplicationId = decodedValue4059
-	}
-	{
-		item := n.get("name")
-		decodedValue4061, decodeError4062 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		decodedValue4061, decodeError4062 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
 		if decodeError4062 != nil {
 			return nil, decodeError4062
 		}
-		dst.Name = decodedValue4061
+		dst.Type = decodedValue4061
 	}
 	{
-		item := n.get("slug")
-		decodedValue4063, decodeError4064 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Slug"), parent)
+		item := n.get("application_id")
+		decodedValue4063, decodeError4064 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ApplicationID"), parent)
 		if decodeError4064 != nil {
 			return nil, decodeError4064
 		}
-		dst.Slug = decodedValue4063
+		dst.ApplicationId = decodedValue4063
+	}
+	{
+		item := n.get("name")
+		decodedValue4065, decodeError4066 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		if decodeError4066 != nil {
+			return nil, decodeError4066
+		}
+		dst.Name = decodedValue4065
+	}
+	{
+		item := n.get("slug")
+		decodedValue4067, decodeError4068 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Slug"), parent)
+		if decodeError4068 != nil {
+			return nil, decodeError4068
+		}
+		dst.Slug = decodedValue4067
 	}
 	{
 		item := n.get("flags")
@@ -12713,11 +12741,11 @@ func (c *conversion) nodePartialSKU(n *ingressNode, path string, parent int64) (
 				return nil, err
 			}
 		}
-		decodedValue4065, decodeError4066 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError4066 != nil {
-			return nil, decodeError4066
+		decodedValue4069, decodeError4070 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
+		if decodeError4070 != nil {
+			return nil, decodeError4070
 		}
-		dst.Flags = decodedValue4065
+		dst.Flags = decodedValue4069
 	}
 	return dst, nil
 }
@@ -12731,27 +12759,27 @@ func (c *conversion) nodePartialSecrets(n *ingressNode, path string, parent int6
 	dst := &wire.PartialSecrets{}
 	{
 		item := n.get("join")
-		decodedValue4067, decodeError4068 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Join"), parent)
-		if decodeError4068 != nil {
-			return nil, decodeError4068
-		}
-		dst.Join = decodedValue4067
-	}
-	{
-		item := n.get("spectate")
-		decodedValue4069, decodeError4070 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Spectate"), parent)
-		if decodeError4070 != nil {
-			return nil, decodeError4070
-		}
-		dst.Spectate = decodedValue4069
-	}
-	{
-		item := n.get("match")
-		decodedValue4071, decodeError4072 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Match"), parent)
+		decodedValue4071, decodeError4072 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Join"), parent)
 		if decodeError4072 != nil {
 			return nil, decodeError4072
 		}
-		dst.Match = decodedValue4071
+		dst.Join = decodedValue4071
+	}
+	{
+		item := n.get("spectate")
+		decodedValue4073, decodeError4074 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Spectate"), parent)
+		if decodeError4074 != nil {
+			return nil, decodeError4074
+		}
+		dst.Spectate = decodedValue4073
+	}
+	{
+		item := n.get("match")
+		decodedValue4075, decodeError4076 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Match"), parent)
+		if decodeError4076 != nil {
+			return nil, decodeError4076
+		}
+		dst.Match = decodedValue4075
 	}
 	return dst, nil
 }
@@ -12770,27 +12798,27 @@ func (c *conversion) nodePartialSection(n *ingressNode, path string, parent int6
 				return nil, err
 			}
 		}
-		decodedValue4073, decodeError4074 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
-		if decodeError4074 != nil {
-			return nil, decodeError4074
-		}
-		dst.Id = decodedValue4073
-	}
-	{
-		item := n.get("components")
-		decodedValue4075, decodeError4076 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
-		if decodeError4076 != nil {
-			return nil, decodeError4076
-		}
-		dst.Components = decodedValue4075
-	}
-	{
-		item := n.get("accessory")
-		decodedValue4077, decodeError4078 := c.nodeDomainNullablePartialMessageComponent(item, fieldPath(path, "Accessory"), parent)
+		decodedValue4077, decodeError4078 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
 		if decodeError4078 != nil {
 			return nil, decodeError4078
 		}
-		dst.Accessory = decodedValue4077
+		dst.Id = decodedValue4077
+	}
+	{
+		item := n.get("components")
+		decodedValue4079, decodeError4080 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
+		if decodeError4080 != nil {
+			return nil, decodeError4080
+		}
+		dst.Components = decodedValue4079
+	}
+	{
+		item := n.get("accessory")
+		decodedValue4081, decodeError4082 := c.nodeDomainNullablePartialMessageComponent(item, fieldPath(path, "Accessory"), parent)
+		if decodeError4082 != nil {
+			return nil, decodeError4082
+		}
+		dst.Accessory = decodedValue4081
 	}
 	return dst, nil
 }
@@ -12809,27 +12837,27 @@ func (c *conversion) nodePartialSelectMenu(n *ingressNode, path string, parent i
 				return nil, err
 			}
 		}
-		decodedValue4079, decodeError4080 := c.nodeDomainNullableUint64(item, fieldPath(path, "MenuType"), parent)
-		if decodeError4080 != nil {
-			return nil, decodeError4080
-		}
-		dst.MenuType = decodedValue4079
-	}
-	{
-		item := n.get("custom_id")
-		decodedValue4081, decodeError4082 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
-		if decodeError4082 != nil {
-			return nil, decodeError4082
-		}
-		dst.CustomId = decodedValue4081
-	}
-	{
-		item := n.get("placeholder")
-		decodedValue4083, decodeError4084 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Placeholder"), parent)
+		decodedValue4083, decodeError4084 := c.nodeDomainNullableUint64(item, fieldPath(path, "MenuType"), parent)
 		if decodeError4084 != nil {
 			return nil, decodeError4084
 		}
-		dst.Placeholder = decodedValue4083
+		dst.MenuType = decodedValue4083
+	}
+	{
+		item := n.get("custom_id")
+		decodedValue4085, decodeError4086 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
+		if decodeError4086 != nil {
+			return nil, decodeError4086
+		}
+		dst.CustomId = decodedValue4085
+	}
+	{
+		item := n.get("placeholder")
+		decodedValue4087, decodeError4088 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Placeholder"), parent)
+		if decodeError4088 != nil {
+			return nil, decodeError4088
+		}
+		dst.Placeholder = decodedValue4087
 	}
 	{
 		item := n.get("min_values")
@@ -12838,11 +12866,11 @@ func (c *conversion) nodePartialSelectMenu(n *ingressNode, path string, parent i
 				return nil, err
 			}
 		}
-		decodedValue4085, decodeError4086 := c.nodeDomainNullableSint64(item, fieldPath(path, "MinValues"), parent)
-		if decodeError4086 != nil {
-			return nil, decodeError4086
+		decodedValue4089, decodeError4090 := c.nodeDomainNullableSint64(item, fieldPath(path, "MinValues"), parent)
+		if decodeError4090 != nil {
+			return nil, decodeError4090
 		}
-		dst.MinValues = decodedValue4085
+		dst.MinValues = decodedValue4089
 	}
 	{
 		item := n.get("max_values")
@@ -12851,51 +12879,51 @@ func (c *conversion) nodePartialSelectMenu(n *ingressNode, path string, parent i
 				return nil, err
 			}
 		}
-		decodedValue4087, decodeError4088 := c.nodeDomainNullableSint64(item, fieldPath(path, "MaxValues"), parent)
-		if decodeError4088 != nil {
-			return nil, decodeError4088
-		}
-		dst.MaxValues = decodedValue4087
-	}
-	{
-		item := n.get("default_values")
-		decodedValue4089, decodeError4090 := c.nodeDomainNullableDomainDomainNullablePartialSelectMenuDefaultValueList(item, fieldPath(path, "DefaultValues"), parent)
-		if decodeError4090 != nil {
-			return nil, decodeError4090
-		}
-		dst.DefaultValues = decodedValue4089
-	}
-	{
-		item := n.get("options")
-		decodedValue4091, decodeError4092 := c.nodeDomainNullableDomainDomainNullablePartialSelectMenuOptionList(item, fieldPath(path, "Options"), parent)
+		decodedValue4091, decodeError4092 := c.nodeDomainNullableSint64(item, fieldPath(path, "MaxValues"), parent)
 		if decodeError4092 != nil {
 			return nil, decodeError4092
 		}
-		dst.Options = decodedValue4091
+		dst.MaxValues = decodedValue4091
 	}
 	{
-		item := n.get("disabled")
-		decodedValue4093, decodeError4094 := c.nodeDomainNullableBool(item, fieldPath(path, "Disabled"), parent)
+		item := n.get("default_values")
+		decodedValue4093, decodeError4094 := c.nodeDomainNullableDomainDomainNullablePartialSelectMenuDefaultValueList(item, fieldPath(path, "DefaultValues"), parent)
 		if decodeError4094 != nil {
 			return nil, decodeError4094
 		}
-		dst.Disabled = decodedValue4093
+		dst.DefaultValues = decodedValue4093
 	}
 	{
-		item := n.get("required")
-		decodedValue4095, decodeError4096 := c.nodeDomainNullableBool(item, fieldPath(path, "Required"), parent)
+		item := n.get("options")
+		decodedValue4095, decodeError4096 := c.nodeDomainNullableDomainDomainNullablePartialSelectMenuOptionList(item, fieldPath(path, "Options"), parent)
 		if decodeError4096 != nil {
 			return nil, decodeError4096
 		}
-		dst.Required = decodedValue4095
+		dst.Options = decodedValue4095
 	}
 	{
-		item := n.get("channel_types")
-		decodedValue4097, decodeError4098 := c.nodeDomainNullableDomainDomainNullableSint64List(item, fieldPath(path, "ChannelTypes"), parent)
+		item := n.get("disabled")
+		decodedValue4097, decodeError4098 := c.nodeDomainNullableBool(item, fieldPath(path, "Disabled"), parent)
 		if decodeError4098 != nil {
 			return nil, decodeError4098
 		}
-		dst.ChannelTypes = decodedValue4097
+		dst.Disabled = decodedValue4097
+	}
+	{
+		item := n.get("required")
+		decodedValue4099, decodeError4100 := c.nodeDomainNullableBool(item, fieldPath(path, "Required"), parent)
+		if decodeError4100 != nil {
+			return nil, decodeError4100
+		}
+		dst.Required = decodedValue4099
+	}
+	{
+		item := n.get("channel_types")
+		decodedValue4101, decodeError4102 := c.nodeDomainNullableDomainDomainNullableSint64List(item, fieldPath(path, "ChannelTypes"), parent)
+		if decodeError4102 != nil {
+			return nil, decodeError4102
+		}
+		dst.ChannelTypes = decodedValue4101
 	}
 	{
 		item := n.get("id")
@@ -12904,19 +12932,19 @@ func (c *conversion) nodePartialSelectMenu(n *ingressNode, path string, parent i
 				return nil, err
 			}
 		}
-		decodedValue4099, decodeError4100 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
-		if decodeError4100 != nil {
-			return nil, decodeError4100
+		decodedValue4103, decodeError4104 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
+		if decodeError4104 != nil {
+			return nil, decodeError4104
 		}
-		dst.Id = decodedValue4099
+		dst.Id = decodedValue4103
 	}
 	{
 		item := n.get("values")
-		decodedValue4101, decodeError4102 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Values"), parent)
-		if decodeError4102 != nil {
-			return nil, decodeError4102
+		decodedValue4105, decodeError4106 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Values"), parent)
+		if decodeError4106 != nil {
+			return nil, decodeError4106
 		}
-		dst.Values = decodedValue4101
+		dst.Values = decodedValue4105
 	}
 	if field := n.get("type"); field != nil && !field.null {
 		kind, err := ingressKind(n, "type", c, path)
@@ -12940,19 +12968,19 @@ func (c *conversion) nodePartialSelectMenuDefaultValue(n *ingressNode, path stri
 	dst := &wire.PartialSelectMenuDefaultValue{}
 	{
 		item := n.get("id")
-		decodedValue4103, decodeError4104 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4104 != nil {
-			return nil, decodeError4104
+		decodedValue4107, decodeError4108 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError4108 != nil {
+			return nil, decodeError4108
 		}
-		dst.Id = decodedValue4103
+		dst.Id = decodedValue4107
 	}
 	{
 		item := n.get("type")
-		decodedValue4105, decodeError4106 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Type"), parent)
-		if decodeError4106 != nil {
-			return nil, decodeError4106
+		decodedValue4109, decodeError4110 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Type"), parent)
+		if decodeError4110 != nil {
+			return nil, decodeError4110
 		}
-		dst.Type = decodedValue4105
+		dst.Type = decodedValue4109
 	}
 	return dst, nil
 }
@@ -12966,43 +12994,43 @@ func (c *conversion) nodePartialSelectMenuOption(n *ingressNode, path string, pa
 	dst := &wire.PartialSelectMenuOption{}
 	{
 		item := n.get("label")
-		decodedValue4107, decodeError4108 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Label"), parent)
-		if decodeError4108 != nil {
-			return nil, decodeError4108
-		}
-		dst.Label = decodedValue4107
-	}
-	{
-		item := n.get("value")
-		decodedValue4109, decodeError4110 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Value"), parent)
-		if decodeError4110 != nil {
-			return nil, decodeError4110
-		}
-		dst.Value = decodedValue4109
-	}
-	{
-		item := n.get("description")
-		decodedValue4111, decodeError4112 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		decodedValue4111, decodeError4112 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Label"), parent)
 		if decodeError4112 != nil {
 			return nil, decodeError4112
 		}
-		dst.Description = decodedValue4111
+		dst.Label = decodedValue4111
 	}
 	{
-		item := n.get("emoji")
-		decodedValue4113, decodeError4114 := c.nodeDomainNullablePartialComponentEmoji(item, fieldPath(path, "Emoji"), parent)
+		item := n.get("value")
+		decodedValue4113, decodeError4114 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Value"), parent)
 		if decodeError4114 != nil {
 			return nil, decodeError4114
 		}
-		dst.Emoji = decodedValue4113
+		dst.Value = decodedValue4113
 	}
 	{
-		item := n.get("default")
-		decodedValue4115, decodeError4116 := c.nodeDomainNullableBool(item, fieldPath(path, "Default"), parent)
+		item := n.get("description")
+		decodedValue4115, decodeError4116 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
 		if decodeError4116 != nil {
 			return nil, decodeError4116
 		}
-		dst.Default = decodedValue4115
+		dst.Description = decodedValue4115
+	}
+	{
+		item := n.get("emoji")
+		decodedValue4117, decodeError4118 := c.nodeDomainNullablePartialComponentEmoji(item, fieldPath(path, "Emoji"), parent)
+		if decodeError4118 != nil {
+			return nil, decodeError4118
+		}
+		dst.Emoji = decodedValue4117
+	}
+	{
+		item := n.get("default")
+		decodedValue4119, decodeError4120 := c.nodeDomainNullableBool(item, fieldPath(path, "Default"), parent)
+		if decodeError4120 != nil {
+			return nil, decodeError4120
+		}
+		dst.Default = decodedValue4119
 	}
 	return dst, nil
 }
@@ -13021,19 +13049,19 @@ func (c *conversion) nodePartialSeparator(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4117, decodeError4118 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
-		if decodeError4118 != nil {
-			return nil, decodeError4118
+		decodedValue4121, decodeError4122 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
+		if decodeError4122 != nil {
+			return nil, decodeError4122
 		}
-		dst.Id = decodedValue4117
+		dst.Id = decodedValue4121
 	}
 	{
 		item := n.get("divider")
-		decodedValue4119, decodeError4120 := c.nodeDomainNullableBool(item, fieldPath(path, "Divider"), parent)
-		if decodeError4120 != nil {
-			return nil, decodeError4120
+		decodedValue4123, decodeError4124 := c.nodeDomainNullableBool(item, fieldPath(path, "Divider"), parent)
+		if decodeError4124 != nil {
+			return nil, decodeError4124
 		}
-		dst.Divider = decodedValue4119
+		dst.Divider = decodedValue4123
 	}
 	{
 		item := n.get("spacing")
@@ -13042,11 +13070,11 @@ func (c *conversion) nodePartialSeparator(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4121, decodeError4122 := c.nodeDomainNullableUint64(item, fieldPath(path, "Spacing"), parent)
-		if decodeError4122 != nil {
-			return nil, decodeError4122
+		decodedValue4125, decodeError4126 := c.nodeDomainNullableUint64(item, fieldPath(path, "Spacing"), parent)
+		if decodeError4126 != nil {
+			return nil, decodeError4126
 		}
-		dst.Spacing = decodedValue4121
+		dst.Spacing = decodedValue4125
 	}
 	return dst, nil
 }
@@ -13065,11 +13093,11 @@ func (c *conversion) nodePartialSessionInformation(n *ingressNode, path string, 
 				return nil, err
 			}
 		}
-		decodedValue4123, decodeError4124 := c.nodeDomainNullableSint64(item, fieldPath(path, "Total"), parent)
-		if decodeError4124 != nil {
-			return nil, decodeError4124
+		decodedValue4127, decodeError4128 := c.nodeDomainNullableSint64(item, fieldPath(path, "Total"), parent)
+		if decodeError4128 != nil {
+			return nil, decodeError4128
 		}
-		dst.Total = decodedValue4123
+		dst.Total = decodedValue4127
 	}
 	{
 		item := n.get("remaining")
@@ -13078,11 +13106,11 @@ func (c *conversion) nodePartialSessionInformation(n *ingressNode, path string, 
 				return nil, err
 			}
 		}
-		decodedValue4125, decodeError4126 := c.nodeDomainNullableSint64(item, fieldPath(path, "Remaining"), parent)
-		if decodeError4126 != nil {
-			return nil, decodeError4126
+		decodedValue4129, decodeError4130 := c.nodeDomainNullableSint64(item, fieldPath(path, "Remaining"), parent)
+		if decodeError4130 != nil {
+			return nil, decodeError4130
 		}
-		dst.Remaining = decodedValue4125
+		dst.Remaining = decodedValue4129
 	}
 	{
 		item := n.get("reset_after")
@@ -13091,11 +13119,11 @@ func (c *conversion) nodePartialSessionInformation(n *ingressNode, path string, 
 				return nil, err
 			}
 		}
-		decodedValue4127, decodeError4128 := c.nodeDomainNullableSint64(item, fieldPath(path, "ResetAfter"), parent)
-		if decodeError4128 != nil {
-			return nil, decodeError4128
+		decodedValue4131, decodeError4132 := c.nodeDomainNullableSint64(item, fieldPath(path, "ResetAfter"), parent)
+		if decodeError4132 != nil {
+			return nil, decodeError4132
 		}
-		dst.ResetAfter = decodedValue4127
+		dst.ResetAfter = decodedValue4131
 	}
 	{
 		item := n.get("max_concurrency")
@@ -13104,11 +13132,11 @@ func (c *conversion) nodePartialSessionInformation(n *ingressNode, path string, 
 				return nil, err
 			}
 		}
-		decodedValue4129, decodeError4130 := c.nodeDomainNullableSint64(item, fieldPath(path, "MaxConcurrency"), parent)
-		if decodeError4130 != nil {
-			return nil, decodeError4130
+		decodedValue4133, decodeError4134 := c.nodeDomainNullableSint64(item, fieldPath(path, "MaxConcurrency"), parent)
+		if decodeError4134 != nil {
+			return nil, decodeError4134
 		}
-		dst.MaxConcurrency = decodedValue4129
+		dst.MaxConcurrency = decodedValue4133
 	}
 	return dst, nil
 }
@@ -13122,35 +13150,35 @@ func (c *conversion) nodePartialStageInstance(n *ingressNode, path string, paren
 	dst := &wire.PartialStageInstance{}
 	{
 		item := n.get("id")
-		decodedValue4131, decodeError4132 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4132 != nil {
-			return nil, decodeError4132
-		}
-		dst.Id = decodedValue4131
-	}
-	{
-		item := n.get("guild_id")
-		decodedValue4133, decodeError4134 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
-		if decodeError4134 != nil {
-			return nil, decodeError4134
-		}
-		dst.GuildId = decodedValue4133
-	}
-	{
-		item := n.get("channel_id")
-		decodedValue4135, decodeError4136 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+		decodedValue4135, decodeError4136 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4136 != nil {
 			return nil, decodeError4136
 		}
-		dst.ChannelId = decodedValue4135
+		dst.Id = decodedValue4135
 	}
 	{
-		item := n.get("topic")
-		decodedValue4137, decodeError4138 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Topic"), parent)
+		item := n.get("guild_id")
+		decodedValue4137, decodeError4138 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
 		if decodeError4138 != nil {
 			return nil, decodeError4138
 		}
-		dst.Topic = decodedValue4137
+		dst.GuildId = decodedValue4137
+	}
+	{
+		item := n.get("channel_id")
+		decodedValue4139, decodeError4140 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+		if decodeError4140 != nil {
+			return nil, decodeError4140
+		}
+		dst.ChannelId = decodedValue4139
+	}
+	{
+		item := n.get("topic")
+		decodedValue4141, decodeError4142 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Topic"), parent)
+		if decodeError4142 != nil {
+			return nil, decodeError4142
+		}
+		dst.Topic = decodedValue4141
 	}
 	{
 		item := n.get("privacy_level")
@@ -13159,27 +13187,27 @@ func (c *conversion) nodePartialStageInstance(n *ingressNode, path string, paren
 				return nil, err
 			}
 		}
-		decodedValue4139, decodeError4140 := c.nodeDomainNullableSint64(item, fieldPath(path, "PrivacyLevel"), parent)
-		if decodeError4140 != nil {
-			return nil, decodeError4140
-		}
-		dst.PrivacyLevel = decodedValue4139
-	}
-	{
-		item := n.get("discoverable_disabled")
-		decodedValue4141, decodeError4142 := c.nodeDomainNullableBool(item, fieldPath(path, "DiscoverableDisabled"), parent)
-		if decodeError4142 != nil {
-			return nil, decodeError4142
-		}
-		dst.DiscoverableDisabled = decodedValue4141
-	}
-	{
-		item := n.get("guild_scheduled_event_id")
-		decodedValue4143, decodeError4144 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildScheduledEventID"), parent)
+		decodedValue4143, decodeError4144 := c.nodeDomainNullableSint64(item, fieldPath(path, "PrivacyLevel"), parent)
 		if decodeError4144 != nil {
 			return nil, decodeError4144
 		}
-		dst.GuildScheduledEventId = decodedValue4143
+		dst.PrivacyLevel = decodedValue4143
+	}
+	{
+		item := n.get("discoverable_disabled")
+		decodedValue4145, decodeError4146 := c.nodeDomainNullableBool(item, fieldPath(path, "DiscoverableDisabled"), parent)
+		if decodeError4146 != nil {
+			return nil, decodeError4146
+		}
+		dst.DiscoverableDisabled = decodedValue4145
+	}
+	{
+		item := n.get("guild_scheduled_event_id")
+		decodedValue4147, decodeError4148 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildScheduledEventID"), parent)
+		if decodeError4148 != nil {
+			return nil, decodeError4148
+		}
+		dst.GuildScheduledEventId = decodedValue4147
 	}
 	return dst, nil
 }
@@ -13193,19 +13221,19 @@ func (c *conversion) nodePartialStageInstanceParams(n *ingressNode, path string,
 	dst := &wire.PartialStageInstanceParams{}
 	{
 		item := n.get("channel_id")
-		decodedValue4145, decodeError4146 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
-		if decodeError4146 != nil {
-			return nil, decodeError4146
+		decodedValue4149, decodeError4150 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+		if decodeError4150 != nil {
+			return nil, decodeError4150
 		}
-		dst.ChannelId = decodedValue4145
+		dst.ChannelId = decodedValue4149
 	}
 	{
 		item := n.get("topic")
-		decodedValue4147, decodeError4148 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Topic"), parent)
-		if decodeError4148 != nil {
-			return nil, decodeError4148
+		decodedValue4151, decodeError4152 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Topic"), parent)
+		if decodeError4152 != nil {
+			return nil, decodeError4152
 		}
-		dst.Topic = decodedValue4147
+		dst.Topic = decodedValue4151
 	}
 	{
 		item := n.get("privacy_level")
@@ -13214,19 +13242,19 @@ func (c *conversion) nodePartialStageInstanceParams(n *ingressNode, path string,
 				return nil, err
 			}
 		}
-		decodedValue4149, decodeError4150 := c.nodeDomainNullableSint64(item, fieldPath(path, "PrivacyLevel"), parent)
-		if decodeError4150 != nil {
-			return nil, decodeError4150
+		decodedValue4153, decodeError4154 := c.nodeDomainNullableSint64(item, fieldPath(path, "PrivacyLevel"), parent)
+		if decodeError4154 != nil {
+			return nil, decodeError4154
 		}
-		dst.PrivacyLevel = decodedValue4149
+		dst.PrivacyLevel = decodedValue4153
 	}
 	{
 		item := n.get("send_start_notification")
-		decodedValue4151, decodeError4152 := c.nodeDomainNullableBool(item, fieldPath(path, "SendStartNotification"), parent)
-		if decodeError4152 != nil {
-			return nil, decodeError4152
+		decodedValue4155, decodeError4156 := c.nodeDomainNullableBool(item, fieldPath(path, "SendStartNotification"), parent)
+		if decodeError4156 != nil {
+			return nil, decodeError4156
 		}
-		dst.SendStartNotification = decodedValue4151
+		dst.SendStartNotification = decodedValue4155
 	}
 	return dst, nil
 }
@@ -13240,43 +13268,43 @@ func (c *conversion) nodePartialSticker(n *ingressNode, path string, parent int6
 	dst := &wire.PartialSticker{}
 	{
 		item := n.get("id")
-		decodedValue4153, decodeError4154 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4154 != nil {
-			return nil, decodeError4154
-		}
-		dst.Id = decodedValue4153
-	}
-	{
-		item := n.get("pack_id")
-		decodedValue4155, decodeError4156 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "PackID"), parent)
-		if decodeError4156 != nil {
-			return nil, decodeError4156
-		}
-		dst.PackId = decodedValue4155
-	}
-	{
-		item := n.get("name")
-		decodedValue4157, decodeError4158 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		decodedValue4157, decodeError4158 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4158 != nil {
 			return nil, decodeError4158
 		}
-		dst.Name = decodedValue4157
+		dst.Id = decodedValue4157
 	}
 	{
-		item := n.get("description")
-		decodedValue4159, decodeError4160 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		item := n.get("pack_id")
+		decodedValue4159, decodeError4160 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "PackID"), parent)
 		if decodeError4160 != nil {
 			return nil, decodeError4160
 		}
-		dst.Description = decodedValue4159
+		dst.PackId = decodedValue4159
 	}
 	{
-		item := n.get("tags")
-		decodedValue4161, decodeError4162 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Tags"), parent)
+		item := n.get("name")
+		decodedValue4161, decodeError4162 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError4162 != nil {
 			return nil, decodeError4162
 		}
-		dst.Tags = decodedValue4161
+		dst.Name = decodedValue4161
+	}
+	{
+		item := n.get("description")
+		decodedValue4163, decodeError4164 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		if decodeError4164 != nil {
+			return nil, decodeError4164
+		}
+		dst.Description = decodedValue4163
+	}
+	{
+		item := n.get("tags")
+		decodedValue4165, decodeError4166 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Tags"), parent)
+		if decodeError4166 != nil {
+			return nil, decodeError4166
+		}
+		dst.Tags = decodedValue4165
 	}
 	{
 		item := n.get("type")
@@ -13285,11 +13313,11 @@ func (c *conversion) nodePartialSticker(n *ingressNode, path string, parent int6
 				return nil, err
 			}
 		}
-		decodedValue4163, decodeError4164 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError4164 != nil {
-			return nil, decodeError4164
+		decodedValue4167, decodeError4168 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
+		if decodeError4168 != nil {
+			return nil, decodeError4168
 		}
-		dst.Type = decodedValue4163
+		dst.Type = decodedValue4167
 	}
 	{
 		item := n.get("format_type")
@@ -13298,35 +13326,35 @@ func (c *conversion) nodePartialSticker(n *ingressNode, path string, parent int6
 				return nil, err
 			}
 		}
-		decodedValue4165, decodeError4166 := c.nodeDomainNullableSint64(item, fieldPath(path, "FormatType"), parent)
-		if decodeError4166 != nil {
-			return nil, decodeError4166
-		}
-		dst.FormatType = decodedValue4165
-	}
-	{
-		item := n.get("available")
-		decodedValue4167, decodeError4168 := c.nodeDomainNullableBool(item, fieldPath(path, "Available"), parent)
-		if decodeError4168 != nil {
-			return nil, decodeError4168
-		}
-		dst.Available = decodedValue4167
-	}
-	{
-		item := n.get("guild_id")
-		decodedValue4169, decodeError4170 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
+		decodedValue4169, decodeError4170 := c.nodeDomainNullableSint64(item, fieldPath(path, "FormatType"), parent)
 		if decodeError4170 != nil {
 			return nil, decodeError4170
 		}
-		dst.GuildId = decodedValue4169
+		dst.FormatType = decodedValue4169
 	}
 	{
-		item := n.get("user")
-		decodedValue4171, decodeError4172 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
+		item := n.get("available")
+		decodedValue4171, decodeError4172 := c.nodeDomainNullableBool(item, fieldPath(path, "Available"), parent)
 		if decodeError4172 != nil {
 			return nil, decodeError4172
 		}
-		dst.User = decodedValue4171
+		dst.Available = decodedValue4171
+	}
+	{
+		item := n.get("guild_id")
+		decodedValue4173, decodeError4174 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
+		if decodeError4174 != nil {
+			return nil, decodeError4174
+		}
+		dst.GuildId = decodedValue4173
+	}
+	{
+		item := n.get("user")
+		decodedValue4175, decodeError4176 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
+		if decodeError4176 != nil {
+			return nil, decodeError4176
+		}
+		dst.User = decodedValue4175
 	}
 	{
 		item := n.get("sort_value")
@@ -13335,11 +13363,11 @@ func (c *conversion) nodePartialSticker(n *ingressNode, path string, parent int6
 				return nil, err
 			}
 		}
-		decodedValue4173, decodeError4174 := c.nodeDomainNullableSint64(item, fieldPath(path, "SortValue"), parent)
-		if decodeError4174 != nil {
-			return nil, decodeError4174
+		decodedValue4177, decodeError4178 := c.nodeDomainNullableSint64(item, fieldPath(path, "SortValue"), parent)
+		if decodeError4178 != nil {
+			return nil, decodeError4178
 		}
-		dst.SortValue = decodedValue4173
+		dst.SortValue = decodedValue4177
 	}
 	return dst, nil
 }
@@ -13353,19 +13381,19 @@ func (c *conversion) nodePartialStickerItem(n *ingressNode, path string, parent 
 	dst := &wire.PartialStickerItem{}
 	{
 		item := n.get("id")
-		decodedValue4175, decodeError4176 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4176 != nil {
-			return nil, decodeError4176
+		decodedValue4179, decodeError4180 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError4180 != nil {
+			return nil, decodeError4180
 		}
-		dst.Id = decodedValue4175
+		dst.Id = decodedValue4179
 	}
 	{
 		item := n.get("name")
-		decodedValue4177, decodeError4178 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4178 != nil {
-			return nil, decodeError4178
+		decodedValue4181, decodeError4182 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		if decodeError4182 != nil {
+			return nil, decodeError4182
 		}
-		dst.Name = decodedValue4177
+		dst.Name = decodedValue4181
 	}
 	{
 		item := n.get("format_type")
@@ -13374,11 +13402,11 @@ func (c *conversion) nodePartialStickerItem(n *ingressNode, path string, parent 
 				return nil, err
 			}
 		}
-		decodedValue4179, decodeError4180 := c.nodeDomainNullableSint64(item, fieldPath(path, "FormatType"), parent)
-		if decodeError4180 != nil {
-			return nil, decodeError4180
+		decodedValue4183, decodeError4184 := c.nodeDomainNullableSint64(item, fieldPath(path, "FormatType"), parent)
+		if decodeError4184 != nil {
+			return nil, decodeError4184
 		}
-		dst.FormatType = decodedValue4179
+		dst.FormatType = decodedValue4183
 	}
 	return dst, nil
 }
@@ -13392,59 +13420,59 @@ func (c *conversion) nodePartialStickerPack(n *ingressNode, path string, parent 
 	dst := &wire.PartialStickerPack{}
 	{
 		item := n.get("id")
-		decodedValue4181, decodeError4182 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4182 != nil {
-			return nil, decodeError4182
-		}
-		dst.Id = decodedValue4181
-	}
-	{
-		item := n.get("stickers")
-		decodedValue4183, decodeError4184 := c.nodeDomainNullableDomainDomainNullablePartialStickerList(item, fieldPath(path, "Stickers"), parent)
-		if decodeError4184 != nil {
-			return nil, decodeError4184
-		}
-		dst.Stickers = decodedValue4183
-	}
-	{
-		item := n.get("name")
-		decodedValue4185, decodeError4186 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		decodedValue4185, decodeError4186 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4186 != nil {
 			return nil, decodeError4186
 		}
-		dst.Name = decodedValue4185
+		dst.Id = decodedValue4185
 	}
 	{
-		item := n.get("sku_id")
-		decodedValue4187, decodeError4188 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "SKUID"), parent)
+		item := n.get("stickers")
+		decodedValue4187, decodeError4188 := c.nodeDomainNullableDomainDomainNullablePartialStickerList(item, fieldPath(path, "Stickers"), parent)
 		if decodeError4188 != nil {
 			return nil, decodeError4188
 		}
-		dst.Skuid = decodedValue4187
+		dst.Stickers = decodedValue4187
 	}
 	{
-		item := n.get("cover_sticker_id")
-		decodedValue4189, decodeError4190 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CoverStickerID"), parent)
+		item := n.get("name")
+		decodedValue4189, decodeError4190 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError4190 != nil {
 			return nil, decodeError4190
 		}
-		dst.CoverStickerId = decodedValue4189
+		dst.Name = decodedValue4189
 	}
 	{
-		item := n.get("description")
-		decodedValue4191, decodeError4192 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		item := n.get("sku_id")
+		decodedValue4191, decodeError4192 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "SKUID"), parent)
 		if decodeError4192 != nil {
 			return nil, decodeError4192
 		}
-		dst.Description = decodedValue4191
+		dst.Skuid = decodedValue4191
 	}
 	{
-		item := n.get("banner_asset_id")
-		decodedValue4193, decodeError4194 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "BannerAssetID"), parent)
+		item := n.get("cover_sticker_id")
+		decodedValue4193, decodeError4194 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CoverStickerID"), parent)
 		if decodeError4194 != nil {
 			return nil, decodeError4194
 		}
-		dst.BannerAssetId = decodedValue4193
+		dst.CoverStickerId = decodedValue4193
+	}
+	{
+		item := n.get("description")
+		decodedValue4195, decodeError4196 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		if decodeError4196 != nil {
+			return nil, decodeError4196
+		}
+		dst.Description = decodedValue4195
+	}
+	{
+		item := n.get("banner_asset_id")
+		decodedValue4197, decodeError4198 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "BannerAssetID"), parent)
+		if decodeError4198 != nil {
+			return nil, decodeError4198
+		}
+		dst.BannerAssetId = decodedValue4197
 	}
 	return dst, nil
 }
@@ -13458,59 +13486,59 @@ func (c *conversion) nodePartialSubscription(n *ingressNode, path string, parent
 	dst := &wire.PartialSubscription{}
 	{
 		item := n.get("id")
-		decodedValue4195, decodeError4196 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4196 != nil {
-			return nil, decodeError4196
-		}
-		dst.Id = decodedValue4195
-	}
-	{
-		item := n.get("user_id")
-		decodedValue4197, decodeError4198 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
-		if decodeError4198 != nil {
-			return nil, decodeError4198
-		}
-		dst.UserId = decodedValue4197
-	}
-	{
-		item := n.get("sku_ids")
-		decodedValue4199, decodeError4200 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "SKUIDs"), parent)
+		decodedValue4199, decodeError4200 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4200 != nil {
 			return nil, decodeError4200
 		}
-		dst.SkuIds = decodedValue4199
+		dst.Id = decodedValue4199
 	}
 	{
-		item := n.get("entitlement_ids")
-		decodedValue4201, decodeError4202 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "EntitlementIDs"), parent)
+		item := n.get("user_id")
+		decodedValue4201, decodeError4202 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
 		if decodeError4202 != nil {
 			return nil, decodeError4202
 		}
-		dst.EntitlementIds = decodedValue4201
+		dst.UserId = decodedValue4201
 	}
 	{
-		item := n.get("renewal_sku_ids")
-		decodedValue4203, decodeError4204 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "RenewalSKUIDs"), parent)
+		item := n.get("sku_ids")
+		decodedValue4203, decodeError4204 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "SKUIDs"), parent)
 		if decodeError4204 != nil {
 			return nil, decodeError4204
 		}
-		dst.RenewalSkuIds = decodedValue4203
+		dst.SkuIds = decodedValue4203
 	}
 	{
-		item := n.get("current_period_start")
-		decodedValue4205, decodeError4206 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CurrentPeriodStart"), parent)
+		item := n.get("entitlement_ids")
+		decodedValue4205, decodeError4206 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "EntitlementIDs"), parent)
 		if decodeError4206 != nil {
 			return nil, decodeError4206
 		}
-		dst.CurrentPeriodStart = decodedValue4205
+		dst.EntitlementIds = decodedValue4205
 	}
 	{
-		item := n.get("current_period_end")
-		decodedValue4207, decodeError4208 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CurrentPeriodEnd"), parent)
+		item := n.get("renewal_sku_ids")
+		decodedValue4207, decodeError4208 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "RenewalSKUIDs"), parent)
 		if decodeError4208 != nil {
 			return nil, decodeError4208
 		}
-		dst.CurrentPeriodEnd = decodedValue4207
+		dst.RenewalSkuIds = decodedValue4207
+	}
+	{
+		item := n.get("current_period_start")
+		decodedValue4209, decodeError4210 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CurrentPeriodStart"), parent)
+		if decodeError4210 != nil {
+			return nil, decodeError4210
+		}
+		dst.CurrentPeriodStart = decodedValue4209
+	}
+	{
+		item := n.get("current_period_end")
+		decodedValue4211, decodeError4212 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CurrentPeriodEnd"), parent)
+		if decodeError4212 != nil {
+			return nil, decodeError4212
+		}
+		dst.CurrentPeriodEnd = decodedValue4211
 	}
 	{
 		item := n.get("status")
@@ -13519,27 +13547,27 @@ func (c *conversion) nodePartialSubscription(n *ingressNode, path string, parent
 				return nil, err
 			}
 		}
-		decodedValue4209, decodeError4210 := c.nodeDomainNullableSint64(item, fieldPath(path, "Status"), parent)
-		if decodeError4210 != nil {
-			return nil, decodeError4210
-		}
-		dst.Status = decodedValue4209
-	}
-	{
-		item := n.get("canceled_at")
-		decodedValue4211, decodeError4212 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CanceledAt"), parent)
-		if decodeError4212 != nil {
-			return nil, decodeError4212
-		}
-		dst.CanceledAt = decodedValue4211
-	}
-	{
-		item := n.get("country")
-		decodedValue4213, decodeError4214 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Country"), parent)
+		decodedValue4213, decodeError4214 := c.nodeDomainNullableSint64(item, fieldPath(path, "Status"), parent)
 		if decodeError4214 != nil {
 			return nil, decodeError4214
 		}
-		dst.Country = decodedValue4213
+		dst.Status = decodedValue4213
+	}
+	{
+		item := n.get("canceled_at")
+		decodedValue4215, decodeError4216 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CanceledAt"), parent)
+		if decodeError4216 != nil {
+			return nil, decodeError4216
+		}
+		dst.CanceledAt = decodedValue4215
+	}
+	{
+		item := n.get("country")
+		decodedValue4217, decodeError4218 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Country"), parent)
+		if decodeError4218 != nil {
+			return nil, decodeError4218
+		}
+		dst.Country = decodedValue4217
 	}
 	return dst, nil
 }
@@ -13553,51 +13581,51 @@ func (c *conversion) nodePartialTeam(n *ingressNode, path string, parent int64) 
 	dst := &wire.PartialTeam{}
 	{
 		item := n.get("id")
-		decodedValue4215, decodeError4216 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4216 != nil {
-			return nil, decodeError4216
-		}
-		dst.Id = decodedValue4215
-	}
-	{
-		item := n.get("name")
-		decodedValue4217, decodeError4218 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4218 != nil {
-			return nil, decodeError4218
-		}
-		dst.Name = decodedValue4217
-	}
-	{
-		item := n.get("description")
-		decodedValue4219, decodeError4220 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		decodedValue4219, decodeError4220 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4220 != nil {
 			return nil, decodeError4220
 		}
-		dst.Description = decodedValue4219
+		dst.Id = decodedValue4219
 	}
 	{
-		item := n.get("icon")
-		decodedValue4221, decodeError4222 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+		item := n.get("name")
+		decodedValue4221, decodeError4222 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError4222 != nil {
 			return nil, decodeError4222
 		}
-		dst.Icon = decodedValue4221
+		dst.Name = decodedValue4221
 	}
 	{
-		item := n.get("owner_user_id")
-		decodedValue4223, decodeError4224 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "OwnerID"), parent)
+		item := n.get("description")
+		decodedValue4223, decodeError4224 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
 		if decodeError4224 != nil {
 			return nil, decodeError4224
 		}
-		dst.OwnerId = decodedValue4223
+		dst.Description = decodedValue4223
 	}
 	{
-		item := n.get("members")
-		decodedValue4225, decodeError4226 := c.nodeDomainNullableDomainDomainNullablePartialTeamMemberList(item, fieldPath(path, "Members"), parent)
+		item := n.get("icon")
+		decodedValue4225, decodeError4226 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
 		if decodeError4226 != nil {
 			return nil, decodeError4226
 		}
-		dst.Members = decodedValue4225
+		dst.Icon = decodedValue4225
+	}
+	{
+		item := n.get("owner_user_id")
+		decodedValue4227, decodeError4228 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "OwnerID"), parent)
+		if decodeError4228 != nil {
+			return nil, decodeError4228
+		}
+		dst.OwnerId = decodedValue4227
+	}
+	{
+		item := n.get("members")
+		decodedValue4229, decodeError4230 := c.nodeDomainNullableDomainDomainNullablePartialTeamMemberList(item, fieldPath(path, "Members"), parent)
+		if decodeError4230 != nil {
+			return nil, decodeError4230
+		}
+		dst.Members = decodedValue4229
 	}
 	return dst, nil
 }
@@ -13611,19 +13639,19 @@ func (c *conversion) nodePartialTeamMember(n *ingressNode, path string, parent i
 	dst := &wire.PartialTeamMember{}
 	{
 		item := n.get("user")
-		decodedValue4227, decodeError4228 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
-		if decodeError4228 != nil {
-			return nil, decodeError4228
+		decodedValue4231, decodeError4232 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
+		if decodeError4232 != nil {
+			return nil, decodeError4232
 		}
-		dst.User = decodedValue4227
+		dst.User = decodedValue4231
 	}
 	{
 		item := n.get("team_id")
-		decodedValue4229, decodeError4230 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "TeamID"), parent)
-		if decodeError4230 != nil {
-			return nil, decodeError4230
+		decodedValue4233, decodeError4234 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "TeamID"), parent)
+		if decodeError4234 != nil {
+			return nil, decodeError4234
 		}
-		dst.TeamId = decodedValue4229
+		dst.TeamId = decodedValue4233
 	}
 	{
 		item := n.get("membership_state")
@@ -13632,19 +13660,19 @@ func (c *conversion) nodePartialTeamMember(n *ingressNode, path string, parent i
 				return nil, err
 			}
 		}
-		decodedValue4231, decodeError4232 := c.nodeDomainNullableSint64(item, fieldPath(path, "MembershipState"), parent)
-		if decodeError4232 != nil {
-			return nil, decodeError4232
+		decodedValue4235, decodeError4236 := c.nodeDomainNullableSint64(item, fieldPath(path, "MembershipState"), parent)
+		if decodeError4236 != nil {
+			return nil, decodeError4236
 		}
-		dst.MembershipState = decodedValue4231
+		dst.MembershipState = decodedValue4235
 	}
 	{
 		item := n.get("permissions")
-		decodedValue4233, decodeError4234 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Permissions"), parent)
-		if decodeError4234 != nil {
-			return nil, decodeError4234
+		decodedValue4237, decodeError4238 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Permissions"), parent)
+		if decodeError4238 != nil {
+			return nil, decodeError4238
 		}
-		dst.Permissions = decodedValue4233
+		dst.Permissions = decodedValue4237
 	}
 	return dst, nil
 }
@@ -13658,11 +13686,11 @@ func (c *conversion) nodePartialTextDisplay(n *ingressNode, path string, parent 
 	dst := &wire.PartialTextDisplay{}
 	{
 		item := n.get("content")
-		decodedValue4235, decodeError4236 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-		if decodeError4236 != nil {
-			return nil, decodeError4236
+		decodedValue4239, decodeError4240 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
+		if decodeError4240 != nil {
+			return nil, decodeError4240
 		}
-		dst.Content = decodedValue4235
+		dst.Content = decodedValue4239
 	}
 	return dst, nil
 }
@@ -13676,19 +13704,19 @@ func (c *conversion) nodePartialTextInput(n *ingressNode, path string, parent in
 	dst := &wire.PartialTextInput{}
 	{
 		item := n.get("custom_id")
-		decodedValue4237, decodeError4238 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
-		if decodeError4238 != nil {
-			return nil, decodeError4238
+		decodedValue4241, decodeError4242 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "CustomID"), parent)
+		if decodeError4242 != nil {
+			return nil, decodeError4242
 		}
-		dst.CustomId = decodedValue4237
+		dst.CustomId = decodedValue4241
 	}
 	{
 		item := n.get("label")
-		decodedValue4239, decodeError4240 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Label"), parent)
-		if decodeError4240 != nil {
-			return nil, decodeError4240
+		decodedValue4243, decodeError4244 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Label"), parent)
+		if decodeError4244 != nil {
+			return nil, decodeError4244
 		}
-		dst.Label = decodedValue4239
+		dst.Label = decodedValue4243
 	}
 	{
 		item := n.get("style")
@@ -13697,35 +13725,35 @@ func (c *conversion) nodePartialTextInput(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4241, decodeError4242 := c.nodeDomainNullableUint64(item, fieldPath(path, "Style"), parent)
-		if decodeError4242 != nil {
-			return nil, decodeError4242
-		}
-		dst.Style = decodedValue4241
-	}
-	{
-		item := n.get("placeholder")
-		decodedValue4243, decodeError4244 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Placeholder"), parent)
-		if decodeError4244 != nil {
-			return nil, decodeError4244
-		}
-		dst.Placeholder = decodedValue4243
-	}
-	{
-		item := n.get("value")
-		decodedValue4245, decodeError4246 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Value"), parent)
+		decodedValue4245, decodeError4246 := c.nodeDomainNullableUint64(item, fieldPath(path, "Style"), parent)
 		if decodeError4246 != nil {
 			return nil, decodeError4246
 		}
-		dst.Value = decodedValue4245
+		dst.Style = decodedValue4245
 	}
 	{
-		item := n.get("required")
-		decodedValue4247, decodeError4248 := c.nodeDomainNullableBool(item, fieldPath(path, "Required"), parent)
+		item := n.get("placeholder")
+		decodedValue4247, decodeError4248 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Placeholder"), parent)
 		if decodeError4248 != nil {
 			return nil, decodeError4248
 		}
-		dst.Required = decodedValue4247
+		dst.Placeholder = decodedValue4247
+	}
+	{
+		item := n.get("value")
+		decodedValue4249, decodeError4250 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Value"), parent)
+		if decodeError4250 != nil {
+			return nil, decodeError4250
+		}
+		dst.Value = decodedValue4249
+	}
+	{
+		item := n.get("required")
+		decodedValue4251, decodeError4252 := c.nodeDomainNullableBool(item, fieldPath(path, "Required"), parent)
+		if decodeError4252 != nil {
+			return nil, decodeError4252
+		}
+		dst.Required = decodedValue4251
 	}
 	{
 		item := n.get("min_length")
@@ -13734,11 +13762,11 @@ func (c *conversion) nodePartialTextInput(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4249, decodeError4250 := c.nodeDomainNullableSint64(item, fieldPath(path, "MinLength"), parent)
-		if decodeError4250 != nil {
-			return nil, decodeError4250
+		decodedValue4253, decodeError4254 := c.nodeDomainNullableSint64(item, fieldPath(path, "MinLength"), parent)
+		if decodeError4254 != nil {
+			return nil, decodeError4254
 		}
-		dst.MinLength = decodedValue4249
+		dst.MinLength = decodedValue4253
 	}
 	{
 		item := n.get("max_length")
@@ -13747,11 +13775,11 @@ func (c *conversion) nodePartialTextInput(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4251, decodeError4252 := c.nodeDomainNullableSint64(item, fieldPath(path, "MaxLength"), parent)
-		if decodeError4252 != nil {
-			return nil, decodeError4252
+		decodedValue4255, decodeError4256 := c.nodeDomainNullableSint64(item, fieldPath(path, "MaxLength"), parent)
+		if decodeError4256 != nil {
+			return nil, decodeError4256
 		}
-		dst.MaxLength = decodedValue4251
+		dst.MaxLength = decodedValue4255
 	}
 	{
 		item := n.get("id")
@@ -13760,11 +13788,11 @@ func (c *conversion) nodePartialTextInput(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4253, decodeError4254 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
-		if decodeError4254 != nil {
-			return nil, decodeError4254
+		decodedValue4257, decodeError4258 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
+		if decodeError4258 != nil {
+			return nil, decodeError4258
 		}
-		dst.Id = decodedValue4253
+		dst.Id = decodedValue4257
 	}
 	return dst, nil
 }
@@ -13778,27 +13806,27 @@ func (c *conversion) nodePartialThreadMember(n *ingressNode, path string, parent
 	dst := &wire.PartialThreadMember{}
 	{
 		item := n.get("id")
-		decodedValue4255, decodeError4256 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4256 != nil {
-			return nil, decodeError4256
-		}
-		dst.Id = decodedValue4255
-	}
-	{
-		item := n.get("user_id")
-		decodedValue4257, decodeError4258 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
-		if decodeError4258 != nil {
-			return nil, decodeError4258
-		}
-		dst.UserId = decodedValue4257
-	}
-	{
-		item := n.get("join_timestamp")
-		decodedValue4259, decodeError4260 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "JoinTimestamp"), parent)
+		decodedValue4259, decodeError4260 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4260 != nil {
 			return nil, decodeError4260
 		}
-		dst.JoinTimestamp = decodedValue4259
+		dst.Id = decodedValue4259
+	}
+	{
+		item := n.get("user_id")
+		decodedValue4261, decodeError4262 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
+		if decodeError4262 != nil {
+			return nil, decodeError4262
+		}
+		dst.UserId = decodedValue4261
+	}
+	{
+		item := n.get("join_timestamp")
+		decodedValue4263, decodeError4264 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "JoinTimestamp"), parent)
+		if decodeError4264 != nil {
+			return nil, decodeError4264
+		}
+		dst.JoinTimestamp = decodedValue4263
 	}
 	{
 		item := n.get("flags")
@@ -13807,19 +13835,19 @@ func (c *conversion) nodePartialThreadMember(n *ingressNode, path string, parent
 				return nil, err
 			}
 		}
-		decodedValue4261, decodeError4262 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError4262 != nil {
-			return nil, decodeError4262
+		decodedValue4265, decodeError4266 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
+		if decodeError4266 != nil {
+			return nil, decodeError4266
 		}
-		dst.Flags = decodedValue4261
+		dst.Flags = decodedValue4265
 	}
 	{
 		item := n.get("member")
-		decodedValue4263, decodeError4264 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
-		if decodeError4264 != nil {
-			return nil, decodeError4264
+		decodedValue4267, decodeError4268 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
+		if decodeError4268 != nil {
+			return nil, decodeError4268
 		}
-		dst.Member = decodedValue4263
+		dst.Member = decodedValue4267
 	}
 	return dst, nil
 }
@@ -13833,11 +13861,11 @@ func (c *conversion) nodePartialThreadMetadata(n *ingressNode, path string, pare
 	dst := &wire.PartialThreadMetadata{}
 	{
 		item := n.get("archived")
-		decodedValue4265, decodeError4266 := c.nodeDomainNullableBool(item, fieldPath(path, "Archived"), parent)
-		if decodeError4266 != nil {
-			return nil, decodeError4266
+		decodedValue4269, decodeError4270 := c.nodeDomainNullableBool(item, fieldPath(path, "Archived"), parent)
+		if decodeError4270 != nil {
+			return nil, decodeError4270
 		}
-		dst.Archived = decodedValue4265
+		dst.Archived = decodedValue4269
 	}
 	{
 		item := n.get("auto_archive_duration")
@@ -13846,35 +13874,35 @@ func (c *conversion) nodePartialThreadMetadata(n *ingressNode, path string, pare
 				return nil, err
 			}
 		}
-		decodedValue4267, decodeError4268 := c.nodeDomainNullableSint64(item, fieldPath(path, "AutoArchiveDuration"), parent)
-		if decodeError4268 != nil {
-			return nil, decodeError4268
-		}
-		dst.AutoArchiveDuration = decodedValue4267
-	}
-	{
-		item := n.get("archive_timestamp")
-		decodedValue4269, decodeError4270 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "ArchiveTimestamp"), parent)
-		if decodeError4270 != nil {
-			return nil, decodeError4270
-		}
-		dst.ArchiveTimestamp = decodedValue4269
-	}
-	{
-		item := n.get("locked")
-		decodedValue4271, decodeError4272 := c.nodeDomainNullableBool(item, fieldPath(path, "Locked"), parent)
+		decodedValue4271, decodeError4272 := c.nodeDomainNullableSint64(item, fieldPath(path, "AutoArchiveDuration"), parent)
 		if decodeError4272 != nil {
 			return nil, decodeError4272
 		}
-		dst.Locked = decodedValue4271
+		dst.AutoArchiveDuration = decodedValue4271
 	}
 	{
-		item := n.get("invitable")
-		decodedValue4273, decodeError4274 := c.nodeDomainNullableBool(item, fieldPath(path, "Invitable"), parent)
+		item := n.get("archive_timestamp")
+		decodedValue4273, decodeError4274 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "ArchiveTimestamp"), parent)
 		if decodeError4274 != nil {
 			return nil, decodeError4274
 		}
-		dst.Invitable = decodedValue4273
+		dst.ArchiveTimestamp = decodedValue4273
+	}
+	{
+		item := n.get("locked")
+		decodedValue4275, decodeError4276 := c.nodeDomainNullableBool(item, fieldPath(path, "Locked"), parent)
+		if decodeError4276 != nil {
+			return nil, decodeError4276
+		}
+		dst.Locked = decodedValue4275
+	}
+	{
+		item := n.get("invitable")
+		decodedValue4277, decodeError4278 := c.nodeDomainNullableBool(item, fieldPath(path, "Invitable"), parent)
+		if decodeError4278 != nil {
+			return nil, decodeError4278
+		}
+		dst.Invitable = decodedValue4277
 	}
 	return dst, nil
 }
@@ -13888,11 +13916,11 @@ func (c *conversion) nodePartialThreadStart(n *ingressNode, path string, parent 
 	dst := &wire.PartialThreadStart{}
 	{
 		item := n.get("name")
-		decodedValue4275, decodeError4276 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4276 != nil {
-			return nil, decodeError4276
+		decodedValue4279, decodeError4280 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		if decodeError4280 != nil {
+			return nil, decodeError4280
 		}
-		dst.Name = decodedValue4275
+		dst.Name = decodedValue4279
 	}
 	{
 		item := n.get("auto_archive_duration")
@@ -13901,11 +13929,11 @@ func (c *conversion) nodePartialThreadStart(n *ingressNode, path string, parent 
 				return nil, err
 			}
 		}
-		decodedValue4277, decodeError4278 := c.nodeDomainNullableSint64(item, fieldPath(path, "AutoArchiveDuration"), parent)
-		if decodeError4278 != nil {
-			return nil, decodeError4278
+		decodedValue4281, decodeError4282 := c.nodeDomainNullableSint64(item, fieldPath(path, "AutoArchiveDuration"), parent)
+		if decodeError4282 != nil {
+			return nil, decodeError4282
 		}
-		dst.AutoArchiveDuration = decodedValue4277
+		dst.AutoArchiveDuration = decodedValue4281
 	}
 	{
 		item := n.get("type")
@@ -13914,19 +13942,19 @@ func (c *conversion) nodePartialThreadStart(n *ingressNode, path string, parent 
 				return nil, err
 			}
 		}
-		decodedValue4279, decodeError4280 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError4280 != nil {
-			return nil, decodeError4280
+		decodedValue4283, decodeError4284 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
+		if decodeError4284 != nil {
+			return nil, decodeError4284
 		}
-		dst.Type = decodedValue4279
+		dst.Type = decodedValue4283
 	}
 	{
 		item := n.get("invitable")
-		decodedValue4281, decodeError4282 := c.nodeDomainNullableBool(item, fieldPath(path, "Invitable"), parent)
-		if decodeError4282 != nil {
-			return nil, decodeError4282
+		decodedValue4285, decodeError4286 := c.nodeDomainNullableBool(item, fieldPath(path, "Invitable"), parent)
+		if decodeError4286 != nil {
+			return nil, decodeError4286
 		}
-		dst.Invitable = decodedValue4281
+		dst.Invitable = decodedValue4285
 	}
 	{
 		item := n.get("rate_limit_per_user")
@@ -13935,19 +13963,19 @@ func (c *conversion) nodePartialThreadStart(n *ingressNode, path string, parent 
 				return nil, err
 			}
 		}
-		decodedValue4283, decodeError4284 := c.nodeDomainNullableSint64(item, fieldPath(path, "RateLimitPerUser"), parent)
-		if decodeError4284 != nil {
-			return nil, decodeError4284
+		decodedValue4287, decodeError4288 := c.nodeDomainNullableSint64(item, fieldPath(path, "RateLimitPerUser"), parent)
+		if decodeError4288 != nil {
+			return nil, decodeError4288
 		}
-		dst.RateLimitPerUser = decodedValue4283
+		dst.RateLimitPerUser = decodedValue4287
 	}
 	{
 		item := n.get("applied_tags")
-		decodedValue4285, decodeError4286 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "AppliedTags"), parent)
-		if decodeError4286 != nil {
-			return nil, decodeError4286
+		decodedValue4289, decodeError4290 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "AppliedTags"), parent)
+		if decodeError4290 != nil {
+			return nil, decodeError4290
 		}
-		dst.AppliedTags = decodedValue4285
+		dst.AppliedTags = decodedValue4289
 	}
 	return dst, nil
 }
@@ -13961,27 +13989,27 @@ func (c *conversion) nodePartialThreadsList(n *ingressNode, path string, parent 
 	dst := &wire.PartialThreadsList{}
 	{
 		item := n.get("threads")
-		decodedValue4287, decodeError4288 := c.nodeDomainNullableDomainDomainNullablePartialChannelList(item, fieldPath(path, "Threads"), parent)
-		if decodeError4288 != nil {
-			return nil, decodeError4288
-		}
-		dst.Threads = decodedValue4287
-	}
-	{
-		item := n.get("members")
-		decodedValue4289, decodeError4290 := c.nodeDomainNullableDomainDomainNullablePartialThreadMemberList(item, fieldPath(path, "Members"), parent)
-		if decodeError4290 != nil {
-			return nil, decodeError4290
-		}
-		dst.Members = decodedValue4289
-	}
-	{
-		item := n.get("has_more")
-		decodedValue4291, decodeError4292 := c.nodeDomainNullableBool(item, fieldPath(path, "HasMore"), parent)
+		decodedValue4291, decodeError4292 := c.nodeDomainNullableDomainDomainNullablePartialChannelList(item, fieldPath(path, "Threads"), parent)
 		if decodeError4292 != nil {
 			return nil, decodeError4292
 		}
-		dst.HasMore = decodedValue4291
+		dst.Threads = decodedValue4291
+	}
+	{
+		item := n.get("members")
+		decodedValue4293, decodeError4294 := c.nodeDomainNullableDomainDomainNullablePartialThreadMemberList(item, fieldPath(path, "Members"), parent)
+		if decodeError4294 != nil {
+			return nil, decodeError4294
+		}
+		dst.Members = decodedValue4293
+	}
+	{
+		item := n.get("has_more")
+		decodedValue4295, decodeError4296 := c.nodeDomainNullableBool(item, fieldPath(path, "HasMore"), parent)
+		if decodeError4296 != nil {
+			return nil, decodeError4296
+		}
+		dst.HasMore = decodedValue4295
 	}
 	return dst, nil
 }
@@ -14000,35 +14028,35 @@ func (c *conversion) nodePartialThumbnail(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4293, decodeError4294 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
-		if decodeError4294 != nil {
-			return nil, decodeError4294
-		}
-		dst.Id = decodedValue4293
-	}
-	{
-		item := n.get("media")
-		decodedValue4295, decodeError4296 := c.nodeDomainNullablePartialUnfurledMediaItem(item, fieldPath(path, "Media"), parent)
-		if decodeError4296 != nil {
-			return nil, decodeError4296
-		}
-		dst.Media = decodedValue4295
-	}
-	{
-		item := n.get("description")
-		decodedValue4297, decodeError4298 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		decodedValue4297, decodeError4298 := c.nodeDomainNullableSint64(item, fieldPath(path, "ID"), parent)
 		if decodeError4298 != nil {
 			return nil, decodeError4298
 		}
-		dst.Description = decodedValue4297
+		dst.Id = decodedValue4297
 	}
 	{
-		item := n.get("spoiler")
-		decodedValue4299, decodeError4300 := c.nodeDomainNullableBool(item, fieldPath(path, "Spoiler"), parent)
+		item := n.get("media")
+		decodedValue4299, decodeError4300 := c.nodeDomainNullablePartialUnfurledMediaItem(item, fieldPath(path, "Media"), parent)
 		if decodeError4300 != nil {
 			return nil, decodeError4300
 		}
-		dst.Spoiler = decodedValue4299
+		dst.Media = decodedValue4299
+	}
+	{
+		item := n.get("description")
+		decodedValue4301, decodeError4302 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+		if decodeError4302 != nil {
+			return nil, decodeError4302
+		}
+		dst.Description = decodedValue4301
+	}
+	{
+		item := n.get("spoiler")
+		decodedValue4303, decodeError4304 := c.nodeDomainNullableBool(item, fieldPath(path, "Spoiler"), parent)
+		if decodeError4304 != nil {
+			return nil, decodeError4304
+		}
+		dst.Spoiler = decodedValue4303
 	}
 	return dst, nil
 }
@@ -14042,29 +14070,31 @@ func (c *conversion) nodePartialTimeStamps(n *ingressNode, path string, parent i
 	dst := &wire.PartialTimeStamps{}
 	{
 		item := n.get("end")
-		if item != nil && !item.null {
-			if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "EndTimestamp")); err != nil {
-				return nil, err
+		if item != nil {
+			if item.null {
+				dst.EndTimestamp = &wire.DomainNullableSint64{Kind: &wire.DomainNullableSint64_NullValue{}}
+			} else {
+				codecValue4305, codecError4306 := ingressExactInt64(item, c, fieldPath(path, "EndTimestamp"))
+				if codecError4306 != nil {
+					return nil, codecError4306
+				}
+				dst.EndTimestamp = &wire.DomainNullableSint64{Kind: &wire.DomainNullableSint64_Value{Value: codecValue4305}}
 			}
 		}
-		decodedValue4301, decodeError4302 := c.nodeDomainNullableSint64(item, fieldPath(path, "EndTimestamp"), parent)
-		if decodeError4302 != nil {
-			return nil, decodeError4302
-		}
-		dst.EndTimestamp = decodedValue4301
 	}
 	{
 		item := n.get("start")
-		if item != nil && !item.null {
-			if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "StartTimestamp")); err != nil {
-				return nil, err
+		if item != nil {
+			if item.null {
+				dst.StartTimestamp = &wire.DomainNullableSint64{Kind: &wire.DomainNullableSint64_NullValue{}}
+			} else {
+				codecValue4307, codecError4308 := ingressExactInt64(item, c, fieldPath(path, "StartTimestamp"))
+				if codecError4308 != nil {
+					return nil, codecError4308
+				}
+				dst.StartTimestamp = &wire.DomainNullableSint64{Kind: &wire.DomainNullableSint64_Value{Value: codecValue4307}}
 			}
 		}
-		decodedValue4303, decodeError4304 := c.nodeDomainNullableSint64(item, fieldPath(path, "StartTimestamp"), parent)
-		if decodeError4304 != nil {
-			return nil, decodeError4304
-		}
-		dst.StartTimestamp = decodedValue4303
 	}
 	return dst, nil
 }
@@ -14078,32 +14108,33 @@ func (c *conversion) nodePartialTooManyRequests(n *ingressNode, path string, par
 	dst := &wire.PartialTooManyRequests{}
 	{
 		item := n.get("bucket")
-		decodedValue4305, decodeError4306 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Bucket"), parent)
-		if decodeError4306 != nil {
-			return nil, decodeError4306
-		}
-		dst.Bucket = decodedValue4305
-	}
-	{
-		item := n.get("message")
-		decodedValue4307, decodeError4308 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Message"), parent)
-		if decodeError4308 != nil {
-			return nil, decodeError4308
-		}
-		dst.Message = decodedValue4307
-	}
-	{
-		item := n.get("retry_after")
-		if item != nil && !item.null {
-			if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "RetryAfter")); err != nil {
-				return nil, err
-			}
-		}
-		decodedValue4309, decodeError4310 := c.nodeDomainNullableSint64(item, fieldPath(path, "RetryAfter"), parent)
+		decodedValue4309, decodeError4310 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Bucket"), parent)
 		if decodeError4310 != nil {
 			return nil, decodeError4310
 		}
-		dst.RetryAfter = decodedValue4309
+		dst.Bucket = decodedValue4309
+	}
+	{
+		item := n.get("message")
+		decodedValue4311, decodeError4312 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Message"), parent)
+		if decodeError4312 != nil {
+			return nil, decodeError4312
+		}
+		dst.Message = decodedValue4311
+	}
+	{
+		item := n.get("retry_after")
+		if item != nil {
+			if item.null {
+				dst.RetryAfter = &wire.DomainNullableSint64{Kind: &wire.DomainNullableSint64_NullValue{}}
+			} else {
+				codecValue4313, codecError4314 := ingressSecondsDuration(item, c, fieldPath(path, "RetryAfter"))
+				if codecError4314 != nil {
+					return nil, codecError4314
+				}
+				dst.RetryAfter = &wire.DomainNullableSint64{Kind: &wire.DomainNullableSint64_Value{Value: codecValue4313}}
+			}
+		}
 	}
 	return dst, nil
 }
@@ -14117,11 +14148,11 @@ func (c *conversion) nodePartialUnfurledMediaItem(n *ingressNode, path string, p
 	dst := &wire.PartialUnfurledMediaItem{}
 	{
 		item := n.get("url")
-		decodedValue4311, decodeError4312 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
-		if decodeError4312 != nil {
-			return nil, decodeError4312
+		decodedValue4315, decodeError4316 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "URL"), parent)
+		if decodeError4316 != nil {
+			return nil, decodeError4316
 		}
-		dst.Url = decodedValue4311
+		dst.Url = decodedValue4315
 	}
 	return dst, nil
 }
@@ -14140,35 +14171,35 @@ func (c *conversion) nodePartialUpdateStatusData(n *ingressNode, path string, pa
 				return nil, err
 			}
 		}
-		decodedValue4313, decodeError4314 := c.nodeDomainNullableSint64(item, fieldPath(path, "IdleSince"), parent)
-		if decodeError4314 != nil {
-			return nil, decodeError4314
-		}
-		dst.IdleSince = decodedValue4313
-	}
-	{
-		item := n.get("activities")
-		decodedValue4315, decodeError4316 := c.nodeDomainNullableDomainDomainNullablePartialActivityList(item, fieldPath(path, "Activities"), parent)
-		if decodeError4316 != nil {
-			return nil, decodeError4316
-		}
-		dst.Activities = decodedValue4315
-	}
-	{
-		item := n.get("afk")
-		decodedValue4317, decodeError4318 := c.nodeDomainNullableBool(item, fieldPath(path, "AFK"), parent)
+		decodedValue4317, decodeError4318 := c.nodeDomainNullableSint64(item, fieldPath(path, "IdleSince"), parent)
 		if decodeError4318 != nil {
 			return nil, decodeError4318
 		}
-		dst.Afk = decodedValue4317
+		dst.IdleSince = decodedValue4317
 	}
 	{
-		item := n.get("status")
-		decodedValue4319, decodeError4320 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Status"), parent)
+		item := n.get("activities")
+		decodedValue4319, decodeError4320 := c.nodeDomainNullableDomainDomainNullablePartialActivityList(item, fieldPath(path, "Activities"), parent)
 		if decodeError4320 != nil {
 			return nil, decodeError4320
 		}
-		dst.Status = decodedValue4319
+		dst.Activities = decodedValue4319
+	}
+	{
+		item := n.get("afk")
+		decodedValue4321, decodeError4322 := c.nodeDomainNullableBool(item, fieldPath(path, "AFK"), parent)
+		if decodeError4322 != nil {
+			return nil, decodeError4322
+		}
+		dst.Afk = decodedValue4321
+	}
+	{
+		item := n.get("status")
+		decodedValue4323, decodeError4324 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Status"), parent)
+		if decodeError4324 != nil {
+			return nil, decodeError4324
+		}
+		dst.Status = decodedValue4323
 	}
 	return dst, nil
 }
@@ -14182,83 +14213,83 @@ func (c *conversion) nodePartialUser(n *ingressNode, path string, parent int64) 
 	dst := &wire.PartialUser{}
 	{
 		item := n.get("id")
-		decodedValue4321, decodeError4322 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4322 != nil {
-			return nil, decodeError4322
-		}
-		dst.Id = decodedValue4321
-	}
-	{
-		item := n.get("email")
-		decodedValue4323, decodeError4324 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Email"), parent)
-		if decodeError4324 != nil {
-			return nil, decodeError4324
-		}
-		dst.Email = decodedValue4323
-	}
-	{
-		item := n.get("username")
-		decodedValue4325, decodeError4326 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Username"), parent)
+		decodedValue4325, decodeError4326 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4326 != nil {
 			return nil, decodeError4326
 		}
-		dst.Username = decodedValue4325
+		dst.Id = decodedValue4325
 	}
 	{
-		item := n.get("avatar")
-		decodedValue4327, decodeError4328 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Avatar"), parent)
+		item := n.get("email")
+		decodedValue4327, decodeError4328 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Email"), parent)
 		if decodeError4328 != nil {
 			return nil, decodeError4328
 		}
-		dst.Avatar = decodedValue4327
+		dst.Email = decodedValue4327
 	}
 	{
-		item := n.get("locale")
-		decodedValue4329, decodeError4330 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Locale"), parent)
+		item := n.get("username")
+		decodedValue4329, decodeError4330 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Username"), parent)
 		if decodeError4330 != nil {
 			return nil, decodeError4330
 		}
-		dst.Locale = decodedValue4329
+		dst.Username = decodedValue4329
 	}
 	{
-		item := n.get("discriminator")
-		decodedValue4331, decodeError4332 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Discriminator"), parent)
+		item := n.get("avatar")
+		decodedValue4331, decodeError4332 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Avatar"), parent)
 		if decodeError4332 != nil {
 			return nil, decodeError4332
 		}
-		dst.Discriminator = decodedValue4331
+		dst.Avatar = decodedValue4331
 	}
 	{
-		item := n.get("global_name")
-		decodedValue4333, decodeError4334 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GlobalName"), parent)
+		item := n.get("locale")
+		decodedValue4333, decodeError4334 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Locale"), parent)
 		if decodeError4334 != nil {
 			return nil, decodeError4334
 		}
-		dst.GlobalName = decodedValue4333
+		dst.Locale = decodedValue4333
 	}
 	{
-		item := n.get("verified")
-		decodedValue4335, decodeError4336 := c.nodeDomainNullableBool(item, fieldPath(path, "Verified"), parent)
+		item := n.get("discriminator")
+		decodedValue4335, decodeError4336 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Discriminator"), parent)
 		if decodeError4336 != nil {
 			return nil, decodeError4336
 		}
-		dst.Verified = decodedValue4335
+		dst.Discriminator = decodedValue4335
 	}
 	{
-		item := n.get("mfa_enabled")
-		decodedValue4337, decodeError4338 := c.nodeDomainNullableBool(item, fieldPath(path, "MFAEnabled"), parent)
+		item := n.get("global_name")
+		decodedValue4337, decodeError4338 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GlobalName"), parent)
 		if decodeError4338 != nil {
 			return nil, decodeError4338
 		}
-		dst.MfaEnabled = decodedValue4337
+		dst.GlobalName = decodedValue4337
 	}
 	{
-		item := n.get("banner")
-		decodedValue4339, decodeError4340 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Banner"), parent)
+		item := n.get("verified")
+		decodedValue4339, decodeError4340 := c.nodeDomainNullableBool(item, fieldPath(path, "Verified"), parent)
 		if decodeError4340 != nil {
 			return nil, decodeError4340
 		}
-		dst.Banner = decodedValue4339
+		dst.Verified = decodedValue4339
+	}
+	{
+		item := n.get("mfa_enabled")
+		decodedValue4341, decodeError4342 := c.nodeDomainNullableBool(item, fieldPath(path, "MFAEnabled"), parent)
+		if decodeError4342 != nil {
+			return nil, decodeError4342
+		}
+		dst.MfaEnabled = decodedValue4341
+	}
+	{
+		item := n.get("banner")
+		decodedValue4343, decodeError4344 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Banner"), parent)
+		if decodeError4344 != nil {
+			return nil, decodeError4344
+		}
+		dst.Banner = decodedValue4343
 	}
 	{
 		item := n.get("accent_color")
@@ -14267,19 +14298,19 @@ func (c *conversion) nodePartialUser(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue4341, decodeError4342 := c.nodeDomainNullableSint64(item, fieldPath(path, "AccentColor"), parent)
-		if decodeError4342 != nil {
-			return nil, decodeError4342
+		decodedValue4345, decodeError4346 := c.nodeDomainNullableSint64(item, fieldPath(path, "AccentColor"), parent)
+		if decodeError4346 != nil {
+			return nil, decodeError4346
 		}
-		dst.AccentColor = decodedValue4341
+		dst.AccentColor = decodedValue4345
 	}
 	{
 		item := n.get("bot")
-		decodedValue4343, decodeError4344 := c.nodeDomainNullableBool(item, fieldPath(path, "Bot"), parent)
-		if decodeError4344 != nil {
-			return nil, decodeError4344
+		decodedValue4347, decodeError4348 := c.nodeDomainNullableBool(item, fieldPath(path, "Bot"), parent)
+		if decodeError4348 != nil {
+			return nil, decodeError4348
 		}
-		dst.Bot = decodedValue4343
+		dst.Bot = decodedValue4347
 	}
 	{
 		item := n.get("public_flags")
@@ -14288,11 +14319,11 @@ func (c *conversion) nodePartialUser(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue4345, decodeError4346 := c.nodeDomainNullableUint64(item, fieldPath(path, "PublicFlags"), parent)
-		if decodeError4346 != nil {
-			return nil, decodeError4346
+		decodedValue4349, decodeError4350 := c.nodeDomainNullableUint64(item, fieldPath(path, "PublicFlags"), parent)
+		if decodeError4350 != nil {
+			return nil, decodeError4350
 		}
-		dst.PublicFlags = decodedValue4345
+		dst.PublicFlags = decodedValue4349
 	}
 	{
 		item := n.get("premium_type")
@@ -14301,19 +14332,19 @@ func (c *conversion) nodePartialUser(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue4347, decodeError4348 := c.nodeDomainNullableSint64(item, fieldPath(path, "PremiumType"), parent)
-		if decodeError4348 != nil {
-			return nil, decodeError4348
+		decodedValue4351, decodeError4352 := c.nodeDomainNullableSint64(item, fieldPath(path, "PremiumType"), parent)
+		if decodeError4352 != nil {
+			return nil, decodeError4352
 		}
-		dst.PremiumType = decodedValue4347
+		dst.PremiumType = decodedValue4351
 	}
 	{
 		item := n.get("system")
-		decodedValue4349, decodeError4350 := c.nodeDomainNullableBool(item, fieldPath(path, "System"), parent)
-		if decodeError4350 != nil {
-			return nil, decodeError4350
+		decodedValue4353, decodeError4354 := c.nodeDomainNullableBool(item, fieldPath(path, "System"), parent)
+		if decodeError4354 != nil {
+			return nil, decodeError4354
 		}
-		dst.System = decodedValue4349
+		dst.System = decodedValue4353
 	}
 	{
 		item := n.get("flags")
@@ -14322,19 +14353,19 @@ func (c *conversion) nodePartialUser(n *ingressNode, path string, parent int64) 
 				return nil, err
 			}
 		}
-		decodedValue4351, decodeError4352 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError4352 != nil {
-			return nil, decodeError4352
+		decodedValue4355, decodeError4356 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
+		if decodeError4356 != nil {
+			return nil, decodeError4356
 		}
-		dst.Flags = decodedValue4351
+		dst.Flags = decodedValue4355
 	}
 	{
 		item := n.get("primary_guild")
-		decodedValue4353, decodeError4354 := c.nodeDomainNullablePartialUserPrimaryGuild(item, fieldPath(path, "PrimaryGuild"), parent)
-		if decodeError4354 != nil {
-			return nil, decodeError4354
+		decodedValue4357, decodeError4358 := c.nodeDomainNullablePartialUserPrimaryGuild(item, fieldPath(path, "PrimaryGuild"), parent)
+		if decodeError4358 != nil {
+			return nil, decodeError4358
 		}
-		dst.PrimaryGuild = decodedValue4353
+		dst.PrimaryGuild = decodedValue4357
 	}
 	return dst, nil
 }
@@ -14348,43 +14379,43 @@ func (c *conversion) nodePartialUserConnection(n *ingressNode, path string, pare
 	dst := &wire.PartialUserConnection{}
 	{
 		item := n.get("id")
-		decodedValue4355, decodeError4356 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4356 != nil {
-			return nil, decodeError4356
-		}
-		dst.Id = decodedValue4355
-	}
-	{
-		item := n.get("name")
-		decodedValue4357, decodeError4358 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4358 != nil {
-			return nil, decodeError4358
-		}
-		dst.Name = decodedValue4357
-	}
-	{
-		item := n.get("type")
-		decodedValue4359, decodeError4360 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Type"), parent)
+		decodedValue4359, decodeError4360 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4360 != nil {
 			return nil, decodeError4360
 		}
-		dst.Type = decodedValue4359
+		dst.Id = decodedValue4359
 	}
 	{
-		item := n.get("revoked")
-		decodedValue4361, decodeError4362 := c.nodeDomainNullableBool(item, fieldPath(path, "Revoked"), parent)
+		item := n.get("name")
+		decodedValue4361, decodeError4362 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError4362 != nil {
 			return nil, decodeError4362
 		}
-		dst.Revoked = decodedValue4361
+		dst.Name = decodedValue4361
 	}
 	{
-		item := n.get("integrations")
-		decodedValue4363, decodeError4364 := c.nodeDomainNullableDomainDomainNullablePartialIntegrationList(item, fieldPath(path, "Integrations"), parent)
+		item := n.get("type")
+		decodedValue4363, decodeError4364 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Type"), parent)
 		if decodeError4364 != nil {
 			return nil, decodeError4364
 		}
-		dst.Integrations = decodedValue4363
+		dst.Type = decodedValue4363
+	}
+	{
+		item := n.get("revoked")
+		decodedValue4365, decodeError4366 := c.nodeDomainNullableBool(item, fieldPath(path, "Revoked"), parent)
+		if decodeError4366 != nil {
+			return nil, decodeError4366
+		}
+		dst.Revoked = decodedValue4365
+	}
+	{
+		item := n.get("integrations")
+		decodedValue4367, decodeError4368 := c.nodeDomainNullableDomainDomainNullablePartialIntegrationList(item, fieldPath(path, "Integrations"), parent)
+		if decodeError4368 != nil {
+			return nil, decodeError4368
+		}
+		dst.Integrations = decodedValue4367
 	}
 	return dst, nil
 }
@@ -14398,54 +14429,54 @@ func (c *conversion) nodePartialUserGuild(n *ingressNode, path string, parent in
 	dst := &wire.PartialUserGuild{}
 	{
 		item := n.get("id")
-		decodedValue4365, decodeError4366 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4366 != nil {
-			return nil, decodeError4366
-		}
-		dst.Id = decodedValue4365
-	}
-	{
-		item := n.get("name")
-		decodedValue4367, decodeError4368 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4368 != nil {
-			return nil, decodeError4368
-		}
-		dst.Name = decodedValue4367
-	}
-	{
-		item := n.get("icon")
-		decodedValue4369, decodeError4370 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+		decodedValue4369, decodeError4370 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4370 != nil {
 			return nil, decodeError4370
 		}
-		dst.Icon = decodedValue4369
+		dst.Id = decodedValue4369
 	}
 	{
-		item := n.get("owner")
-		decodedValue4371, decodeError4372 := c.nodeDomainNullableBool(item, fieldPath(path, "Owner"), parent)
+		item := n.get("name")
+		decodedValue4371, decodeError4372 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError4372 != nil {
 			return nil, decodeError4372
 		}
-		dst.Owner = decodedValue4371
+		dst.Name = decodedValue4371
+	}
+	{
+		item := n.get("icon")
+		decodedValue4373, decodeError4374 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+		if decodeError4374 != nil {
+			return nil, decodeError4374
+		}
+		dst.Icon = decodedValue4373
+	}
+	{
+		item := n.get("owner")
+		decodedValue4375, decodeError4376 := c.nodeDomainNullableBool(item, fieldPath(path, "Owner"), parent)
+		if decodeError4376 != nil {
+			return nil, decodeError4376
+		}
+		dst.Owner = decodedValue4375
 	}
 	{
 		item := n.get("permissions")
 		if err := ingressPermission(item, c, fieldPath(path, "Permissions")); err != nil {
 			return nil, err
 		}
-		decodedValue4373, decodeError4374 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Permissions"), parent)
-		if decodeError4374 != nil {
-			return nil, decodeError4374
+		decodedValue4377, decodeError4378 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Permissions"), parent)
+		if decodeError4378 != nil {
+			return nil, decodeError4378
 		}
-		dst.Permissions = decodedValue4373
+		dst.Permissions = decodedValue4377
 	}
 	{
 		item := n.get("features")
-		decodedValue4375, decodeError4376 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Features"), parent)
-		if decodeError4376 != nil {
-			return nil, decodeError4376
+		decodedValue4379, decodeError4380 := c.nodeDomainNullableDomainFlexmoduleCoreV2NullableStringList(item, fieldPath(path, "Features"), parent)
+		if decodeError4380 != nil {
+			return nil, decodeError4380
 		}
-		dst.Features = decodedValue4375
+		dst.Features = decodedValue4379
 	}
 	{
 		item := n.get("approximate_member_count")
@@ -14454,11 +14485,11 @@ func (c *conversion) nodePartialUserGuild(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4377, decodeError4378 := c.nodeDomainNullableSint64(item, fieldPath(path, "ApproximateMemberCount"), parent)
-		if decodeError4378 != nil {
-			return nil, decodeError4378
+		decodedValue4381, decodeError4382 := c.nodeDomainNullableSint64(item, fieldPath(path, "ApproximateMemberCount"), parent)
+		if decodeError4382 != nil {
+			return nil, decodeError4382
 		}
-		dst.ApproximateMemberCount = decodedValue4377
+		dst.ApproximateMemberCount = decodedValue4381
 	}
 	{
 		item := n.get("approximate_presence_count")
@@ -14467,11 +14498,11 @@ func (c *conversion) nodePartialUserGuild(n *ingressNode, path string, parent in
 				return nil, err
 			}
 		}
-		decodedValue4379, decodeError4380 := c.nodeDomainNullableSint64(item, fieldPath(path, "ApproximatePresenceCount"), parent)
-		if decodeError4380 != nil {
-			return nil, decodeError4380
+		decodedValue4383, decodeError4384 := c.nodeDomainNullableSint64(item, fieldPath(path, "ApproximatePresenceCount"), parent)
+		if decodeError4384 != nil {
+			return nil, decodeError4384
 		}
-		dst.ApproximatePresenceCount = decodedValue4379
+		dst.ApproximatePresenceCount = decodedValue4383
 	}
 	return dst, nil
 }
@@ -14485,35 +14516,35 @@ func (c *conversion) nodePartialUserPrimaryGuild(n *ingressNode, path string, pa
 	dst := &wire.PartialUserPrimaryGuild{}
 	{
 		item := n.get("identity_guild_id")
-		decodedValue4381, decodeError4382 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "IdentityGuildID"), parent)
-		if decodeError4382 != nil {
-			return nil, decodeError4382
-		}
-		dst.IdentityGuildId = decodedValue4381
-	}
-	{
-		item := n.get("identity_enabled")
-		decodedValue4383, decodeError4384 := c.nodeDomainNullableBool(item, fieldPath(path, "IdentityEnabled"), parent)
-		if decodeError4384 != nil {
-			return nil, decodeError4384
-		}
-		dst.IdentityEnabled = decodedValue4383
-	}
-	{
-		item := n.get("tag")
-		decodedValue4385, decodeError4386 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Tag"), parent)
+		decodedValue4385, decodeError4386 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "IdentityGuildID"), parent)
 		if decodeError4386 != nil {
 			return nil, decodeError4386
 		}
-		dst.Tag = decodedValue4385
+		dst.IdentityGuildId = decodedValue4385
 	}
 	{
-		item := n.get("badge")
-		decodedValue4387, decodeError4388 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Badge"), parent)
+		item := n.get("identity_enabled")
+		decodedValue4387, decodeError4388 := c.nodeDomainNullableBool(item, fieldPath(path, "IdentityEnabled"), parent)
 		if decodeError4388 != nil {
 			return nil, decodeError4388
 		}
-		dst.Badge = decodedValue4387
+		dst.IdentityEnabled = decodedValue4387
+	}
+	{
+		item := n.get("tag")
+		decodedValue4389, decodeError4390 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Tag"), parent)
+		if decodeError4390 != nil {
+			return nil, decodeError4390
+		}
+		dst.Tag = decodedValue4389
+	}
+	{
+		item := n.get("badge")
+		decodedValue4391, decodeError4392 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Badge"), parent)
+		if decodeError4392 != nil {
+			return nil, decodeError4392
+		}
+		dst.Badge = decodedValue4391
 	}
 	return dst, nil
 }
@@ -14527,43 +14558,43 @@ func (c *conversion) nodePartialVoiceRegion(n *ingressNode, path string, parent 
 	dst := &wire.PartialVoiceRegion{}
 	{
 		item := n.get("id")
-		decodedValue4389, decodeError4390 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4390 != nil {
-			return nil, decodeError4390
-		}
-		dst.Id = decodedValue4389
-	}
-	{
-		item := n.get("name")
-		decodedValue4391, decodeError4392 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
-		if decodeError4392 != nil {
-			return nil, decodeError4392
-		}
-		dst.Name = decodedValue4391
-	}
-	{
-		item := n.get("optimal")
-		decodedValue4393, decodeError4394 := c.nodeDomainNullableBool(item, fieldPath(path, "Optimal"), parent)
+		decodedValue4393, decodeError4394 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
 		if decodeError4394 != nil {
 			return nil, decodeError4394
 		}
-		dst.Optimal = decodedValue4393
+		dst.Id = decodedValue4393
 	}
 	{
-		item := n.get("deprecated")
-		decodedValue4395, decodeError4396 := c.nodeDomainNullableBool(item, fieldPath(path, "Deprecated"), parent)
+		item := n.get("name")
+		decodedValue4395, decodeError4396 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
 		if decodeError4396 != nil {
 			return nil, decodeError4396
 		}
-		dst.Deprecated = decodedValue4395
+		dst.Name = decodedValue4395
 	}
 	{
-		item := n.get("custom")
-		decodedValue4397, decodeError4398 := c.nodeDomainNullableBool(item, fieldPath(path, "Custom"), parent)
+		item := n.get("optimal")
+		decodedValue4397, decodeError4398 := c.nodeDomainNullableBool(item, fieldPath(path, "Optimal"), parent)
 		if decodeError4398 != nil {
 			return nil, decodeError4398
 		}
-		dst.Custom = decodedValue4397
+		dst.Optimal = decodedValue4397
+	}
+	{
+		item := n.get("deprecated")
+		decodedValue4399, decodeError4400 := c.nodeDomainNullableBool(item, fieldPath(path, "Deprecated"), parent)
+		if decodeError4400 != nil {
+			return nil, decodeError4400
+		}
+		dst.Deprecated = decodedValue4399
+	}
+	{
+		item := n.get("custom")
+		decodedValue4401, decodeError4402 := c.nodeDomainNullableBool(item, fieldPath(path, "Custom"), parent)
+		if decodeError4402 != nil {
+			return nil, decodeError4402
+		}
+		dst.Custom = decodedValue4401
 	}
 	return dst, nil
 }
@@ -14577,99 +14608,99 @@ func (c *conversion) nodePartialVoiceState(n *ingressNode, path string, parent i
 	dst := &wire.PartialVoiceState{}
 	{
 		item := n.get("guild_id")
-		decodedValue4399, decodeError4400 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
-		if decodeError4400 != nil {
-			return nil, decodeError4400
-		}
-		dst.GuildId = decodedValue4399
-	}
-	{
-		item := n.get("channel_id")
-		decodedValue4401, decodeError4402 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
-		if decodeError4402 != nil {
-			return nil, decodeError4402
-		}
-		dst.ChannelId = decodedValue4401
-	}
-	{
-		item := n.get("user_id")
-		decodedValue4403, decodeError4404 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
+		decodedValue4403, decodeError4404 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
 		if decodeError4404 != nil {
 			return nil, decodeError4404
 		}
-		dst.UserId = decodedValue4403
+		dst.GuildId = decodedValue4403
 	}
 	{
-		item := n.get("member")
-		decodedValue4405, decodeError4406 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
+		item := n.get("channel_id")
+		decodedValue4405, decodeError4406 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
 		if decodeError4406 != nil {
 			return nil, decodeError4406
 		}
-		dst.Member = decodedValue4405
+		dst.ChannelId = decodedValue4405
 	}
 	{
-		item := n.get("deaf")
-		decodedValue4407, decodeError4408 := c.nodeDomainNullableBool(item, fieldPath(path, "Deaf"), parent)
+		item := n.get("user_id")
+		decodedValue4407, decodeError4408 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UserID"), parent)
 		if decodeError4408 != nil {
 			return nil, decodeError4408
 		}
-		dst.Deaf = decodedValue4407
+		dst.UserId = decodedValue4407
 	}
 	{
-		item := n.get("mute")
-		decodedValue4409, decodeError4410 := c.nodeDomainNullableBool(item, fieldPath(path, "Mute"), parent)
+		item := n.get("member")
+		decodedValue4409, decodeError4410 := c.nodeDomainNullablePartialMember(item, fieldPath(path, "Member"), parent)
 		if decodeError4410 != nil {
 			return nil, decodeError4410
 		}
-		dst.Mute = decodedValue4409
+		dst.Member = decodedValue4409
 	}
 	{
-		item := n.get("self_deaf")
-		decodedValue4411, decodeError4412 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfDeaf"), parent)
+		item := n.get("deaf")
+		decodedValue4411, decodeError4412 := c.nodeDomainNullableBool(item, fieldPath(path, "Deaf"), parent)
 		if decodeError4412 != nil {
 			return nil, decodeError4412
 		}
-		dst.SelfDeaf = decodedValue4411
+		dst.Deaf = decodedValue4411
 	}
 	{
-		item := n.get("self_mute")
-		decodedValue4413, decodeError4414 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfMute"), parent)
+		item := n.get("mute")
+		decodedValue4413, decodeError4414 := c.nodeDomainNullableBool(item, fieldPath(path, "Mute"), parent)
 		if decodeError4414 != nil {
 			return nil, decodeError4414
 		}
-		dst.SelfMute = decodedValue4413
+		dst.Mute = decodedValue4413
 	}
 	{
-		item := n.get("self_stream")
-		decodedValue4415, decodeError4416 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfStream"), parent)
+		item := n.get("self_deaf")
+		decodedValue4415, decodeError4416 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfDeaf"), parent)
 		if decodeError4416 != nil {
 			return nil, decodeError4416
 		}
-		dst.SelfStream = decodedValue4415
+		dst.SelfDeaf = decodedValue4415
 	}
 	{
-		item := n.get("self_video")
-		decodedValue4417, decodeError4418 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfVideo"), parent)
+		item := n.get("self_mute")
+		decodedValue4417, decodeError4418 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfMute"), parent)
 		if decodeError4418 != nil {
 			return nil, decodeError4418
 		}
-		dst.SelfVideo = decodedValue4417
+		dst.SelfMute = decodedValue4417
 	}
 	{
-		item := n.get("suppress")
-		decodedValue4419, decodeError4420 := c.nodeDomainNullableBool(item, fieldPath(path, "Suppress"), parent)
+		item := n.get("self_stream")
+		decodedValue4419, decodeError4420 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfStream"), parent)
 		if decodeError4420 != nil {
 			return nil, decodeError4420
 		}
-		dst.Suppress = decodedValue4419
+		dst.SelfStream = decodedValue4419
 	}
 	{
-		item := n.get("request_to_speak_timestamp")
-		decodedValue4421, decodeError4422 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "RequestToSpeakTimestamp"), parent)
+		item := n.get("self_video")
+		decodedValue4421, decodeError4422 := c.nodeDomainNullableBool(item, fieldPath(path, "SelfVideo"), parent)
 		if decodeError4422 != nil {
 			return nil, decodeError4422
 		}
-		dst.RequestToSpeakTimestamp = decodedValue4421
+		dst.SelfVideo = decodedValue4421
+	}
+	{
+		item := n.get("suppress")
+		decodedValue4423, decodeError4424 := c.nodeDomainNullableBool(item, fieldPath(path, "Suppress"), parent)
+		if decodeError4424 != nil {
+			return nil, decodeError4424
+		}
+		dst.Suppress = decodedValue4423
+	}
+	{
+		item := n.get("request_to_speak_timestamp")
+		decodedValue4425, decodeError4426 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "RequestToSpeakTimestamp"), parent)
+		if decodeError4426 != nil {
+			return nil, decodeError4426
+		}
+		dst.RequestToSpeakTimestamp = decodedValue4425
 	}
 	return dst, nil
 }
@@ -14683,11 +14714,11 @@ func (c *conversion) nodePartialWebhook(n *ingressNode, path string, parent int6
 	dst := &wire.PartialWebhook{}
 	{
 		item := n.get("id")
-		decodedValue4423, decodeError4424 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
-		if decodeError4424 != nil {
-			return nil, decodeError4424
+		decodedValue4427, decodeError4428 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ID"), parent)
+		if decodeError4428 != nil {
+			return nil, decodeError4428
 		}
-		dst.Id = decodedValue4423
+		dst.Id = decodedValue4427
 	}
 	{
 		item := n.get("type")
@@ -14696,51 +14727,51 @@ func (c *conversion) nodePartialWebhook(n *ingressNode, path string, parent int6
 				return nil, err
 			}
 		}
-		decodedValue4425, decodeError4426 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
-		if decodeError4426 != nil {
-			return nil, decodeError4426
-		}
-		dst.Type = decodedValue4425
-	}
-	{
-		item := n.get("guild_id")
-		decodedValue4427, decodeError4428 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
-		if decodeError4428 != nil {
-			return nil, decodeError4428
-		}
-		dst.GuildId = decodedValue4427
-	}
-	{
-		item := n.get("channel_id")
-		decodedValue4429, decodeError4430 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+		decodedValue4429, decodeError4430 := c.nodeDomainNullableSint64(item, fieldPath(path, "Type"), parent)
 		if decodeError4430 != nil {
 			return nil, decodeError4430
 		}
-		dst.ChannelId = decodedValue4429
+		dst.Type = decodedValue4429
 	}
 	{
-		item := n.get("user")
-		decodedValue4431, decodeError4432 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
+		item := n.get("guild_id")
+		decodedValue4431, decodeError4432 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "GuildID"), parent)
 		if decodeError4432 != nil {
 			return nil, decodeError4432
 		}
-		dst.User = decodedValue4431
+		dst.GuildId = decodedValue4431
 	}
 	{
-		item := n.get("name")
-		decodedValue4433, decodeError4434 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		item := n.get("channel_id")
+		decodedValue4433, decodeError4434 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
 		if decodeError4434 != nil {
 			return nil, decodeError4434
 		}
-		dst.Name = decodedValue4433
+		dst.ChannelId = decodedValue4433
 	}
 	{
-		item := n.get("avatar")
-		decodedValue4435, decodeError4436 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Avatar"), parent)
+		item := n.get("user")
+		decodedValue4435, decodeError4436 := c.nodeDomainNullablePartialUser(item, fieldPath(path, "User"), parent)
 		if decodeError4436 != nil {
 			return nil, decodeError4436
 		}
-		dst.Avatar = decodedValue4435
+		dst.User = decodedValue4435
+	}
+	{
+		item := n.get("name")
+		decodedValue4437, decodeError4438 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Name"), parent)
+		if decodeError4438 != nil {
+			return nil, decodeError4438
+		}
+		dst.Name = decodedValue4437
+	}
+	{
+		item := n.get("avatar")
+		decodedValue4439, decodeError4440 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Avatar"), parent)
+		if decodeError4440 != nil {
+			return nil, decodeError4440
+		}
+		dst.Avatar = decodedValue4439
 	}
 	{
 		item := n.get("token")
@@ -14783,11 +14814,11 @@ func (c *conversion) nodePartialWebhook(n *ingressNode, path string, parent int6
 	}
 	{
 		item := n.get("application_id")
-		decodedValue4437, decodeError4438 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ApplicationID"), parent)
-		if decodeError4438 != nil {
-			return nil, decodeError4438
+		decodedValue4441, decodeError4442 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ApplicationID"), parent)
+		if decodeError4442 != nil {
+			return nil, decodeError4442
 		}
-		dst.ApplicationId = decodedValue4437
+		dst.ApplicationId = decodedValue4441
 	}
 	return dst, nil
 }
@@ -14801,43 +14832,43 @@ func (c *conversion) nodePartialWebhookEdit(n *ingressNode, path string, parent 
 	dst := &wire.PartialWebhookEdit{}
 	{
 		item := n.get("content")
-		decodedValue4439, decodeError4440 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-		if decodeError4440 != nil {
-			return nil, decodeError4440
-		}
-		dst.Content = decodedValue4439
-	}
-	{
-		item := n.get("components")
-		decodedValue4441, decodeError4442 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
-		if decodeError4442 != nil {
-			return nil, decodeError4442
-		}
-		dst.Components = decodedValue4441
-	}
-	{
-		item := n.get("embeds")
-		decodedValue4443, decodeError4444 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
+		decodedValue4443, decodeError4444 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
 		if decodeError4444 != nil {
 			return nil, decodeError4444
 		}
-		dst.Embeds = decodedValue4443
+		dst.Content = decodedValue4443
 	}
 	{
-		item := n.get("attachments")
-		decodedValue4445, decodeError4446 := c.nodeDomainNullableAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
+		item := n.get("components")
+		decodedValue4445, decodeError4446 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
 		if decodeError4446 != nil {
 			return nil, decodeError4446
 		}
-		dst.Attachments = decodedValue4445
+		dst.Components = decodedValue4445
 	}
 	{
-		item := n.get("allowed_mentions")
-		decodedValue4447, decodeError4448 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+		item := n.get("embeds")
+		decodedValue4447, decodeError4448 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
 		if decodeError4448 != nil {
 			return nil, decodeError4448
 		}
-		dst.AllowedMentions = decodedValue4447
+		dst.Embeds = decodedValue4447
+	}
+	{
+		item := n.get("attachments")
+		decodedValue4449, decodeError4450 := c.nodeDomainNullableAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
+		if decodeError4450 != nil {
+			return nil, decodeError4450
+		}
+		dst.Attachments = decodedValue4449
+	}
+	{
+		item := n.get("allowed_mentions")
+		decodedValue4451, decodeError4452 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+		if decodeError4452 != nil {
+			return nil, decodeError4452
+		}
+		dst.AllowedMentions = decodedValue4451
 	}
 	{
 		item := n.get("flags")
@@ -14846,11 +14877,11 @@ func (c *conversion) nodePartialWebhookEdit(n *ingressNode, path string, parent 
 				return nil, err
 			}
 		}
-		decodedValue4449, decodeError4450 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError4450 != nil {
-			return nil, decodeError4450
+		decodedValue4453, decodeError4454 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
+		if decodeError4454 != nil {
+			return nil, decodeError4454
 		}
-		dst.Flags = decodedValue4449
+		dst.Flags = decodedValue4453
 	}
 	return dst, nil
 }
@@ -14864,67 +14895,67 @@ func (c *conversion) nodePartialWebhookParams(n *ingressNode, path string, paren
 	dst := &wire.PartialWebhookParams{}
 	{
 		item := n.get("content")
-		decodedValue4451, decodeError4452 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-		if decodeError4452 != nil {
-			return nil, decodeError4452
-		}
-		dst.Content = decodedValue4451
-	}
-	{
-		item := n.get("username")
-		decodedValue4453, decodeError4454 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Username"), parent)
-		if decodeError4454 != nil {
-			return nil, decodeError4454
-		}
-		dst.Username = decodedValue4453
-	}
-	{
-		item := n.get("avatar_url")
-		decodedValue4455, decodeError4456 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "AvatarURL"), parent)
+		decodedValue4455, decodeError4456 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
 		if decodeError4456 != nil {
 			return nil, decodeError4456
 		}
-		dst.AvatarUrl = decodedValue4455
+		dst.Content = decodedValue4455
 	}
 	{
-		item := n.get("tts")
-		decodedValue4457, decodeError4458 := c.nodeDomainNullableBool(item, fieldPath(path, "TTS"), parent)
+		item := n.get("username")
+		decodedValue4457, decodeError4458 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Username"), parent)
 		if decodeError4458 != nil {
 			return nil, decodeError4458
 		}
-		dst.Tts = decodedValue4457
+		dst.Username = decodedValue4457
 	}
 	{
-		item := n.get("components")
-		decodedValue4459, decodeError4460 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
+		item := n.get("avatar_url")
+		decodedValue4459, decodeError4460 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "AvatarURL"), parent)
 		if decodeError4460 != nil {
 			return nil, decodeError4460
 		}
-		dst.Components = decodedValue4459
+		dst.AvatarUrl = decodedValue4459
 	}
 	{
-		item := n.get("embeds")
-		decodedValue4461, decodeError4462 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
+		item := n.get("tts")
+		decodedValue4461, decodeError4462 := c.nodeDomainNullableBool(item, fieldPath(path, "TTS"), parent)
 		if decodeError4462 != nil {
 			return nil, decodeError4462
 		}
-		dst.Embeds = decodedValue4461
+		dst.Tts = decodedValue4461
 	}
 	{
-		item := n.get("attachments")
-		decodedValue4463, decodeError4464 := c.nodeDomainNullableDomainDomainNullablePartialMessageAttachmentList(item, fieldPath(path, "Attachments"), parent)
+		item := n.get("components")
+		decodedValue4463, decodeError4464 := c.nodeDomainNullableDomainDomainNullablePartialMessageComponentList(item, fieldPath(path, "Components"), parent)
 		if decodeError4464 != nil {
 			return nil, decodeError4464
 		}
-		dst.Attachments = decodedValue4463
+		dst.Components = decodedValue4463
 	}
 	{
-		item := n.get("allowed_mentions")
-		decodedValue4465, decodeError4466 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+		item := n.get("embeds")
+		decodedValue4465, decodeError4466 := c.nodeDomainNullableDomainDomainNullablePartialMessageEmbedList(item, fieldPath(path, "Embeds"), parent)
 		if decodeError4466 != nil {
 			return nil, decodeError4466
 		}
-		dst.AllowedMentions = decodedValue4465
+		dst.Embeds = decodedValue4465
+	}
+	{
+		item := n.get("attachments")
+		decodedValue4467, decodeError4468 := c.nodeDomainNullableDomainDomainNullablePartialMessageAttachmentList(item, fieldPath(path, "Attachments"), parent)
+		if decodeError4468 != nil {
+			return nil, decodeError4468
+		}
+		dst.Attachments = decodedValue4467
+	}
+	{
+		item := n.get("allowed_mentions")
+		decodedValue4469, decodeError4470 := c.nodeDomainNullablePartialMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+		if decodeError4470 != nil {
+			return nil, decodeError4470
+		}
+		dst.AllowedMentions = decodedValue4469
 	}
 	{
 		item := n.get("flags")
@@ -14933,19 +14964,19 @@ func (c *conversion) nodePartialWebhookParams(n *ingressNode, path string, paren
 				return nil, err
 			}
 		}
-		decodedValue4467, decodeError4468 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
-		if decodeError4468 != nil {
-			return nil, decodeError4468
+		decodedValue4471, decodeError4472 := c.nodeDomainNullableUint64(item, fieldPath(path, "Flags"), parent)
+		if decodeError4472 != nil {
+			return nil, decodeError4472
 		}
-		dst.Flags = decodedValue4467
+		dst.Flags = decodedValue4471
 	}
 	{
 		item := n.get("thread_name")
-		decodedValue4469, decodeError4470 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ThreadName"), parent)
-		if decodeError4470 != nil {
-			return nil, decodeError4470
+		decodedValue4473, decodeError4474 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ThreadName"), parent)
+		if decodeError4474 != nil {
+			return nil, decodeError4474
 		}
-		dst.ThreadName = decodedValue4469
+		dst.ThreadName = decodedValue4473
 	}
 	return dst, nil
 }
@@ -15099,11 +15130,11 @@ func (c *conversion) nodeSnapshotAPIErrorMessage(n *ingressNode, path string, pa
 					}
 				}
 				var value int64
-				decodedValue4471, decodeError4472 := ingressNumericScalar[int64](item, c, fieldPath(path, "Code"))
-				if decodeError4472 != nil {
-					return nil, decodeError4472
+				decodedValue4475, decodeError4476 := ingressNumericScalar[int64](item, c, fieldPath(path, "Code"))
+				if decodeError4476 != nil {
+					return nil, decodeError4476
 				}
-				value = decodedValue4471
+				value = decodedValue4475
 				dst.Code = &value
 			}
 		}
@@ -15113,11 +15144,11 @@ func (c *conversion) nodeSnapshotAPIErrorMessage(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4473, decodeError4474 := ingressString(item, c, fieldPath(path, "Message"))
-				if decodeError4474 != nil {
-					return nil, decodeError4474
+				decodedValue4477, decodeError4478 := ingressString(item, c, fieldPath(path, "Message"))
+				if decodeError4478 != nil {
+					return nil, decodeError4478
 				}
-				value = decodedValue4473
+				value = decodedValue4477
 				dst.Message = &value
 			}
 		}
@@ -15148,11 +15179,11 @@ func (c *conversion) nodeSnapshotActionsRow(n *ingressNode, path string, parent 
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue4475, decodeError4476 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError4476 != nil {
-					return nil, decodeError4476
+				decodedValue4479, decodeError4480 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError4480 != nil {
+					return nil, decodeError4480
 				}
-				dst.Components = decodedValue4475
+				dst.Components = decodedValue4479
 			}
 		}
 	}
@@ -15166,11 +15197,11 @@ func (c *conversion) nodeSnapshotActionsRow(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue4477, decodeError4478 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError4478 != nil {
-					return nil, decodeError4478
+				decodedValue4481, decodeError4482 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError4482 != nil {
+					return nil, decodeError4482
 				}
-				value = decodedValue4477
+				value = decodedValue4481
 				dst.Id = &value
 			}
 		}
@@ -15202,11 +15233,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4479, decodeError4480 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4480 != nil {
-					return nil, decodeError4480
+				decodedValue4483, decodeError4484 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4484 != nil {
+					return nil, decodeError4484
 				}
-				value = decodedValue4479
+				value = decodedValue4483
 				dst.Name = &value
 			}
 		}
@@ -15221,11 +15252,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 					}
 				}
 				var value int64
-				decodedValue4481, decodeError4482 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError4482 != nil {
-					return nil, decodeError4482
+				decodedValue4485, decodeError4486 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError4486 != nil {
+					return nil, decodeError4486
 				}
-				value = decodedValue4481
+				value = decodedValue4485
 				dst.Type = &value
 			}
 		}
@@ -15235,11 +15266,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4483, decodeError4484 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError4484 != nil {
-					return nil, decodeError4484
+				decodedValue4487, decodeError4488 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError4488 != nil {
+					return nil, decodeError4488
 				}
-				value = decodedValue4483
+				value = decodedValue4487
 				dst.Url = &value
 			}
 		}
@@ -15248,11 +15279,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		item := n.get("created_at")
 		if item != nil {
 			if !item.null {
-				decodedValue4485, decodeError4486 := ingressTimestamp(item, c, fieldPath(path, "CreatedAt"))
-				if decodeError4486 != nil {
-					return nil, decodeError4486
+				codecValue4489, codecError4490 := ingressUnixMilliseconds(item, c, fieldPath(path, "CreatedAt"))
+				if codecError4490 != nil {
+					return nil, codecError4490
 				}
-				dst.CreatedAt = decodedValue4485
+				dst.CreatedAt = codecValue4489
 			}
 		}
 	}
@@ -15261,11 +15292,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4487, decodeError4488 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError4488 != nil {
-					return nil, decodeError4488
+				codecValue4491, codecError4492 := ingressNumberString(item, c, fieldPath(path, "ApplicationID"))
+				if codecError4492 != nil {
+					return nil, codecError4492
 				}
-				value = decodedValue4487
+				value = codecValue4491
 				dst.ApplicationId = &value
 			}
 		}
@@ -15275,11 +15306,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4489, decodeError4490 := ingressString(item, c, fieldPath(path, "State"))
-				if decodeError4490 != nil {
-					return nil, decodeError4490
+				decodedValue4493, decodeError4494 := ingressString(item, c, fieldPath(path, "State"))
+				if decodeError4494 != nil {
+					return nil, decodeError4494
 				}
-				value = decodedValue4489
+				value = decodedValue4493
 				dst.State = &value
 			}
 		}
@@ -15289,11 +15320,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4491, decodeError4492 := ingressString(item, c, fieldPath(path, "Details"))
-				if decodeError4492 != nil {
-					return nil, decodeError4492
+				decodedValue4495, decodeError4496 := ingressString(item, c, fieldPath(path, "Details"))
+				if decodeError4496 != nil {
+					return nil, decodeError4496
 				}
-				value = decodedValue4491
+				value = decodedValue4495
 				dst.Details = &value
 			}
 		}
@@ -15302,11 +15333,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		item := n.get("timestamps")
 		if item != nil {
 			if !item.null {
-				decodedValue4493, decodeError4494 := c.nodeSnapshotTimeStamps(item, fieldPath(path, "Timestamps"), parent)
-				if decodeError4494 != nil {
-					return nil, decodeError4494
+				decodedValue4497, decodeError4498 := c.nodeSnapshotTimeStamps(item, fieldPath(path, "Timestamps"), parent)
+				if decodeError4498 != nil {
+					return nil, decodeError4498
 				}
-				dst.Timestamps = decodedValue4493
+				dst.Timestamps = decodedValue4497
 			}
 		}
 	}
@@ -15314,11 +15345,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		item := n.get("emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue4495, decodeError4496 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
-				if decodeError4496 != nil {
-					return nil, decodeError4496
+				decodedValue4499, decodeError4500 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
+				if decodeError4500 != nil {
+					return nil, decodeError4500
 				}
-				dst.Emoji = decodedValue4495
+				dst.Emoji = decodedValue4499
 			}
 		}
 	}
@@ -15326,11 +15357,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		item := n.get("party")
 		if item != nil {
 			if !item.null {
-				decodedValue4497, decodeError4498 := c.nodeSnapshotParty(item, fieldPath(path, "Party"), parent)
-				if decodeError4498 != nil {
-					return nil, decodeError4498
+				decodedValue4501, decodeError4502 := c.nodeSnapshotParty(item, fieldPath(path, "Party"), parent)
+				if decodeError4502 != nil {
+					return nil, decodeError4502
 				}
-				dst.Party = decodedValue4497
+				dst.Party = decodedValue4501
 			}
 		}
 	}
@@ -15338,11 +15369,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		item := n.get("assets")
 		if item != nil {
 			if !item.null {
-				decodedValue4499, decodeError4500 := c.nodeSnapshotAssets(item, fieldPath(path, "Assets"), parent)
-				if decodeError4500 != nil {
-					return nil, decodeError4500
+				decodedValue4503, decodeError4504 := c.nodeSnapshotAssets(item, fieldPath(path, "Assets"), parent)
+				if decodeError4504 != nil {
+					return nil, decodeError4504
 				}
-				dst.Assets = decodedValue4499
+				dst.Assets = decodedValue4503
 			}
 		}
 	}
@@ -15350,11 +15381,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		item := n.get("secrets")
 		if item != nil {
 			if !item.null {
-				decodedValue4501, decodeError4502 := c.nodeSnapshotSecrets(item, fieldPath(path, "Secrets"), parent)
-				if decodeError4502 != nil {
-					return nil, decodeError4502
+				decodedValue4505, decodeError4506 := c.nodeSnapshotSecrets(item, fieldPath(path, "Secrets"), parent)
+				if decodeError4506 != nil {
+					return nil, decodeError4506
 				}
-				dst.Secrets = decodedValue4501
+				dst.Secrets = decodedValue4505
 			}
 		}
 	}
@@ -15363,11 +15394,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4503, decodeError4504 := ingressScalar[bool](item, c, fieldPath(path, "Instance"))
-				if decodeError4504 != nil {
-					return nil, decodeError4504
+				decodedValue4507, decodeError4508 := ingressScalar[bool](item, c, fieldPath(path, "Instance"))
+				if decodeError4508 != nil {
+					return nil, decodeError4508
 				}
-				value = decodedValue4503
+				value = decodedValue4507
 				dst.Instance = &value
 			}
 		}
@@ -15382,11 +15413,11 @@ func (c *conversion) nodeSnapshotActivity(n *ingressNode, path string, parent in
 					}
 				}
 				var value uint64
-				decodedValue4505, decodeError4506 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError4506 != nil {
-					return nil, decodeError4506
+				decodedValue4509, decodeError4510 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError4510 != nil {
+					return nil, decodeError4510
 				}
-				value = decodedValue4505
+				value = decodedValue4509
 				dst.Flags = &value
 			}
 		}
@@ -15420,11 +15451,11 @@ func (c *conversion) nodeSnapshotAddedThreadMember(n *ingressNode, path string, 
 		}
 		if item != nil {
 			if !item.null {
-				decodedValue4507, decodeError4508 := c.nodeSnapshotThreadMember(item, fieldPath(path, "ThreadMember"), parent)
-				if decodeError4508 != nil {
-					return nil, decodeError4508
+				decodedValue4511, decodeError4512 := c.nodeSnapshotThreadMember(item, fieldPath(path, "ThreadMember"), parent)
+				if decodeError4512 != nil {
+					return nil, decodeError4512
 				}
-				dst.ThreadMember = decodedValue4507
+				dst.ThreadMember = decodedValue4511
 			}
 		}
 	}
@@ -15432,11 +15463,11 @@ func (c *conversion) nodeSnapshotAddedThreadMember(n *ingressNode, path string, 
 		item := n.get("member")
 		if item != nil {
 			if !item.null {
-				decodedValue4509, decodeError4510 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
-				if decodeError4510 != nil {
-					return nil, decodeError4510
+				decodedValue4513, decodeError4514 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
+				if decodeError4514 != nil {
+					return nil, decodeError4514
 				}
-				dst.Member = decodedValue4509
+				dst.Member = decodedValue4513
 			}
 		}
 	}
@@ -15444,11 +15475,11 @@ func (c *conversion) nodeSnapshotAddedThreadMember(n *ingressNode, path string, 
 		item := n.get("presence")
 		if item != nil {
 			if !item.null {
-				decodedValue4511, decodeError4512 := c.nodeSnapshotPresence(item, fieldPath(path, "Presence"), parent)
-				if decodeError4512 != nil {
-					return nil, decodeError4512
+				decodedValue4515, decodeError4516 := c.nodeSnapshotPresence(item, fieldPath(path, "Presence"), parent)
+				if decodeError4516 != nil {
+					return nil, decodeError4516
 				}
-				dst.Presence = decodedValue4511
+				dst.Presence = decodedValue4515
 			}
 		}
 	}
@@ -15479,11 +15510,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4513, decodeError4514 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4514 != nil {
-					return nil, decodeError4514
+				decodedValue4517, decodeError4518 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4518 != nil {
+					return nil, decodeError4518
 				}
-				value = decodedValue4513
+				value = decodedValue4517
 				dst.Id = &value
 			}
 		}
@@ -15493,11 +15524,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4515, decodeError4516 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4516 != nil {
-					return nil, decodeError4516
+				decodedValue4519, decodeError4520 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4520 != nil {
+					return nil, decodeError4520
 				}
-				value = decodedValue4515
+				value = decodedValue4519
 				dst.Name = &value
 			}
 		}
@@ -15507,11 +15538,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4517, decodeError4518 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError4518 != nil {
-					return nil, decodeError4518
+				decodedValue4521, decodeError4522 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError4522 != nil {
+					return nil, decodeError4522
 				}
-				value = decodedValue4517
+				value = decodedValue4521
 				dst.Icon = &value
 			}
 		}
@@ -15521,11 +15552,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4519, decodeError4520 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError4520 != nil {
-					return nil, decodeError4520
+				decodedValue4523, decodeError4524 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError4524 != nil {
+					return nil, decodeError4524
 				}
-				value = decodedValue4519
+				value = decodedValue4523
 				dst.Description = &value
 			}
 		}
@@ -15534,11 +15565,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		item := n.get("rpc_origins")
 		if item != nil {
 			if !item.null {
-				decodedValue4521, decodeError4522 := c.nodeDomainStringList(item, fieldPath(path, "RPCOrigins"), parent)
-				if decodeError4522 != nil {
-					return nil, decodeError4522
+				decodedValue4525, decodeError4526 := c.nodeDomainStringList(item, fieldPath(path, "RPCOrigins"), parent)
+				if decodeError4526 != nil {
+					return nil, decodeError4526
 				}
-				dst.RpcOrigins = decodedValue4521
+				dst.RpcOrigins = decodedValue4525
 			}
 		}
 	}
@@ -15547,11 +15578,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4523, decodeError4524 := ingressScalar[bool](item, c, fieldPath(path, "BotPublic"))
-				if decodeError4524 != nil {
-					return nil, decodeError4524
+				decodedValue4527, decodeError4528 := ingressScalar[bool](item, c, fieldPath(path, "BotPublic"))
+				if decodeError4528 != nil {
+					return nil, decodeError4528
 				}
-				value = decodedValue4523
+				value = decodedValue4527
 				dst.BotPublic = &value
 			}
 		}
@@ -15561,11 +15592,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4525, decodeError4526 := ingressScalar[bool](item, c, fieldPath(path, "BotRequireCodeGrant"))
-				if decodeError4526 != nil {
-					return nil, decodeError4526
+				decodedValue4529, decodeError4530 := ingressScalar[bool](item, c, fieldPath(path, "BotRequireCodeGrant"))
+				if decodeError4530 != nil {
+					return nil, decodeError4530
 				}
-				value = decodedValue4525
+				value = decodedValue4529
 				dst.BotRequireCodeGrant = &value
 			}
 		}
@@ -15575,11 +15606,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4527, decodeError4528 := ingressString(item, c, fieldPath(path, "TermsOfServiceURL"))
-				if decodeError4528 != nil {
-					return nil, decodeError4528
+				decodedValue4531, decodeError4532 := ingressString(item, c, fieldPath(path, "TermsOfServiceURL"))
+				if decodeError4532 != nil {
+					return nil, decodeError4532
 				}
-				value = decodedValue4527
+				value = decodedValue4531
 				dst.TermsOfServiceUrl = &value
 			}
 		}
@@ -15589,11 +15620,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4529, decodeError4530 := ingressString(item, c, fieldPath(path, "PrivacyProxyURL"))
-				if decodeError4530 != nil {
-					return nil, decodeError4530
+				decodedValue4533, decodeError4534 := ingressString(item, c, fieldPath(path, "PrivacyProxyURL"))
+				if decodeError4534 != nil {
+					return nil, decodeError4534
 				}
-				value = decodedValue4529
+				value = decodedValue4533
 				dst.PrivacyProxyUrl = &value
 			}
 		}
@@ -15602,11 +15633,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		item := n.get("owner")
 		if item != nil {
 			if !item.null {
-				decodedValue4531, decodeError4532 := c.nodeSnapshotUser(item, fieldPath(path, "Owner"), parent)
-				if decodeError4532 != nil {
-					return nil, decodeError4532
+				decodedValue4535, decodeError4536 := c.nodeSnapshotUser(item, fieldPath(path, "Owner"), parent)
+				if decodeError4536 != nil {
+					return nil, decodeError4536
 				}
-				dst.Owner = decodedValue4531
+				dst.Owner = decodedValue4535
 			}
 		}
 	}
@@ -15615,11 +15646,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4533, decodeError4534 := ingressString(item, c, fieldPath(path, "Summary"))
-				if decodeError4534 != nil {
-					return nil, decodeError4534
+				decodedValue4537, decodeError4538 := ingressString(item, c, fieldPath(path, "Summary"))
+				if decodeError4538 != nil {
+					return nil, decodeError4538
 				}
-				value = decodedValue4533
+				value = decodedValue4537
 				dst.Summary = &value
 			}
 		}
@@ -15629,11 +15660,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4535, decodeError4536 := ingressString(item, c, fieldPath(path, "VerifyKey"))
-				if decodeError4536 != nil {
-					return nil, decodeError4536
+				decodedValue4539, decodeError4540 := ingressString(item, c, fieldPath(path, "VerifyKey"))
+				if decodeError4540 != nil {
+					return nil, decodeError4540
 				}
-				value = decodedValue4535
+				value = decodedValue4539
 				dst.VerifyKey = &value
 			}
 		}
@@ -15642,11 +15673,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		item := n.get("team")
 		if item != nil {
 			if !item.null {
-				decodedValue4537, decodeError4538 := c.nodeSnapshotTeam(item, fieldPath(path, "Team"), parent)
-				if decodeError4538 != nil {
-					return nil, decodeError4538
+				decodedValue4541, decodeError4542 := c.nodeSnapshotTeam(item, fieldPath(path, "Team"), parent)
+				if decodeError4542 != nil {
+					return nil, decodeError4542
 				}
-				dst.Team = decodedValue4537
+				dst.Team = decodedValue4541
 			}
 		}
 	}
@@ -15655,11 +15686,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4539, decodeError4540 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError4540 != nil {
-					return nil, decodeError4540
+				decodedValue4543, decodeError4544 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError4544 != nil {
+					return nil, decodeError4544
 				}
-				value = decodedValue4539
+				value = decodedValue4543
 				dst.GuildId = &value
 			}
 		}
@@ -15669,11 +15700,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4541, decodeError4542 := ingressString(item, c, fieldPath(path, "PrimarySKUID"))
-				if decodeError4542 != nil {
-					return nil, decodeError4542
+				decodedValue4545, decodeError4546 := ingressString(item, c, fieldPath(path, "PrimarySKUID"))
+				if decodeError4546 != nil {
+					return nil, decodeError4546
 				}
-				value = decodedValue4541
+				value = decodedValue4545
 				dst.PrimarySkuid = &value
 			}
 		}
@@ -15683,11 +15714,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4543, decodeError4544 := ingressString(item, c, fieldPath(path, "Slug"))
-				if decodeError4544 != nil {
-					return nil, decodeError4544
+				decodedValue4547, decodeError4548 := ingressString(item, c, fieldPath(path, "Slug"))
+				if decodeError4548 != nil {
+					return nil, decodeError4548
 				}
-				value = decodedValue4543
+				value = decodedValue4547
 				dst.Slug = &value
 			}
 		}
@@ -15697,11 +15728,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4545, decodeError4546 := ingressString(item, c, fieldPath(path, "CoverImage"))
-				if decodeError4546 != nil {
-					return nil, decodeError4546
+				decodedValue4549, decodeError4550 := ingressString(item, c, fieldPath(path, "CoverImage"))
+				if decodeError4550 != nil {
+					return nil, decodeError4550
 				}
-				value = decodedValue4545
+				value = decodedValue4549
 				dst.CoverImage = &value
 			}
 		}
@@ -15716,11 +15747,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 					}
 				}
 				var value uint64
-				decodedValue4547, decodeError4548 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError4548 != nil {
-					return nil, decodeError4548
+				decodedValue4551, decodeError4552 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError4552 != nil {
+					return nil, decodeError4552
 				}
-				value = decodedValue4547
+				value = decodedValue4551
 				dst.Flags = &value
 			}
 		}
@@ -15729,11 +15760,11 @@ func (c *conversion) nodeSnapshotApplication(n *ingressNode, path string, parent
 		item := n.get("integration_types")
 		if item != nil {
 			if !item.null {
-				decodedValue4549, decodeError4550 := c.nodeDomainUint64ToApplicationIntegrationTypeConfigMap(item, fieldPath(path, "IntegrationTypesConfig"), parent)
-				if decodeError4550 != nil {
-					return nil, decodeError4550
+				decodedValue4553, decodeError4554 := c.nodeDomainUint64ToApplicationIntegrationTypeConfigMap(item, fieldPath(path, "IntegrationTypesConfig"), parent)
+				if decodeError4554 != nil {
+					return nil, decodeError4554
 				}
-				dst.IntegrationTypesConfig = decodedValue4549
+				dst.IntegrationTypesConfig = decodedValue4553
 			}
 		}
 	}
@@ -15764,11 +15795,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4551, decodeError4552 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4552 != nil {
-					return nil, decodeError4552
+				decodedValue4555, decodeError4556 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4556 != nil {
+					return nil, decodeError4556
 				}
-				value = decodedValue4551
+				value = decodedValue4555
 				dst.Id = &value
 			}
 		}
@@ -15778,11 +15809,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4553, decodeError4554 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError4554 != nil {
-					return nil, decodeError4554
+				decodedValue4557, decodeError4558 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError4558 != nil {
+					return nil, decodeError4558
 				}
-				value = decodedValue4553
+				value = decodedValue4557
 				dst.ApplicationId = &value
 			}
 		}
@@ -15792,11 +15823,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4555, decodeError4556 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError4556 != nil {
-					return nil, decodeError4556
+				decodedValue4559, decodeError4560 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError4560 != nil {
+					return nil, decodeError4560
 				}
-				value = decodedValue4555
+				value = decodedValue4559
 				dst.GuildId = &value
 			}
 		}
@@ -15806,11 +15837,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4557, decodeError4558 := ingressString(item, c, fieldPath(path, "Version"))
-				if decodeError4558 != nil {
-					return nil, decodeError4558
+				decodedValue4561, decodeError4562 := ingressString(item, c, fieldPath(path, "Version"))
+				if decodeError4562 != nil {
+					return nil, decodeError4562
 				}
-				value = decodedValue4557
+				value = decodedValue4561
 				dst.Version = &value
 			}
 		}
@@ -15825,11 +15856,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 					}
 				}
 				var value uint32
-				decodedValue4559, decodeError4560 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError4560 != nil {
-					return nil, decodeError4560
+				decodedValue4563, decodeError4564 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError4564 != nil {
+					return nil, decodeError4564
 				}
-				value = decodedValue4559
+				value = decodedValue4563
 				dst.Type = &value
 			}
 		}
@@ -15839,11 +15870,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4561, decodeError4562 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4562 != nil {
-					return nil, decodeError4562
+				decodedValue4565, decodeError4566 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4566 != nil {
+					return nil, decodeError4566
 				}
-				value = decodedValue4561
+				value = decodedValue4565
 				dst.Name = &value
 			}
 		}
@@ -15852,11 +15883,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		item := n.get("name_localizations")
 		if item != nil {
 			if !item.null {
-				decodedValue4563, decodeError4564 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
-				if decodeError4564 != nil {
-					return nil, decodeError4564
+				decodedValue4567, decodeError4568 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
+				if decodeError4568 != nil {
+					return nil, decodeError4568
 				}
-				dst.NameLocalizations = decodedValue4563
+				dst.NameLocalizations = decodedValue4567
 			}
 		}
 	}
@@ -15865,11 +15896,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4565, decodeError4566 := ingressScalar[bool](item, c, fieldPath(path, "DefaultPermission"))
-				if decodeError4566 != nil {
-					return nil, decodeError4566
+				decodedValue4569, decodeError4570 := ingressScalar[bool](item, c, fieldPath(path, "DefaultPermission"))
+				if decodeError4570 != nil {
+					return nil, decodeError4570
 				}
-				value = decodedValue4565
+				value = decodedValue4569
 				dst.DefaultPermission = &value
 			}
 		}
@@ -15880,11 +15911,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 			if err := ingressPermission(item, c, fieldPath(path, "DefaultMemberPermissions")); err != nil {
 				return nil, err
 			}
-			decodedValue4567, decodeError4568 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "DefaultMemberPermissions"), parent)
-			if decodeError4568 != nil {
-				return nil, decodeError4568
+			decodedValue4571, decodeError4572 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "DefaultMemberPermissions"), parent)
+			if decodeError4572 != nil {
+				return nil, decodeError4572
 			}
-			dst.DefaultMemberPermissions = decodedValue4567
+			dst.DefaultMemberPermissions = decodedValue4571
 		}
 	}
 	{
@@ -15892,11 +15923,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4569, decodeError4570 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
-				if decodeError4570 != nil {
-					return nil, decodeError4570
+				decodedValue4573, decodeError4574 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
+				if decodeError4574 != nil {
+					return nil, decodeError4574
 				}
-				value = decodedValue4569
+				value = decodedValue4573
 				dst.Nsfw = &value
 			}
 		}
@@ -15906,11 +15937,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4571, decodeError4572 := ingressScalar[bool](item, c, fieldPath(path, "DMPermission"))
-				if decodeError4572 != nil {
-					return nil, decodeError4572
+				decodedValue4575, decodeError4576 := ingressScalar[bool](item, c, fieldPath(path, "DMPermission"))
+				if decodeError4576 != nil {
+					return nil, decodeError4576
 				}
-				value = decodedValue4571
+				value = decodedValue4575
 				dst.DmPermission = &value
 			}
 		}
@@ -15919,11 +15950,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		item := n.get("contexts")
 		if item != nil {
 			if !item.null {
-				decodedValue4573, decodeError4574 := c.nodeDomainUint64List(item, fieldPath(path, "Contexts"), parent)
-				if decodeError4574 != nil {
-					return nil, decodeError4574
+				decodedValue4577, decodeError4578 := c.nodeDomainUint64List(item, fieldPath(path, "Contexts"), parent)
+				if decodeError4578 != nil {
+					return nil, decodeError4578
 				}
-				dst.Contexts = decodedValue4573
+				dst.Contexts = decodedValue4577
 			}
 		}
 	}
@@ -15931,11 +15962,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		item := n.get("integration_types")
 		if item != nil {
 			if !item.null {
-				decodedValue4575, decodeError4576 := c.nodeDomainUint64List(item, fieldPath(path, "IntegrationTypes"), parent)
-				if decodeError4576 != nil {
-					return nil, decodeError4576
+				decodedValue4579, decodeError4580 := c.nodeDomainUint64List(item, fieldPath(path, "IntegrationTypes"), parent)
+				if decodeError4580 != nil {
+					return nil, decodeError4580
 				}
-				dst.IntegrationTypes = decodedValue4575
+				dst.IntegrationTypes = decodedValue4579
 			}
 		}
 	}
@@ -15944,11 +15975,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4577, decodeError4578 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError4578 != nil {
-					return nil, decodeError4578
+				decodedValue4581, decodeError4582 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError4582 != nil {
+					return nil, decodeError4582
 				}
-				value = decodedValue4577
+				value = decodedValue4581
 				dst.Description = &value
 			}
 		}
@@ -15957,11 +15988,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		item := n.get("description_localizations")
 		if item != nil {
 			if !item.null {
-				decodedValue4579, decodeError4580 := c.nodeDomainStringToStringMap(item, fieldPath(path, "DescriptionLocalizations"), parent)
-				if decodeError4580 != nil {
-					return nil, decodeError4580
+				decodedValue4583, decodeError4584 := c.nodeDomainStringToStringMap(item, fieldPath(path, "DescriptionLocalizations"), parent)
+				if decodeError4584 != nil {
+					return nil, decodeError4584
 				}
-				dst.DescriptionLocalizations = decodedValue4579
+				dst.DescriptionLocalizations = decodedValue4583
 			}
 		}
 	}
@@ -15969,11 +16000,11 @@ func (c *conversion) nodeSnapshotApplicationCommand(n *ingressNode, path string,
 		item := n.get("options")
 		if item != nil {
 			if !item.null {
-				decodedValue4581, decodeError4582 := c.nodeDomainApplicationCommandOptionList(item, fieldPath(path, "Options"), parent)
-				if decodeError4582 != nil {
-					return nil, decodeError4582
+				decodedValue4585, decodeError4586 := c.nodeDomainApplicationCommandOptionList(item, fieldPath(path, "Options"), parent)
+				if decodeError4586 != nil {
+					return nil, decodeError4586
 				}
-				dst.Options = decodedValue4581
+				dst.Options = decodedValue4585
 			}
 		}
 	}
@@ -16004,11 +16035,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionData(n *ingressNod
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4583, decodeError4584 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4584 != nil {
-					return nil, decodeError4584
+				decodedValue4587, decodeError4588 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4588 != nil {
+					return nil, decodeError4588
 				}
-				value = decodedValue4583
+				value = decodedValue4587
 				dst.Id = &value
 			}
 		}
@@ -16018,11 +16049,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionData(n *ingressNod
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4585, decodeError4586 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4586 != nil {
-					return nil, decodeError4586
+				decodedValue4589, decodeError4590 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4590 != nil {
+					return nil, decodeError4590
 				}
-				value = decodedValue4585
+				value = decodedValue4589
 				dst.Name = &value
 			}
 		}
@@ -16037,11 +16068,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionData(n *ingressNod
 					}
 				}
 				var value uint32
-				decodedValue4587, decodeError4588 := ingressNumericScalar[uint32](item, c, fieldPath(path, "CommandType"))
-				if decodeError4588 != nil {
-					return nil, decodeError4588
+				decodedValue4591, decodeError4592 := ingressNumericScalar[uint32](item, c, fieldPath(path, "CommandType"))
+				if decodeError4592 != nil {
+					return nil, decodeError4592
 				}
-				value = decodedValue4587
+				value = decodedValue4591
 				dst.CommandType = &value
 			}
 		}
@@ -16050,11 +16081,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionData(n *ingressNod
 		item := n.get("resolved")
 		if item != nil {
 			if !item.null {
-				decodedValue4589, decodeError4590 := c.nodeSnapshotApplicationCommandInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
-				if decodeError4590 != nil {
-					return nil, decodeError4590
+				decodedValue4593, decodeError4594 := c.nodeSnapshotApplicationCommandInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
+				if decodeError4594 != nil {
+					return nil, decodeError4594
 				}
-				dst.Resolved = decodedValue4589
+				dst.Resolved = decodedValue4593
 			}
 		}
 	}
@@ -16062,11 +16093,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionData(n *ingressNod
 		item := n.get("options")
 		if item != nil {
 			if !item.null {
-				decodedValue4591, decodeError4592 := c.nodeDomainApplicationCommandInteractionDataOptionList(item, fieldPath(path, "Options"), parent)
-				if decodeError4592 != nil {
-					return nil, decodeError4592
+				decodedValue4595, decodeError4596 := c.nodeDomainApplicationCommandInteractionDataOptionList(item, fieldPath(path, "Options"), parent)
+				if decodeError4596 != nil {
+					return nil, decodeError4596
 				}
-				dst.Options = decodedValue4591
+				dst.Options = decodedValue4595
 			}
 		}
 	}
@@ -16075,11 +16106,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionData(n *ingressNod
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4593, decodeError4594 := ingressString(item, c, fieldPath(path, "TargetID"))
-				if decodeError4594 != nil {
-					return nil, decodeError4594
+				decodedValue4597, decodeError4598 := ingressString(item, c, fieldPath(path, "TargetID"))
+				if decodeError4598 != nil {
+					return nil, decodeError4598
 				}
-				value = decodedValue4593
+				value = decodedValue4597
 				dst.TargetId = &value
 			}
 		}
@@ -16116,11 +16147,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataOption(n *ingr
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4595, decodeError4596 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4596 != nil {
-					return nil, decodeError4596
+				decodedValue4599, decodeError4600 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4600 != nil {
+					return nil, decodeError4600
 				}
-				value = decodedValue4595
+				value = decodedValue4599
 				dst.Name = &value
 			}
 		}
@@ -16135,11 +16166,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataOption(n *ingr
 					}
 				}
 				var value uint32
-				decodedValue4597, decodeError4598 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError4598 != nil {
-					return nil, decodeError4598
+				decodedValue4601, decodeError4602 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError4602 != nil {
+					return nil, decodeError4602
 				}
-				value = decodedValue4597
+				value = decodedValue4601
 				dst.Type = &value
 			}
 		}
@@ -16148,11 +16179,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataOption(n *ingr
 		item := n.get("value")
 		if item != nil {
 			if !item.null {
-				decodedValue4599, decodeError4600 := ingressOptionValue(item, kind, c, fieldPath(path, "Value"))
-				if decodeError4600 != nil {
-					return nil, decodeError4600
+				decodedValue4603, decodeError4604 := ingressOptionValue(item, kind, c, fieldPath(path, "Value"))
+				if decodeError4604 != nil {
+					return nil, decodeError4604
 				}
-				dst.Value = decodedValue4599
+				dst.Value = decodedValue4603
 			}
 		}
 	}
@@ -16160,11 +16191,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataOption(n *ingr
 		item := n.get("options")
 		if item != nil {
 			if !item.null {
-				decodedValue4601, decodeError4602 := c.nodeDomainApplicationCommandInteractionDataOptionList(item, fieldPath(path, "Options"), parent)
-				if decodeError4602 != nil {
-					return nil, decodeError4602
+				decodedValue4605, decodeError4606 := c.nodeDomainApplicationCommandInteractionDataOptionList(item, fieldPath(path, "Options"), parent)
+				if decodeError4606 != nil {
+					return nil, decodeError4606
 				}
-				dst.Options = decodedValue4601
+				dst.Options = decodedValue4605
 			}
 		}
 	}
@@ -16173,11 +16204,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataOption(n *ingr
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4603, decodeError4604 := ingressScalar[bool](item, c, fieldPath(path, "Focused"))
-				if decodeError4604 != nil {
-					return nil, decodeError4604
+				decodedValue4607, decodeError4608 := ingressScalar[bool](item, c, fieldPath(path, "Focused"))
+				if decodeError4608 != nil {
+					return nil, decodeError4608
 				}
-				value = decodedValue4603
+				value = decodedValue4607
 				dst.Focused = &value
 			}
 		}
@@ -16208,11 +16239,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataResolved(n *in
 		item := n.get("users")
 		if item != nil {
 			if !item.null {
-				decodedValue4605, decodeError4606 := c.nodeDomainStringToUserMap(item, fieldPath(path, "Users"), parent)
-				if decodeError4606 != nil {
-					return nil, decodeError4606
+				decodedValue4609, decodeError4610 := c.nodeDomainStringToUserMap(item, fieldPath(path, "Users"), parent)
+				if decodeError4610 != nil {
+					return nil, decodeError4610
 				}
-				dst.Users = decodedValue4605
+				dst.Users = decodedValue4609
 			}
 		}
 	}
@@ -16220,11 +16251,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataResolved(n *in
 		item := n.get("members")
 		if item != nil {
 			if !item.null {
-				decodedValue4607, decodeError4608 := c.nodeDomainStringToMemberMap(item, fieldPath(path, "Members"), parent)
-				if decodeError4608 != nil {
-					return nil, decodeError4608
+				decodedValue4611, decodeError4612 := c.nodeDomainStringToMemberMap(item, fieldPath(path, "Members"), parent)
+				if decodeError4612 != nil {
+					return nil, decodeError4612
 				}
-				dst.Members = decodedValue4607
+				dst.Members = decodedValue4611
 			}
 		}
 	}
@@ -16232,11 +16263,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataResolved(n *in
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue4609, decodeError4610 := c.nodeDomainStringToRoleMap(item, fieldPath(path, "Roles"), parent)
-				if decodeError4610 != nil {
-					return nil, decodeError4610
+				decodedValue4613, decodeError4614 := c.nodeDomainStringToRoleMap(item, fieldPath(path, "Roles"), parent)
+				if decodeError4614 != nil {
+					return nil, decodeError4614
 				}
-				dst.Roles = decodedValue4609
+				dst.Roles = decodedValue4613
 			}
 		}
 	}
@@ -16244,11 +16275,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataResolved(n *in
 		item := n.get("channels")
 		if item != nil {
 			if !item.null {
-				decodedValue4611, decodeError4612 := c.nodeDomainStringToChannelMap(item, fieldPath(path, "Channels"), parent)
-				if decodeError4612 != nil {
-					return nil, decodeError4612
+				decodedValue4615, decodeError4616 := c.nodeDomainStringToChannelMap(item, fieldPath(path, "Channels"), parent)
+				if decodeError4616 != nil {
+					return nil, decodeError4616
 				}
-				dst.Channels = decodedValue4611
+				dst.Channels = decodedValue4615
 			}
 		}
 	}
@@ -16256,11 +16287,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataResolved(n *in
 		item := n.get("messages")
 		if item != nil {
 			if !item.null {
-				decodedValue4613, decodeError4614 := c.nodeDomainStringToMessageMap(item, fieldPath(path, "Messages"), parent)
-				if decodeError4614 != nil {
-					return nil, decodeError4614
+				decodedValue4617, decodeError4618 := c.nodeDomainStringToMessageMap(item, fieldPath(path, "Messages"), parent)
+				if decodeError4618 != nil {
+					return nil, decodeError4618
 				}
-				dst.Messages = decodedValue4613
+				dst.Messages = decodedValue4617
 			}
 		}
 	}
@@ -16268,11 +16299,11 @@ func (c *conversion) nodeSnapshotApplicationCommandInteractionDataResolved(n *in
 		item := n.get("attachments")
 		if item != nil {
 			if !item.null {
-				decodedValue4615, decodeError4616 := c.nodeDomainStringToMessageAttachmentMap(item, fieldPath(path, "Attachments"), parent)
-				if decodeError4616 != nil {
-					return nil, decodeError4616
+				decodedValue4619, decodeError4620 := c.nodeDomainStringToMessageAttachmentMap(item, fieldPath(path, "Attachments"), parent)
+				if decodeError4620 != nil {
+					return nil, decodeError4620
 				}
-				dst.Attachments = decodedValue4615
+				dst.Attachments = decodedValue4619
 			}
 		}
 	}
@@ -16313,11 +16344,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 					}
 				}
 				var value uint32
-				decodedValue4617, decodeError4618 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError4618 != nil {
-					return nil, decodeError4618
+				decodedValue4621, decodeError4622 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError4622 != nil {
+					return nil, decodeError4622
 				}
-				value = decodedValue4617
+				value = decodedValue4621
 				dst.Type = &value
 			}
 		}
@@ -16327,11 +16358,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4619, decodeError4620 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4620 != nil {
-					return nil, decodeError4620
+				decodedValue4623, decodeError4624 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4624 != nil {
+					return nil, decodeError4624
 				}
-				value = decodedValue4619
+				value = decodedValue4623
 				dst.Name = &value
 			}
 		}
@@ -16340,11 +16371,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		item := n.get("name_localizations")
 		if item != nil {
 			if !item.null {
-				decodedValue4621, decodeError4622 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
-				if decodeError4622 != nil {
-					return nil, decodeError4622
+				decodedValue4625, decodeError4626 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
+				if decodeError4626 != nil {
+					return nil, decodeError4626
 				}
-				dst.NameLocalizations = decodedValue4621
+				dst.NameLocalizations = decodedValue4625
 			}
 		}
 	}
@@ -16353,11 +16384,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4623, decodeError4624 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError4624 != nil {
-					return nil, decodeError4624
+				decodedValue4627, decodeError4628 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError4628 != nil {
+					return nil, decodeError4628
 				}
-				value = decodedValue4623
+				value = decodedValue4627
 				dst.Description = &value
 			}
 		}
@@ -16366,11 +16397,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		item := n.get("description_localizations")
 		if item != nil {
 			if !item.null {
-				decodedValue4625, decodeError4626 := c.nodeDomainStringToStringMap(item, fieldPath(path, "DescriptionLocalizations"), parent)
-				if decodeError4626 != nil {
-					return nil, decodeError4626
+				decodedValue4629, decodeError4630 := c.nodeDomainStringToStringMap(item, fieldPath(path, "DescriptionLocalizations"), parent)
+				if decodeError4630 != nil {
+					return nil, decodeError4630
 				}
-				dst.DescriptionLocalizations = decodedValue4625
+				dst.DescriptionLocalizations = decodedValue4629
 			}
 		}
 	}
@@ -16378,11 +16409,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		item := n.get("channel_types")
 		if item != nil {
 			if !item.null {
-				decodedValue4627, decodeError4628 := c.nodeDomainSint64List(item, fieldPath(path, "ChannelTypes"), parent)
-				if decodeError4628 != nil {
-					return nil, decodeError4628
+				decodedValue4631, decodeError4632 := c.nodeDomainSint64List(item, fieldPath(path, "ChannelTypes"), parent)
+				if decodeError4632 != nil {
+					return nil, decodeError4632
 				}
-				dst.ChannelTypes = decodedValue4627
+				dst.ChannelTypes = decodedValue4631
 			}
 		}
 	}
@@ -16391,11 +16422,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4629, decodeError4630 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
-				if decodeError4630 != nil {
-					return nil, decodeError4630
+				decodedValue4633, decodeError4634 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
+				if decodeError4634 != nil {
+					return nil, decodeError4634
 				}
-				value = decodedValue4629
+				value = decodedValue4633
 				dst.Required = &value
 			}
 		}
@@ -16404,11 +16435,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		item := n.get("options")
 		if item != nil {
 			if !item.null {
-				decodedValue4631, decodeError4632 := c.nodeDomainApplicationCommandOptionList(item, fieldPath(path, "Options"), parent)
-				if decodeError4632 != nil {
-					return nil, decodeError4632
+				decodedValue4635, decodeError4636 := c.nodeDomainApplicationCommandOptionList(item, fieldPath(path, "Options"), parent)
+				if decodeError4636 != nil {
+					return nil, decodeError4636
 				}
-				dst.Options = decodedValue4631
+				dst.Options = decodedValue4635
 			}
 		}
 	}
@@ -16417,11 +16448,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4633, decodeError4634 := ingressScalar[bool](item, c, fieldPath(path, "Autocomplete"))
-				if decodeError4634 != nil {
-					return nil, decodeError4634
+				decodedValue4637, decodeError4638 := ingressScalar[bool](item, c, fieldPath(path, "Autocomplete"))
+				if decodeError4638 != nil {
+					return nil, decodeError4638
 				}
-				value = decodedValue4633
+				value = decodedValue4637
 				dst.Autocomplete = &value
 			}
 		}
@@ -16430,11 +16461,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		item := n.get("choices")
 		if item != nil {
 			if !item.null {
-				decodedValue4635, decodeError4636 := c.nodeDomainApplicationCommandOptionChoiceList(item, fieldPath(path, "Choices"), kind)
-				if decodeError4636 != nil {
-					return nil, decodeError4636
+				decodedValue4639, decodeError4640 := c.nodeDomainApplicationCommandOptionChoiceList(item, fieldPath(path, "Choices"), kind)
+				if decodeError4640 != nil {
+					return nil, decodeError4640
 				}
-				dst.Choices = decodedValue4635
+				dst.Choices = decodedValue4639
 			}
 		}
 	}
@@ -16443,11 +16474,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value float64
-				decodedValue4637, decodeError4638 := ingressFloat(item, c, fieldPath(path, "MinValue"))
-				if decodeError4638 != nil {
-					return nil, decodeError4638
+				decodedValue4641, decodeError4642 := ingressFloat(item, c, fieldPath(path, "MinValue"))
+				if decodeError4642 != nil {
+					return nil, decodeError4642
 				}
-				value = decodedValue4637
+				value = decodedValue4641
 				dst.MinValue = &value
 			}
 		}
@@ -16457,11 +16488,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value float64
-				decodedValue4639, decodeError4640 := ingressFloat(item, c, fieldPath(path, "MaxValue"))
-				if decodeError4640 != nil {
-					return nil, decodeError4640
+				decodedValue4643, decodeError4644 := ingressFloat(item, c, fieldPath(path, "MaxValue"))
+				if decodeError4644 != nil {
+					return nil, decodeError4644
 				}
-				value = decodedValue4639
+				value = decodedValue4643
 				dst.MaxValue = &value
 			}
 		}
@@ -16476,11 +16507,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 					}
 				}
 				var value int64
-				decodedValue4641, decodeError4642 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinLength"))
-				if decodeError4642 != nil {
-					return nil, decodeError4642
+				decodedValue4645, decodeError4646 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinLength"))
+				if decodeError4646 != nil {
+					return nil, decodeError4646
 				}
-				value = decodedValue4641
+				value = decodedValue4645
 				dst.MinLength = &value
 			}
 		}
@@ -16495,11 +16526,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOption(n *ingressNode, path s
 					}
 				}
 				var value int64
-				decodedValue4643, decodeError4644 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxLength"))
-				if decodeError4644 != nil {
-					return nil, decodeError4644
+				decodedValue4647, decodeError4648 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxLength"))
+				if decodeError4648 != nil {
+					return nil, decodeError4648
 				}
-				value = decodedValue4643
+				value = decodedValue4647
 				dst.MaxLength = &value
 			}
 		}
@@ -16531,11 +16562,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOptionChoice(n *ingressNode, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4645, decodeError4646 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4646 != nil {
-					return nil, decodeError4646
+				decodedValue4649, decodeError4650 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4650 != nil {
+					return nil, decodeError4650
 				}
-				value = decodedValue4645
+				value = decodedValue4649
 				dst.Name = &value
 			}
 		}
@@ -16544,11 +16575,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOptionChoice(n *ingressNode, 
 		item := n.get("name_localizations")
 		if item != nil {
 			if !item.null {
-				decodedValue4647, decodeError4648 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
-				if decodeError4648 != nil {
-					return nil, decodeError4648
+				decodedValue4651, decodeError4652 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
+				if decodeError4652 != nil {
+					return nil, decodeError4652
 				}
-				dst.NameLocalizations = decodedValue4647
+				dst.NameLocalizations = decodedValue4651
 			}
 		}
 	}
@@ -16556,11 +16587,11 @@ func (c *conversion) nodeSnapshotApplicationCommandOptionChoice(n *ingressNode, 
 		item := n.get("value")
 		if item != nil {
 			if !item.null {
-				decodedValue4649, decodeError4650 := ingressChoiceValue(item, parent, c, fieldPath(path, "Value"))
-				if decodeError4650 != nil {
-					return nil, decodeError4650
+				decodedValue4653, decodeError4654 := ingressChoiceValue(item, parent, c, fieldPath(path, "Value"))
+				if decodeError4654 != nil {
+					return nil, decodeError4654
 				}
-				dst.Value = decodedValue4649
+				dst.Value = decodedValue4653
 			}
 		}
 	}
@@ -16591,11 +16622,11 @@ func (c *conversion) nodeSnapshotApplicationCommandPermissions(n *ingressNode, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4651, decodeError4652 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4652 != nil {
-					return nil, decodeError4652
+				decodedValue4655, decodeError4656 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4656 != nil {
+					return nil, decodeError4656
 				}
-				value = decodedValue4651
+				value = decodedValue4655
 				dst.Id = &value
 			}
 		}
@@ -16610,11 +16641,11 @@ func (c *conversion) nodeSnapshotApplicationCommandPermissions(n *ingressNode, p
 					}
 				}
 				var value uint32
-				decodedValue4653, decodeError4654 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError4654 != nil {
-					return nil, decodeError4654
+				decodedValue4657, decodeError4658 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError4658 != nil {
+					return nil, decodeError4658
 				}
-				value = decodedValue4653
+				value = decodedValue4657
 				dst.Type = &value
 			}
 		}
@@ -16624,11 +16655,11 @@ func (c *conversion) nodeSnapshotApplicationCommandPermissions(n *ingressNode, p
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4655, decodeError4656 := ingressScalar[bool](item, c, fieldPath(path, "Permission"))
-				if decodeError4656 != nil {
-					return nil, decodeError4656
+				decodedValue4659, decodeError4660 := ingressScalar[bool](item, c, fieldPath(path, "Permission"))
+				if decodeError4660 != nil {
+					return nil, decodeError4660
 				}
-				value = decodedValue4655
+				value = decodedValue4659
 				dst.Permission = &value
 			}
 		}
@@ -16659,11 +16690,11 @@ func (c *conversion) nodeSnapshotApplicationCommandPermissionsList(n *ingressNod
 		item := n.get("permissions")
 		if item != nil {
 			if !item.null {
-				decodedValue4657, decodeError4658 := c.nodeDomainApplicationCommandPermissionsList(item, fieldPath(path, "Permissions"), parent)
-				if decodeError4658 != nil {
-					return nil, decodeError4658
+				decodedValue4661, decodeError4662 := c.nodeDomainApplicationCommandPermissionsList(item, fieldPath(path, "Permissions"), parent)
+				if decodeError4662 != nil {
+					return nil, decodeError4662
 				}
-				dst.Permissions = decodedValue4657
+				dst.Permissions = decodedValue4661
 			}
 		}
 	}
@@ -16693,11 +16724,11 @@ func (c *conversion) nodeSnapshotApplicationInstallParams(n *ingressNode, path s
 		item := n.get("scopes")
 		if item != nil {
 			if !item.null {
-				decodedValue4659, decodeError4660 := c.nodeDomainStringList(item, fieldPath(path, "Scopes"), parent)
-				if decodeError4660 != nil {
-					return nil, decodeError4660
+				decodedValue4663, decodeError4664 := c.nodeDomainStringList(item, fieldPath(path, "Scopes"), parent)
+				if decodeError4664 != nil {
+					return nil, decodeError4664
 				}
-				dst.Scopes = decodedValue4659
+				dst.Scopes = decodedValue4663
 			}
 		}
 	}
@@ -16709,11 +16740,11 @@ func (c *conversion) nodeSnapshotApplicationInstallParams(n *ingressNode, path s
 					return nil, err
 				}
 				var value string
-				decodedValue4661, decodeError4662 := ingressString(item, c, fieldPath(path, "Permissions"))
-				if decodeError4662 != nil {
-					return nil, decodeError4662
+				decodedValue4665, decodeError4666 := ingressString(item, c, fieldPath(path, "Permissions"))
+				if decodeError4666 != nil {
+					return nil, decodeError4666
 				}
-				value = decodedValue4661
+				value = decodedValue4665
 				dst.Permissions = &value
 			}
 		}
@@ -16744,11 +16775,11 @@ func (c *conversion) nodeSnapshotApplicationIntegrationTypeConfig(n *ingressNode
 		item := n.get("oauth2_install_params")
 		if item != nil {
 			if !item.null {
-				decodedValue4663, decodeError4664 := c.nodeSnapshotApplicationInstallParams(item, fieldPath(path, "OAuth2InstallParams"), parent)
-				if decodeError4664 != nil {
-					return nil, decodeError4664
+				decodedValue4667, decodeError4668 := c.nodeSnapshotApplicationInstallParams(item, fieldPath(path, "OAuth2InstallParams"), parent)
+				if decodeError4668 != nil {
+					return nil, decodeError4668
 				}
-				dst.OAuth2InstallParams = decodedValue4663
+				dst.OAuth2InstallParams = decodedValue4667
 			}
 		}
 	}
@@ -16779,11 +16810,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnection(n *ingressNode, path 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4665, decodeError4666 := ingressString(item, c, fieldPath(path, "PlatformName"))
-				if decodeError4666 != nil {
-					return nil, decodeError4666
+				decodedValue4669, decodeError4670 := ingressString(item, c, fieldPath(path, "PlatformName"))
+				if decodeError4670 != nil {
+					return nil, decodeError4670
 				}
-				value = decodedValue4665
+				value = decodedValue4669
 				dst.PlatformName = &value
 			}
 		}
@@ -16793,11 +16824,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnection(n *ingressNode, path 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4667, decodeError4668 := ingressString(item, c, fieldPath(path, "PlatformUsername"))
-				if decodeError4668 != nil {
-					return nil, decodeError4668
+				decodedValue4671, decodeError4672 := ingressString(item, c, fieldPath(path, "PlatformUsername"))
+				if decodeError4672 != nil {
+					return nil, decodeError4672
 				}
-				value = decodedValue4667
+				value = decodedValue4671
 				dst.PlatformUsername = &value
 			}
 		}
@@ -16806,11 +16837,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnection(n *ingressNode, path 
 		item := n.get("metadata")
 		if item != nil {
 			if !item.null {
-				decodedValue4669, decodeError4670 := c.nodeDomainStringToStringMap(item, fieldPath(path, "Metadata"), parent)
-				if decodeError4670 != nil {
-					return nil, decodeError4670
+				decodedValue4673, decodeError4674 := c.nodeDomainStringToStringMap(item, fieldPath(path, "Metadata"), parent)
+				if decodeError4674 != nil {
+					return nil, decodeError4674
 				}
-				dst.Metadata = decodedValue4669
+				dst.Metadata = decodedValue4673
 			}
 		}
 	}
@@ -16846,11 +16877,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnectionMetadata(n *ingressNod
 					}
 				}
 				var value int64
-				decodedValue4671, decodeError4672 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError4672 != nil {
-					return nil, decodeError4672
+				decodedValue4675, decodeError4676 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError4676 != nil {
+					return nil, decodeError4676
 				}
-				value = decodedValue4671
+				value = decodedValue4675
 				dst.Type = &value
 			}
 		}
@@ -16860,11 +16891,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnectionMetadata(n *ingressNod
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4673, decodeError4674 := ingressString(item, c, fieldPath(path, "Key"))
-				if decodeError4674 != nil {
-					return nil, decodeError4674
+				decodedValue4677, decodeError4678 := ingressString(item, c, fieldPath(path, "Key"))
+				if decodeError4678 != nil {
+					return nil, decodeError4678
 				}
-				value = decodedValue4673
+				value = decodedValue4677
 				dst.Key = &value
 			}
 		}
@@ -16874,11 +16905,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnectionMetadata(n *ingressNod
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4675, decodeError4676 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4676 != nil {
-					return nil, decodeError4676
+				decodedValue4679, decodeError4680 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4680 != nil {
+					return nil, decodeError4680
 				}
-				value = decodedValue4675
+				value = decodedValue4679
 				dst.Name = &value
 			}
 		}
@@ -16887,11 +16918,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnectionMetadata(n *ingressNod
 		item := n.get("name_localizations")
 		if item != nil {
 			if !item.null {
-				decodedValue4677, decodeError4678 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
-				if decodeError4678 != nil {
-					return nil, decodeError4678
+				decodedValue4681, decodeError4682 := c.nodeDomainStringToStringMap(item, fieldPath(path, "NameLocalizations"), parent)
+				if decodeError4682 != nil {
+					return nil, decodeError4682
 				}
-				dst.NameLocalizations = decodedValue4677
+				dst.NameLocalizations = decodedValue4681
 			}
 		}
 	}
@@ -16900,11 +16931,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnectionMetadata(n *ingressNod
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4679, decodeError4680 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError4680 != nil {
-					return nil, decodeError4680
+				decodedValue4683, decodeError4684 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError4684 != nil {
+					return nil, decodeError4684
 				}
-				value = decodedValue4679
+				value = decodedValue4683
 				dst.Description = &value
 			}
 		}
@@ -16913,11 +16944,11 @@ func (c *conversion) nodeSnapshotApplicationRoleConnectionMetadata(n *ingressNod
 		item := n.get("description_localizations")
 		if item != nil {
 			if !item.null {
-				decodedValue4681, decodeError4682 := c.nodeDomainStringToStringMap(item, fieldPath(path, "DescriptionLocalizations"), parent)
-				if decodeError4682 != nil {
-					return nil, decodeError4682
+				decodedValue4685, decodeError4686 := c.nodeDomainStringToStringMap(item, fieldPath(path, "DescriptionLocalizations"), parent)
+				if decodeError4686 != nil {
+					return nil, decodeError4686
 				}
-				dst.DescriptionLocalizations = decodedValue4681
+				dst.DescriptionLocalizations = decodedValue4685
 			}
 		}
 	}
@@ -16948,11 +16979,11 @@ func (c *conversion) nodeSnapshotAssets(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4683, decodeError4684 := ingressString(item, c, fieldPath(path, "LargeImageID"))
-				if decodeError4684 != nil {
-					return nil, decodeError4684
+				decodedValue4687, decodeError4688 := ingressString(item, c, fieldPath(path, "LargeImageID"))
+				if decodeError4688 != nil {
+					return nil, decodeError4688
 				}
-				value = decodedValue4683
+				value = decodedValue4687
 				dst.LargeImageId = &value
 			}
 		}
@@ -16962,11 +16993,11 @@ func (c *conversion) nodeSnapshotAssets(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4685, decodeError4686 := ingressString(item, c, fieldPath(path, "SmallImageID"))
-				if decodeError4686 != nil {
-					return nil, decodeError4686
+				decodedValue4689, decodeError4690 := ingressString(item, c, fieldPath(path, "SmallImageID"))
+				if decodeError4690 != nil {
+					return nil, decodeError4690
 				}
-				value = decodedValue4685
+				value = decodedValue4689
 				dst.SmallImageId = &value
 			}
 		}
@@ -16976,11 +17007,11 @@ func (c *conversion) nodeSnapshotAssets(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4687, decodeError4688 := ingressString(item, c, fieldPath(path, "LargeText"))
-				if decodeError4688 != nil {
-					return nil, decodeError4688
+				decodedValue4691, decodeError4692 := ingressString(item, c, fieldPath(path, "LargeText"))
+				if decodeError4692 != nil {
+					return nil, decodeError4692
 				}
-				value = decodedValue4687
+				value = decodedValue4691
 				dst.LargeText = &value
 			}
 		}
@@ -16990,11 +17021,11 @@ func (c *conversion) nodeSnapshotAssets(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4689, decodeError4690 := ingressString(item, c, fieldPath(path, "SmallText"))
-				if decodeError4690 != nil {
-					return nil, decodeError4690
+				decodedValue4693, decodeError4694 := ingressString(item, c, fieldPath(path, "SmallText"))
+				if decodeError4694 != nil {
+					return nil, decodeError4694
 				}
-				value = decodedValue4689
+				value = decodedValue4693
 				dst.SmallText = &value
 			}
 		}
@@ -17047,11 +17078,11 @@ func (c *conversion) nodeSnapshotAuditLogChange(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4695, decodeError4696 := ingressString(item, c, fieldPath(path, "Key"))
-				if decodeError4696 != nil {
-					return nil, decodeError4696
+				decodedValue4699, decodeError4700 := ingressString(item, c, fieldPath(path, "Key"))
+				if decodeError4700 != nil {
+					return nil, decodeError4700
 				}
-				value = decodedValue4695
+				value = decodedValue4699
 				dst.Key = &value
 			}
 		}
@@ -17083,11 +17114,11 @@ func (c *conversion) nodeSnapshotAuditLogEntry(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4697, decodeError4698 := ingressString(item, c, fieldPath(path, "TargetID"))
-				if decodeError4698 != nil {
-					return nil, decodeError4698
+				decodedValue4701, decodeError4702 := ingressString(item, c, fieldPath(path, "TargetID"))
+				if decodeError4702 != nil {
+					return nil, decodeError4702
 				}
-				value = decodedValue4697
+				value = decodedValue4701
 				dst.TargetId = &value
 			}
 		}
@@ -17096,11 +17127,11 @@ func (c *conversion) nodeSnapshotAuditLogEntry(n *ingressNode, path string, pare
 		item := n.get("changes")
 		if item != nil {
 			if !item.null {
-				decodedValue4699, decodeError4700 := c.nodeDomainAuditLogChangeList(item, fieldPath(path, "Changes"), parent)
-				if decodeError4700 != nil {
-					return nil, decodeError4700
+				decodedValue4703, decodeError4704 := c.nodeDomainAuditLogChangeList(item, fieldPath(path, "Changes"), parent)
+				if decodeError4704 != nil {
+					return nil, decodeError4704
 				}
-				dst.Changes = decodedValue4699
+				dst.Changes = decodedValue4703
 			}
 		}
 	}
@@ -17109,11 +17140,11 @@ func (c *conversion) nodeSnapshotAuditLogEntry(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4701, decodeError4702 := ingressString(item, c, fieldPath(path, "UserID"))
-				if decodeError4702 != nil {
-					return nil, decodeError4702
+				decodedValue4705, decodeError4706 := ingressString(item, c, fieldPath(path, "UserID"))
+				if decodeError4706 != nil {
+					return nil, decodeError4706
 				}
-				value = decodedValue4701
+				value = decodedValue4705
 				dst.UserId = &value
 			}
 		}
@@ -17123,11 +17154,11 @@ func (c *conversion) nodeSnapshotAuditLogEntry(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4703, decodeError4704 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4704 != nil {
-					return nil, decodeError4704
+				decodedValue4707, decodeError4708 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4708 != nil {
+					return nil, decodeError4708
 				}
-				value = decodedValue4703
+				value = decodedValue4707
 				dst.Id = &value
 			}
 		}
@@ -17142,11 +17173,11 @@ func (c *conversion) nodeSnapshotAuditLogEntry(n *ingressNode, path string, pare
 					}
 				}
 				var value int64
-				decodedValue4705, decodeError4706 := ingressNumericScalar[int64](item, c, fieldPath(path, "ActionType"))
-				if decodeError4706 != nil {
-					return nil, decodeError4706
+				decodedValue4709, decodeError4710 := ingressNumericScalar[int64](item, c, fieldPath(path, "ActionType"))
+				if decodeError4710 != nil {
+					return nil, decodeError4710
 				}
-				value = decodedValue4705
+				value = decodedValue4709
 				dst.ActionType = &value
 			}
 		}
@@ -17155,11 +17186,11 @@ func (c *conversion) nodeSnapshotAuditLogEntry(n *ingressNode, path string, pare
 		item := n.get("options")
 		if item != nil {
 			if !item.null {
-				decodedValue4707, decodeError4708 := c.nodeSnapshotAuditLogOptions(item, fieldPath(path, "Options"), parent)
-				if decodeError4708 != nil {
-					return nil, decodeError4708
+				decodedValue4711, decodeError4712 := c.nodeSnapshotAuditLogOptions(item, fieldPath(path, "Options"), parent)
+				if decodeError4712 != nil {
+					return nil, decodeError4712
 				}
-				dst.Options = decodedValue4707
+				dst.Options = decodedValue4711
 			}
 		}
 	}
@@ -17168,11 +17199,11 @@ func (c *conversion) nodeSnapshotAuditLogEntry(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4709, decodeError4710 := ingressString(item, c, fieldPath(path, "Reason"))
-				if decodeError4710 != nil {
-					return nil, decodeError4710
+				decodedValue4713, decodeError4714 := ingressString(item, c, fieldPath(path, "Reason"))
+				if decodeError4714 != nil {
+					return nil, decodeError4714
 				}
-				value = decodedValue4709
+				value = decodedValue4713
 				dst.Reason = &value
 			}
 		}
@@ -17204,11 +17235,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4711, decodeError4712 := ingressString(item, c, fieldPath(path, "DeleteMemberDays"))
-				if decodeError4712 != nil {
-					return nil, decodeError4712
+				decodedValue4715, decodeError4716 := ingressString(item, c, fieldPath(path, "DeleteMemberDays"))
+				if decodeError4716 != nil {
+					return nil, decodeError4716
 				}
-				value = decodedValue4711
+				value = decodedValue4715
 				dst.DeleteMemberDays = &value
 			}
 		}
@@ -17218,11 +17249,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4713, decodeError4714 := ingressString(item, c, fieldPath(path, "MembersRemoved"))
-				if decodeError4714 != nil {
-					return nil, decodeError4714
+				decodedValue4717, decodeError4718 := ingressString(item, c, fieldPath(path, "MembersRemoved"))
+				if decodeError4718 != nil {
+					return nil, decodeError4718
 				}
-				value = decodedValue4713
+				value = decodedValue4717
 				dst.MembersRemoved = &value
 			}
 		}
@@ -17232,11 +17263,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4715, decodeError4716 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError4716 != nil {
-					return nil, decodeError4716
+				decodedValue4719, decodeError4720 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError4720 != nil {
+					return nil, decodeError4720
 				}
-				value = decodedValue4715
+				value = decodedValue4719
 				dst.ChannelId = &value
 			}
 		}
@@ -17246,11 +17277,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4717, decodeError4718 := ingressString(item, c, fieldPath(path, "MessageID"))
-				if decodeError4718 != nil {
-					return nil, decodeError4718
+				decodedValue4721, decodeError4722 := ingressString(item, c, fieldPath(path, "MessageID"))
+				if decodeError4722 != nil {
+					return nil, decodeError4722
 				}
-				value = decodedValue4717
+				value = decodedValue4721
 				dst.MessageId = &value
 			}
 		}
@@ -17260,11 +17291,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4719, decodeError4720 := ingressString(item, c, fieldPath(path, "Count"))
-				if decodeError4720 != nil {
-					return nil, decodeError4720
+				decodedValue4723, decodeError4724 := ingressString(item, c, fieldPath(path, "Count"))
+				if decodeError4724 != nil {
+					return nil, decodeError4724
 				}
-				value = decodedValue4719
+				value = decodedValue4723
 				dst.Count = &value
 			}
 		}
@@ -17274,11 +17305,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4721, decodeError4722 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4722 != nil {
-					return nil, decodeError4722
+				decodedValue4725, decodeError4726 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4726 != nil {
+					return nil, decodeError4726
 				}
-				value = decodedValue4721
+				value = decodedValue4725
 				dst.Id = &value
 			}
 		}
@@ -17288,11 +17319,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4723, decodeError4724 := ingressString(item, c, fieldPath(path, "Type"))
-				if decodeError4724 != nil {
-					return nil, decodeError4724
+				decodedValue4727, decodeError4728 := ingressString(item, c, fieldPath(path, "Type"))
+				if decodeError4728 != nil {
+					return nil, decodeError4728
 				}
-				value = decodedValue4723
+				value = decodedValue4727
 				dst.Type = &value
 			}
 		}
@@ -17302,11 +17333,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4725, decodeError4726 := ingressString(item, c, fieldPath(path, "RoleName"))
-				if decodeError4726 != nil {
-					return nil, decodeError4726
+				decodedValue4729, decodeError4730 := ingressString(item, c, fieldPath(path, "RoleName"))
+				if decodeError4730 != nil {
+					return nil, decodeError4730
 				}
-				value = decodedValue4725
+				value = decodedValue4729
 				dst.RoleName = &value
 			}
 		}
@@ -17316,11 +17347,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4727, decodeError4728 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError4728 != nil {
-					return nil, decodeError4728
+				decodedValue4731, decodeError4732 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError4732 != nil {
+					return nil, decodeError4732
 				}
-				value = decodedValue4727
+				value = decodedValue4731
 				dst.ApplicationId = &value
 			}
 		}
@@ -17330,11 +17361,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4729, decodeError4730 := ingressString(item, c, fieldPath(path, "AutoModerationRuleName"))
-				if decodeError4730 != nil {
-					return nil, decodeError4730
+				decodedValue4733, decodeError4734 := ingressString(item, c, fieldPath(path, "AutoModerationRuleName"))
+				if decodeError4734 != nil {
+					return nil, decodeError4734
 				}
-				value = decodedValue4729
+				value = decodedValue4733
 				dst.AutoModerationRuleName = &value
 			}
 		}
@@ -17344,11 +17375,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4731, decodeError4732 := ingressString(item, c, fieldPath(path, "AutoModerationRuleTriggerType"))
-				if decodeError4732 != nil {
-					return nil, decodeError4732
+				decodedValue4735, decodeError4736 := ingressString(item, c, fieldPath(path, "AutoModerationRuleTriggerType"))
+				if decodeError4736 != nil {
+					return nil, decodeError4736
 				}
-				value = decodedValue4731
+				value = decodedValue4735
 				dst.AutoModerationRuleTriggerType = &value
 			}
 		}
@@ -17358,11 +17389,11 @@ func (c *conversion) nodeSnapshotAuditLogOptions(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4733, decodeError4734 := ingressString(item, c, fieldPath(path, "IntegrationType"))
-				if decodeError4734 != nil {
-					return nil, decodeError4734
+				decodedValue4737, decodeError4738 := ingressString(item, c, fieldPath(path, "IntegrationType"))
+				if decodeError4738 != nil {
+					return nil, decodeError4738
 				}
-				value = decodedValue4733
+				value = decodedValue4737
 				dst.IntegrationType = &value
 			}
 		}
@@ -17399,11 +17430,11 @@ func (c *conversion) nodeSnapshotAutoModerationAction(n *ingressNode, path strin
 					}
 				}
 				var value int64
-				decodedValue4735, decodeError4736 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError4736 != nil {
-					return nil, decodeError4736
+				decodedValue4739, decodeError4740 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError4740 != nil {
+					return nil, decodeError4740
 				}
-				value = decodedValue4735
+				value = decodedValue4739
 				dst.Type = &value
 			}
 		}
@@ -17412,11 +17443,11 @@ func (c *conversion) nodeSnapshotAutoModerationAction(n *ingressNode, path strin
 		item := n.get("metadata")
 		if item != nil {
 			if !item.null {
-				decodedValue4737, decodeError4738 := c.nodeSnapshotAutoModerationActionMetadata(item, fieldPath(path, "Metadata"), parent)
-				if decodeError4738 != nil {
-					return nil, decodeError4738
+				decodedValue4741, decodeError4742 := c.nodeSnapshotAutoModerationActionMetadata(item, fieldPath(path, "Metadata"), parent)
+				if decodeError4742 != nil {
+					return nil, decodeError4742
 				}
-				dst.Metadata = decodedValue4737
+				dst.Metadata = decodedValue4741
 			}
 		}
 	}
@@ -17447,11 +17478,11 @@ func (c *conversion) nodeSnapshotAutoModerationActionMetadata(n *ingressNode, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4739, decodeError4740 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError4740 != nil {
-					return nil, decodeError4740
+				decodedValue4743, decodeError4744 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError4744 != nil {
+					return nil, decodeError4744
 				}
-				value = decodedValue4739
+				value = decodedValue4743
 				dst.ChannelId = &value
 			}
 		}
@@ -17466,11 +17497,11 @@ func (c *conversion) nodeSnapshotAutoModerationActionMetadata(n *ingressNode, pa
 					}
 				}
 				var value int64
-				decodedValue4741, decodeError4742 := ingressNumericScalar[int64](item, c, fieldPath(path, "Duration"))
-				if decodeError4742 != nil {
-					return nil, decodeError4742
+				decodedValue4745, decodeError4746 := ingressNumericScalar[int64](item, c, fieldPath(path, "Duration"))
+				if decodeError4746 != nil {
+					return nil, decodeError4746
 				}
-				value = decodedValue4741
+				value = decodedValue4745
 				dst.Duration = &value
 			}
 		}
@@ -17480,11 +17511,11 @@ func (c *conversion) nodeSnapshotAutoModerationActionMetadata(n *ingressNode, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4743, decodeError4744 := ingressString(item, c, fieldPath(path, "CustomMessage"))
-				if decodeError4744 != nil {
-					return nil, decodeError4744
+				decodedValue4747, decodeError4748 := ingressString(item, c, fieldPath(path, "CustomMessage"))
+				if decodeError4748 != nil {
+					return nil, decodeError4748
 				}
-				value = decodedValue4743
+				value = decodedValue4747
 				dst.CustomMessage = &value
 			}
 		}
@@ -17516,11 +17547,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4745, decodeError4746 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4746 != nil {
-					return nil, decodeError4746
+				decodedValue4749, decodeError4750 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4750 != nil {
+					return nil, decodeError4750
 				}
-				value = decodedValue4745
+				value = decodedValue4749
 				dst.Id = &value
 			}
 		}
@@ -17530,11 +17561,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4747, decodeError4748 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError4748 != nil {
-					return nil, decodeError4748
+				decodedValue4751, decodeError4752 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError4752 != nil {
+					return nil, decodeError4752
 				}
-				value = decodedValue4747
+				value = decodedValue4751
 				dst.GuildId = &value
 			}
 		}
@@ -17544,11 +17575,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4749, decodeError4750 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4750 != nil {
-					return nil, decodeError4750
+				decodedValue4753, decodeError4754 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4754 != nil {
+					return nil, decodeError4754
 				}
-				value = decodedValue4749
+				value = decodedValue4753
 				dst.Name = &value
 			}
 		}
@@ -17558,11 +17589,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4751, decodeError4752 := ingressString(item, c, fieldPath(path, "CreatorID"))
-				if decodeError4752 != nil {
-					return nil, decodeError4752
+				decodedValue4755, decodeError4756 := ingressString(item, c, fieldPath(path, "CreatorID"))
+				if decodeError4756 != nil {
+					return nil, decodeError4756
 				}
-				value = decodedValue4751
+				value = decodedValue4755
 				dst.CreatorId = &value
 			}
 		}
@@ -17577,11 +17608,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 					}
 				}
 				var value int64
-				decodedValue4753, decodeError4754 := ingressNumericScalar[int64](item, c, fieldPath(path, "EventType"))
-				if decodeError4754 != nil {
-					return nil, decodeError4754
+				decodedValue4757, decodeError4758 := ingressNumericScalar[int64](item, c, fieldPath(path, "EventType"))
+				if decodeError4758 != nil {
+					return nil, decodeError4758
 				}
-				value = decodedValue4753
+				value = decodedValue4757
 				dst.EventType = &value
 			}
 		}
@@ -17596,11 +17627,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 					}
 				}
 				var value int64
-				decodedValue4755, decodeError4756 := ingressNumericScalar[int64](item, c, fieldPath(path, "TriggerType"))
-				if decodeError4756 != nil {
-					return nil, decodeError4756
+				decodedValue4759, decodeError4760 := ingressNumericScalar[int64](item, c, fieldPath(path, "TriggerType"))
+				if decodeError4760 != nil {
+					return nil, decodeError4760
 				}
-				value = decodedValue4755
+				value = decodedValue4759
 				dst.TriggerType = &value
 			}
 		}
@@ -17609,11 +17640,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		item := n.get("trigger_metadata")
 		if item != nil {
 			if !item.null {
-				decodedValue4757, decodeError4758 := c.nodeSnapshotAutoModerationTriggerMetadata(item, fieldPath(path, "TriggerMetadata"), parent)
-				if decodeError4758 != nil {
-					return nil, decodeError4758
+				decodedValue4761, decodeError4762 := c.nodeSnapshotAutoModerationTriggerMetadata(item, fieldPath(path, "TriggerMetadata"), parent)
+				if decodeError4762 != nil {
+					return nil, decodeError4762
 				}
-				dst.TriggerMetadata = decodedValue4757
+				dst.TriggerMetadata = decodedValue4761
 			}
 		}
 	}
@@ -17621,11 +17652,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		item := n.get("actions")
 		if item != nil {
 			if !item.null {
-				decodedValue4759, decodeError4760 := c.nodeDomainAutoModerationActionList(item, fieldPath(path, "Actions"), parent)
-				if decodeError4760 != nil {
-					return nil, decodeError4760
+				decodedValue4763, decodeError4764 := c.nodeDomainAutoModerationActionList(item, fieldPath(path, "Actions"), parent)
+				if decodeError4764 != nil {
+					return nil, decodeError4764
 				}
-				dst.Actions = decodedValue4759
+				dst.Actions = decodedValue4763
 			}
 		}
 	}
@@ -17634,11 +17665,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4761, decodeError4762 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
-				if decodeError4762 != nil {
-					return nil, decodeError4762
+				decodedValue4765, decodeError4766 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
+				if decodeError4766 != nil {
+					return nil, decodeError4766
 				}
-				value = decodedValue4761
+				value = decodedValue4765
 				dst.Enabled = &value
 			}
 		}
@@ -17647,11 +17678,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		item := n.get("exempt_roles")
 		if item != nil {
 			if !item.null {
-				decodedValue4763, decodeError4764 := c.nodeDomainStringList(item, fieldPath(path, "ExemptRoles"), parent)
-				if decodeError4764 != nil {
-					return nil, decodeError4764
+				decodedValue4767, decodeError4768 := c.nodeDomainStringList(item, fieldPath(path, "ExemptRoles"), parent)
+				if decodeError4768 != nil {
+					return nil, decodeError4768
 				}
-				dst.ExemptRoles = decodedValue4763
+				dst.ExemptRoles = decodedValue4767
 			}
 		}
 	}
@@ -17659,11 +17690,11 @@ func (c *conversion) nodeSnapshotAutoModerationRule(n *ingressNode, path string,
 		item := n.get("exempt_channels")
 		if item != nil {
 			if !item.null {
-				decodedValue4765, decodeError4766 := c.nodeDomainStringList(item, fieldPath(path, "ExemptChannels"), parent)
-				if decodeError4766 != nil {
-					return nil, decodeError4766
+				decodedValue4769, decodeError4770 := c.nodeDomainStringList(item, fieldPath(path, "ExemptChannels"), parent)
+				if decodeError4770 != nil {
+					return nil, decodeError4770
 				}
-				dst.ExemptChannels = decodedValue4765
+				dst.ExemptChannels = decodedValue4769
 			}
 		}
 	}
@@ -17693,11 +17724,11 @@ func (c *conversion) nodeSnapshotAutoModerationTriggerMetadata(n *ingressNode, p
 		item := n.get("keyword_filter")
 		if item != nil {
 			if !item.null {
-				decodedValue4767, decodeError4768 := c.nodeDomainStringList(item, fieldPath(path, "KeywordFilter"), parent)
-				if decodeError4768 != nil {
-					return nil, decodeError4768
+				decodedValue4771, decodeError4772 := c.nodeDomainStringList(item, fieldPath(path, "KeywordFilter"), parent)
+				if decodeError4772 != nil {
+					return nil, decodeError4772
 				}
-				dst.KeywordFilter = decodedValue4767
+				dst.KeywordFilter = decodedValue4771
 			}
 		}
 	}
@@ -17705,11 +17736,11 @@ func (c *conversion) nodeSnapshotAutoModerationTriggerMetadata(n *ingressNode, p
 		item := n.get("regex_patterns")
 		if item != nil {
 			if !item.null {
-				decodedValue4769, decodeError4770 := c.nodeDomainStringList(item, fieldPath(path, "RegexPatterns"), parent)
-				if decodeError4770 != nil {
-					return nil, decodeError4770
+				decodedValue4773, decodeError4774 := c.nodeDomainStringList(item, fieldPath(path, "RegexPatterns"), parent)
+				if decodeError4774 != nil {
+					return nil, decodeError4774
 				}
-				dst.RegexPatterns = decodedValue4769
+				dst.RegexPatterns = decodedValue4773
 			}
 		}
 	}
@@ -17717,11 +17748,11 @@ func (c *conversion) nodeSnapshotAutoModerationTriggerMetadata(n *ingressNode, p
 		item := n.get("presets")
 		if item != nil {
 			if !item.null {
-				decodedValue4771, decodeError4772 := c.nodeDomainUint64List(item, fieldPath(path, "Presets"), parent)
-				if decodeError4772 != nil {
-					return nil, decodeError4772
+				decodedValue4775, decodeError4776 := c.nodeDomainUint64List(item, fieldPath(path, "Presets"), parent)
+				if decodeError4776 != nil {
+					return nil, decodeError4776
 				}
-				dst.Presets = decodedValue4771
+				dst.Presets = decodedValue4775
 			}
 		}
 	}
@@ -17729,11 +17760,11 @@ func (c *conversion) nodeSnapshotAutoModerationTriggerMetadata(n *ingressNode, p
 		item := n.get("allow_list")
 		if item != nil {
 			if !item.null {
-				decodedValue4773, decodeError4774 := c.nodeDomainStringList(item, fieldPath(path, "AllowList"), parent)
-				if decodeError4774 != nil {
-					return nil, decodeError4774
+				decodedValue4777, decodeError4778 := c.nodeDomainStringList(item, fieldPath(path, "AllowList"), parent)
+				if decodeError4778 != nil {
+					return nil, decodeError4778
 				}
-				dst.AllowList = decodedValue4773
+				dst.AllowList = decodedValue4777
 			}
 		}
 	}
@@ -17747,11 +17778,11 @@ func (c *conversion) nodeSnapshotAutoModerationTriggerMetadata(n *ingressNode, p
 					}
 				}
 				var value int64
-				decodedValue4775, decodeError4776 := ingressNumericScalar[int64](item, c, fieldPath(path, "MentionTotalLimit"))
-				if decodeError4776 != nil {
-					return nil, decodeError4776
+				decodedValue4779, decodeError4780 := ingressNumericScalar[int64](item, c, fieldPath(path, "MentionTotalLimit"))
+				if decodeError4780 != nil {
+					return nil, decodeError4780
 				}
-				value = decodedValue4775
+				value = decodedValue4779
 				dst.MentionTotalLimit = &value
 			}
 		}
@@ -17783,11 +17814,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4777, decodeError4778 := ingressString(item, c, fieldPath(path, "Label"))
-				if decodeError4778 != nil {
-					return nil, decodeError4778
+				decodedValue4781, decodeError4782 := ingressString(item, c, fieldPath(path, "Label"))
+				if decodeError4782 != nil {
+					return nil, decodeError4782
 				}
-				value = decodedValue4777
+				value = decodedValue4781
 				dst.Label = &value
 			}
 		}
@@ -17802,11 +17833,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 					}
 				}
 				var value uint64
-				decodedValue4779, decodeError4780 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Style"))
-				if decodeError4780 != nil {
-					return nil, decodeError4780
+				decodedValue4783, decodeError4784 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Style"))
+				if decodeError4784 != nil {
+					return nil, decodeError4784
 				}
-				value = decodedValue4779
+				value = decodedValue4783
 				dst.Style = &value
 			}
 		}
@@ -17816,11 +17847,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4781, decodeError4782 := ingressScalar[bool](item, c, fieldPath(path, "Disabled"))
-				if decodeError4782 != nil {
-					return nil, decodeError4782
+				decodedValue4785, decodeError4786 := ingressScalar[bool](item, c, fieldPath(path, "Disabled"))
+				if decodeError4786 != nil {
+					return nil, decodeError4786
 				}
-				value = decodedValue4781
+				value = decodedValue4785
 				dst.Disabled = &value
 			}
 		}
@@ -17829,11 +17860,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 		item := n.get("emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue4783, decodeError4784 := c.nodeSnapshotComponentEmoji(item, fieldPath(path, "Emoji"), parent)
-				if decodeError4784 != nil {
-					return nil, decodeError4784
+				decodedValue4787, decodeError4788 := c.nodeSnapshotComponentEmoji(item, fieldPath(path, "Emoji"), parent)
+				if decodeError4788 != nil {
+					return nil, decodeError4788
 				}
-				dst.Emoji = decodedValue4783
+				dst.Emoji = decodedValue4787
 			}
 		}
 	}
@@ -17842,11 +17873,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4785, decodeError4786 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError4786 != nil {
-					return nil, decodeError4786
+				decodedValue4789, decodeError4790 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError4790 != nil {
+					return nil, decodeError4790
 				}
-				value = decodedValue4785
+				value = decodedValue4789
 				dst.Url = &value
 			}
 		}
@@ -17856,11 +17887,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4787, decodeError4788 := ingressString(item, c, fieldPath(path, "CustomID"))
-				if decodeError4788 != nil {
-					return nil, decodeError4788
+				decodedValue4791, decodeError4792 := ingressString(item, c, fieldPath(path, "CustomID"))
+				if decodeError4792 != nil {
+					return nil, decodeError4792
 				}
-				value = decodedValue4787
+				value = decodedValue4791
 				dst.CustomId = &value
 			}
 		}
@@ -17870,11 +17901,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4789, decodeError4790 := ingressString(item, c, fieldPath(path, "SKUID"))
-				if decodeError4790 != nil {
-					return nil, decodeError4790
+				decodedValue4793, decodeError4794 := ingressString(item, c, fieldPath(path, "SKUID"))
+				if decodeError4794 != nil {
+					return nil, decodeError4794
 				}
-				value = decodedValue4789
+				value = decodedValue4793
 				dst.Skuid = &value
 			}
 		}
@@ -17889,11 +17920,11 @@ func (c *conversion) nodeSnapshotButton(n *ingressNode, path string, parent int6
 					}
 				}
 				var value int64
-				decodedValue4791, decodeError4792 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError4792 != nil {
-					return nil, decodeError4792
+				decodedValue4795, decodeError4796 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError4796 != nil {
+					return nil, decodeError4796
 				}
-				value = decodedValue4791
+				value = decodedValue4795
 				dst.Id = &value
 			}
 		}
@@ -17925,11 +17956,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4793, decodeError4794 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4794 != nil {
-					return nil, decodeError4794
+				decodedValue4797, decodeError4798 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4798 != nil {
+					return nil, decodeError4798
 				}
-				value = decodedValue4793
+				value = decodedValue4797
 				dst.Id = &value
 			}
 		}
@@ -17939,11 +17970,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4795, decodeError4796 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError4796 != nil {
-					return nil, decodeError4796
+				decodedValue4799, decodeError4800 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError4800 != nil {
+					return nil, decodeError4800
 				}
-				value = decodedValue4795
+				value = decodedValue4799
 				dst.GuildId = &value
 			}
 		}
@@ -17953,11 +17984,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4797, decodeError4798 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4798 != nil {
-					return nil, decodeError4798
+				decodedValue4801, decodeError4802 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4802 != nil {
+					return nil, decodeError4802
 				}
-				value = decodedValue4797
+				value = decodedValue4801
 				dst.Name = &value
 			}
 		}
@@ -17967,11 +17998,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4799, decodeError4800 := ingressString(item, c, fieldPath(path, "Topic"))
-				if decodeError4800 != nil {
-					return nil, decodeError4800
+				decodedValue4803, decodeError4804 := ingressString(item, c, fieldPath(path, "Topic"))
+				if decodeError4804 != nil {
+					return nil, decodeError4804
 				}
-				value = decodedValue4799
+				value = decodedValue4803
 				dst.Topic = &value
 			}
 		}
@@ -17986,11 +18017,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4801, decodeError4802 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError4802 != nil {
-					return nil, decodeError4802
+				decodedValue4805, decodeError4806 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError4806 != nil {
+					return nil, decodeError4806
 				}
-				value = decodedValue4801
+				value = decodedValue4805
 				dst.Type = &value
 			}
 		}
@@ -18000,11 +18031,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4803, decodeError4804 := ingressString(item, c, fieldPath(path, "LastMessageID"))
-				if decodeError4804 != nil {
-					return nil, decodeError4804
+				decodedValue4807, decodeError4808 := ingressString(item, c, fieldPath(path, "LastMessageID"))
+				if decodeError4808 != nil {
+					return nil, decodeError4808
 				}
-				value = decodedValue4803
+				value = decodedValue4807
 				dst.LastMessageId = &value
 			}
 		}
@@ -18013,11 +18044,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("last_pin_timestamp")
 		if item != nil {
 			if !item.null {
-				decodedValue4805, decodeError4806 := ingressTimestamp(item, c, fieldPath(path, "LastPinTimestamp"))
-				if decodeError4806 != nil {
-					return nil, decodeError4806
+				decodedValue4809, decodeError4810 := ingressTimestamp(item, c, fieldPath(path, "LastPinTimestamp"))
+				if decodeError4810 != nil {
+					return nil, decodeError4810
 				}
-				dst.LastPinTimestamp = decodedValue4805
+				dst.LastPinTimestamp = decodedValue4809
 			}
 		}
 	}
@@ -18031,11 +18062,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4807, decodeError4808 := ingressNumericScalar[int64](item, c, fieldPath(path, "MessageCount"))
-				if decodeError4808 != nil {
-					return nil, decodeError4808
+				decodedValue4811, decodeError4812 := ingressNumericScalar[int64](item, c, fieldPath(path, "MessageCount"))
+				if decodeError4812 != nil {
+					return nil, decodeError4812
 				}
-				value = decodedValue4807
+				value = decodedValue4811
 				dst.MessageCount = &value
 			}
 		}
@@ -18050,11 +18081,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4809, decodeError4810 := ingressNumericScalar[int64](item, c, fieldPath(path, "MemberCount"))
-				if decodeError4810 != nil {
-					return nil, decodeError4810
+				decodedValue4813, decodeError4814 := ingressNumericScalar[int64](item, c, fieldPath(path, "MemberCount"))
+				if decodeError4814 != nil {
+					return nil, decodeError4814
 				}
-				value = decodedValue4809
+				value = decodedValue4813
 				dst.MemberCount = &value
 			}
 		}
@@ -18064,11 +18095,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4811, decodeError4812 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
-				if decodeError4812 != nil {
-					return nil, decodeError4812
+				decodedValue4815, decodeError4816 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
+				if decodeError4816 != nil {
+					return nil, decodeError4816
 				}
-				value = decodedValue4811
+				value = decodedValue4815
 				dst.Nsfw = &value
 			}
 		}
@@ -18078,11 +18109,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4813, decodeError4814 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError4814 != nil {
-					return nil, decodeError4814
+				decodedValue4817, decodeError4818 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError4818 != nil {
+					return nil, decodeError4818
 				}
-				value = decodedValue4813
+				value = decodedValue4817
 				dst.Icon = &value
 			}
 		}
@@ -18097,11 +18128,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4815, decodeError4816 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
-				if decodeError4816 != nil {
-					return nil, decodeError4816
+				decodedValue4819, decodeError4820 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
+				if decodeError4820 != nil {
+					return nil, decodeError4820
 				}
-				value = decodedValue4815
+				value = decodedValue4819
 				dst.Position = &value
 			}
 		}
@@ -18116,11 +18147,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4817, decodeError4818 := ingressNumericScalar[int64](item, c, fieldPath(path, "Bitrate"))
-				if decodeError4818 != nil {
-					return nil, decodeError4818
+				decodedValue4821, decodeError4822 := ingressNumericScalar[int64](item, c, fieldPath(path, "Bitrate"))
+				if decodeError4822 != nil {
+					return nil, decodeError4822
 				}
-				value = decodedValue4817
+				value = decodedValue4821
 				dst.Bitrate = &value
 			}
 		}
@@ -18129,11 +18160,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("recipients")
 		if item != nil {
 			if !item.null {
-				decodedValue4819, decodeError4820 := c.nodeDomainUserList(item, fieldPath(path, "Recipients"), parent)
-				if decodeError4820 != nil {
-					return nil, decodeError4820
+				decodedValue4823, decodeError4824 := c.nodeDomainUserList(item, fieldPath(path, "Recipients"), parent)
+				if decodeError4824 != nil {
+					return nil, decodeError4824
 				}
-				dst.Recipients = decodedValue4819
+				dst.Recipients = decodedValue4823
 			}
 		}
 	}
@@ -18141,11 +18172,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("permission_overwrites")
 		if item != nil {
 			if !item.null {
-				decodedValue4821, decodeError4822 := c.nodeDomainPermissionOverwriteList(item, fieldPath(path, "PermissionOverwrites"), parent)
-				if decodeError4822 != nil {
-					return nil, decodeError4822
+				decodedValue4825, decodeError4826 := c.nodeDomainPermissionOverwriteList(item, fieldPath(path, "PermissionOverwrites"), parent)
+				if decodeError4826 != nil {
+					return nil, decodeError4826
 				}
-				dst.PermissionOverwrites = decodedValue4821
+				dst.PermissionOverwrites = decodedValue4825
 			}
 		}
 	}
@@ -18159,11 +18190,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4823, decodeError4824 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserLimit"))
-				if decodeError4824 != nil {
-					return nil, decodeError4824
+				decodedValue4827, decodeError4828 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserLimit"))
+				if decodeError4828 != nil {
+					return nil, decodeError4828
 				}
-				value = decodedValue4823
+				value = decodedValue4827
 				dst.UserLimit = &value
 			}
 		}
@@ -18173,11 +18204,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4825, decodeError4826 := ingressString(item, c, fieldPath(path, "ParentID"))
-				if decodeError4826 != nil {
-					return nil, decodeError4826
+				decodedValue4829, decodeError4830 := ingressString(item, c, fieldPath(path, "ParentID"))
+				if decodeError4830 != nil {
+					return nil, decodeError4830
 				}
-				value = decodedValue4825
+				value = decodedValue4829
 				dst.ParentId = &value
 			}
 		}
@@ -18192,11 +18223,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4827, decodeError4828 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
-				if decodeError4828 != nil {
-					return nil, decodeError4828
+				decodedValue4831, decodeError4832 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
+				if decodeError4832 != nil {
+					return nil, decodeError4832
 				}
-				value = decodedValue4827
+				value = decodedValue4831
 				dst.RateLimitPerUser = &value
 			}
 		}
@@ -18206,11 +18237,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4829, decodeError4830 := ingressString(item, c, fieldPath(path, "OwnerID"))
-				if decodeError4830 != nil {
-					return nil, decodeError4830
+				decodedValue4833, decodeError4834 := ingressString(item, c, fieldPath(path, "OwnerID"))
+				if decodeError4834 != nil {
+					return nil, decodeError4834
 				}
-				value = decodedValue4829
+				value = decodedValue4833
 				dst.OwnerId = &value
 			}
 		}
@@ -18220,11 +18251,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4831, decodeError4832 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError4832 != nil {
-					return nil, decodeError4832
+				decodedValue4835, decodeError4836 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError4836 != nil {
+					return nil, decodeError4836
 				}
-				value = decodedValue4831
+				value = decodedValue4835
 				dst.ApplicationId = &value
 			}
 		}
@@ -18233,11 +18264,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("thread_metadata")
 		if item != nil {
 			if !item.null {
-				decodedValue4833, decodeError4834 := c.nodeSnapshotThreadMetadata(item, fieldPath(path, "ThreadMetadata"), parent)
-				if decodeError4834 != nil {
-					return nil, decodeError4834
+				decodedValue4837, decodeError4838 := c.nodeSnapshotThreadMetadata(item, fieldPath(path, "ThreadMetadata"), parent)
+				if decodeError4838 != nil {
+					return nil, decodeError4838
 				}
-				dst.ThreadMetadata = decodedValue4833
+				dst.ThreadMetadata = decodedValue4837
 			}
 		}
 	}
@@ -18245,11 +18276,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("thread_member")
 		if item != nil {
 			if !item.null {
-				decodedValue4835, decodeError4836 := c.nodeSnapshotThreadMember(item, fieldPath(path, "Member"), parent)
-				if decodeError4836 != nil {
-					return nil, decodeError4836
+				decodedValue4839, decodeError4840 := c.nodeSnapshotThreadMember(item, fieldPath(path, "Member"), parent)
+				if decodeError4840 != nil {
+					return nil, decodeError4840
 				}
-				dst.Member = decodedValue4835
+				dst.Member = decodedValue4839
 			}
 		}
 	}
@@ -18263,11 +18294,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value uint64
-				decodedValue4837, decodeError4838 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError4838 != nil {
-					return nil, decodeError4838
+				decodedValue4841, decodeError4842 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError4842 != nil {
+					return nil, decodeError4842
 				}
-				value = decodedValue4837
+				value = decodedValue4841
 				dst.Flags = &value
 			}
 		}
@@ -18276,11 +18307,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("available_tags")
 		if item != nil {
 			if !item.null {
-				decodedValue4839, decodeError4840 := c.nodeDomainForumTagList(item, fieldPath(path, "AvailableTags"), parent)
-				if decodeError4840 != nil {
-					return nil, decodeError4840
+				decodedValue4843, decodeError4844 := c.nodeDomainForumTagList(item, fieldPath(path, "AvailableTags"), parent)
+				if decodeError4844 != nil {
+					return nil, decodeError4844
 				}
-				dst.AvailableTags = decodedValue4839
+				dst.AvailableTags = decodedValue4843
 			}
 		}
 	}
@@ -18288,11 +18319,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("applied_tags")
 		if item != nil {
 			if !item.null {
-				decodedValue4841, decodeError4842 := c.nodeDomainStringList(item, fieldPath(path, "AppliedTags"), parent)
-				if decodeError4842 != nil {
-					return nil, decodeError4842
+				decodedValue4845, decodeError4846 := c.nodeDomainStringList(item, fieldPath(path, "AppliedTags"), parent)
+				if decodeError4846 != nil {
+					return nil, decodeError4846
 				}
-				dst.AppliedTags = decodedValue4841
+				dst.AppliedTags = decodedValue4845
 			}
 		}
 	}
@@ -18300,11 +18331,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 		item := n.get("default_reaction_emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue4843, decodeError4844 := c.nodeSnapshotForumDefaultReaction(item, fieldPath(path, "DefaultReactionEmoji"), parent)
-				if decodeError4844 != nil {
-					return nil, decodeError4844
+				decodedValue4847, decodeError4848 := c.nodeSnapshotForumDefaultReaction(item, fieldPath(path, "DefaultReactionEmoji"), parent)
+				if decodeError4848 != nil {
+					return nil, decodeError4848
 				}
-				dst.DefaultReactionEmoji = decodedValue4843
+				dst.DefaultReactionEmoji = decodedValue4847
 			}
 		}
 	}
@@ -18318,11 +18349,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4845, decodeError4846 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultThreadRateLimitPerUser"))
-				if decodeError4846 != nil {
-					return nil, decodeError4846
+				decodedValue4849, decodeError4850 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultThreadRateLimitPerUser"))
+				if decodeError4850 != nil {
+					return nil, decodeError4850
 				}
-				value = decodedValue4845
+				value = decodedValue4849
 				dst.DefaultThreadRateLimitPerUser = &value
 			}
 		}
@@ -18337,11 +18368,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4847, decodeError4848 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultSortOrder"))
-				if decodeError4848 != nil {
-					return nil, decodeError4848
+				decodedValue4851, decodeError4852 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultSortOrder"))
+				if decodeError4852 != nil {
+					return nil, decodeError4852
 				}
-				value = decodedValue4847
+				value = decodedValue4851
 				dst.DefaultSortOrder = &value
 			}
 		}
@@ -18356,11 +18387,11 @@ func (c *conversion) nodeSnapshotChannel(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue4849, decodeError4850 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultForumLayout"))
-				if decodeError4850 != nil {
-					return nil, decodeError4850
+				decodedValue4853, decodeError4854 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultForumLayout"))
+				if decodeError4854 != nil {
+					return nil, decodeError4854
 				}
-				value = decodedValue4849
+				value = decodedValue4853
 				dst.DefaultForumLayout = &value
 			}
 		}
@@ -18380,11 +18411,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4851, decodeError4852 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4852 != nil {
-					return nil, decodeError4852
+				decodedValue4855, decodeError4856 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4856 != nil {
+					return nil, decodeError4856
 				}
-				value = decodedValue4851
+				value = decodedValue4855
 				dst.Name = &value
 			}
 		}
@@ -18392,11 +18423,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 	{
 		item := n.get("topic")
 		if item != nil {
-			decodedValue4853, decodeError4854 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Topic"), parent)
-			if decodeError4854 != nil {
-				return nil, decodeError4854
+			decodedValue4857, decodeError4858 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Topic"), parent)
+			if decodeError4858 != nil {
+				return nil, decodeError4858
 			}
-			dst.Topic = decodedValue4853
+			dst.Topic = decodedValue4857
 		}
 	}
 	{
@@ -18404,11 +18435,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4855, decodeError4856 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
-				if decodeError4856 != nil {
-					return nil, decodeError4856
+				decodedValue4859, decodeError4860 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
+				if decodeError4860 != nil {
+					return nil, decodeError4860
 				}
-				value = decodedValue4855
+				value = decodedValue4859
 				dst.Nsfw = &value
 			}
 		}
@@ -18423,11 +18454,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4857, decodeError4858 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
-				if decodeError4858 != nil {
-					return nil, decodeError4858
+				decodedValue4861, decodeError4862 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
+				if decodeError4862 != nil {
+					return nil, decodeError4862
 				}
-				value = decodedValue4857
+				value = decodedValue4861
 				dst.Position = &value
 			}
 		}
@@ -18442,11 +18473,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4859, decodeError4860 := ingressNumericScalar[int64](item, c, fieldPath(path, "Bitrate"))
-				if decodeError4860 != nil {
-					return nil, decodeError4860
+				decodedValue4863, decodeError4864 := ingressNumericScalar[int64](item, c, fieldPath(path, "Bitrate"))
+				if decodeError4864 != nil {
+					return nil, decodeError4864
 				}
-				value = decodedValue4859
+				value = decodedValue4863
 				dst.Bitrate = &value
 			}
 		}
@@ -18461,11 +18492,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4861, decodeError4862 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserLimit"))
-				if decodeError4862 != nil {
-					return nil, decodeError4862
+				decodedValue4865, decodeError4866 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserLimit"))
+				if decodeError4866 != nil {
+					return nil, decodeError4866
 				}
-				value = decodedValue4861
+				value = decodedValue4865
 				dst.UserLimit = &value
 			}
 		}
@@ -18474,22 +18505,22 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		item := n.get("permission_overwrites")
 		if item != nil {
 			if !item.null {
-				decodedValue4863, decodeError4864 := c.nodeDomainPermissionOverwriteList(item, fieldPath(path, "PermissionOverwrites"), parent)
-				if decodeError4864 != nil {
-					return nil, decodeError4864
+				decodedValue4867, decodeError4868 := c.nodeDomainPermissionOverwriteList(item, fieldPath(path, "PermissionOverwrites"), parent)
+				if decodeError4868 != nil {
+					return nil, decodeError4868
 				}
-				dst.PermissionOverwrites = decodedValue4863
+				dst.PermissionOverwrites = decodedValue4867
 			}
 		}
 	}
 	{
 		item := n.get("parent_id")
 		if item != nil {
-			decodedValue4865, decodeError4866 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ParentID"), parent)
-			if decodeError4866 != nil {
-				return nil, decodeError4866
+			decodedValue4869, decodeError4870 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ParentID"), parent)
+			if decodeError4870 != nil {
+				return nil, decodeError4870
 			}
-			dst.ParentId = decodedValue4865
+			dst.ParentId = decodedValue4869
 		}
 	}
 	{
@@ -18502,11 +18533,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4867, decodeError4868 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
-				if decodeError4868 != nil {
-					return nil, decodeError4868
+				decodedValue4871, decodeError4872 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
+				if decodeError4872 != nil {
+					return nil, decodeError4872
 				}
-				value = decodedValue4867
+				value = decodedValue4871
 				dst.RateLimitPerUser = &value
 			}
 		}
@@ -18521,11 +18552,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value uint64
-				decodedValue4869, decodeError4870 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError4870 != nil {
-					return nil, decodeError4870
+				decodedValue4873, decodeError4874 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError4874 != nil {
+					return nil, decodeError4874
 				}
-				value = decodedValue4869
+				value = decodedValue4873
 				dst.Flags = &value
 			}
 		}
@@ -18540,11 +18571,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4871, decodeError4872 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultThreadRateLimitPerUser"))
-				if decodeError4872 != nil {
-					return nil, decodeError4872
+				decodedValue4875, decodeError4876 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultThreadRateLimitPerUser"))
+				if decodeError4876 != nil {
+					return nil, decodeError4876
 				}
-				value = decodedValue4871
+				value = decodedValue4875
 				dst.DefaultThreadRateLimitPerUser = &value
 			}
 		}
@@ -18554,11 +18585,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4873, decodeError4874 := ingressScalar[bool](item, c, fieldPath(path, "Archived"))
-				if decodeError4874 != nil {
-					return nil, decodeError4874
+				decodedValue4877, decodeError4878 := ingressScalar[bool](item, c, fieldPath(path, "Archived"))
+				if decodeError4878 != nil {
+					return nil, decodeError4878
 				}
-				value = decodedValue4873
+				value = decodedValue4877
 				dst.Archived = &value
 			}
 		}
@@ -18573,11 +18604,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4875, decodeError4876 := ingressNumericScalar[int64](item, c, fieldPath(path, "AutoArchiveDuration"))
-				if decodeError4876 != nil {
-					return nil, decodeError4876
+				decodedValue4879, decodeError4880 := ingressNumericScalar[int64](item, c, fieldPath(path, "AutoArchiveDuration"))
+				if decodeError4880 != nil {
+					return nil, decodeError4880
 				}
-				value = decodedValue4875
+				value = decodedValue4879
 				dst.AutoArchiveDuration = &value
 			}
 		}
@@ -18587,11 +18618,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4877, decodeError4878 := ingressScalar[bool](item, c, fieldPath(path, "Locked"))
-				if decodeError4878 != nil {
-					return nil, decodeError4878
+				decodedValue4881, decodeError4882 := ingressScalar[bool](item, c, fieldPath(path, "Locked"))
+				if decodeError4882 != nil {
+					return nil, decodeError4882
 				}
-				value = decodedValue4877
+				value = decodedValue4881
 				dst.Locked = &value
 			}
 		}
@@ -18601,11 +18632,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4879, decodeError4880 := ingressScalar[bool](item, c, fieldPath(path, "Invitable"))
-				if decodeError4880 != nil {
-					return nil, decodeError4880
+				decodedValue4883, decodeError4884 := ingressScalar[bool](item, c, fieldPath(path, "Invitable"))
+				if decodeError4884 != nil {
+					return nil, decodeError4884
 				}
-				value = decodedValue4879
+				value = decodedValue4883
 				dst.Invitable = &value
 			}
 		}
@@ -18614,22 +18645,22 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		item := n.get("available_tags")
 		if item != nil {
 			if !item.null {
-				decodedValue4881, decodeError4882 := c.nodeDomainForumTagList(item, fieldPath(path, "AvailableTags"), parent)
-				if decodeError4882 != nil {
-					return nil, decodeError4882
+				decodedValue4885, decodeError4886 := c.nodeDomainForumTagList(item, fieldPath(path, "AvailableTags"), parent)
+				if decodeError4886 != nil {
+					return nil, decodeError4886
 				}
-				dst.AvailableTags = decodedValue4881
+				dst.AvailableTags = decodedValue4885
 			}
 		}
 	}
 	{
 		item := n.get("default_reaction_emoji")
 		if item != nil {
-			decodedValue4883, decodeError4884 := c.nodeDomainNullableForumDefaultReaction(item, fieldPath(path, "DefaultReactionEmoji"), parent)
-			if decodeError4884 != nil {
-				return nil, decodeError4884
+			decodedValue4887, decodeError4888 := c.nodeDomainNullableForumDefaultReaction(item, fieldPath(path, "DefaultReactionEmoji"), parent)
+			if decodeError4888 != nil {
+				return nil, decodeError4888
 			}
-			dst.DefaultReactionEmoji = decodedValue4883
+			dst.DefaultReactionEmoji = decodedValue4887
 		}
 	}
 	{
@@ -18640,11 +18671,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					return nil, err
 				}
 			}
-			decodedValue4885, decodeError4886 := c.nodeDomainNullableSint64(item, fieldPath(path, "DefaultSortOrder"), parent)
-			if decodeError4886 != nil {
-				return nil, decodeError4886
+			decodedValue4889, decodeError4890 := c.nodeDomainNullableSint64(item, fieldPath(path, "DefaultSortOrder"), parent)
+			if decodeError4890 != nil {
+				return nil, decodeError4890
 			}
-			dst.DefaultSortOrder = decodedValue4885
+			dst.DefaultSortOrder = decodedValue4889
 		}
 	}
 	{
@@ -18657,11 +18688,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4887, decodeError4888 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultForumLayout"))
-				if decodeError4888 != nil {
-					return nil, decodeError4888
+				decodedValue4891, decodeError4892 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultForumLayout"))
+				if decodeError4892 != nil {
+					return nil, decodeError4892
 				}
-				value = decodedValue4887
+				value = decodedValue4891
 				dst.DefaultForumLayout = &value
 			}
 		}
@@ -18670,11 +18701,11 @@ func (c *conversion) nodeSnapshotChannelEdit(n *ingressNode, path string, parent
 		item := n.get("applied_tags")
 		if item != nil {
 			if !item.null {
-				decodedValue4889, decodeError4890 := c.nodeDomainStringList(item, fieldPath(path, "AppliedTags"), parent)
-				if decodeError4890 != nil {
-					return nil, decodeError4890
+				decodedValue4893, decodeError4894 := c.nodeDomainStringList(item, fieldPath(path, "AppliedTags"), parent)
+				if decodeError4894 != nil {
+					return nil, decodeError4894
 				}
-				dst.AppliedTags = decodedValue4889
+				dst.AppliedTags = decodedValue4893
 			}
 		}
 	}
@@ -18705,11 +18736,11 @@ func (c *conversion) nodeSnapshotChannelFollow(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4891, decodeError4892 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError4892 != nil {
-					return nil, decodeError4892
+				decodedValue4895, decodeError4896 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError4896 != nil {
+					return nil, decodeError4896
 				}
-				value = decodedValue4891
+				value = decodedValue4895
 				dst.ChannelId = &value
 			}
 		}
@@ -18719,11 +18750,11 @@ func (c *conversion) nodeSnapshotChannelFollow(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4893, decodeError4894 := ingressString(item, c, fieldPath(path, "WebhookID"))
-				if decodeError4894 != nil {
-					return nil, decodeError4894
+				decodedValue4897, decodeError4898 := ingressString(item, c, fieldPath(path, "WebhookID"))
+				if decodeError4898 != nil {
+					return nil, decodeError4898
 				}
-				value = decodedValue4893
+				value = decodedValue4897
 				dst.WebhookId = &value
 			}
 		}
@@ -18754,11 +18785,11 @@ func (c *conversion) nodeSnapshotChannelMessagePinsList(n *ingressNode, path str
 		item := n.get("items")
 		if item != nil {
 			if !item.null {
-				decodedValue4895, decodeError4896 := c.nodeDomainMessagePinList(item, fieldPath(path, "Items"), parent)
-				if decodeError4896 != nil {
-					return nil, decodeError4896
+				decodedValue4899, decodeError4900 := c.nodeDomainMessagePinList(item, fieldPath(path, "Items"), parent)
+				if decodeError4900 != nil {
+					return nil, decodeError4900
 				}
-				dst.Items = decodedValue4895
+				dst.Items = decodedValue4899
 			}
 		}
 	}
@@ -18767,11 +18798,11 @@ func (c *conversion) nodeSnapshotChannelMessagePinsList(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4897, decodeError4898 := ingressScalar[bool](item, c, fieldPath(path, "HasMore"))
-				if decodeError4898 != nil {
-					return nil, decodeError4898
+				decodedValue4901, decodeError4902 := ingressScalar[bool](item, c, fieldPath(path, "HasMore"))
+				if decodeError4902 != nil {
+					return nil, decodeError4902
 				}
-				value = decodedValue4897
+				value = decodedValue4901
 				dst.HasMore = &value
 			}
 		}
@@ -18803,11 +18834,11 @@ func (c *conversion) nodeSnapshotClientStatus(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4899, decodeError4900 := ingressString(item, c, fieldPath(path, "Desktop"))
-				if decodeError4900 != nil {
-					return nil, decodeError4900
+				decodedValue4903, decodeError4904 := ingressString(item, c, fieldPath(path, "Desktop"))
+				if decodeError4904 != nil {
+					return nil, decodeError4904
 				}
-				value = decodedValue4899
+				value = decodedValue4903
 				dst.Desktop = &value
 			}
 		}
@@ -18817,11 +18848,11 @@ func (c *conversion) nodeSnapshotClientStatus(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4901, decodeError4902 := ingressString(item, c, fieldPath(path, "Mobile"))
-				if decodeError4902 != nil {
-					return nil, decodeError4902
+				decodedValue4905, decodeError4906 := ingressString(item, c, fieldPath(path, "Mobile"))
+				if decodeError4906 != nil {
+					return nil, decodeError4906
 				}
-				value = decodedValue4901
+				value = decodedValue4905
 				dst.Mobile = &value
 			}
 		}
@@ -18831,11 +18862,11 @@ func (c *conversion) nodeSnapshotClientStatus(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4903, decodeError4904 := ingressString(item, c, fieldPath(path, "Web"))
-				if decodeError4904 != nil {
-					return nil, decodeError4904
+				decodedValue4907, decodeError4908 := ingressString(item, c, fieldPath(path, "Web"))
+				if decodeError4908 != nil {
+					return nil, decodeError4908
 				}
-				value = decodedValue4903
+				value = decodedValue4907
 				dst.Web = &value
 			}
 		}
@@ -18867,11 +18898,11 @@ func (c *conversion) nodeSnapshotComponentEmoji(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4905, decodeError4906 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4906 != nil {
-					return nil, decodeError4906
+				decodedValue4909, decodeError4910 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4910 != nil {
+					return nil, decodeError4910
 				}
-				value = decodedValue4905
+				value = decodedValue4909
 				dst.Name = &value
 			}
 		}
@@ -18881,11 +18912,11 @@ func (c *conversion) nodeSnapshotComponentEmoji(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4907, decodeError4908 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4908 != nil {
-					return nil, decodeError4908
+				decodedValue4911, decodeError4912 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4912 != nil {
+					return nil, decodeError4912
 				}
-				value = decodedValue4907
+				value = decodedValue4911
 				dst.Id = &value
 			}
 		}
@@ -18895,11 +18926,11 @@ func (c *conversion) nodeSnapshotComponentEmoji(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4909, decodeError4910 := ingressScalar[bool](item, c, fieldPath(path, "Animated"))
-				if decodeError4910 != nil {
-					return nil, decodeError4910
+				decodedValue4913, decodeError4914 := ingressScalar[bool](item, c, fieldPath(path, "Animated"))
+				if decodeError4914 != nil {
+					return nil, decodeError4914
 				}
-				value = decodedValue4909
+				value = decodedValue4913
 				dst.Animated = &value
 			}
 		}
@@ -18930,11 +18961,11 @@ func (c *conversion) nodeSnapshotComponentInteractionDataResolved(n *ingressNode
 		item := n.get("users")
 		if item != nil {
 			if !item.null {
-				decodedValue4911, decodeError4912 := c.nodeDomainStringToUserMap(item, fieldPath(path, "Users"), parent)
-				if decodeError4912 != nil {
-					return nil, decodeError4912
+				decodedValue4915, decodeError4916 := c.nodeDomainStringToUserMap(item, fieldPath(path, "Users"), parent)
+				if decodeError4916 != nil {
+					return nil, decodeError4916
 				}
-				dst.Users = decodedValue4911
+				dst.Users = decodedValue4915
 			}
 		}
 	}
@@ -18942,11 +18973,11 @@ func (c *conversion) nodeSnapshotComponentInteractionDataResolved(n *ingressNode
 		item := n.get("members")
 		if item != nil {
 			if !item.null {
-				decodedValue4913, decodeError4914 := c.nodeDomainStringToMemberMap(item, fieldPath(path, "Members"), parent)
-				if decodeError4914 != nil {
-					return nil, decodeError4914
+				decodedValue4917, decodeError4918 := c.nodeDomainStringToMemberMap(item, fieldPath(path, "Members"), parent)
+				if decodeError4918 != nil {
+					return nil, decodeError4918
 				}
-				dst.Members = decodedValue4913
+				dst.Members = decodedValue4917
 			}
 		}
 	}
@@ -18954,11 +18985,11 @@ func (c *conversion) nodeSnapshotComponentInteractionDataResolved(n *ingressNode
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue4915, decodeError4916 := c.nodeDomainStringToRoleMap(item, fieldPath(path, "Roles"), parent)
-				if decodeError4916 != nil {
-					return nil, decodeError4916
+				decodedValue4919, decodeError4920 := c.nodeDomainStringToRoleMap(item, fieldPath(path, "Roles"), parent)
+				if decodeError4920 != nil {
+					return nil, decodeError4920
 				}
-				dst.Roles = decodedValue4915
+				dst.Roles = decodedValue4919
 			}
 		}
 	}
@@ -18966,11 +18997,11 @@ func (c *conversion) nodeSnapshotComponentInteractionDataResolved(n *ingressNode
 		item := n.get("channels")
 		if item != nil {
 			if !item.null {
-				decodedValue4917, decodeError4918 := c.nodeDomainStringToChannelMap(item, fieldPath(path, "Channels"), parent)
-				if decodeError4918 != nil {
-					return nil, decodeError4918
+				decodedValue4921, decodeError4922 := c.nodeDomainStringToChannelMap(item, fieldPath(path, "Channels"), parent)
+				if decodeError4922 != nil {
+					return nil, decodeError4922
 				}
-				dst.Channels = decodedValue4917
+				dst.Channels = decodedValue4921
 			}
 		}
 	}
@@ -18978,11 +19009,11 @@ func (c *conversion) nodeSnapshotComponentInteractionDataResolved(n *ingressNode
 		item := n.get("attachments")
 		if item != nil {
 			if !item.null {
-				decodedValue4919, decodeError4920 := c.nodeDomainStringToMessageAttachmentMap(item, fieldPath(path, "Attachments"), parent)
-				if decodeError4920 != nil {
-					return nil, decodeError4920
+				decodedValue4923, decodeError4924 := c.nodeDomainStringToMessageAttachmentMap(item, fieldPath(path, "Attachments"), parent)
+				if decodeError4924 != nil {
+					return nil, decodeError4924
 				}
-				dst.Attachments = decodedValue4919
+				dst.Attachments = decodedValue4923
 			}
 		}
 	}
@@ -19018,11 +19049,11 @@ func (c *conversion) nodeSnapshotContainer(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue4921, decodeError4922 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError4922 != nil {
-					return nil, decodeError4922
+				decodedValue4925, decodeError4926 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError4926 != nil {
+					return nil, decodeError4926
 				}
-				value = decodedValue4921
+				value = decodedValue4925
 				dst.Id = &value
 			}
 		}
@@ -19037,11 +19068,11 @@ func (c *conversion) nodeSnapshotContainer(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue4923, decodeError4924 := ingressNumericScalar[int64](item, c, fieldPath(path, "AccentColor"))
-				if decodeError4924 != nil {
-					return nil, decodeError4924
+				decodedValue4927, decodeError4928 := ingressNumericScalar[int64](item, c, fieldPath(path, "AccentColor"))
+				if decodeError4928 != nil {
+					return nil, decodeError4928
 				}
-				value = decodedValue4923
+				value = decodedValue4927
 				dst.AccentColor = &value
 			}
 		}
@@ -19051,11 +19082,11 @@ func (c *conversion) nodeSnapshotContainer(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4925, decodeError4926 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
-				if decodeError4926 != nil {
-					return nil, decodeError4926
+				decodedValue4929, decodeError4930 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
+				if decodeError4930 != nil {
+					return nil, decodeError4930
 				}
-				value = decodedValue4925
+				value = decodedValue4929
 				dst.Spoiler = &value
 			}
 		}
@@ -19064,11 +19095,11 @@ func (c *conversion) nodeSnapshotContainer(n *ingressNode, path string, parent i
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue4927, decodeError4928 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError4928 != nil {
-					return nil, decodeError4928
+				decodedValue4931, decodeError4932 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError4932 != nil {
+					return nil, decodeError4932
 				}
-				dst.Components = decodedValue4927
+				dst.Components = decodedValue4931
 			}
 		}
 	}
@@ -19099,11 +19130,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4929, decodeError4930 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4930 != nil {
-					return nil, decodeError4930
+				decodedValue4933, decodeError4934 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4934 != nil {
+					return nil, decodeError4934
 				}
-				value = decodedValue4929
+				value = decodedValue4933
 				dst.Id = &value
 			}
 		}
@@ -19113,11 +19144,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4931, decodeError4932 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4932 != nil {
-					return nil, decodeError4932
+				decodedValue4935, decodeError4936 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4936 != nil {
+					return nil, decodeError4936
 				}
-				value = decodedValue4931
+				value = decodedValue4935
 				dst.Name = &value
 			}
 		}
@@ -19126,11 +19157,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue4933, decodeError4934 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
-				if decodeError4934 != nil {
-					return nil, decodeError4934
+				decodedValue4937, decodeError4938 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
+				if decodeError4938 != nil {
+					return nil, decodeError4938
 				}
-				dst.Roles = decodedValue4933
+				dst.Roles = decodedValue4937
 			}
 		}
 	}
@@ -19138,11 +19169,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue4935, decodeError4936 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError4936 != nil {
-					return nil, decodeError4936
+				decodedValue4939, decodeError4940 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError4940 != nil {
+					return nil, decodeError4940
 				}
-				dst.User = decodedValue4935
+				dst.User = decodedValue4939
 			}
 		}
 	}
@@ -19151,11 +19182,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4937, decodeError4938 := ingressScalar[bool](item, c, fieldPath(path, "RequireColons"))
-				if decodeError4938 != nil {
-					return nil, decodeError4938
+				decodedValue4941, decodeError4942 := ingressScalar[bool](item, c, fieldPath(path, "RequireColons"))
+				if decodeError4942 != nil {
+					return nil, decodeError4942
 				}
-				value = decodedValue4937
+				value = decodedValue4941
 				dst.RequireColons = &value
 			}
 		}
@@ -19165,11 +19196,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4939, decodeError4940 := ingressScalar[bool](item, c, fieldPath(path, "Managed"))
-				if decodeError4940 != nil {
-					return nil, decodeError4940
+				decodedValue4943, decodeError4944 := ingressScalar[bool](item, c, fieldPath(path, "Managed"))
+				if decodeError4944 != nil {
+					return nil, decodeError4944
 				}
-				value = decodedValue4939
+				value = decodedValue4943
 				dst.Managed = &value
 			}
 		}
@@ -19179,11 +19210,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4941, decodeError4942 := ingressScalar[bool](item, c, fieldPath(path, "Animated"))
-				if decodeError4942 != nil {
-					return nil, decodeError4942
+				decodedValue4945, decodeError4946 := ingressScalar[bool](item, c, fieldPath(path, "Animated"))
+				if decodeError4946 != nil {
+					return nil, decodeError4946
 				}
-				value = decodedValue4941
+				value = decodedValue4945
 				dst.Animated = &value
 			}
 		}
@@ -19193,11 +19224,11 @@ func (c *conversion) nodeSnapshotEmoji(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4943, decodeError4944 := ingressScalar[bool](item, c, fieldPath(path, "Available"))
-				if decodeError4944 != nil {
-					return nil, decodeError4944
+				decodedValue4947, decodeError4948 := ingressScalar[bool](item, c, fieldPath(path, "Available"))
+				if decodeError4948 != nil {
+					return nil, decodeError4948
 				}
-				value = decodedValue4943
+				value = decodedValue4947
 				dst.Available = &value
 			}
 		}
@@ -19229,11 +19260,11 @@ func (c *conversion) nodeSnapshotEmojiParams(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4945, decodeError4946 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError4946 != nil {
-					return nil, decodeError4946
+				decodedValue4949, decodeError4950 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError4950 != nil {
+					return nil, decodeError4950
 				}
-				value = decodedValue4945
+				value = decodedValue4949
 				dst.Name = &value
 			}
 		}
@@ -19243,11 +19274,11 @@ func (c *conversion) nodeSnapshotEmojiParams(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4947, decodeError4948 := ingressString(item, c, fieldPath(path, "Image"))
-				if decodeError4948 != nil {
-					return nil, decodeError4948
+				decodedValue4951, decodeError4952 := ingressString(item, c, fieldPath(path, "Image"))
+				if decodeError4952 != nil {
+					return nil, decodeError4952
 				}
-				value = decodedValue4947
+				value = decodedValue4951
 				dst.Image = &value
 			}
 		}
@@ -19256,11 +19287,11 @@ func (c *conversion) nodeSnapshotEmojiParams(n *ingressNode, path string, parent
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue4949, decodeError4950 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
-				if decodeError4950 != nil {
-					return nil, decodeError4950
+				decodedValue4953, decodeError4954 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
+				if decodeError4954 != nil {
+					return nil, decodeError4954
 				}
-				dst.Roles = decodedValue4949
+				dst.Roles = decodedValue4953
 			}
 		}
 	}
@@ -19291,11 +19322,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4951, decodeError4952 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError4952 != nil {
-					return nil, decodeError4952
+				decodedValue4955, decodeError4956 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError4956 != nil {
+					return nil, decodeError4956
 				}
-				value = decodedValue4951
+				value = decodedValue4955
 				dst.Id = &value
 			}
 		}
@@ -19305,11 +19336,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4953, decodeError4954 := ingressString(item, c, fieldPath(path, "SKUID"))
-				if decodeError4954 != nil {
-					return nil, decodeError4954
+				decodedValue4957, decodeError4958 := ingressString(item, c, fieldPath(path, "SKUID"))
+				if decodeError4958 != nil {
+					return nil, decodeError4958
 				}
-				value = decodedValue4953
+				value = decodedValue4957
 				dst.Skuid = &value
 			}
 		}
@@ -19319,11 +19350,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4955, decodeError4956 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError4956 != nil {
-					return nil, decodeError4956
+				decodedValue4959, decodeError4960 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError4960 != nil {
+					return nil, decodeError4960
 				}
-				value = decodedValue4955
+				value = decodedValue4959
 				dst.ApplicationId = &value
 			}
 		}
@@ -19333,11 +19364,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4957, decodeError4958 := ingressString(item, c, fieldPath(path, "UserID"))
-				if decodeError4958 != nil {
-					return nil, decodeError4958
+				decodedValue4961, decodeError4962 := ingressString(item, c, fieldPath(path, "UserID"))
+				if decodeError4962 != nil {
+					return nil, decodeError4962
 				}
-				value = decodedValue4957
+				value = decodedValue4961
 				dst.UserId = &value
 			}
 		}
@@ -19352,11 +19383,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue4959, decodeError4960 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError4960 != nil {
-					return nil, decodeError4960
+				decodedValue4963, decodeError4964 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError4964 != nil {
+					return nil, decodeError4964
 				}
-				value = decodedValue4959
+				value = decodedValue4963
 				dst.Type = &value
 			}
 		}
@@ -19366,11 +19397,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4961, decodeError4962 := ingressScalar[bool](item, c, fieldPath(path, "Deleted"))
-				if decodeError4962 != nil {
-					return nil, decodeError4962
+				decodedValue4965, decodeError4966 := ingressScalar[bool](item, c, fieldPath(path, "Deleted"))
+				if decodeError4966 != nil {
+					return nil, decodeError4966
 				}
-				value = decodedValue4961
+				value = decodedValue4965
 				dst.Deleted = &value
 			}
 		}
@@ -19379,11 +19410,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		item := n.get("starts_at")
 		if item != nil {
 			if !item.null {
-				decodedValue4963, decodeError4964 := ingressTimestamp(item, c, fieldPath(path, "StartsAt"))
-				if decodeError4964 != nil {
-					return nil, decodeError4964
+				decodedValue4967, decodeError4968 := ingressTimestamp(item, c, fieldPath(path, "StartsAt"))
+				if decodeError4968 != nil {
+					return nil, decodeError4968
 				}
-				dst.StartsAt = decodedValue4963
+				dst.StartsAt = decodedValue4967
 			}
 		}
 	}
@@ -19391,11 +19422,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		item := n.get("ends_at")
 		if item != nil {
 			if !item.null {
-				decodedValue4965, decodeError4966 := ingressTimestamp(item, c, fieldPath(path, "EndsAt"))
-				if decodeError4966 != nil {
-					return nil, decodeError4966
+				decodedValue4969, decodeError4970 := ingressTimestamp(item, c, fieldPath(path, "EndsAt"))
+				if decodeError4970 != nil {
+					return nil, decodeError4970
 				}
-				dst.EndsAt = decodedValue4965
+				dst.EndsAt = decodedValue4969
 			}
 		}
 	}
@@ -19404,11 +19435,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4967, decodeError4968 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError4968 != nil {
-					return nil, decodeError4968
+				decodedValue4971, decodeError4972 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError4972 != nil {
+					return nil, decodeError4972
 				}
-				value = decodedValue4967
+				value = decodedValue4971
 				dst.GuildId = &value
 			}
 		}
@@ -19418,11 +19449,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4969, decodeError4970 := ingressScalar[bool](item, c, fieldPath(path, "Consumed"))
-				if decodeError4970 != nil {
-					return nil, decodeError4970
+				decodedValue4973, decodeError4974 := ingressScalar[bool](item, c, fieldPath(path, "Consumed"))
+				if decodeError4974 != nil {
+					return nil, decodeError4974
 				}
-				value = decodedValue4969
+				value = decodedValue4973
 				dst.Consumed = &value
 			}
 		}
@@ -19432,11 +19463,11 @@ func (c *conversion) nodeSnapshotEntitlement(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4971, decodeError4972 := ingressString(item, c, fieldPath(path, "SubscriptionID"))
-				if decodeError4972 != nil {
-					return nil, decodeError4972
+				decodedValue4975, decodeError4976 := ingressString(item, c, fieldPath(path, "SubscriptionID"))
+				if decodeError4976 != nil {
+					return nil, decodeError4976
 				}
-				value = decodedValue4971
+				value = decodedValue4975
 				dst.SubscriptionId = &value
 			}
 		}
@@ -19468,11 +19499,11 @@ func (c *conversion) nodeSnapshotEntitlementFilterOptions(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4973, decodeError4974 := ingressString(item, c, fieldPath(path, "UserID"))
-				if decodeError4974 != nil {
-					return nil, decodeError4974
+				decodedValue4977, decodeError4978 := ingressString(item, c, fieldPath(path, "UserID"))
+				if decodeError4978 != nil {
+					return nil, decodeError4978
 				}
-				value = decodedValue4973
+				value = decodedValue4977
 				dst.UserId = &value
 			}
 		}
@@ -19481,11 +19512,11 @@ func (c *conversion) nodeSnapshotEntitlementFilterOptions(n *ingressNode, path s
 		item := n.get("SkuIDs")
 		if item != nil {
 			if !item.null {
-				decodedValue4975, decodeError4976 := c.nodeDomainStringList(item, fieldPath(path, "SkuIDs"), parent)
-				if decodeError4976 != nil {
-					return nil, decodeError4976
+				decodedValue4979, decodeError4980 := c.nodeDomainStringList(item, fieldPath(path, "SkuIDs"), parent)
+				if decodeError4980 != nil {
+					return nil, decodeError4980
 				}
-				dst.SkuIds = decodedValue4975
+				dst.SkuIds = decodedValue4979
 			}
 		}
 	}
@@ -19493,11 +19524,11 @@ func (c *conversion) nodeSnapshotEntitlementFilterOptions(n *ingressNode, path s
 		item := n.get("Before")
 		if item != nil {
 			if !item.null {
-				decodedValue4977, decodeError4978 := ingressTimestamp(item, c, fieldPath(path, "Before"))
-				if decodeError4978 != nil {
-					return nil, decodeError4978
+				decodedValue4981, decodeError4982 := ingressTimestamp(item, c, fieldPath(path, "Before"))
+				if decodeError4982 != nil {
+					return nil, decodeError4982
 				}
-				dst.Before = decodedValue4977
+				dst.Before = decodedValue4981
 			}
 		}
 	}
@@ -19505,11 +19536,11 @@ func (c *conversion) nodeSnapshotEntitlementFilterOptions(n *ingressNode, path s
 		item := n.get("After")
 		if item != nil {
 			if !item.null {
-				decodedValue4979, decodeError4980 := ingressTimestamp(item, c, fieldPath(path, "After"))
-				if decodeError4980 != nil {
-					return nil, decodeError4980
+				decodedValue4983, decodeError4984 := ingressTimestamp(item, c, fieldPath(path, "After"))
+				if decodeError4984 != nil {
+					return nil, decodeError4984
 				}
-				dst.After = decodedValue4979
+				dst.After = decodedValue4983
 			}
 		}
 	}
@@ -19523,11 +19554,11 @@ func (c *conversion) nodeSnapshotEntitlementFilterOptions(n *ingressNode, path s
 					}
 				}
 				var value int64
-				decodedValue4981, decodeError4982 := ingressNumericScalar[int64](item, c, fieldPath(path, "Limit"))
-				if decodeError4982 != nil {
-					return nil, decodeError4982
+				decodedValue4985, decodeError4986 := ingressNumericScalar[int64](item, c, fieldPath(path, "Limit"))
+				if decodeError4986 != nil {
+					return nil, decodeError4986
 				}
-				value = decodedValue4981
+				value = decodedValue4985
 				dst.Limit = &value
 			}
 		}
@@ -19537,11 +19568,11 @@ func (c *conversion) nodeSnapshotEntitlementFilterOptions(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4983, decodeError4984 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError4984 != nil {
-					return nil, decodeError4984
+				decodedValue4987, decodeError4988 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError4988 != nil {
+					return nil, decodeError4988
 				}
-				value = decodedValue4983
+				value = decodedValue4987
 				dst.GuildId = &value
 			}
 		}
@@ -19551,11 +19582,11 @@ func (c *conversion) nodeSnapshotEntitlementFilterOptions(n *ingressNode, path s
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4985, decodeError4986 := ingressScalar[bool](item, c, fieldPath(path, "ExcludeEnded"))
-				if decodeError4986 != nil {
-					return nil, decodeError4986
+				decodedValue4989, decodeError4990 := ingressScalar[bool](item, c, fieldPath(path, "ExcludeEnded"))
+				if decodeError4990 != nil {
+					return nil, decodeError4990
 				}
-				value = decodedValue4985
+				value = decodedValue4989
 				dst.ExcludeEnded = &value
 			}
 		}
@@ -19587,11 +19618,11 @@ func (c *conversion) nodeSnapshotEntitlementTest(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4987, decodeError4988 := ingressString(item, c, fieldPath(path, "SKUID"))
-				if decodeError4988 != nil {
-					return nil, decodeError4988
+				decodedValue4991, decodeError4992 := ingressString(item, c, fieldPath(path, "SKUID"))
+				if decodeError4992 != nil {
+					return nil, decodeError4992
 				}
-				value = decodedValue4987
+				value = decodedValue4991
 				dst.Skuid = &value
 			}
 		}
@@ -19601,11 +19632,11 @@ func (c *conversion) nodeSnapshotEntitlementTest(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue4989, decodeError4990 := ingressString(item, c, fieldPath(path, "OwnerID"))
-				if decodeError4990 != nil {
-					return nil, decodeError4990
+				decodedValue4993, decodeError4994 := ingressString(item, c, fieldPath(path, "OwnerID"))
+				if decodeError4994 != nil {
+					return nil, decodeError4994
 				}
-				value = decodedValue4989
+				value = decodedValue4993
 				dst.OwnerId = &value
 			}
 		}
@@ -19620,11 +19651,11 @@ func (c *conversion) nodeSnapshotEntitlementTest(n *ingressNode, path string, pa
 					}
 				}
 				var value int64
-				decodedValue4991, decodeError4992 := ingressNumericScalar[int64](item, c, fieldPath(path, "OwnerType"))
-				if decodeError4992 != nil {
-					return nil, decodeError4992
+				decodedValue4995, decodeError4996 := ingressNumericScalar[int64](item, c, fieldPath(path, "OwnerType"))
+				if decodeError4996 != nil {
+					return nil, decodeError4996
 				}
-				value = decodedValue4991
+				value = decodedValue4995
 				dst.OwnerType = &value
 			}
 		}
@@ -19661,11 +19692,11 @@ func (c *conversion) nodeSnapshotFileComponent(n *ingressNode, path string, pare
 					}
 				}
 				var value int64
-				decodedValue4993, decodeError4994 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError4994 != nil {
-					return nil, decodeError4994
+				decodedValue4997, decodeError4998 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError4998 != nil {
+					return nil, decodeError4998
 				}
-				value = decodedValue4993
+				value = decodedValue4997
 				dst.Id = &value
 			}
 		}
@@ -19674,11 +19705,11 @@ func (c *conversion) nodeSnapshotFileComponent(n *ingressNode, path string, pare
 		item := n.get("file")
 		if item != nil {
 			if !item.null {
-				decodedValue4995, decodeError4996 := c.nodeSnapshotUnfurledMediaItem(item, fieldPath(path, "File"), parent)
-				if decodeError4996 != nil {
-					return nil, decodeError4996
+				decodedValue4999, decodeError5000 := c.nodeSnapshotUnfurledMediaItem(item, fieldPath(path, "File"), parent)
+				if decodeError5000 != nil {
+					return nil, decodeError5000
 				}
-				dst.File = decodedValue4995
+				dst.File = decodedValue4999
 			}
 		}
 	}
@@ -19687,11 +19718,11 @@ func (c *conversion) nodeSnapshotFileComponent(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue4997, decodeError4998 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
-				if decodeError4998 != nil {
-					return nil, decodeError4998
+				decodedValue5001, decodeError5002 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
+				if decodeError5002 != nil {
+					return nil, decodeError5002
 				}
-				value = decodedValue4997
+				value = decodedValue5001
 				dst.Spoiler = &value
 			}
 		}
@@ -19728,11 +19759,11 @@ func (c *conversion) nodeSnapshotFileUpload(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue4999, decodeError5000 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError5000 != nil {
-					return nil, decodeError5000
+				decodedValue5003, decodeError5004 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError5004 != nil {
+					return nil, decodeError5004
 				}
-				value = decodedValue4999
+				value = decodedValue5003
 				dst.Id = &value
 			}
 		}
@@ -19742,11 +19773,11 @@ func (c *conversion) nodeSnapshotFileUpload(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5001, decodeError5002 := ingressString(item, c, fieldPath(path, "CustomID"))
-				if decodeError5002 != nil {
-					return nil, decodeError5002
+				decodedValue5005, decodeError5006 := ingressString(item, c, fieldPath(path, "CustomID"))
+				if decodeError5006 != nil {
+					return nil, decodeError5006
 				}
-				value = decodedValue5001
+				value = decodedValue5005
 				dst.CustomId = &value
 			}
 		}
@@ -19761,11 +19792,11 @@ func (c *conversion) nodeSnapshotFileUpload(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue5003, decodeError5004 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinValues"))
-				if decodeError5004 != nil {
-					return nil, decodeError5004
+				decodedValue5007, decodeError5008 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinValues"))
+				if decodeError5008 != nil {
+					return nil, decodeError5008
 				}
-				value = decodedValue5003
+				value = decodedValue5007
 				dst.MinValues = &value
 			}
 		}
@@ -19780,11 +19811,11 @@ func (c *conversion) nodeSnapshotFileUpload(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue5005, decodeError5006 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxValues"))
-				if decodeError5006 != nil {
-					return nil, decodeError5006
+				decodedValue5009, decodeError5010 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxValues"))
+				if decodeError5010 != nil {
+					return nil, decodeError5010
 				}
-				value = decodedValue5005
+				value = decodedValue5009
 				dst.MaxValues = &value
 			}
 		}
@@ -19794,11 +19825,11 @@ func (c *conversion) nodeSnapshotFileUpload(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5007, decodeError5008 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
-				if decodeError5008 != nil {
-					return nil, decodeError5008
+				decodedValue5011, decodeError5012 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
+				if decodeError5012 != nil {
+					return nil, decodeError5012
 				}
-				value = decodedValue5007
+				value = decodedValue5011
 				dst.Required = &value
 			}
 		}
@@ -19807,11 +19838,11 @@ func (c *conversion) nodeSnapshotFileUpload(n *ingressNode, path string, parent 
 		item := n.get("values")
 		if item != nil {
 			if !item.null {
-				decodedValue5009, decodeError5010 := c.nodeDomainStringList(item, fieldPath(path, "Values"), parent)
-				if decodeError5010 != nil {
-					return nil, decodeError5010
+				decodedValue5013, decodeError5014 := c.nodeDomainStringList(item, fieldPath(path, "Values"), parent)
+				if decodeError5014 != nil {
+					return nil, decodeError5014
 				}
-				dst.Values = decodedValue5009
+				dst.Values = decodedValue5013
 			}
 		}
 	}
@@ -19842,11 +19873,11 @@ func (c *conversion) nodeSnapshotForumDefaultReaction(n *ingressNode, path strin
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5011, decodeError5012 := ingressString(item, c, fieldPath(path, "EmojiID"))
-				if decodeError5012 != nil {
-					return nil, decodeError5012
+				decodedValue5015, decodeError5016 := ingressString(item, c, fieldPath(path, "EmojiID"))
+				if decodeError5016 != nil {
+					return nil, decodeError5016
 				}
-				value = decodedValue5011
+				value = decodedValue5015
 				dst.EmojiId = &value
 			}
 		}
@@ -19856,11 +19887,11 @@ func (c *conversion) nodeSnapshotForumDefaultReaction(n *ingressNode, path strin
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5013, decodeError5014 := ingressString(item, c, fieldPath(path, "EmojiName"))
-				if decodeError5014 != nil {
-					return nil, decodeError5014
+				decodedValue5017, decodeError5018 := ingressString(item, c, fieldPath(path, "EmojiName"))
+				if decodeError5018 != nil {
+					return nil, decodeError5018
 				}
-				value = decodedValue5013
+				value = decodedValue5017
 				dst.EmojiName = &value
 			}
 		}
@@ -19892,11 +19923,11 @@ func (c *conversion) nodeSnapshotForumTag(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5015, decodeError5016 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5016 != nil {
-					return nil, decodeError5016
+				decodedValue5019, decodeError5020 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5020 != nil {
+					return nil, decodeError5020
 				}
-				value = decodedValue5015
+				value = decodedValue5019
 				dst.Id = &value
 			}
 		}
@@ -19906,11 +19937,11 @@ func (c *conversion) nodeSnapshotForumTag(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5017, decodeError5018 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5018 != nil {
-					return nil, decodeError5018
+				decodedValue5021, decodeError5022 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5022 != nil {
+					return nil, decodeError5022
 				}
-				value = decodedValue5017
+				value = decodedValue5021
 				dst.Name = &value
 			}
 		}
@@ -19920,11 +19951,11 @@ func (c *conversion) nodeSnapshotForumTag(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5019, decodeError5020 := ingressScalar[bool](item, c, fieldPath(path, "Moderated"))
-				if decodeError5020 != nil {
-					return nil, decodeError5020
+				decodedValue5023, decodeError5024 := ingressScalar[bool](item, c, fieldPath(path, "Moderated"))
+				if decodeError5024 != nil {
+					return nil, decodeError5024
 				}
-				value = decodedValue5019
+				value = decodedValue5023
 				dst.Moderated = &value
 			}
 		}
@@ -19934,11 +19965,11 @@ func (c *conversion) nodeSnapshotForumTag(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5021, decodeError5022 := ingressString(item, c, fieldPath(path, "EmojiID"))
-				if decodeError5022 != nil {
-					return nil, decodeError5022
+				decodedValue5025, decodeError5026 := ingressString(item, c, fieldPath(path, "EmojiID"))
+				if decodeError5026 != nil {
+					return nil, decodeError5026
 				}
-				value = decodedValue5021
+				value = decodedValue5025
 				dst.EmojiId = &value
 			}
 		}
@@ -19948,11 +19979,11 @@ func (c *conversion) nodeSnapshotForumTag(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5023, decodeError5024 := ingressString(item, c, fieldPath(path, "EmojiName"))
-				if decodeError5024 != nil {
-					return nil, decodeError5024
+				decodedValue5027, decodeError5028 := ingressString(item, c, fieldPath(path, "EmojiName"))
+				if decodeError5028 != nil {
+					return nil, decodeError5028
 				}
-				value = decodedValue5023
+				value = decodedValue5027
 				dst.EmojiName = &value
 			}
 		}
@@ -19984,11 +20015,11 @@ func (c *conversion) nodeSnapshotGatewayBotResponse(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5025, decodeError5026 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError5026 != nil {
-					return nil, decodeError5026
+				decodedValue5029, decodeError5030 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5030 != nil {
+					return nil, decodeError5030
 				}
-				value = decodedValue5025
+				value = decodedValue5029
 				dst.Url = &value
 			}
 		}
@@ -20003,11 +20034,11 @@ func (c *conversion) nodeSnapshotGatewayBotResponse(n *ingressNode, path string,
 					}
 				}
 				var value int64
-				decodedValue5027, decodeError5028 := ingressNumericScalar[int64](item, c, fieldPath(path, "Shards"))
-				if decodeError5028 != nil {
-					return nil, decodeError5028
+				decodedValue5031, decodeError5032 := ingressNumericScalar[int64](item, c, fieldPath(path, "Shards"))
+				if decodeError5032 != nil {
+					return nil, decodeError5032
 				}
-				value = decodedValue5027
+				value = decodedValue5031
 				dst.Shards = &value
 			}
 		}
@@ -20016,11 +20047,11 @@ func (c *conversion) nodeSnapshotGatewayBotResponse(n *ingressNode, path string,
 		item := n.get("session_start_limit")
 		if item != nil {
 			if !item.null {
-				decodedValue5029, decodeError5030 := c.nodeSnapshotSessionInformation(item, fieldPath(path, "SessionStartLimit"), parent)
-				if decodeError5030 != nil {
-					return nil, decodeError5030
+				decodedValue5033, decodeError5034 := c.nodeSnapshotSessionInformation(item, fieldPath(path, "SessionStartLimit"), parent)
+				if decodeError5034 != nil {
+					return nil, decodeError5034
 				}
-				dst.SessionStartLimit = decodedValue5029
+				dst.SessionStartLimit = decodedValue5033
 			}
 		}
 	}
@@ -20056,11 +20087,11 @@ func (c *conversion) nodeSnapshotGatewayStatusUpdate(n *ingressNode, path string
 					}
 				}
 				var value int64
-				decodedValue5031, decodeError5032 := ingressNumericScalar[int64](item, c, fieldPath(path, "Since"))
-				if decodeError5032 != nil {
-					return nil, decodeError5032
+				decodedValue5035, decodeError5036 := ingressNumericScalar[int64](item, c, fieldPath(path, "Since"))
+				if decodeError5036 != nil {
+					return nil, decodeError5036
 				}
-				value = decodedValue5031
+				value = decodedValue5035
 				dst.Since = &value
 			}
 		}
@@ -20069,11 +20100,11 @@ func (c *conversion) nodeSnapshotGatewayStatusUpdate(n *ingressNode, path string
 		item := n.get("game")
 		if item != nil {
 			if !item.null {
-				decodedValue5033, decodeError5034 := c.nodeSnapshotActivity(item, fieldPath(path, "Game"), parent)
-				if decodeError5034 != nil {
-					return nil, decodeError5034
+				decodedValue5037, decodeError5038 := c.nodeSnapshotActivity(item, fieldPath(path, "Game"), parent)
+				if decodeError5038 != nil {
+					return nil, decodeError5038
 				}
-				dst.Game = decodedValue5033
+				dst.Game = decodedValue5037
 			}
 		}
 	}
@@ -20082,11 +20113,11 @@ func (c *conversion) nodeSnapshotGatewayStatusUpdate(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5035, decodeError5036 := ingressString(item, c, fieldPath(path, "Status"))
-				if decodeError5036 != nil {
-					return nil, decodeError5036
+				decodedValue5039, decodeError5040 := ingressString(item, c, fieldPath(path, "Status"))
+				if decodeError5040 != nil {
+					return nil, decodeError5040
 				}
-				value = decodedValue5035
+				value = decodedValue5039
 				dst.Status = &value
 			}
 		}
@@ -20096,11 +20127,11 @@ func (c *conversion) nodeSnapshotGatewayStatusUpdate(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5037, decodeError5038 := ingressScalar[bool](item, c, fieldPath(path, "AFK"))
-				if decodeError5038 != nil {
-					return nil, decodeError5038
+				decodedValue5041, decodeError5042 := ingressScalar[bool](item, c, fieldPath(path, "AFK"))
+				if decodeError5042 != nil {
+					return nil, decodeError5042
 				}
-				value = decodedValue5037
+				value = decodedValue5041
 				dst.Afk = &value
 			}
 		}
@@ -20132,11 +20163,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5039, decodeError5040 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5040 != nil {
-					return nil, decodeError5040
+				decodedValue5043, decodeError5044 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5044 != nil {
+					return nil, decodeError5044
 				}
-				value = decodedValue5039
+				value = decodedValue5043
 				dst.Id = &value
 			}
 		}
@@ -20146,11 +20177,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5041, decodeError5042 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5042 != nil {
-					return nil, decodeError5042
+				decodedValue5045, decodeError5046 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5046 != nil {
+					return nil, decodeError5046
 				}
-				value = decodedValue5041
+				value = decodedValue5045
 				dst.Name = &value
 			}
 		}
@@ -20160,11 +20191,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5043, decodeError5044 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError5044 != nil {
-					return nil, decodeError5044
+				decodedValue5047, decodeError5048 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError5048 != nil {
+					return nil, decodeError5048
 				}
-				value = decodedValue5043
+				value = decodedValue5047
 				dst.Icon = &value
 			}
 		}
@@ -20174,11 +20205,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5045, decodeError5046 := ingressString(item, c, fieldPath(path, "Region"))
-				if decodeError5046 != nil {
-					return nil, decodeError5046
+				decodedValue5049, decodeError5050 := ingressString(item, c, fieldPath(path, "Region"))
+				if decodeError5050 != nil {
+					return nil, decodeError5050
 				}
-				value = decodedValue5045
+				value = decodedValue5049
 				dst.Region = &value
 			}
 		}
@@ -20188,11 +20219,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5047, decodeError5048 := ingressString(item, c, fieldPath(path, "AfkChannelID"))
-				if decodeError5048 != nil {
-					return nil, decodeError5048
+				decodedValue5051, decodeError5052 := ingressString(item, c, fieldPath(path, "AfkChannelID"))
+				if decodeError5052 != nil {
+					return nil, decodeError5052
 				}
-				value = decodedValue5047
+				value = decodedValue5051
 				dst.AfkChannelId = &value
 			}
 		}
@@ -20202,11 +20233,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5049, decodeError5050 := ingressString(item, c, fieldPath(path, "OwnerID"))
-				if decodeError5050 != nil {
-					return nil, decodeError5050
+				decodedValue5053, decodeError5054 := ingressString(item, c, fieldPath(path, "OwnerID"))
+				if decodeError5054 != nil {
+					return nil, decodeError5054
 				}
-				value = decodedValue5049
+				value = decodedValue5053
 				dst.OwnerId = &value
 			}
 		}
@@ -20216,11 +20247,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5051, decodeError5052 := ingressScalar[bool](item, c, fieldPath(path, "Owner"))
-				if decodeError5052 != nil {
-					return nil, decodeError5052
+				decodedValue5055, decodeError5056 := ingressScalar[bool](item, c, fieldPath(path, "Owner"))
+				if decodeError5056 != nil {
+					return nil, decodeError5056
 				}
-				value = decodedValue5051
+				value = decodedValue5055
 				dst.Owner = &value
 			}
 		}
@@ -20229,11 +20260,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("joined_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5053, decodeError5054 := ingressTimestamp(item, c, fieldPath(path, "JoinedAt"))
-				if decodeError5054 != nil {
-					return nil, decodeError5054
+				decodedValue5057, decodeError5058 := ingressTimestamp(item, c, fieldPath(path, "JoinedAt"))
+				if decodeError5058 != nil {
+					return nil, decodeError5058
 				}
-				dst.JoinedAt = decodedValue5053
+				dst.JoinedAt = decodedValue5057
 			}
 		}
 	}
@@ -20242,11 +20273,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5055, decodeError5056 := ingressString(item, c, fieldPath(path, "DiscoverySplash"))
-				if decodeError5056 != nil {
-					return nil, decodeError5056
+				decodedValue5059, decodeError5060 := ingressString(item, c, fieldPath(path, "DiscoverySplash"))
+				if decodeError5060 != nil {
+					return nil, decodeError5060
 				}
-				value = decodedValue5055
+				value = decodedValue5059
 				dst.DiscoverySplash = &value
 			}
 		}
@@ -20256,11 +20287,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5057, decodeError5058 := ingressString(item, c, fieldPath(path, "Splash"))
-				if decodeError5058 != nil {
-					return nil, decodeError5058
+				decodedValue5061, decodeError5062 := ingressString(item, c, fieldPath(path, "Splash"))
+				if decodeError5062 != nil {
+					return nil, decodeError5062
 				}
-				value = decodedValue5057
+				value = decodedValue5061
 				dst.Splash = &value
 			}
 		}
@@ -20275,11 +20306,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5059, decodeError5060 := ingressNumericScalar[int64](item, c, fieldPath(path, "AfkTimeout"))
-				if decodeError5060 != nil {
-					return nil, decodeError5060
+				decodedValue5063, decodeError5064 := ingressNumericScalar[int64](item, c, fieldPath(path, "AfkTimeout"))
+				if decodeError5064 != nil {
+					return nil, decodeError5064
 				}
-				value = decodedValue5059
+				value = decodedValue5063
 				dst.AfkTimeout = &value
 			}
 		}
@@ -20294,11 +20325,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5061, decodeError5062 := ingressNumericScalar[int64](item, c, fieldPath(path, "MemberCount"))
-				if decodeError5062 != nil {
-					return nil, decodeError5062
+				decodedValue5065, decodeError5066 := ingressNumericScalar[int64](item, c, fieldPath(path, "MemberCount"))
+				if decodeError5066 != nil {
+					return nil, decodeError5066
 				}
-				value = decodedValue5061
+				value = decodedValue5065
 				dst.MemberCount = &value
 			}
 		}
@@ -20313,11 +20344,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5063, decodeError5064 := ingressNumericScalar[int64](item, c, fieldPath(path, "VerificationLevel"))
-				if decodeError5064 != nil {
-					return nil, decodeError5064
+				decodedValue5067, decodeError5068 := ingressNumericScalar[int64](item, c, fieldPath(path, "VerificationLevel"))
+				if decodeError5068 != nil {
+					return nil, decodeError5068
 				}
-				value = decodedValue5063
+				value = decodedValue5067
 				dst.VerificationLevel = &value
 			}
 		}
@@ -20327,11 +20358,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5065, decodeError5066 := ingressScalar[bool](item, c, fieldPath(path, "Large"))
-				if decodeError5066 != nil {
-					return nil, decodeError5066
+				decodedValue5069, decodeError5070 := ingressScalar[bool](item, c, fieldPath(path, "Large"))
+				if decodeError5070 != nil {
+					return nil, decodeError5070
 				}
-				value = decodedValue5065
+				value = decodedValue5069
 				dst.Large = &value
 			}
 		}
@@ -20346,11 +20377,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5067, decodeError5068 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultMessageNotifications"))
-				if decodeError5068 != nil {
-					return nil, decodeError5068
+				decodedValue5071, decodeError5072 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultMessageNotifications"))
+				if decodeError5072 != nil {
+					return nil, decodeError5072
 				}
-				value = decodedValue5067
+				value = decodedValue5071
 				dst.DefaultMessageNotifications = &value
 			}
 		}
@@ -20359,11 +20390,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue5069, decodeError5070 := c.nodeDomainRoleList(item, fieldPath(path, "Roles"), parent)
-				if decodeError5070 != nil {
-					return nil, decodeError5070
+				decodedValue5073, decodeError5074 := c.nodeDomainRoleList(item, fieldPath(path, "Roles"), parent)
+				if decodeError5074 != nil {
+					return nil, decodeError5074
 				}
-				dst.Roles = decodedValue5069
+				dst.Roles = decodedValue5073
 			}
 		}
 	}
@@ -20371,11 +20402,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("emojis")
 		if item != nil {
 			if !item.null {
-				decodedValue5071, decodeError5072 := c.nodeDomainEmojiList(item, fieldPath(path, "Emojis"), parent)
-				if decodeError5072 != nil {
-					return nil, decodeError5072
+				decodedValue5075, decodeError5076 := c.nodeDomainEmojiList(item, fieldPath(path, "Emojis"), parent)
+				if decodeError5076 != nil {
+					return nil, decodeError5076
 				}
-				dst.Emojis = decodedValue5071
+				dst.Emojis = decodedValue5075
 			}
 		}
 	}
@@ -20383,11 +20414,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("stickers")
 		if item != nil {
 			if !item.null {
-				decodedValue5073, decodeError5074 := c.nodeDomainStickerList(item, fieldPath(path, "Stickers"), parent)
-				if decodeError5074 != nil {
-					return nil, decodeError5074
+				decodedValue5077, decodeError5078 := c.nodeDomainStickerList(item, fieldPath(path, "Stickers"), parent)
+				if decodeError5078 != nil {
+					return nil, decodeError5078
 				}
-				dst.Stickers = decodedValue5073
+				dst.Stickers = decodedValue5077
 			}
 		}
 	}
@@ -20395,11 +20426,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("members")
 		if item != nil {
 			if !item.null {
-				decodedValue5075, decodeError5076 := c.nodeDomainMemberList(item, fieldPath(path, "Members"), parent)
-				if decodeError5076 != nil {
-					return nil, decodeError5076
+				decodedValue5079, decodeError5080 := c.nodeDomainMemberList(item, fieldPath(path, "Members"), parent)
+				if decodeError5080 != nil {
+					return nil, decodeError5080
 				}
-				dst.Members = decodedValue5075
+				dst.Members = decodedValue5079
 			}
 		}
 	}
@@ -20407,11 +20438,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("presences")
 		if item != nil {
 			if !item.null {
-				decodedValue5077, decodeError5078 := c.nodeDomainPresenceList(item, fieldPath(path, "Presences"), parent)
-				if decodeError5078 != nil {
-					return nil, decodeError5078
+				decodedValue5081, decodeError5082 := c.nodeDomainPresenceList(item, fieldPath(path, "Presences"), parent)
+				if decodeError5082 != nil {
+					return nil, decodeError5082
 				}
-				dst.Presences = decodedValue5077
+				dst.Presences = decodedValue5081
 			}
 		}
 	}
@@ -20425,11 +20456,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5079, decodeError5080 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxPresences"))
-				if decodeError5080 != nil {
-					return nil, decodeError5080
+				decodedValue5083, decodeError5084 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxPresences"))
+				if decodeError5084 != nil {
+					return nil, decodeError5084
 				}
-				value = decodedValue5079
+				value = decodedValue5083
 				dst.MaxPresences = &value
 			}
 		}
@@ -20444,11 +20475,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5081, decodeError5082 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxMembers"))
-				if decodeError5082 != nil {
-					return nil, decodeError5082
+				decodedValue5085, decodeError5086 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxMembers"))
+				if decodeError5086 != nil {
+					return nil, decodeError5086
 				}
-				value = decodedValue5081
+				value = decodedValue5085
 				dst.MaxMembers = &value
 			}
 		}
@@ -20457,11 +20488,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("channels")
 		if item != nil {
 			if !item.null {
-				decodedValue5083, decodeError5084 := c.nodeDomainChannelList(item, fieldPath(path, "Channels"), parent)
-				if decodeError5084 != nil {
-					return nil, decodeError5084
+				decodedValue5087, decodeError5088 := c.nodeDomainChannelList(item, fieldPath(path, "Channels"), parent)
+				if decodeError5088 != nil {
+					return nil, decodeError5088
 				}
-				dst.Channels = decodedValue5083
+				dst.Channels = decodedValue5087
 			}
 		}
 	}
@@ -20469,11 +20500,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("threads")
 		if item != nil {
 			if !item.null {
-				decodedValue5085, decodeError5086 := c.nodeDomainChannelList(item, fieldPath(path, "Threads"), parent)
-				if decodeError5086 != nil {
-					return nil, decodeError5086
+				decodedValue5089, decodeError5090 := c.nodeDomainChannelList(item, fieldPath(path, "Threads"), parent)
+				if decodeError5090 != nil {
+					return nil, decodeError5090
 				}
-				dst.Threads = decodedValue5085
+				dst.Threads = decodedValue5089
 			}
 		}
 	}
@@ -20481,11 +20512,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("voice_states")
 		if item != nil {
 			if !item.null {
-				decodedValue5087, decodeError5088 := c.nodeDomainVoiceStateList(item, fieldPath(path, "VoiceStates"), parent)
-				if decodeError5088 != nil {
-					return nil, decodeError5088
+				decodedValue5091, decodeError5092 := c.nodeDomainVoiceStateList(item, fieldPath(path, "VoiceStates"), parent)
+				if decodeError5092 != nil {
+					return nil, decodeError5092
 				}
-				dst.VoiceStates = decodedValue5087
+				dst.VoiceStates = decodedValue5091
 			}
 		}
 	}
@@ -20494,11 +20525,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5089, decodeError5090 := ingressScalar[bool](item, c, fieldPath(path, "Unavailable"))
-				if decodeError5090 != nil {
-					return nil, decodeError5090
+				decodedValue5093, decodeError5094 := ingressScalar[bool](item, c, fieldPath(path, "Unavailable"))
+				if decodeError5094 != nil {
+					return nil, decodeError5094
 				}
-				value = decodedValue5089
+				value = decodedValue5093
 				dst.Unavailable = &value
 			}
 		}
@@ -20513,11 +20544,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5091, decodeError5092 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExplicitContentFilter"))
-				if decodeError5092 != nil {
-					return nil, decodeError5092
+				decodedValue5095, decodeError5096 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExplicitContentFilter"))
+				if decodeError5096 != nil {
+					return nil, decodeError5096
 				}
-				value = decodedValue5091
+				value = decodedValue5095
 				dst.ExplicitContentFilter = &value
 			}
 		}
@@ -20532,11 +20563,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5093, decodeError5094 := ingressNumericScalar[int64](item, c, fieldPath(path, "NSFWLevel"))
-				if decodeError5094 != nil {
-					return nil, decodeError5094
+				decodedValue5097, decodeError5098 := ingressNumericScalar[int64](item, c, fieldPath(path, "NSFWLevel"))
+				if decodeError5098 != nil {
+					return nil, decodeError5098
 				}
-				value = decodedValue5093
+				value = decodedValue5097
 				dst.NsfwLevel = &value
 			}
 		}
@@ -20545,11 +20576,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("features")
 		if item != nil {
 			if !item.null {
-				decodedValue5095, decodeError5096 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
-				if decodeError5096 != nil {
-					return nil, decodeError5096
+				decodedValue5099, decodeError5100 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
+				if decodeError5100 != nil {
+					return nil, decodeError5100
 				}
-				dst.Features = decodedValue5095
+				dst.Features = decodedValue5099
 			}
 		}
 	}
@@ -20563,11 +20594,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5097, decodeError5098 := ingressNumericScalar[int64](item, c, fieldPath(path, "MfaLevel"))
-				if decodeError5098 != nil {
-					return nil, decodeError5098
+				decodedValue5101, decodeError5102 := ingressNumericScalar[int64](item, c, fieldPath(path, "MfaLevel"))
+				if decodeError5102 != nil {
+					return nil, decodeError5102
 				}
-				value = decodedValue5097
+				value = decodedValue5101
 				dst.MfaLevel = &value
 			}
 		}
@@ -20577,11 +20608,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5099, decodeError5100 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError5100 != nil {
-					return nil, decodeError5100
+				decodedValue5103, decodeError5104 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError5104 != nil {
+					return nil, decodeError5104
 				}
-				value = decodedValue5099
+				value = decodedValue5103
 				dst.ApplicationId = &value
 			}
 		}
@@ -20591,11 +20622,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5101, decodeError5102 := ingressScalar[bool](item, c, fieldPath(path, "WidgetEnabled"))
-				if decodeError5102 != nil {
-					return nil, decodeError5102
+				decodedValue5105, decodeError5106 := ingressScalar[bool](item, c, fieldPath(path, "WidgetEnabled"))
+				if decodeError5106 != nil {
+					return nil, decodeError5106
 				}
-				value = decodedValue5101
+				value = decodedValue5105
 				dst.WidgetEnabled = &value
 			}
 		}
@@ -20605,11 +20636,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5103, decodeError5104 := ingressString(item, c, fieldPath(path, "WidgetChannelID"))
-				if decodeError5104 != nil {
-					return nil, decodeError5104
+				decodedValue5107, decodeError5108 := ingressString(item, c, fieldPath(path, "WidgetChannelID"))
+				if decodeError5108 != nil {
+					return nil, decodeError5108
 				}
-				value = decodedValue5103
+				value = decodedValue5107
 				dst.WidgetChannelId = &value
 			}
 		}
@@ -20619,11 +20650,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5105, decodeError5106 := ingressString(item, c, fieldPath(path, "SystemChannelID"))
-				if decodeError5106 != nil {
-					return nil, decodeError5106
+				decodedValue5109, decodeError5110 := ingressString(item, c, fieldPath(path, "SystemChannelID"))
+				if decodeError5110 != nil {
+					return nil, decodeError5110
 				}
-				value = decodedValue5105
+				value = decodedValue5109
 				dst.SystemChannelId = &value
 			}
 		}
@@ -20638,11 +20669,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value uint64
-				decodedValue5107, decodeError5108 := ingressNumericScalar[uint64](item, c, fieldPath(path, "SystemChannelFlags"))
-				if decodeError5108 != nil {
-					return nil, decodeError5108
+				decodedValue5111, decodeError5112 := ingressNumericScalar[uint64](item, c, fieldPath(path, "SystemChannelFlags"))
+				if decodeError5112 != nil {
+					return nil, decodeError5112
 				}
-				value = decodedValue5107
+				value = decodedValue5111
 				dst.SystemChannelFlags = &value
 			}
 		}
@@ -20652,11 +20683,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5109, decodeError5110 := ingressString(item, c, fieldPath(path, "RulesChannelID"))
-				if decodeError5110 != nil {
-					return nil, decodeError5110
+				decodedValue5113, decodeError5114 := ingressString(item, c, fieldPath(path, "RulesChannelID"))
+				if decodeError5114 != nil {
+					return nil, decodeError5114
 				}
-				value = decodedValue5109
+				value = decodedValue5113
 				dst.RulesChannelId = &value
 			}
 		}
@@ -20666,11 +20697,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5111, decodeError5112 := ingressString(item, c, fieldPath(path, "VanityURLCode"))
-				if decodeError5112 != nil {
-					return nil, decodeError5112
+				decodedValue5115, decodeError5116 := ingressString(item, c, fieldPath(path, "VanityURLCode"))
+				if decodeError5116 != nil {
+					return nil, decodeError5116
 				}
-				value = decodedValue5111
+				value = decodedValue5115
 				dst.VanityUrlCode = &value
 			}
 		}
@@ -20680,11 +20711,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5113, decodeError5114 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5114 != nil {
-					return nil, decodeError5114
+				decodedValue5117, decodeError5118 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5118 != nil {
+					return nil, decodeError5118
 				}
-				value = decodedValue5113
+				value = decodedValue5117
 				dst.Description = &value
 			}
 		}
@@ -20694,11 +20725,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5115, decodeError5116 := ingressString(item, c, fieldPath(path, "Banner"))
-				if decodeError5116 != nil {
-					return nil, decodeError5116
+				decodedValue5119, decodeError5120 := ingressString(item, c, fieldPath(path, "Banner"))
+				if decodeError5120 != nil {
+					return nil, decodeError5120
 				}
-				value = decodedValue5115
+				value = decodedValue5119
 				dst.Banner = &value
 			}
 		}
@@ -20713,11 +20744,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5117, decodeError5118 := ingressNumericScalar[int64](item, c, fieldPath(path, "PremiumTier"))
-				if decodeError5118 != nil {
-					return nil, decodeError5118
+				decodedValue5121, decodeError5122 := ingressNumericScalar[int64](item, c, fieldPath(path, "PremiumTier"))
+				if decodeError5122 != nil {
+					return nil, decodeError5122
 				}
-				value = decodedValue5117
+				value = decodedValue5121
 				dst.PremiumTier = &value
 			}
 		}
@@ -20732,11 +20763,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5119, decodeError5120 := ingressNumericScalar[int64](item, c, fieldPath(path, "PremiumSubscriptionCount"))
-				if decodeError5120 != nil {
-					return nil, decodeError5120
+				decodedValue5123, decodeError5124 := ingressNumericScalar[int64](item, c, fieldPath(path, "PremiumSubscriptionCount"))
+				if decodeError5124 != nil {
+					return nil, decodeError5124
 				}
-				value = decodedValue5119
+				value = decodedValue5123
 				dst.PremiumSubscriptionCount = &value
 			}
 		}
@@ -20746,11 +20777,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5121, decodeError5122 := ingressString(item, c, fieldPath(path, "PreferredLocale"))
-				if decodeError5122 != nil {
-					return nil, decodeError5122
+				decodedValue5125, decodeError5126 := ingressString(item, c, fieldPath(path, "PreferredLocale"))
+				if decodeError5126 != nil {
+					return nil, decodeError5126
 				}
-				value = decodedValue5121
+				value = decodedValue5125
 				dst.PreferredLocale = &value
 			}
 		}
@@ -20760,11 +20791,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5123, decodeError5124 := ingressString(item, c, fieldPath(path, "PublicUpdatesChannelID"))
-				if decodeError5124 != nil {
-					return nil, decodeError5124
+				decodedValue5127, decodeError5128 := ingressString(item, c, fieldPath(path, "PublicUpdatesChannelID"))
+				if decodeError5128 != nil {
+					return nil, decodeError5128
 				}
-				value = decodedValue5123
+				value = decodedValue5127
 				dst.PublicUpdatesChannelId = &value
 			}
 		}
@@ -20779,11 +20810,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5125, decodeError5126 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxVideoChannelUsers"))
-				if decodeError5126 != nil {
-					return nil, decodeError5126
+				decodedValue5129, decodeError5130 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxVideoChannelUsers"))
+				if decodeError5130 != nil {
+					return nil, decodeError5130
 				}
-				value = decodedValue5125
+				value = decodedValue5129
 				dst.MaxVideoChannelUsers = &value
 			}
 		}
@@ -20798,11 +20829,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5127, decodeError5128 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
-				if decodeError5128 != nil {
-					return nil, decodeError5128
+				decodedValue5131, decodeError5132 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
+				if decodeError5132 != nil {
+					return nil, decodeError5132
 				}
-				value = decodedValue5127
+				value = decodedValue5131
 				dst.ApproximateMemberCount = &value
 			}
 		}
@@ -20817,11 +20848,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5129, decodeError5130 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
-				if decodeError5130 != nil {
-					return nil, decodeError5130
+				decodedValue5133, decodeError5134 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
+				if decodeError5134 != nil {
+					return nil, decodeError5134
 				}
-				value = decodedValue5129
+				value = decodedValue5133
 				dst.ApproximatePresenceCount = &value
 			}
 		}
@@ -20834,11 +20865,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 					return nil, err
 				}
 				var value string
-				decodedValue5131, decodeError5132 := ingressString(item, c, fieldPath(path, "Permissions"))
-				if decodeError5132 != nil {
-					return nil, decodeError5132
+				decodedValue5135, decodeError5136 := ingressString(item, c, fieldPath(path, "Permissions"))
+				if decodeError5136 != nil {
+					return nil, decodeError5136
 				}
-				value = decodedValue5131
+				value = decodedValue5135
 				dst.Permissions = &value
 			}
 		}
@@ -20847,11 +20878,11 @@ func (c *conversion) nodeSnapshotGuild(n *ingressNode, path string, parent int64
 		item := n.get("stage_instances")
 		if item != nil {
 			if !item.null {
-				decodedValue5133, decodeError5134 := c.nodeDomainStageInstanceList(item, fieldPath(path, "StageInstances"), parent)
-				if decodeError5134 != nil {
-					return nil, decodeError5134
+				decodedValue5137, decodeError5138 := c.nodeDomainStageInstanceList(item, fieldPath(path, "StageInstances"), parent)
+				if decodeError5138 != nil {
+					return nil, decodeError5138
 				}
-				dst.StageInstances = decodedValue5133
+				dst.StageInstances = decodedValue5137
 			}
 		}
 	}
@@ -20882,11 +20913,11 @@ func (c *conversion) nodeSnapshotGuildApplicationCommandPermissions(n *ingressNo
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5135, decodeError5136 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5136 != nil {
-					return nil, decodeError5136
+				decodedValue5139, decodeError5140 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5140 != nil {
+					return nil, decodeError5140
 				}
-				value = decodedValue5135
+				value = decodedValue5139
 				dst.Id = &value
 			}
 		}
@@ -20896,11 +20927,11 @@ func (c *conversion) nodeSnapshotGuildApplicationCommandPermissions(n *ingressNo
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5137, decodeError5138 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError5138 != nil {
-					return nil, decodeError5138
+				decodedValue5141, decodeError5142 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError5142 != nil {
+					return nil, decodeError5142
 				}
-				value = decodedValue5137
+				value = decodedValue5141
 				dst.ApplicationId = &value
 			}
 		}
@@ -20910,11 +20941,11 @@ func (c *conversion) nodeSnapshotGuildApplicationCommandPermissions(n *ingressNo
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5139, decodeError5140 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5140 != nil {
-					return nil, decodeError5140
+				decodedValue5143, decodeError5144 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5144 != nil {
+					return nil, decodeError5144
 				}
-				value = decodedValue5139
+				value = decodedValue5143
 				dst.GuildId = &value
 			}
 		}
@@ -20923,11 +20954,11 @@ func (c *conversion) nodeSnapshotGuildApplicationCommandPermissions(n *ingressNo
 		item := n.get("permissions")
 		if item != nil {
 			if !item.null {
-				decodedValue5141, decodeError5142 := c.nodeDomainApplicationCommandPermissionsList(item, fieldPath(path, "Permissions"), parent)
-				if decodeError5142 != nil {
-					return nil, decodeError5142
+				decodedValue5145, decodeError5146 := c.nodeDomainApplicationCommandPermissionsList(item, fieldPath(path, "Permissions"), parent)
+				if decodeError5146 != nil {
+					return nil, decodeError5146
 				}
-				dst.Permissions = decodedValue5141
+				dst.Permissions = decodedValue5145
 			}
 		}
 	}
@@ -20957,11 +20988,11 @@ func (c *conversion) nodeSnapshotGuildAuditLog(n *ingressNode, path string, pare
 		item := n.get("webhooks")
 		if item != nil {
 			if !item.null {
-				decodedValue5143, decodeError5144 := c.nodeDomainWebhookList(item, fieldPath(path, "Webhooks"), parent)
-				if decodeError5144 != nil {
-					return nil, decodeError5144
+				decodedValue5147, decodeError5148 := c.nodeDomainWebhookList(item, fieldPath(path, "Webhooks"), parent)
+				if decodeError5148 != nil {
+					return nil, decodeError5148
 				}
-				dst.Webhooks = decodedValue5143
+				dst.Webhooks = decodedValue5147
 			}
 		}
 	}
@@ -20969,11 +21000,11 @@ func (c *conversion) nodeSnapshotGuildAuditLog(n *ingressNode, path string, pare
 		item := n.get("users")
 		if item != nil {
 			if !item.null {
-				decodedValue5145, decodeError5146 := c.nodeDomainUserList(item, fieldPath(path, "Users"), parent)
-				if decodeError5146 != nil {
-					return nil, decodeError5146
+				decodedValue5149, decodeError5150 := c.nodeDomainUserList(item, fieldPath(path, "Users"), parent)
+				if decodeError5150 != nil {
+					return nil, decodeError5150
 				}
-				dst.Users = decodedValue5145
+				dst.Users = decodedValue5149
 			}
 		}
 	}
@@ -20981,11 +21012,11 @@ func (c *conversion) nodeSnapshotGuildAuditLog(n *ingressNode, path string, pare
 		item := n.get("audit_log_entries")
 		if item != nil {
 			if !item.null {
-				decodedValue5147, decodeError5148 := c.nodeDomainAuditLogEntryList(item, fieldPath(path, "AuditLogEntries"), parent)
-				if decodeError5148 != nil {
-					return nil, decodeError5148
+				decodedValue5151, decodeError5152 := c.nodeDomainAuditLogEntryList(item, fieldPath(path, "AuditLogEntries"), parent)
+				if decodeError5152 != nil {
+					return nil, decodeError5152
 				}
-				dst.AuditLogEntries = decodedValue5147
+				dst.AuditLogEntries = decodedValue5151
 			}
 		}
 	}
@@ -20993,11 +21024,11 @@ func (c *conversion) nodeSnapshotGuildAuditLog(n *ingressNode, path string, pare
 		item := n.get("integrations")
 		if item != nil {
 			if !item.null {
-				decodedValue5149, decodeError5150 := c.nodeDomainIntegrationList(item, fieldPath(path, "Integrations"), parent)
-				if decodeError5150 != nil {
-					return nil, decodeError5150
+				decodedValue5153, decodeError5154 := c.nodeDomainIntegrationList(item, fieldPath(path, "Integrations"), parent)
+				if decodeError5154 != nil {
+					return nil, decodeError5154
 				}
-				dst.Integrations = decodedValue5149
+				dst.Integrations = decodedValue5153
 			}
 		}
 	}
@@ -21028,11 +21059,11 @@ func (c *conversion) nodeSnapshotGuildBan(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5151, decodeError5152 := ingressString(item, c, fieldPath(path, "Reason"))
-				if decodeError5152 != nil {
-					return nil, decodeError5152
+				decodedValue5155, decodeError5156 := ingressString(item, c, fieldPath(path, "Reason"))
+				if decodeError5156 != nil {
+					return nil, decodeError5156
 				}
-				value = decodedValue5151
+				value = decodedValue5155
 				dst.Reason = &value
 			}
 		}
@@ -21041,11 +21072,11 @@ func (c *conversion) nodeSnapshotGuildBan(n *ingressNode, path string, parent in
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5153, decodeError5154 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5154 != nil {
-					return nil, decodeError5154
+				decodedValue5157, decodeError5158 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5158 != nil {
+					return nil, decodeError5158
 				}
-				dst.User = decodedValue5153
+				dst.User = decodedValue5157
 			}
 		}
 	}
@@ -21076,11 +21107,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5155, decodeError5156 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5156 != nil {
-					return nil, decodeError5156
+				decodedValue5159, decodeError5160 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5160 != nil {
+					return nil, decodeError5160
 				}
-				value = decodedValue5155
+				value = decodedValue5159
 				dst.Name = &value
 			}
 		}
@@ -21095,11 +21126,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 					}
 				}
 				var value int64
-				decodedValue5157, decodeError5158 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError5158 != nil {
-					return nil, decodeError5158
+				decodedValue5161, decodeError5162 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError5162 != nil {
+					return nil, decodeError5162
 				}
-				value = decodedValue5157
+				value = decodedValue5161
 				dst.Type = &value
 			}
 		}
@@ -21109,11 +21140,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5159, decodeError5160 := ingressString(item, c, fieldPath(path, "Topic"))
-				if decodeError5160 != nil {
-					return nil, decodeError5160
+				decodedValue5163, decodeError5164 := ingressString(item, c, fieldPath(path, "Topic"))
+				if decodeError5164 != nil {
+					return nil, decodeError5164
 				}
-				value = decodedValue5159
+				value = decodedValue5163
 				dst.Topic = &value
 			}
 		}
@@ -21128,11 +21159,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 					}
 				}
 				var value int64
-				decodedValue5161, decodeError5162 := ingressNumericScalar[int64](item, c, fieldPath(path, "Bitrate"))
-				if decodeError5162 != nil {
-					return nil, decodeError5162
+				decodedValue5165, decodeError5166 := ingressNumericScalar[int64](item, c, fieldPath(path, "Bitrate"))
+				if decodeError5166 != nil {
+					return nil, decodeError5166
 				}
-				value = decodedValue5161
+				value = decodedValue5165
 				dst.Bitrate = &value
 			}
 		}
@@ -21147,11 +21178,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 					}
 				}
 				var value int64
-				decodedValue5163, decodeError5164 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserLimit"))
-				if decodeError5164 != nil {
-					return nil, decodeError5164
+				decodedValue5167, decodeError5168 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserLimit"))
+				if decodeError5168 != nil {
+					return nil, decodeError5168
 				}
-				value = decodedValue5163
+				value = decodedValue5167
 				dst.UserLimit = &value
 			}
 		}
@@ -21166,11 +21197,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 					}
 				}
 				var value int64
-				decodedValue5165, decodeError5166 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
-				if decodeError5166 != nil {
-					return nil, decodeError5166
+				decodedValue5169, decodeError5170 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
+				if decodeError5170 != nil {
+					return nil, decodeError5170
 				}
-				value = decodedValue5165
+				value = decodedValue5169
 				dst.RateLimitPerUser = &value
 			}
 		}
@@ -21185,11 +21216,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 					}
 				}
 				var value int64
-				decodedValue5167, decodeError5168 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
-				if decodeError5168 != nil {
-					return nil, decodeError5168
+				decodedValue5171, decodeError5172 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
+				if decodeError5172 != nil {
+					return nil, decodeError5172
 				}
-				value = decodedValue5167
+				value = decodedValue5171
 				dst.Position = &value
 			}
 		}
@@ -21198,11 +21229,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 		item := n.get("permission_overwrites")
 		if item != nil {
 			if !item.null {
-				decodedValue5169, decodeError5170 := c.nodeDomainPermissionOverwriteList(item, fieldPath(path, "PermissionOverwrites"), parent)
-				if decodeError5170 != nil {
-					return nil, decodeError5170
+				decodedValue5173, decodeError5174 := c.nodeDomainPermissionOverwriteList(item, fieldPath(path, "PermissionOverwrites"), parent)
+				if decodeError5174 != nil {
+					return nil, decodeError5174
 				}
-				dst.PermissionOverwrites = decodedValue5169
+				dst.PermissionOverwrites = decodedValue5173
 			}
 		}
 	}
@@ -21211,11 +21242,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5171, decodeError5172 := ingressString(item, c, fieldPath(path, "ParentID"))
-				if decodeError5172 != nil {
-					return nil, decodeError5172
+				decodedValue5175, decodeError5176 := ingressString(item, c, fieldPath(path, "ParentID"))
+				if decodeError5176 != nil {
+					return nil, decodeError5176
 				}
-				value = decodedValue5171
+				value = decodedValue5175
 				dst.ParentId = &value
 			}
 		}
@@ -21225,11 +21256,11 @@ func (c *conversion) nodeSnapshotGuildChannelCreateData(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5173, decodeError5174 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
-				if decodeError5174 != nil {
-					return nil, decodeError5174
+				decodedValue5177, decodeError5178 := ingressScalar[bool](item, c, fieldPath(path, "NSFW"))
+				if decodeError5178 != nil {
+					return nil, decodeError5178
 				}
-				value = decodedValue5173
+				value = decodedValue5177
 				dst.Nsfw = &value
 			}
 		}
@@ -21261,11 +21292,11 @@ func (c *conversion) nodeSnapshotGuildEmbed(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5175, decodeError5176 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
-				if decodeError5176 != nil {
-					return nil, decodeError5176
+				decodedValue5179, decodeError5180 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
+				if decodeError5180 != nil {
+					return nil, decodeError5180
 				}
-				value = decodedValue5175
+				value = decodedValue5179
 				dst.Enabled = &value
 			}
 		}
@@ -21275,11 +21306,11 @@ func (c *conversion) nodeSnapshotGuildEmbed(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5177, decodeError5178 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError5178 != nil {
-					return nil, decodeError5178
+				decodedValue5181, decodeError5182 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError5182 != nil {
+					return nil, decodeError5182
 				}
-				value = decodedValue5177
+				value = decodedValue5181
 				dst.ChannelId = &value
 			}
 		}
@@ -21305,11 +21336,11 @@ func (c *conversion) nodeSnapshotGuildMemberAddParams(n *ingressNode, path strin
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5179, decodeError5180 := ingressString(item, c, fieldPath(path, "Nick"))
-				if decodeError5180 != nil {
-					return nil, decodeError5180
+				decodedValue5183, decodeError5184 := ingressString(item, c, fieldPath(path, "Nick"))
+				if decodeError5184 != nil {
+					return nil, decodeError5184
 				}
-				value = decodedValue5179
+				value = decodedValue5183
 				dst.Nick = &value
 			}
 		}
@@ -21318,11 +21349,11 @@ func (c *conversion) nodeSnapshotGuildMemberAddParams(n *ingressNode, path strin
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue5181, decodeError5182 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
-				if decodeError5182 != nil {
-					return nil, decodeError5182
+				decodedValue5185, decodeError5186 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
+				if decodeError5186 != nil {
+					return nil, decodeError5186
 				}
-				dst.Roles = decodedValue5181
+				dst.Roles = decodedValue5185
 			}
 		}
 	}
@@ -21331,11 +21362,11 @@ func (c *conversion) nodeSnapshotGuildMemberAddParams(n *ingressNode, path strin
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5183, decodeError5184 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
-				if decodeError5184 != nil {
-					return nil, decodeError5184
+				decodedValue5187, decodeError5188 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
+				if decodeError5188 != nil {
+					return nil, decodeError5188
 				}
-				value = decodedValue5183
+				value = decodedValue5187
 				dst.Mute = &value
 			}
 		}
@@ -21345,11 +21376,11 @@ func (c *conversion) nodeSnapshotGuildMemberAddParams(n *ingressNode, path strin
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5185, decodeError5186 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
-				if decodeError5186 != nil {
-					return nil, decodeError5186
+				decodedValue5189, decodeError5190 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
+				if decodeError5190 != nil {
+					return nil, decodeError5190
 				}
-				value = decodedValue5185
+				value = decodedValue5189
 				dst.Deaf = &value
 			}
 		}
@@ -21369,11 +21400,11 @@ func (c *conversion) nodeSnapshotGuildMemberParams(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5187, decodeError5188 := ingressString(item, c, fieldPath(path, "Nick"))
-				if decodeError5188 != nil {
-					return nil, decodeError5188
+				decodedValue5191, decodeError5192 := ingressString(item, c, fieldPath(path, "Nick"))
+				if decodeError5192 != nil {
+					return nil, decodeError5192
 				}
-				value = decodedValue5187
+				value = decodedValue5191
 				dst.Nick = &value
 			}
 		}
@@ -21382,22 +21413,22 @@ func (c *conversion) nodeSnapshotGuildMemberParams(n *ingressNode, path string, 
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue5189, decodeError5190 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
-				if decodeError5190 != nil {
-					return nil, decodeError5190
+				decodedValue5193, decodeError5194 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
+				if decodeError5194 != nil {
+					return nil, decodeError5194
 				}
-				dst.Roles = decodedValue5189
+				dst.Roles = decodedValue5193
 			}
 		}
 	}
 	{
 		item := n.get("channel_id")
 		if item != nil {
-			decodedValue5191, decodeError5192 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
-			if decodeError5192 != nil {
-				return nil, decodeError5192
+			decodedValue5195, decodeError5196 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+			if decodeError5196 != nil {
+				return nil, decodeError5196
 			}
-			dst.ChannelId = decodedValue5191
+			dst.ChannelId = decodedValue5195
 		}
 	}
 	{
@@ -21405,11 +21436,11 @@ func (c *conversion) nodeSnapshotGuildMemberParams(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5193, decodeError5194 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
-				if decodeError5194 != nil {
-					return nil, decodeError5194
+				decodedValue5197, decodeError5198 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
+				if decodeError5198 != nil {
+					return nil, decodeError5198
 				}
-				value = decodedValue5193
+				value = decodedValue5197
 				dst.Mute = &value
 			}
 		}
@@ -21419,11 +21450,11 @@ func (c *conversion) nodeSnapshotGuildMemberParams(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5195, decodeError5196 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
-				if decodeError5196 != nil {
-					return nil, decodeError5196
+				decodedValue5199, decodeError5200 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
+				if decodeError5200 != nil {
+					return nil, decodeError5200
 				}
-				value = decodedValue5195
+				value = decodedValue5199
 				dst.Deaf = &value
 			}
 		}
@@ -21431,11 +21462,11 @@ func (c *conversion) nodeSnapshotGuildMemberParams(n *ingressNode, path string, 
 	{
 		item := n.get("communication_disabled_until")
 		if item != nil {
-			decodedValue5197, decodeError5198 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CommunicationDisabledUntil"), parent)
-			if decodeError5198 != nil {
-				return nil, decodeError5198
+			decodedValue5201, decodeError5202 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "CommunicationDisabledUntil"), parent)
+			if decodeError5202 != nil {
+				return nil, decodeError5202
 			}
-			dst.CommunicationDisabledUntil = decodedValue5197
+			dst.CommunicationDisabledUntil = decodedValue5201
 		}
 	}
 	return dst, nil
@@ -21465,11 +21496,11 @@ func (c *conversion) nodeSnapshotGuildOnboarding(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5199, decodeError5200 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5200 != nil {
-					return nil, decodeError5200
+				decodedValue5203, decodeError5204 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5204 != nil {
+					return nil, decodeError5204
 				}
-				value = decodedValue5199
+				value = decodedValue5203
 				dst.GuildId = &value
 			}
 		}
@@ -21478,11 +21509,11 @@ func (c *conversion) nodeSnapshotGuildOnboarding(n *ingressNode, path string, pa
 		item := n.get("prompts")
 		if item != nil {
 			if !item.null {
-				decodedValue5201, decodeError5202 := c.nodeDomainGuildOnboardingPromptList(item, fieldPath(path, "Prompts"), parent)
-				if decodeError5202 != nil {
-					return nil, decodeError5202
+				decodedValue5205, decodeError5206 := c.nodeDomainGuildOnboardingPromptList(item, fieldPath(path, "Prompts"), parent)
+				if decodeError5206 != nil {
+					return nil, decodeError5206
 				}
-				dst.Prompts = decodedValue5201
+				dst.Prompts = decodedValue5205
 			}
 		}
 	}
@@ -21490,11 +21521,11 @@ func (c *conversion) nodeSnapshotGuildOnboarding(n *ingressNode, path string, pa
 		item := n.get("default_channel_ids")
 		if item != nil {
 			if !item.null {
-				decodedValue5203, decodeError5204 := c.nodeDomainStringList(item, fieldPath(path, "DefaultChannelIDs"), parent)
-				if decodeError5204 != nil {
-					return nil, decodeError5204
+				decodedValue5207, decodeError5208 := c.nodeDomainStringList(item, fieldPath(path, "DefaultChannelIDs"), parent)
+				if decodeError5208 != nil {
+					return nil, decodeError5208
 				}
-				dst.DefaultChannelIds = decodedValue5203
+				dst.DefaultChannelIds = decodedValue5207
 			}
 		}
 	}
@@ -21503,11 +21534,11 @@ func (c *conversion) nodeSnapshotGuildOnboarding(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5205, decodeError5206 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
-				if decodeError5206 != nil {
-					return nil, decodeError5206
+				decodedValue5209, decodeError5210 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
+				if decodeError5210 != nil {
+					return nil, decodeError5210
 				}
-				value = decodedValue5205
+				value = decodedValue5209
 				dst.Enabled = &value
 			}
 		}
@@ -21522,11 +21553,11 @@ func (c *conversion) nodeSnapshotGuildOnboarding(n *ingressNode, path string, pa
 					}
 				}
 				var value int64
-				decodedValue5207, decodeError5208 := ingressNumericScalar[int64](item, c, fieldPath(path, "Mode"))
-				if decodeError5208 != nil {
-					return nil, decodeError5208
+				decodedValue5211, decodeError5212 := ingressNumericScalar[int64](item, c, fieldPath(path, "Mode"))
+				if decodeError5212 != nil {
+					return nil, decodeError5212
 				}
-				value = decodedValue5207
+				value = decodedValue5211
 				dst.Mode = &value
 			}
 		}
@@ -21558,11 +21589,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPrompt(n *ingressNode, path stri
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5209, decodeError5210 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5210 != nil {
-					return nil, decodeError5210
+				decodedValue5213, decodeError5214 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5214 != nil {
+					return nil, decodeError5214
 				}
-				value = decodedValue5209
+				value = decodedValue5213
 				dst.Id = &value
 			}
 		}
@@ -21577,11 +21608,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPrompt(n *ingressNode, path stri
 					}
 				}
 				var value int64
-				decodedValue5211, decodeError5212 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError5212 != nil {
-					return nil, decodeError5212
+				decodedValue5215, decodeError5216 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError5216 != nil {
+					return nil, decodeError5216
 				}
-				value = decodedValue5211
+				value = decodedValue5215
 				dst.Type = &value
 			}
 		}
@@ -21590,11 +21621,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPrompt(n *ingressNode, path stri
 		item := n.get("options")
 		if item != nil {
 			if !item.null {
-				decodedValue5213, decodeError5214 := c.nodeDomainGuildOnboardingPromptOptionList(item, fieldPath(path, "Options"), parent)
-				if decodeError5214 != nil {
-					return nil, decodeError5214
+				decodedValue5217, decodeError5218 := c.nodeDomainGuildOnboardingPromptOptionList(item, fieldPath(path, "Options"), parent)
+				if decodeError5218 != nil {
+					return nil, decodeError5218
 				}
-				dst.Options = decodedValue5213
+				dst.Options = decodedValue5217
 			}
 		}
 	}
@@ -21603,11 +21634,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPrompt(n *ingressNode, path stri
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5215, decodeError5216 := ingressString(item, c, fieldPath(path, "Title"))
-				if decodeError5216 != nil {
-					return nil, decodeError5216
+				decodedValue5219, decodeError5220 := ingressString(item, c, fieldPath(path, "Title"))
+				if decodeError5220 != nil {
+					return nil, decodeError5220
 				}
-				value = decodedValue5215
+				value = decodedValue5219
 				dst.Title = &value
 			}
 		}
@@ -21617,11 +21648,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPrompt(n *ingressNode, path stri
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5217, decodeError5218 := ingressScalar[bool](item, c, fieldPath(path, "SingleSelect"))
-				if decodeError5218 != nil {
-					return nil, decodeError5218
+				decodedValue5221, decodeError5222 := ingressScalar[bool](item, c, fieldPath(path, "SingleSelect"))
+				if decodeError5222 != nil {
+					return nil, decodeError5222
 				}
-				value = decodedValue5217
+				value = decodedValue5221
 				dst.SingleSelect = &value
 			}
 		}
@@ -21631,11 +21662,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPrompt(n *ingressNode, path stri
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5219, decodeError5220 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
-				if decodeError5220 != nil {
-					return nil, decodeError5220
+				decodedValue5223, decodeError5224 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
+				if decodeError5224 != nil {
+					return nil, decodeError5224
 				}
-				value = decodedValue5219
+				value = decodedValue5223
 				dst.Required = &value
 			}
 		}
@@ -21645,11 +21676,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPrompt(n *ingressNode, path stri
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5221, decodeError5222 := ingressScalar[bool](item, c, fieldPath(path, "InOnboarding"))
-				if decodeError5222 != nil {
-					return nil, decodeError5222
+				decodedValue5225, decodeError5226 := ingressScalar[bool](item, c, fieldPath(path, "InOnboarding"))
+				if decodeError5226 != nil {
+					return nil, decodeError5226
 				}
-				value = decodedValue5221
+				value = decodedValue5225
 				dst.InOnboarding = &value
 			}
 		}
@@ -21681,11 +21712,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5223, decodeError5224 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5224 != nil {
-					return nil, decodeError5224
+				decodedValue5227, decodeError5228 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5228 != nil {
+					return nil, decodeError5228
 				}
-				value = decodedValue5223
+				value = decodedValue5227
 				dst.Id = &value
 			}
 		}
@@ -21694,11 +21725,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		item := n.get("channel_ids")
 		if item != nil {
 			if !item.null {
-				decodedValue5225, decodeError5226 := c.nodeDomainStringList(item, fieldPath(path, "ChannelIDs"), parent)
-				if decodeError5226 != nil {
-					return nil, decodeError5226
+				decodedValue5229, decodeError5230 := c.nodeDomainStringList(item, fieldPath(path, "ChannelIDs"), parent)
+				if decodeError5230 != nil {
+					return nil, decodeError5230
 				}
-				dst.ChannelIds = decodedValue5225
+				dst.ChannelIds = decodedValue5229
 			}
 		}
 	}
@@ -21706,11 +21737,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		item := n.get("role_ids")
 		if item != nil {
 			if !item.null {
-				decodedValue5227, decodeError5228 := c.nodeDomainStringList(item, fieldPath(path, "RoleIDs"), parent)
-				if decodeError5228 != nil {
-					return nil, decodeError5228
+				decodedValue5231, decodeError5232 := c.nodeDomainStringList(item, fieldPath(path, "RoleIDs"), parent)
+				if decodeError5232 != nil {
+					return nil, decodeError5232
 				}
-				dst.RoleIds = decodedValue5227
+				dst.RoleIds = decodedValue5231
 			}
 		}
 	}
@@ -21718,11 +21749,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		item := n.get("emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue5229, decodeError5230 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
-				if decodeError5230 != nil {
-					return nil, decodeError5230
+				decodedValue5233, decodeError5234 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
+				if decodeError5234 != nil {
+					return nil, decodeError5234
 				}
-				dst.Emoji = decodedValue5229
+				dst.Emoji = decodedValue5233
 			}
 		}
 	}
@@ -21731,11 +21762,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5231, decodeError5232 := ingressString(item, c, fieldPath(path, "Title"))
-				if decodeError5232 != nil {
-					return nil, decodeError5232
+				decodedValue5235, decodeError5236 := ingressString(item, c, fieldPath(path, "Title"))
+				if decodeError5236 != nil {
+					return nil, decodeError5236
 				}
-				value = decodedValue5231
+				value = decodedValue5235
 				dst.Title = &value
 			}
 		}
@@ -21745,11 +21776,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5233, decodeError5234 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5234 != nil {
-					return nil, decodeError5234
+				decodedValue5237, decodeError5238 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5238 != nil {
+					return nil, decodeError5238
 				}
-				value = decodedValue5233
+				value = decodedValue5237
 				dst.Description = &value
 			}
 		}
@@ -21759,11 +21790,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5235, decodeError5236 := ingressString(item, c, fieldPath(path, "EmojiID"))
-				if decodeError5236 != nil {
-					return nil, decodeError5236
+				decodedValue5239, decodeError5240 := ingressString(item, c, fieldPath(path, "EmojiID"))
+				if decodeError5240 != nil {
+					return nil, decodeError5240
 				}
-				value = decodedValue5235
+				value = decodedValue5239
 				dst.EmojiId = &value
 			}
 		}
@@ -21773,11 +21804,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5237, decodeError5238 := ingressString(item, c, fieldPath(path, "EmojiName"))
-				if decodeError5238 != nil {
-					return nil, decodeError5238
+				decodedValue5241, decodeError5242 := ingressString(item, c, fieldPath(path, "EmojiName"))
+				if decodeError5242 != nil {
+					return nil, decodeError5242
 				}
-				value = decodedValue5237
+				value = decodedValue5241
 				dst.EmojiName = &value
 			}
 		}
@@ -21787,11 +21818,11 @@ func (c *conversion) nodeSnapshotGuildOnboardingPromptOption(n *ingressNode, pat
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5239, decodeError5240 := ingressScalar[bool](item, c, fieldPath(path, "EmojiAnimated"))
-				if decodeError5240 != nil {
-					return nil, decodeError5240
+				decodedValue5243, decodeError5244 := ingressScalar[bool](item, c, fieldPath(path, "EmojiAnimated"))
+				if decodeError5244 != nil {
+					return nil, decodeError5244
 				}
-				value = decodedValue5239
+				value = decodedValue5243
 				dst.EmojiAnimated = &value
 			}
 		}
@@ -21811,11 +21842,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5241, decodeError5242 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5242 != nil {
-					return nil, decodeError5242
+				decodedValue5245, decodeError5246 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5246 != nil {
+					return nil, decodeError5246
 				}
-				value = decodedValue5241
+				value = decodedValue5245
 				dst.Name = &value
 			}
 		}
@@ -21825,11 +21856,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5243, decodeError5244 := ingressString(item, c, fieldPath(path, "Region"))
-				if decodeError5244 != nil {
-					return nil, decodeError5244
+				decodedValue5247, decodeError5248 := ingressString(item, c, fieldPath(path, "Region"))
+				if decodeError5248 != nil {
+					return nil, decodeError5248
 				}
-				value = decodedValue5243
+				value = decodedValue5247
 				dst.Region = &value
 			}
 		}
@@ -21844,11 +21875,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue5245, decodeError5246 := ingressNumericScalar[int64](item, c, fieldPath(path, "VerificationLevel"))
-				if decodeError5246 != nil {
-					return nil, decodeError5246
+				decodedValue5249, decodeError5250 := ingressNumericScalar[int64](item, c, fieldPath(path, "VerificationLevel"))
+				if decodeError5250 != nil {
+					return nil, decodeError5250
 				}
-				value = decodedValue5245
+				value = decodedValue5249
 				dst.VerificationLevel = &value
 			}
 		}
@@ -21863,11 +21894,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue5247, decodeError5248 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultMessageNotifications"))
-				if decodeError5248 != nil {
-					return nil, decodeError5248
+				decodedValue5251, decodeError5252 := ingressNumericScalar[int64](item, c, fieldPath(path, "DefaultMessageNotifications"))
+				if decodeError5252 != nil {
+					return nil, decodeError5252
 				}
-				value = decodedValue5247
+				value = decodedValue5251
 				dst.DefaultMessageNotifications = &value
 			}
 		}
@@ -21882,11 +21913,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue5249, decodeError5250 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExplicitContentFilter"))
-				if decodeError5250 != nil {
-					return nil, decodeError5250
+				decodedValue5253, decodeError5254 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExplicitContentFilter"))
+				if decodeError5254 != nil {
+					return nil, decodeError5254
 				}
-				value = decodedValue5249
+				value = decodedValue5253
 				dst.ExplicitContentFilter = &value
 			}
 		}
@@ -21894,11 +21925,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 	{
 		item := n.get("afk_channel_id")
 		if item != nil {
-			decodedValue5251, decodeError5252 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "AfkChannelID"), parent)
-			if decodeError5252 != nil {
-				return nil, decodeError5252
+			decodedValue5255, decodeError5256 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "AfkChannelID"), parent)
+			if decodeError5256 != nil {
+				return nil, decodeError5256
 			}
-			dst.AfkChannelId = decodedValue5251
+			dst.AfkChannelId = decodedValue5255
 		}
 	}
 	{
@@ -21911,11 +21942,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue5253, decodeError5254 := ingressNumericScalar[int64](item, c, fieldPath(path, "AfkTimeout"))
-				if decodeError5254 != nil {
-					return nil, decodeError5254
+				decodedValue5257, decodeError5258 := ingressNumericScalar[int64](item, c, fieldPath(path, "AfkTimeout"))
+				if decodeError5258 != nil {
+					return nil, decodeError5258
 				}
-				value = decodedValue5253
+				value = decodedValue5257
 				dst.AfkTimeout = &value
 			}
 		}
@@ -21923,11 +21954,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 	{
 		item := n.get("icon")
 		if item != nil {
-			decodedValue5255, decodeError5256 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
-			if decodeError5256 != nil {
-				return nil, decodeError5256
+			decodedValue5259, decodeError5260 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+			if decodeError5260 != nil {
+				return nil, decodeError5260
 			}
-			dst.Icon = decodedValue5255
+			dst.Icon = decodedValue5259
 		}
 	}
 	{
@@ -21935,11 +21966,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5257, decodeError5258 := ingressString(item, c, fieldPath(path, "OwnerID"))
-				if decodeError5258 != nil {
-					return nil, decodeError5258
+				decodedValue5261, decodeError5262 := ingressString(item, c, fieldPath(path, "OwnerID"))
+				if decodeError5262 != nil {
+					return nil, decodeError5262
 				}
-				value = decodedValue5257
+				value = decodedValue5261
 				dst.OwnerId = &value
 			}
 		}
@@ -21947,41 +21978,41 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 	{
 		item := n.get("splash")
 		if item != nil {
-			decodedValue5259, decodeError5260 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Splash"), parent)
-			if decodeError5260 != nil {
-				return nil, decodeError5260
+			decodedValue5263, decodeError5264 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Splash"), parent)
+			if decodeError5264 != nil {
+				return nil, decodeError5264
 			}
-			dst.Splash = decodedValue5259
+			dst.Splash = decodedValue5263
 		}
 	}
 	{
 		item := n.get("discovery_splash")
 		if item != nil {
-			decodedValue5261, decodeError5262 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "DiscoverySplash"), parent)
-			if decodeError5262 != nil {
-				return nil, decodeError5262
+			decodedValue5265, decodeError5266 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "DiscoverySplash"), parent)
+			if decodeError5266 != nil {
+				return nil, decodeError5266
 			}
-			dst.DiscoverySplash = decodedValue5261
+			dst.DiscoverySplash = decodedValue5265
 		}
 	}
 	{
 		item := n.get("banner")
 		if item != nil {
-			decodedValue5263, decodeError5264 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Banner"), parent)
-			if decodeError5264 != nil {
-				return nil, decodeError5264
+			decodedValue5267, decodeError5268 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Banner"), parent)
+			if decodeError5268 != nil {
+				return nil, decodeError5268
 			}
-			dst.Banner = decodedValue5263
+			dst.Banner = decodedValue5267
 		}
 	}
 	{
 		item := n.get("system_channel_id")
 		if item != nil {
-			decodedValue5265, decodeError5266 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "SystemChannelID"), parent)
-			if decodeError5266 != nil {
-				return nil, decodeError5266
+			decodedValue5269, decodeError5270 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "SystemChannelID"), parent)
+			if decodeError5270 != nil {
+				return nil, decodeError5270
 			}
-			dst.SystemChannelId = decodedValue5265
+			dst.SystemChannelId = decodedValue5269
 		}
 	}
 	{
@@ -21994,11 +22025,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 					}
 				}
 				var value uint64
-				decodedValue5267, decodeError5268 := ingressNumericScalar[uint64](item, c, fieldPath(path, "SystemChannelFlags"))
-				if decodeError5268 != nil {
-					return nil, decodeError5268
+				decodedValue5271, decodeError5272 := ingressNumericScalar[uint64](item, c, fieldPath(path, "SystemChannelFlags"))
+				if decodeError5272 != nil {
+					return nil, decodeError5272
 				}
-				value = decodedValue5267
+				value = decodedValue5271
 				dst.SystemChannelFlags = &value
 			}
 		}
@@ -22006,21 +22037,21 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 	{
 		item := n.get("rules_channel_id")
 		if item != nil {
-			decodedValue5269, decodeError5270 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "RulesChannelID"), parent)
-			if decodeError5270 != nil {
-				return nil, decodeError5270
+			decodedValue5273, decodeError5274 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "RulesChannelID"), parent)
+			if decodeError5274 != nil {
+				return nil, decodeError5274
 			}
-			dst.RulesChannelId = decodedValue5269
+			dst.RulesChannelId = decodedValue5273
 		}
 	}
 	{
 		item := n.get("public_updates_channel_id")
 		if item != nil {
-			decodedValue5271, decodeError5272 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "PublicUpdatesChannelID"), parent)
-			if decodeError5272 != nil {
-				return nil, decodeError5272
+			decodedValue5275, decodeError5276 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "PublicUpdatesChannelID"), parent)
+			if decodeError5276 != nil {
+				return nil, decodeError5276
 			}
-			dst.PublicUpdatesChannelId = decodedValue5271
+			dst.PublicUpdatesChannelId = decodedValue5275
 		}
 	}
 	{
@@ -22028,11 +22059,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5273, decodeError5274 := ingressString(item, c, fieldPath(path, "PreferredLocale"))
-				if decodeError5274 != nil {
-					return nil, decodeError5274
+				decodedValue5277, decodeError5278 := ingressString(item, c, fieldPath(path, "PreferredLocale"))
+				if decodeError5278 != nil {
+					return nil, decodeError5278
 				}
-				value = decodedValue5273
+				value = decodedValue5277
 				dst.PreferredLocale = &value
 			}
 		}
@@ -22041,22 +22072,22 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 		item := n.get("features")
 		if item != nil {
 			if !item.null {
-				decodedValue5275, decodeError5276 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
-				if decodeError5276 != nil {
-					return nil, decodeError5276
+				decodedValue5279, decodeError5280 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
+				if decodeError5280 != nil {
+					return nil, decodeError5280
 				}
-				dst.Features = decodedValue5275
+				dst.Features = decodedValue5279
 			}
 		}
 	}
 	{
 		item := n.get("description")
 		if item != nil {
-			decodedValue5277, decodeError5278 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
-			if decodeError5278 != nil {
-				return nil, decodeError5278
+			decodedValue5281, decodeError5282 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Description"), parent)
+			if decodeError5282 != nil {
+				return nil, decodeError5282
 			}
-			dst.Description = decodedValue5277
+			dst.Description = decodedValue5281
 		}
 	}
 	{
@@ -22064,11 +22095,11 @@ func (c *conversion) nodeSnapshotGuildParams(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5279, decodeError5280 := ingressScalar[bool](item, c, fieldPath(path, "PremiumProgressBarEnabled"))
-				if decodeError5280 != nil {
-					return nil, decodeError5280
+				decodedValue5283, decodeError5284 := ingressScalar[bool](item, c, fieldPath(path, "PremiumProgressBarEnabled"))
+				if decodeError5284 != nil {
+					return nil, decodeError5284
 				}
-				value = decodedValue5279
+				value = decodedValue5283
 				dst.PremiumProgressBarEnabled = &value
 			}
 		}
@@ -22100,11 +22131,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5281, decodeError5282 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5282 != nil {
-					return nil, decodeError5282
+				decodedValue5285, decodeError5286 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5286 != nil {
+					return nil, decodeError5286
 				}
-				value = decodedValue5281
+				value = decodedValue5285
 				dst.Id = &value
 			}
 		}
@@ -22114,11 +22145,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5283, decodeError5284 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5284 != nil {
-					return nil, decodeError5284
+				decodedValue5287, decodeError5288 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5288 != nil {
+					return nil, decodeError5288
 				}
-				value = decodedValue5283
+				value = decodedValue5287
 				dst.Name = &value
 			}
 		}
@@ -22128,11 +22159,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5285, decodeError5286 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError5286 != nil {
-					return nil, decodeError5286
+				decodedValue5289, decodeError5290 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError5290 != nil {
+					return nil, decodeError5290
 				}
-				value = decodedValue5285
+				value = decodedValue5289
 				dst.Icon = &value
 			}
 		}
@@ -22142,11 +22173,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5287, decodeError5288 := ingressString(item, c, fieldPath(path, "Splash"))
-				if decodeError5288 != nil {
-					return nil, decodeError5288
+				decodedValue5291, decodeError5292 := ingressString(item, c, fieldPath(path, "Splash"))
+				if decodeError5292 != nil {
+					return nil, decodeError5292
 				}
-				value = decodedValue5287
+				value = decodedValue5291
 				dst.Splash = &value
 			}
 		}
@@ -22156,11 +22187,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5289, decodeError5290 := ingressString(item, c, fieldPath(path, "DiscoverySplash"))
-				if decodeError5290 != nil {
-					return nil, decodeError5290
+				decodedValue5293, decodeError5294 := ingressString(item, c, fieldPath(path, "DiscoverySplash"))
+				if decodeError5294 != nil {
+					return nil, decodeError5294
 				}
-				value = decodedValue5289
+				value = decodedValue5293
 				dst.DiscoverySplash = &value
 			}
 		}
@@ -22169,11 +22200,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		item := n.get("emojis")
 		if item != nil {
 			if !item.null {
-				decodedValue5291, decodeError5292 := c.nodeDomainEmojiList(item, fieldPath(path, "Emojis"), parent)
-				if decodeError5292 != nil {
-					return nil, decodeError5292
+				decodedValue5295, decodeError5296 := c.nodeDomainEmojiList(item, fieldPath(path, "Emojis"), parent)
+				if decodeError5296 != nil {
+					return nil, decodeError5296
 				}
-				dst.Emojis = decodedValue5291
+				dst.Emojis = decodedValue5295
 			}
 		}
 	}
@@ -22181,11 +22212,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		item := n.get("features")
 		if item != nil {
 			if !item.null {
-				decodedValue5293, decodeError5294 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
-				if decodeError5294 != nil {
-					return nil, decodeError5294
+				decodedValue5297, decodeError5298 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
+				if decodeError5298 != nil {
+					return nil, decodeError5298
 				}
-				dst.Features = decodedValue5293
+				dst.Features = decodedValue5297
 			}
 		}
 	}
@@ -22199,11 +22230,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 					}
 				}
 				var value int64
-				decodedValue5295, decodeError5296 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
-				if decodeError5296 != nil {
-					return nil, decodeError5296
+				decodedValue5299, decodeError5300 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
+				if decodeError5300 != nil {
+					return nil, decodeError5300
 				}
-				value = decodedValue5295
+				value = decodedValue5299
 				dst.ApproximateMemberCount = &value
 			}
 		}
@@ -22218,11 +22249,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 					}
 				}
 				var value int64
-				decodedValue5297, decodeError5298 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
-				if decodeError5298 != nil {
-					return nil, decodeError5298
+				decodedValue5301, decodeError5302 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
+				if decodeError5302 != nil {
+					return nil, decodeError5302
 				}
-				value = decodedValue5297
+				value = decodedValue5301
 				dst.ApproximatePresenceCount = &value
 			}
 		}
@@ -22232,11 +22263,11 @@ func (c *conversion) nodeSnapshotGuildPreview(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5299, decodeError5300 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5300 != nil {
-					return nil, decodeError5300
+				decodedValue5303, decodeError5304 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5304 != nil {
+					return nil, decodeError5304
 				}
-				value = decodedValue5299
+				value = decodedValue5303
 				dst.Description = &value
 			}
 		}
@@ -22267,11 +22298,11 @@ func (c *conversion) nodeSnapshotGuildRole(n *ingressNode, path string, parent i
 		item := n.get("role")
 		if item != nil {
 			if !item.null {
-				decodedValue5301, decodeError5302 := c.nodeSnapshotRole(item, fieldPath(path, "Role"), parent)
-				if decodeError5302 != nil {
-					return nil, decodeError5302
+				decodedValue5305, decodeError5306 := c.nodeSnapshotRole(item, fieldPath(path, "Role"), parent)
+				if decodeError5306 != nil {
+					return nil, decodeError5306
 				}
-				dst.Role = decodedValue5301
+				dst.Role = decodedValue5305
 			}
 		}
 	}
@@ -22280,11 +22311,11 @@ func (c *conversion) nodeSnapshotGuildRole(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5303, decodeError5304 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5304 != nil {
-					return nil, decodeError5304
+				decodedValue5307, decodeError5308 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5308 != nil {
+					return nil, decodeError5308
 				}
-				value = decodedValue5303
+				value = decodedValue5307
 				dst.GuildId = &value
 			}
 		}
@@ -22316,11 +22347,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5305, decodeError5306 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5306 != nil {
-					return nil, decodeError5306
+				decodedValue5309, decodeError5310 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5310 != nil {
+					return nil, decodeError5310
 				}
-				value = decodedValue5305
+				value = decodedValue5309
 				dst.Id = &value
 			}
 		}
@@ -22330,11 +22361,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5307, decodeError5308 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5308 != nil {
-					return nil, decodeError5308
+				decodedValue5311, decodeError5312 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5312 != nil {
+					return nil, decodeError5312
 				}
-				value = decodedValue5307
+				value = decodedValue5311
 				dst.GuildId = &value
 			}
 		}
@@ -22344,11 +22375,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5309, decodeError5310 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError5310 != nil {
-					return nil, decodeError5310
+				decodedValue5313, decodeError5314 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError5314 != nil {
+					return nil, decodeError5314
 				}
-				value = decodedValue5309
+				value = decodedValue5313
 				dst.ChannelId = &value
 			}
 		}
@@ -22358,11 +22389,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5311, decodeError5312 := ingressString(item, c, fieldPath(path, "CreatorID"))
-				if decodeError5312 != nil {
-					return nil, decodeError5312
+				decodedValue5315, decodeError5316 := ingressString(item, c, fieldPath(path, "CreatorID"))
+				if decodeError5316 != nil {
+					return nil, decodeError5316
 				}
-				value = decodedValue5311
+				value = decodedValue5315
 				dst.CreatorId = &value
 			}
 		}
@@ -22372,11 +22403,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5313, decodeError5314 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5314 != nil {
-					return nil, decodeError5314
+				decodedValue5317, decodeError5318 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5318 != nil {
+					return nil, decodeError5318
 				}
-				value = decodedValue5313
+				value = decodedValue5317
 				dst.Name = &value
 			}
 		}
@@ -22386,11 +22417,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5315, decodeError5316 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5316 != nil {
-					return nil, decodeError5316
+				decodedValue5319, decodeError5320 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5320 != nil {
+					return nil, decodeError5320
 				}
-				value = decodedValue5315
+				value = decodedValue5319
 				dst.Description = &value
 			}
 		}
@@ -22399,11 +22430,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		item := n.get("scheduled_start_time")
 		if item != nil {
 			if !item.null {
-				decodedValue5317, decodeError5318 := ingressTimestamp(item, c, fieldPath(path, "ScheduledStartTime"))
-				if decodeError5318 != nil {
-					return nil, decodeError5318
+				decodedValue5321, decodeError5322 := ingressTimestamp(item, c, fieldPath(path, "ScheduledStartTime"))
+				if decodeError5322 != nil {
+					return nil, decodeError5322
 				}
-				dst.ScheduledStartTime = decodedValue5317
+				dst.ScheduledStartTime = decodedValue5321
 			}
 		}
 	}
@@ -22411,11 +22442,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		item := n.get("scheduled_end_time")
 		if item != nil {
 			if !item.null {
-				decodedValue5319, decodeError5320 := ingressTimestamp(item, c, fieldPath(path, "ScheduledEndTime"))
-				if decodeError5320 != nil {
-					return nil, decodeError5320
+				decodedValue5323, decodeError5324 := ingressTimestamp(item, c, fieldPath(path, "ScheduledEndTime"))
+				if decodeError5324 != nil {
+					return nil, decodeError5324
 				}
-				dst.ScheduledEndTime = decodedValue5319
+				dst.ScheduledEndTime = decodedValue5323
 			}
 		}
 	}
@@ -22429,11 +22460,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 					}
 				}
 				var value int64
-				decodedValue5321, decodeError5322 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
-				if decodeError5322 != nil {
-					return nil, decodeError5322
+				decodedValue5325, decodeError5326 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
+				if decodeError5326 != nil {
+					return nil, decodeError5326
 				}
-				value = decodedValue5321
+				value = decodedValue5325
 				dst.PrivacyLevel = &value
 			}
 		}
@@ -22448,11 +22479,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 					}
 				}
 				var value int64
-				decodedValue5323, decodeError5324 := ingressNumericScalar[int64](item, c, fieldPath(path, "Status"))
-				if decodeError5324 != nil {
-					return nil, decodeError5324
+				decodedValue5327, decodeError5328 := ingressNumericScalar[int64](item, c, fieldPath(path, "Status"))
+				if decodeError5328 != nil {
+					return nil, decodeError5328
 				}
-				value = decodedValue5323
+				value = decodedValue5327
 				dst.Status = &value
 			}
 		}
@@ -22467,11 +22498,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 					}
 				}
 				var value int64
-				decodedValue5325, decodeError5326 := ingressNumericScalar[int64](item, c, fieldPath(path, "EntityType"))
-				if decodeError5326 != nil {
-					return nil, decodeError5326
+				decodedValue5329, decodeError5330 := ingressNumericScalar[int64](item, c, fieldPath(path, "EntityType"))
+				if decodeError5330 != nil {
+					return nil, decodeError5330
 				}
-				value = decodedValue5325
+				value = decodedValue5329
 				dst.EntityType = &value
 			}
 		}
@@ -22481,11 +22512,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5327, decodeError5328 := ingressString(item, c, fieldPath(path, "EntityID"))
-				if decodeError5328 != nil {
-					return nil, decodeError5328
+				decodedValue5331, decodeError5332 := ingressString(item, c, fieldPath(path, "EntityID"))
+				if decodeError5332 != nil {
+					return nil, decodeError5332
 				}
-				value = decodedValue5327
+				value = decodedValue5331
 				dst.EntityId = &value
 			}
 		}
@@ -22494,11 +22525,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		item := n.get("entity_metadata")
 		if item != nil {
 			if !item.null {
-				decodedValue5329, decodeError5330 := c.nodeSnapshotGuildScheduledEventEntityMetadata(item, fieldPath(path, "EntityMetadata"), parent)
-				if decodeError5330 != nil {
-					return nil, decodeError5330
+				decodedValue5333, decodeError5334 := c.nodeSnapshotGuildScheduledEventEntityMetadata(item, fieldPath(path, "EntityMetadata"), parent)
+				if decodeError5334 != nil {
+					return nil, decodeError5334
 				}
-				dst.EntityMetadata = decodedValue5329
+				dst.EntityMetadata = decodedValue5333
 			}
 		}
 	}
@@ -22506,11 +22537,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		item := n.get("creator")
 		if item != nil {
 			if !item.null {
-				decodedValue5331, decodeError5332 := c.nodeSnapshotUser(item, fieldPath(path, "Creator"), parent)
-				if decodeError5332 != nil {
-					return nil, decodeError5332
+				decodedValue5335, decodeError5336 := c.nodeSnapshotUser(item, fieldPath(path, "Creator"), parent)
+				if decodeError5336 != nil {
+					return nil, decodeError5336
 				}
-				dst.Creator = decodedValue5331
+				dst.Creator = decodedValue5335
 			}
 		}
 	}
@@ -22524,11 +22555,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 					}
 				}
 				var value int64
-				decodedValue5333, decodeError5334 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserCount"))
-				if decodeError5334 != nil {
-					return nil, decodeError5334
+				decodedValue5337, decodeError5338 := ingressNumericScalar[int64](item, c, fieldPath(path, "UserCount"))
+				if decodeError5338 != nil {
+					return nil, decodeError5338
 				}
-				value = decodedValue5333
+				value = decodedValue5337
 				dst.UserCount = &value
 			}
 		}
@@ -22538,11 +22569,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEvent(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5335, decodeError5336 := ingressString(item, c, fieldPath(path, "Image"))
-				if decodeError5336 != nil {
-					return nil, decodeError5336
+				decodedValue5339, decodeError5340 := ingressString(item, c, fieldPath(path, "Image"))
+				if decodeError5340 != nil {
+					return nil, decodeError5340
 				}
-				value = decodedValue5335
+				value = decodedValue5339
 				dst.Image = &value
 			}
 		}
@@ -22574,11 +22605,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventEntityMetadata(n *ingressNod
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5337, decodeError5338 := ingressString(item, c, fieldPath(path, "Location"))
-				if decodeError5338 != nil {
-					return nil, decodeError5338
+				decodedValue5341, decodeError5342 := ingressString(item, c, fieldPath(path, "Location"))
+				if decodeError5342 != nil {
+					return nil, decodeError5342
 				}
-				value = decodedValue5337
+				value = decodedValue5341
 				dst.Location = &value
 			}
 		}
@@ -22596,11 +22627,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 	{
 		item := n.get("channel_id")
 		if item != nil {
-			decodedValue5339, decodeError5340 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
-			if decodeError5340 != nil {
-				return nil, decodeError5340
+			decodedValue5343, decodeError5344 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "ChannelID"), parent)
+			if decodeError5344 != nil {
+				return nil, decodeError5344
 			}
-			dst.ChannelId = decodedValue5339
+			dst.ChannelId = decodedValue5343
 		}
 	}
 	{
@@ -22608,11 +22639,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5341, decodeError5342 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5342 != nil {
-					return nil, decodeError5342
+				decodedValue5345, decodeError5346 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5346 != nil {
+					return nil, decodeError5346
 				}
-				value = decodedValue5341
+				value = decodedValue5345
 				dst.Name = &value
 			}
 		}
@@ -22622,11 +22653,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5343, decodeError5344 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5344 != nil {
-					return nil, decodeError5344
+				decodedValue5347, decodeError5348 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5348 != nil {
+					return nil, decodeError5348
 				}
-				value = decodedValue5343
+				value = decodedValue5347
 				dst.Description = &value
 			}
 		}
@@ -22635,22 +22666,22 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 		item := n.get("scheduled_start_time")
 		if item != nil {
 			if !item.null {
-				decodedValue5345, decodeError5346 := ingressTimestamp(item, c, fieldPath(path, "ScheduledStartTime"))
-				if decodeError5346 != nil {
-					return nil, decodeError5346
+				decodedValue5349, decodeError5350 := ingressTimestamp(item, c, fieldPath(path, "ScheduledStartTime"))
+				if decodeError5350 != nil {
+					return nil, decodeError5350
 				}
-				dst.ScheduledStartTime = decodedValue5345
+				dst.ScheduledStartTime = decodedValue5349
 			}
 		}
 	}
 	{
 		item := n.get("scheduled_end_time")
 		if item != nil {
-			decodedValue5347, decodeError5348 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "ScheduledEndTime"), parent)
-			if decodeError5348 != nil {
-				return nil, decodeError5348
+			decodedValue5351, decodeError5352 := c.nodeflexmodulecorev2NullableTimestamp(item, fieldPath(path, "ScheduledEndTime"), parent)
+			if decodeError5352 != nil {
+				return nil, decodeError5352
 			}
-			dst.ScheduledEndTime = decodedValue5347
+			dst.ScheduledEndTime = decodedValue5351
 		}
 	}
 	{
@@ -22663,11 +22694,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 					}
 				}
 				var value int64
-				decodedValue5349, decodeError5350 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
-				if decodeError5350 != nil {
-					return nil, decodeError5350
+				decodedValue5353, decodeError5354 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
+				if decodeError5354 != nil {
+					return nil, decodeError5354
 				}
-				value = decodedValue5349
+				value = decodedValue5353
 				dst.PrivacyLevel = &value
 			}
 		}
@@ -22682,11 +22713,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 					}
 				}
 				var value int64
-				decodedValue5351, decodeError5352 := ingressNumericScalar[int64](item, c, fieldPath(path, "Status"))
-				if decodeError5352 != nil {
-					return nil, decodeError5352
+				decodedValue5355, decodeError5356 := ingressNumericScalar[int64](item, c, fieldPath(path, "Status"))
+				if decodeError5356 != nil {
+					return nil, decodeError5356
 				}
-				value = decodedValue5351
+				value = decodedValue5355
 				dst.Status = &value
 			}
 		}
@@ -22701,11 +22732,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 					}
 				}
 				var value int64
-				decodedValue5353, decodeError5354 := ingressNumericScalar[int64](item, c, fieldPath(path, "EntityType"))
-				if decodeError5354 != nil {
-					return nil, decodeError5354
+				decodedValue5357, decodeError5358 := ingressNumericScalar[int64](item, c, fieldPath(path, "EntityType"))
+				if decodeError5358 != nil {
+					return nil, decodeError5358
 				}
-				value = decodedValue5353
+				value = decodedValue5357
 				dst.EntityType = &value
 			}
 		}
@@ -22713,11 +22744,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 	{
 		item := n.get("entity_metadata")
 		if item != nil {
-			decodedValue5355, decodeError5356 := c.nodeDomainNullableGuildScheduledEventEntityMetadata(item, fieldPath(path, "EntityMetadata"), parent)
-			if decodeError5356 != nil {
-				return nil, decodeError5356
+			decodedValue5359, decodeError5360 := c.nodeDomainNullableGuildScheduledEventEntityMetadata(item, fieldPath(path, "EntityMetadata"), parent)
+			if decodeError5360 != nil {
+				return nil, decodeError5360
 			}
-			dst.EntityMetadata = decodedValue5355
+			dst.EntityMetadata = decodedValue5359
 		}
 	}
 	{
@@ -22725,11 +22756,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventParams(n *ingressNode, path 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5357, decodeError5358 := ingressString(item, c, fieldPath(path, "Image"))
-				if decodeError5358 != nil {
-					return nil, decodeError5358
+				decodedValue5361, decodeError5362 := ingressString(item, c, fieldPath(path, "Image"))
+				if decodeError5362 != nil {
+					return nil, decodeError5362
 				}
-				value = decodedValue5357
+				value = decodedValue5361
 				dst.Image = &value
 			}
 		}
@@ -22761,11 +22792,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventUser(n *ingressNode, path st
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5359, decodeError5360 := ingressString(item, c, fieldPath(path, "GuildScheduledEventID"))
-				if decodeError5360 != nil {
-					return nil, decodeError5360
+				decodedValue5363, decodeError5364 := ingressString(item, c, fieldPath(path, "GuildScheduledEventID"))
+				if decodeError5364 != nil {
+					return nil, decodeError5364
 				}
-				value = decodedValue5359
+				value = decodedValue5363
 				dst.GuildScheduledEventId = &value
 			}
 		}
@@ -22774,11 +22805,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventUser(n *ingressNode, path st
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5361, decodeError5362 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5362 != nil {
-					return nil, decodeError5362
+				decodedValue5365, decodeError5366 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5366 != nil {
+					return nil, decodeError5366
 				}
-				dst.User = decodedValue5361
+				dst.User = decodedValue5365
 			}
 		}
 	}
@@ -22786,11 +22817,11 @@ func (c *conversion) nodeSnapshotGuildScheduledEventUser(n *ingressNode, path st
 		item := n.get("member")
 		if item != nil {
 			if !item.null {
-				decodedValue5363, decodeError5364 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
-				if decodeError5364 != nil {
-					return nil, decodeError5364
+				decodedValue5367, decodeError5368 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
+				if decodeError5368 != nil {
+					return nil, decodeError5368
 				}
-				dst.Member = decodedValue5363
+				dst.Member = decodedValue5367
 			}
 		}
 	}
@@ -22821,11 +22852,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5365, decodeError5366 := ingressString(item, c, fieldPath(path, "Code"))
-				if decodeError5366 != nil {
-					return nil, decodeError5366
+				decodedValue5369, decodeError5370 := ingressString(item, c, fieldPath(path, "Code"))
+				if decodeError5370 != nil {
+					return nil, decodeError5370
 				}
-				value = decodedValue5365
+				value = decodedValue5369
 				dst.Code = &value
 			}
 		}
@@ -22835,11 +22866,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5367, decodeError5368 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5368 != nil {
-					return nil, decodeError5368
+				decodedValue5371, decodeError5372 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5372 != nil {
+					return nil, decodeError5372
 				}
-				value = decodedValue5367
+				value = decodedValue5371
 				dst.Name = &value
 			}
 		}
@@ -22849,11 +22880,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5369, decodeError5370 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5370 != nil {
-					return nil, decodeError5370
+				decodedValue5373, decodeError5374 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5374 != nil {
+					return nil, decodeError5374
 				}
-				value = decodedValue5369
+				value = decodedValue5373
 				dst.Description = &value
 			}
 		}
@@ -22868,11 +22899,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 					}
 				}
 				var value int64
-				decodedValue5371, decodeError5372 := ingressNumericScalar[int64](item, c, fieldPath(path, "UsageCount"))
-				if decodeError5372 != nil {
-					return nil, decodeError5372
+				decodedValue5375, decodeError5376 := ingressNumericScalar[int64](item, c, fieldPath(path, "UsageCount"))
+				if decodeError5376 != nil {
+					return nil, decodeError5376
 				}
-				value = decodedValue5371
+				value = decodedValue5375
 				dst.UsageCount = &value
 			}
 		}
@@ -22882,11 +22913,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5373, decodeError5374 := ingressString(item, c, fieldPath(path, "CreatorID"))
-				if decodeError5374 != nil {
-					return nil, decodeError5374
+				decodedValue5377, decodeError5378 := ingressString(item, c, fieldPath(path, "CreatorID"))
+				if decodeError5378 != nil {
+					return nil, decodeError5378
 				}
-				value = decodedValue5373
+				value = decodedValue5377
 				dst.CreatorId = &value
 			}
 		}
@@ -22895,11 +22926,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		item := n.get("creator")
 		if item != nil {
 			if !item.null {
-				decodedValue5375, decodeError5376 := c.nodeSnapshotUser(item, fieldPath(path, "Creator"), parent)
-				if decodeError5376 != nil {
-					return nil, decodeError5376
+				decodedValue5379, decodeError5380 := c.nodeSnapshotUser(item, fieldPath(path, "Creator"), parent)
+				if decodeError5380 != nil {
+					return nil, decodeError5380
 				}
-				dst.Creator = decodedValue5375
+				dst.Creator = decodedValue5379
 			}
 		}
 	}
@@ -22907,11 +22938,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		item := n.get("created_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5377, decodeError5378 := ingressTimestamp(item, c, fieldPath(path, "CreatedAt"))
-				if decodeError5378 != nil {
-					return nil, decodeError5378
+				decodedValue5381, decodeError5382 := ingressTimestamp(item, c, fieldPath(path, "CreatedAt"))
+				if decodeError5382 != nil {
+					return nil, decodeError5382
 				}
-				dst.CreatedAt = decodedValue5377
+				dst.CreatedAt = decodedValue5381
 			}
 		}
 	}
@@ -22919,11 +22950,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		item := n.get("updated_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5379, decodeError5380 := ingressTimestamp(item, c, fieldPath(path, "UpdatedAt"))
-				if decodeError5380 != nil {
-					return nil, decodeError5380
+				decodedValue5383, decodeError5384 := ingressTimestamp(item, c, fieldPath(path, "UpdatedAt"))
+				if decodeError5384 != nil {
+					return nil, decodeError5384
 				}
-				dst.UpdatedAt = decodedValue5379
+				dst.UpdatedAt = decodedValue5383
 			}
 		}
 	}
@@ -22932,11 +22963,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5381, decodeError5382 := ingressString(item, c, fieldPath(path, "SourceGuildID"))
-				if decodeError5382 != nil {
-					return nil, decodeError5382
+				decodedValue5385, decodeError5386 := ingressString(item, c, fieldPath(path, "SourceGuildID"))
+				if decodeError5386 != nil {
+					return nil, decodeError5386
 				}
-				value = decodedValue5381
+				value = decodedValue5385
 				dst.SourceGuildId = &value
 			}
 		}
@@ -22945,11 +22976,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		item := n.get("serialized_source_guild")
 		if item != nil {
 			if !item.null {
-				decodedValue5383, decodeError5384 := c.nodeSnapshotGuild(item, fieldPath(path, "SerializedSourceGuild"), parent)
-				if decodeError5384 != nil {
-					return nil, decodeError5384
+				decodedValue5387, decodeError5388 := c.nodeSnapshotGuild(item, fieldPath(path, "SerializedSourceGuild"), parent)
+				if decodeError5388 != nil {
+					return nil, decodeError5388
 				}
-				dst.SerializedSourceGuild = decodedValue5383
+				dst.SerializedSourceGuild = decodedValue5387
 			}
 		}
 	}
@@ -22958,11 +22989,11 @@ func (c *conversion) nodeSnapshotGuildTemplate(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5385, decodeError5386 := ingressScalar[bool](item, c, fieldPath(path, "IsDirty"))
-				if decodeError5386 != nil {
-					return nil, decodeError5386
+				decodedValue5389, decodeError5390 := ingressScalar[bool](item, c, fieldPath(path, "IsDirty"))
+				if decodeError5390 != nil {
+					return nil, decodeError5390
 				}
-				value = decodedValue5385
+				value = decodedValue5389
 				dst.IsDirty = &value
 			}
 		}
@@ -22982,11 +23013,11 @@ func (c *conversion) nodeSnapshotGuildTemplateParams(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5387, decodeError5388 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5388 != nil {
-					return nil, decodeError5388
+				decodedValue5391, decodeError5392 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5392 != nil {
+					return nil, decodeError5392
 				}
-				value = decodedValue5387
+				value = decodedValue5391
 				dst.Name = &value
 			}
 		}
@@ -22996,11 +23027,11 @@ func (c *conversion) nodeSnapshotGuildTemplateParams(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5389, decodeError5390 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5390 != nil {
-					return nil, decodeError5390
+				decodedValue5393, decodeError5394 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5394 != nil {
+					return nil, decodeError5394
 				}
-				value = decodedValue5389
+				value = decodedValue5393
 				dst.Description = &value
 			}
 		}
@@ -23032,11 +23063,11 @@ func (c *conversion) nodeSnapshotIdentifyProperties(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5391, decodeError5392 := ingressString(item, c, fieldPath(path, "OS"))
-				if decodeError5392 != nil {
-					return nil, decodeError5392
+				decodedValue5395, decodeError5396 := ingressString(item, c, fieldPath(path, "OS"))
+				if decodeError5396 != nil {
+					return nil, decodeError5396
 				}
-				value = decodedValue5391
+				value = decodedValue5395
 				dst.Os = &value
 			}
 		}
@@ -23046,11 +23077,11 @@ func (c *conversion) nodeSnapshotIdentifyProperties(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5393, decodeError5394 := ingressString(item, c, fieldPath(path, "Browser"))
-				if decodeError5394 != nil {
-					return nil, decodeError5394
+				decodedValue5397, decodeError5398 := ingressString(item, c, fieldPath(path, "Browser"))
+				if decodeError5398 != nil {
+					return nil, decodeError5398
 				}
-				value = decodedValue5393
+				value = decodedValue5397
 				dst.Browser = &value
 			}
 		}
@@ -23060,11 +23091,11 @@ func (c *conversion) nodeSnapshotIdentifyProperties(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5395, decodeError5396 := ingressString(item, c, fieldPath(path, "Device"))
-				if decodeError5396 != nil {
-					return nil, decodeError5396
+				decodedValue5399, decodeError5400 := ingressString(item, c, fieldPath(path, "Device"))
+				if decodeError5400 != nil {
+					return nil, decodeError5400
 				}
-				value = decodedValue5395
+				value = decodedValue5399
 				dst.Device = &value
 			}
 		}
@@ -23074,11 +23105,11 @@ func (c *conversion) nodeSnapshotIdentifyProperties(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5397, decodeError5398 := ingressString(item, c, fieldPath(path, "Referer"))
-				if decodeError5398 != nil {
-					return nil, decodeError5398
+				decodedValue5401, decodeError5402 := ingressString(item, c, fieldPath(path, "Referer"))
+				if decodeError5402 != nil {
+					return nil, decodeError5402
 				}
-				value = decodedValue5397
+				value = decodedValue5401
 				dst.Referer = &value
 			}
 		}
@@ -23088,11 +23119,11 @@ func (c *conversion) nodeSnapshotIdentifyProperties(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5399, decodeError5400 := ingressString(item, c, fieldPath(path, "ReferringDomain"))
-				if decodeError5400 != nil {
-					return nil, decodeError5400
+				decodedValue5403, decodeError5404 := ingressString(item, c, fieldPath(path, "ReferringDomain"))
+				if decodeError5404 != nil {
+					return nil, decodeError5404
 				}
-				value = decodedValue5399
+				value = decodedValue5403
 				dst.ReferringDomain = &value
 			}
 		}
@@ -23124,11 +23155,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5401, decodeError5402 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5402 != nil {
-					return nil, decodeError5402
+				decodedValue5405, decodeError5406 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5406 != nil {
+					return nil, decodeError5406
 				}
-				value = decodedValue5401
+				value = decodedValue5405
 				dst.Id = &value
 			}
 		}
@@ -23138,11 +23169,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5403, decodeError5404 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5404 != nil {
-					return nil, decodeError5404
+				decodedValue5407, decodeError5408 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5408 != nil {
+					return nil, decodeError5408
 				}
-				value = decodedValue5403
+				value = decodedValue5407
 				dst.Name = &value
 			}
 		}
@@ -23152,11 +23183,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5405, decodeError5406 := ingressString(item, c, fieldPath(path, "Type"))
-				if decodeError5406 != nil {
-					return nil, decodeError5406
+				decodedValue5409, decodeError5410 := ingressString(item, c, fieldPath(path, "Type"))
+				if decodeError5410 != nil {
+					return nil, decodeError5410
 				}
-				value = decodedValue5405
+				value = decodedValue5409
 				dst.Type = &value
 			}
 		}
@@ -23166,11 +23197,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5407, decodeError5408 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
-				if decodeError5408 != nil {
-					return nil, decodeError5408
+				decodedValue5411, decodeError5412 := ingressScalar[bool](item, c, fieldPath(path, "Enabled"))
+				if decodeError5412 != nil {
+					return nil, decodeError5412
 				}
-				value = decodedValue5407
+				value = decodedValue5411
 				dst.Enabled = &value
 			}
 		}
@@ -23180,11 +23211,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5409, decodeError5410 := ingressScalar[bool](item, c, fieldPath(path, "Syncing"))
-				if decodeError5410 != nil {
-					return nil, decodeError5410
+				decodedValue5413, decodeError5414 := ingressScalar[bool](item, c, fieldPath(path, "Syncing"))
+				if decodeError5414 != nil {
+					return nil, decodeError5414
 				}
-				value = decodedValue5409
+				value = decodedValue5413
 				dst.Syncing = &value
 			}
 		}
@@ -23194,11 +23225,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5411, decodeError5412 := ingressString(item, c, fieldPath(path, "RoleID"))
-				if decodeError5412 != nil {
-					return nil, decodeError5412
+				decodedValue5415, decodeError5416 := ingressString(item, c, fieldPath(path, "RoleID"))
+				if decodeError5416 != nil {
+					return nil, decodeError5416
 				}
-				value = decodedValue5411
+				value = decodedValue5415
 				dst.RoleId = &value
 			}
 		}
@@ -23208,11 +23239,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5413, decodeError5414 := ingressScalar[bool](item, c, fieldPath(path, "EnableEmoticons"))
-				if decodeError5414 != nil {
-					return nil, decodeError5414
+				decodedValue5417, decodeError5418 := ingressScalar[bool](item, c, fieldPath(path, "EnableEmoticons"))
+				if decodeError5418 != nil {
+					return nil, decodeError5418
 				}
-				value = decodedValue5413
+				value = decodedValue5417
 				dst.EnableEmoticons = &value
 			}
 		}
@@ -23227,11 +23258,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue5415, decodeError5416 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExpireBehavior"))
-				if decodeError5416 != nil {
-					return nil, decodeError5416
+				decodedValue5419, decodeError5420 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExpireBehavior"))
+				if decodeError5420 != nil {
+					return nil, decodeError5420
 				}
-				value = decodedValue5415
+				value = decodedValue5419
 				dst.ExpireBehavior = &value
 			}
 		}
@@ -23246,11 +23277,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue5417, decodeError5418 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExpireGracePeriod"))
-				if decodeError5418 != nil {
-					return nil, decodeError5418
+				decodedValue5421, decodeError5422 := ingressNumericScalar[int64](item, c, fieldPath(path, "ExpireGracePeriod"))
+				if decodeError5422 != nil {
+					return nil, decodeError5422
 				}
-				value = decodedValue5417
+				value = decodedValue5421
 				dst.ExpireGracePeriod = &value
 			}
 		}
@@ -23259,11 +23290,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5419, decodeError5420 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5420 != nil {
-					return nil, decodeError5420
+				decodedValue5423, decodeError5424 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5424 != nil {
+					return nil, decodeError5424
 				}
-				dst.User = decodedValue5419
+				dst.User = decodedValue5423
 			}
 		}
 	}
@@ -23271,11 +23302,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		item := n.get("account")
 		if item != nil {
 			if !item.null {
-				decodedValue5421, decodeError5422 := c.nodeSnapshotIntegrationAccount(item, fieldPath(path, "Account"), parent)
-				if decodeError5422 != nil {
-					return nil, decodeError5422
+				decodedValue5425, decodeError5426 := c.nodeSnapshotIntegrationAccount(item, fieldPath(path, "Account"), parent)
+				if decodeError5426 != nil {
+					return nil, decodeError5426
 				}
-				dst.Account = decodedValue5421
+				dst.Account = decodedValue5425
 			}
 		}
 	}
@@ -23283,11 +23314,11 @@ func (c *conversion) nodeSnapshotIntegration(n *ingressNode, path string, parent
 		item := n.get("synced_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5423, decodeError5424 := ingressTimestamp(item, c, fieldPath(path, "SyncedAt"))
-				if decodeError5424 != nil {
-					return nil, decodeError5424
+				decodedValue5427, decodeError5428 := ingressTimestamp(item, c, fieldPath(path, "SyncedAt"))
+				if decodeError5428 != nil {
+					return nil, decodeError5428
 				}
-				dst.SyncedAt = decodedValue5423
+				dst.SyncedAt = decodedValue5427
 			}
 		}
 	}
@@ -23318,11 +23349,11 @@ func (c *conversion) nodeSnapshotIntegrationAccount(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5425, decodeError5426 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5426 != nil {
-					return nil, decodeError5426
+				decodedValue5429, decodeError5430 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5430 != nil {
+					return nil, decodeError5430
 				}
-				value = decodedValue5425
+				value = decodedValue5429
 				dst.Id = &value
 			}
 		}
@@ -23332,11 +23363,11 @@ func (c *conversion) nodeSnapshotIntegrationAccount(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5427, decodeError5428 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5428 != nil {
-					return nil, decodeError5428
+				decodedValue5431, decodeError5432 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5432 != nil {
+					return nil, decodeError5432
 				}
-				value = decodedValue5427
+				value = decodedValue5431
 				dst.Name = &value
 			}
 		}
@@ -23373,11 +23404,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5429, decodeError5430 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5430 != nil {
-					return nil, decodeError5430
+				decodedValue5433, decodeError5434 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5434 != nil {
+					return nil, decodeError5434
 				}
-				value = decodedValue5429
+				value = decodedValue5433
 				dst.Id = &value
 			}
 		}
@@ -23387,11 +23418,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5431, decodeError5432 := ingressString(item, c, fieldPath(path, "AppID"))
-				if decodeError5432 != nil {
-					return nil, decodeError5432
+				decodedValue5435, decodeError5436 := ingressString(item, c, fieldPath(path, "AppID"))
+				if decodeError5436 != nil {
+					return nil, decodeError5436
 				}
-				value = decodedValue5431
+				value = decodedValue5435
 				dst.AppId = &value
 			}
 		}
@@ -23406,11 +23437,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 					}
 				}
 				var value uint32
-				decodedValue5433, decodeError5434 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError5434 != nil {
-					return nil, decodeError5434
+				decodedValue5437, decodeError5438 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError5438 != nil {
+					return nil, decodeError5438
 				}
-				value = decodedValue5433
+				value = decodedValue5437
 				dst.Type = &value
 			}
 		}
@@ -23419,11 +23450,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		item := n.get("data")
 		if item != nil {
 			if !item.null {
-				decodedValue5435, decodeError5436 := c.nodeSnapshotInteractionData(item, fieldPath(path, "Data"), kind)
-				if decodeError5436 != nil {
-					return nil, decodeError5436
+				decodedValue5439, decodeError5440 := c.nodeSnapshotInteractionData(item, fieldPath(path, "Data"), kind)
+				if decodeError5440 != nil {
+					return nil, decodeError5440
 				}
-				dst.Data = decodedValue5435
+				dst.Data = decodedValue5439
 			}
 		}
 	}
@@ -23432,11 +23463,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5437, decodeError5438 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5438 != nil {
-					return nil, decodeError5438
+				decodedValue5441, decodeError5442 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5442 != nil {
+					return nil, decodeError5442
 				}
-				value = decodedValue5437
+				value = decodedValue5441
 				dst.GuildId = &value
 			}
 		}
@@ -23446,11 +23477,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5439, decodeError5440 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError5440 != nil {
-					return nil, decodeError5440
+				decodedValue5443, decodeError5444 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError5444 != nil {
+					return nil, decodeError5444
 				}
-				value = decodedValue5439
+				value = decodedValue5443
 				dst.ChannelId = &value
 			}
 		}
@@ -23459,11 +23490,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		item := n.get("message")
 		if item != nil {
 			if !item.null {
-				decodedValue5441, decodeError5442 := c.nodeSnapshotMessage(item, fieldPath(path, "Message"), parent)
-				if decodeError5442 != nil {
-					return nil, decodeError5442
+				decodedValue5445, decodeError5446 := c.nodeSnapshotMessage(item, fieldPath(path, "Message"), parent)
+				if decodeError5446 != nil {
+					return nil, decodeError5446
 				}
-				dst.Message = decodedValue5441
+				dst.Message = decodedValue5445
 			}
 		}
 	}
@@ -23475,11 +23506,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 					return nil, err
 				}
 				var value string
-				decodedValue5443, decodeError5444 := ingressString(item, c, fieldPath(path, "AppPermissions"))
-				if decodeError5444 != nil {
-					return nil, decodeError5444
+				decodedValue5447, decodeError5448 := ingressString(item, c, fieldPath(path, "AppPermissions"))
+				if decodeError5448 != nil {
+					return nil, decodeError5448
 				}
-				value = decodedValue5443
+				value = decodedValue5447
 				dst.AppPermissions = &value
 			}
 		}
@@ -23488,11 +23519,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		item := n.get("member")
 		if item != nil {
 			if !item.null {
-				decodedValue5445, decodeError5446 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
-				if decodeError5446 != nil {
-					return nil, decodeError5446
+				decodedValue5449, decodeError5450 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
+				if decodeError5450 != nil {
+					return nil, decodeError5450
 				}
-				dst.Member = decodedValue5445
+				dst.Member = decodedValue5449
 			}
 		}
 	}
@@ -23500,11 +23531,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5447, decodeError5448 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5448 != nil {
-					return nil, decodeError5448
+				decodedValue5451, decodeError5452 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5452 != nil {
+					return nil, decodeError5452
 				}
-				dst.User = decodedValue5447
+				dst.User = decodedValue5451
 			}
 		}
 	}
@@ -23513,11 +23544,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5449, decodeError5450 := ingressString(item, c, fieldPath(path, "Locale"))
-				if decodeError5450 != nil {
-					return nil, decodeError5450
+				decodedValue5453, decodeError5454 := ingressString(item, c, fieldPath(path, "Locale"))
+				if decodeError5454 != nil {
+					return nil, decodeError5454
 				}
-				value = decodedValue5449
+				value = decodedValue5453
 				dst.Locale = &value
 			}
 		}
@@ -23527,11 +23558,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5451, decodeError5452 := ingressString(item, c, fieldPath(path, "GuildLocale"))
-				if decodeError5452 != nil {
-					return nil, decodeError5452
+				decodedValue5455, decodeError5456 := ingressString(item, c, fieldPath(path, "GuildLocale"))
+				if decodeError5456 != nil {
+					return nil, decodeError5456
 				}
-				value = decodedValue5451
+				value = decodedValue5455
 				dst.GuildLocale = &value
 			}
 		}
@@ -23546,11 +23577,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 					}
 				}
 				var value uint64
-				decodedValue5453, decodeError5454 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Context"))
-				if decodeError5454 != nil {
-					return nil, decodeError5454
+				decodedValue5457, decodeError5458 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Context"))
+				if decodeError5458 != nil {
+					return nil, decodeError5458
 				}
-				value = decodedValue5453
+				value = decodedValue5457
 				dst.Context = &value
 			}
 		}
@@ -23559,11 +23590,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		item := n.get("authorizing_integration_owners")
 		if item != nil {
 			if !item.null {
-				decodedValue5455, decodeError5456 := c.nodeDomainUint64ToStringMap(item, fieldPath(path, "AuthorizingIntegrationOwners"), parent)
-				if decodeError5456 != nil {
-					return nil, decodeError5456
+				decodedValue5459, decodeError5460 := c.nodeDomainUint64ToStringMap(item, fieldPath(path, "AuthorizingIntegrationOwners"), parent)
+				if decodeError5460 != nil {
+					return nil, decodeError5460
 				}
-				dst.AuthorizingIntegrationOwners = decodedValue5455
+				dst.AuthorizingIntegrationOwners = decodedValue5459
 			}
 		}
 	}
@@ -23618,11 +23649,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue5457, decodeError5458 := ingressNumericScalar[int64](item, c, fieldPath(path, "Version"))
-				if decodeError5458 != nil {
-					return nil, decodeError5458
+				decodedValue5461, decodeError5462 := ingressNumericScalar[int64](item, c, fieldPath(path, "Version"))
+				if decodeError5462 != nil {
+					return nil, decodeError5462
 				}
-				value = decodedValue5457
+				value = decodedValue5461
 				dst.Version = &value
 			}
 		}
@@ -23631,11 +23662,11 @@ func (c *conversion) nodeSnapshotInteraction(n *ingressNode, path string, parent
 		item := n.get("entitlements")
 		if item != nil {
 			if !item.null {
-				decodedValue5459, decodeError5460 := c.nodeDomainEntitlementList(item, fieldPath(path, "Entitlements"), parent)
-				if decodeError5460 != nil {
-					return nil, decodeError5460
+				decodedValue5463, decodeError5464 := c.nodeDomainEntitlementList(item, fieldPath(path, "Entitlements"), parent)
+				if decodeError5464 != nil {
+					return nil, decodeError5464
 				}
-				dst.Entitlements = decodedValue5459
+				dst.Entitlements = decodedValue5463
 			}
 		}
 	}
@@ -23659,11 +23690,11 @@ func (c *conversion) nodeSnapshotInteractionResponse(n *ingressNode, path string
 					}
 				}
 				var value uint32
-				decodedValue5461, decodeError5462 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError5462 != nil {
-					return nil, decodeError5462
+				decodedValue5465, decodeError5466 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError5466 != nil {
+					return nil, decodeError5466
 				}
-				value = decodedValue5461
+				value = decodedValue5465
 				dst.Type = &value
 			}
 		}
@@ -23672,11 +23703,11 @@ func (c *conversion) nodeSnapshotInteractionResponse(n *ingressNode, path string
 		item := n.get("data")
 		if item != nil {
 			if !item.null {
-				decodedValue5463, decodeError5464 := c.nodeSnapshotInteractionResponseData(item, fieldPath(path, "Data"), parent)
-				if decodeError5464 != nil {
-					return nil, decodeError5464
+				decodedValue5467, decodeError5468 := c.nodeSnapshotInteractionResponseData(item, fieldPath(path, "Data"), parent)
+				if decodeError5468 != nil {
+					return nil, decodeError5468
 				}
-				dst.Data = decodedValue5463
+				dst.Data = decodedValue5467
 			}
 		}
 	}
@@ -23695,11 +23726,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5465, decodeError5466 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
-				if decodeError5466 != nil {
-					return nil, decodeError5466
+				decodedValue5469, decodeError5470 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
+				if decodeError5470 != nil {
+					return nil, decodeError5470
 				}
-				value = decodedValue5465
+				value = decodedValue5469
 				dst.Tts = &value
 			}
 		}
@@ -23707,22 +23738,22 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 	{
 		item := n.get("content")
 		if item != nil {
-			decodedValue5467, decodeError5468 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-			if decodeError5468 != nil {
-				return nil, decodeError5468
+			decodedValue5471, decodeError5472 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
+			if decodeError5472 != nil {
+				return nil, decodeError5472
 			}
-			dst.Content = decodedValue5467
+			dst.Content = decodedValue5471
 		}
 	}
 	{
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue5469, decodeError5470 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError5470 != nil {
-					return nil, decodeError5470
+				decodedValue5473, decodeError5474 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError5474 != nil {
+					return nil, decodeError5474
 				}
-				dst.Components = decodedValue5469
+				dst.Components = decodedValue5473
 			}
 		}
 	}
@@ -23730,11 +23761,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		item := n.get("embeds")
 		if item != nil {
 			if !item.null {
-				decodedValue5471, decodeError5472 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
-				if decodeError5472 != nil {
-					return nil, decodeError5472
+				decodedValue5475, decodeError5476 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
+				if decodeError5476 != nil {
+					return nil, decodeError5476
 				}
-				dst.Embeds = decodedValue5471
+				dst.Embeds = decodedValue5475
 			}
 		}
 	}
@@ -23742,11 +23773,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		item := n.get("allowed_mentions")
 		if item != nil {
 			if !item.null {
-				decodedValue5473, decodeError5474 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
-				if decodeError5474 != nil {
-					return nil, decodeError5474
+				decodedValue5477, decodeError5478 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+				if decodeError5478 != nil {
+					return nil, decodeError5478
 				}
-				dst.AllowedMentions = decodedValue5473
+				dst.AllowedMentions = decodedValue5477
 			}
 		}
 	}
@@ -23754,11 +23785,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		item := n.get("attachments")
 		if item != nil {
 			if !item.null {
-				decodedValue5475, decodeError5476 := c.nodeAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
-				if decodeError5476 != nil {
-					return nil, decodeError5476
+				decodedValue5479, decodeError5480 := c.nodeAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
+				if decodeError5480 != nil {
+					return nil, decodeError5480
 				}
-				dst.Attachments = decodedValue5475
+				dst.Attachments = decodedValue5479
 			}
 		}
 	}
@@ -23766,11 +23797,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		item := n.get("poll")
 		if item != nil {
 			if !item.null {
-				decodedValue5477, decodeError5478 := c.nodeSnapshotPoll(item, fieldPath(path, "Poll"), parent)
-				if decodeError5478 != nil {
-					return nil, decodeError5478
+				decodedValue5481, decodeError5482 := c.nodeSnapshotPoll(item, fieldPath(path, "Poll"), parent)
+				if decodeError5482 != nil {
+					return nil, decodeError5482
 				}
-				dst.Poll = decodedValue5477
+				dst.Poll = decodedValue5481
 			}
 		}
 	}
@@ -23784,11 +23815,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 					}
 				}
 				var value uint64
-				decodedValue5479, decodeError5480 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5480 != nil {
-					return nil, decodeError5480
+				decodedValue5483, decodeError5484 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5484 != nil {
+					return nil, decodeError5484
 				}
-				value = decodedValue5479
+				value = decodedValue5483
 				dst.Flags = &value
 			}
 		}
@@ -23797,11 +23828,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		item := n.get("choices")
 		if item != nil {
 			if !item.null {
-				decodedValue5481, decodeError5482 := c.nodeDomainApplicationCommandOptionChoiceList(item, fieldPath(path, "Choices"), parent)
-				if decodeError5482 != nil {
-					return nil, decodeError5482
+				decodedValue5485, decodeError5486 := c.nodeDomainApplicationCommandOptionChoiceList(item, fieldPath(path, "Choices"), parent)
+				if decodeError5486 != nil {
+					return nil, decodeError5486
 				}
-				dst.Choices = decodedValue5481
+				dst.Choices = decodedValue5485
 			}
 		}
 	}
@@ -23810,11 +23841,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5483, decodeError5484 := ingressString(item, c, fieldPath(path, "CustomID"))
-				if decodeError5484 != nil {
-					return nil, decodeError5484
+				decodedValue5487, decodeError5488 := ingressString(item, c, fieldPath(path, "CustomID"))
+				if decodeError5488 != nil {
+					return nil, decodeError5488
 				}
-				value = decodedValue5483
+				value = decodedValue5487
 				dst.CustomId = &value
 			}
 		}
@@ -23824,11 +23855,11 @@ func (c *conversion) nodeSnapshotInteractionResponseData(n *ingressNode, path st
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5485, decodeError5486 := ingressString(item, c, fieldPath(path, "Title"))
-				if decodeError5486 != nil {
-					return nil, decodeError5486
+				decodedValue5489, decodeError5490 := ingressString(item, c, fieldPath(path, "Title"))
+				if decodeError5490 != nil {
+					return nil, decodeError5490
 				}
-				value = decodedValue5485
+				value = decodedValue5489
 				dst.Title = &value
 			}
 		}
@@ -23862,11 +23893,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		item := n.get("guild")
 		if item != nil {
 			if !item.null {
-				decodedValue5487, decodeError5488 := c.nodeSnapshotGuild(item, fieldPath(path, "Guild"), parent)
-				if decodeError5488 != nil {
-					return nil, decodeError5488
+				decodedValue5491, decodeError5492 := c.nodeSnapshotGuild(item, fieldPath(path, "Guild"), parent)
+				if decodeError5492 != nil {
+					return nil, decodeError5492
 				}
-				dst.Guild = decodedValue5487
+				dst.Guild = decodedValue5491
 			}
 		}
 	}
@@ -23874,11 +23905,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		item := n.get("channel")
 		if item != nil {
 			if !item.null {
-				decodedValue5489, decodeError5490 := c.nodeSnapshotChannel(item, fieldPath(path, "Channel"), parent)
-				if decodeError5490 != nil {
-					return nil, decodeError5490
+				decodedValue5493, decodeError5494 := c.nodeSnapshotChannel(item, fieldPath(path, "Channel"), parent)
+				if decodeError5494 != nil {
+					return nil, decodeError5494
 				}
-				dst.Channel = decodedValue5489
+				dst.Channel = decodedValue5493
 			}
 		}
 	}
@@ -23886,11 +23917,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		item := n.get("inviter")
 		if item != nil {
 			if !item.null {
-				decodedValue5491, decodeError5492 := c.nodeSnapshotUser(item, fieldPath(path, "Inviter"), parent)
-				if decodeError5492 != nil {
-					return nil, decodeError5492
+				decodedValue5495, decodeError5496 := c.nodeSnapshotUser(item, fieldPath(path, "Inviter"), parent)
+				if decodeError5496 != nil {
+					return nil, decodeError5496
 				}
-				dst.Inviter = decodedValue5491
+				dst.Inviter = decodedValue5495
 			}
 		}
 	}
@@ -23899,11 +23930,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5493, decodeError5494 := ingressString(item, c, fieldPath(path, "Code"))
-				if decodeError5494 != nil {
-					return nil, decodeError5494
+				decodedValue5497, decodeError5498 := ingressString(item, c, fieldPath(path, "Code"))
+				if decodeError5498 != nil {
+					return nil, decodeError5498
 				}
-				value = decodedValue5493
+				value = decodedValue5497
 				dst.Code = &value
 			}
 		}
@@ -23912,11 +23943,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		item := n.get("created_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5495, decodeError5496 := ingressTimestamp(item, c, fieldPath(path, "CreatedAt"))
-				if decodeError5496 != nil {
-					return nil, decodeError5496
+				decodedValue5499, decodeError5500 := ingressTimestamp(item, c, fieldPath(path, "CreatedAt"))
+				if decodeError5500 != nil {
+					return nil, decodeError5500
 				}
-				dst.CreatedAt = decodedValue5495
+				dst.CreatedAt = decodedValue5499
 			}
 		}
 	}
@@ -23930,11 +23961,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 					}
 				}
 				var value int64
-				decodedValue5497, decodeError5498 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxAge"))
-				if decodeError5498 != nil {
-					return nil, decodeError5498
+				decodedValue5501, decodeError5502 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxAge"))
+				if decodeError5502 != nil {
+					return nil, decodeError5502
 				}
-				value = decodedValue5497
+				value = decodedValue5501
 				dst.MaxAge = &value
 			}
 		}
@@ -23949,11 +23980,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 					}
 				}
 				var value int64
-				decodedValue5499, decodeError5500 := ingressNumericScalar[int64](item, c, fieldPath(path, "Uses"))
-				if decodeError5500 != nil {
-					return nil, decodeError5500
+				decodedValue5503, decodeError5504 := ingressNumericScalar[int64](item, c, fieldPath(path, "Uses"))
+				if decodeError5504 != nil {
+					return nil, decodeError5504
 				}
-				value = decodedValue5499
+				value = decodedValue5503
 				dst.Uses = &value
 			}
 		}
@@ -23968,11 +23999,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 					}
 				}
 				var value int64
-				decodedValue5501, decodeError5502 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxUses"))
-				if decodeError5502 != nil {
-					return nil, decodeError5502
+				decodedValue5505, decodeError5506 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxUses"))
+				if decodeError5506 != nil {
+					return nil, decodeError5506
 				}
-				value = decodedValue5501
+				value = decodedValue5505
 				dst.MaxUses = &value
 			}
 		}
@@ -23982,11 +24013,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5503, decodeError5504 := ingressScalar[bool](item, c, fieldPath(path, "Revoked"))
-				if decodeError5504 != nil {
-					return nil, decodeError5504
+				decodedValue5507, decodeError5508 := ingressScalar[bool](item, c, fieldPath(path, "Revoked"))
+				if decodeError5508 != nil {
+					return nil, decodeError5508
 				}
-				value = decodedValue5503
+				value = decodedValue5507
 				dst.Revoked = &value
 			}
 		}
@@ -23996,11 +24027,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5505, decodeError5506 := ingressScalar[bool](item, c, fieldPath(path, "Temporary"))
-				if decodeError5506 != nil {
-					return nil, decodeError5506
+				decodedValue5509, decodeError5510 := ingressScalar[bool](item, c, fieldPath(path, "Temporary"))
+				if decodeError5510 != nil {
+					return nil, decodeError5510
 				}
-				value = decodedValue5505
+				value = decodedValue5509
 				dst.Temporary = &value
 			}
 		}
@@ -24010,11 +24041,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5507, decodeError5508 := ingressScalar[bool](item, c, fieldPath(path, "Unique"))
-				if decodeError5508 != nil {
-					return nil, decodeError5508
+				decodedValue5511, decodeError5512 := ingressScalar[bool](item, c, fieldPath(path, "Unique"))
+				if decodeError5512 != nil {
+					return nil, decodeError5512
 				}
-				value = decodedValue5507
+				value = decodedValue5511
 				dst.Unique = &value
 			}
 		}
@@ -24023,11 +24054,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		item := n.get("target_user")
 		if item != nil {
 			if !item.null {
-				decodedValue5509, decodeError5510 := c.nodeSnapshotUser(item, fieldPath(path, "TargetUser"), parent)
-				if decodeError5510 != nil {
-					return nil, decodeError5510
+				decodedValue5513, decodeError5514 := c.nodeSnapshotUser(item, fieldPath(path, "TargetUser"), parent)
+				if decodeError5514 != nil {
+					return nil, decodeError5514
 				}
-				dst.TargetUser = decodedValue5509
+				dst.TargetUser = decodedValue5513
 			}
 		}
 	}
@@ -24041,11 +24072,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 					}
 				}
 				var value uint32
-				decodedValue5511, decodeError5512 := ingressNumericScalar[uint32](item, c, fieldPath(path, "TargetType"))
-				if decodeError5512 != nil {
-					return nil, decodeError5512
+				decodedValue5515, decodeError5516 := ingressNumericScalar[uint32](item, c, fieldPath(path, "TargetType"))
+				if decodeError5516 != nil {
+					return nil, decodeError5516
 				}
-				value = decodedValue5511
+				value = decodedValue5515
 				dst.TargetType = &value
 			}
 		}
@@ -24054,11 +24085,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		item := n.get("target_application")
 		if item != nil {
 			if !item.null {
-				decodedValue5513, decodeError5514 := c.nodeSnapshotApplication(item, fieldPath(path, "TargetApplication"), parent)
-				if decodeError5514 != nil {
-					return nil, decodeError5514
+				decodedValue5517, decodeError5518 := c.nodeSnapshotApplication(item, fieldPath(path, "TargetApplication"), parent)
+				if decodeError5518 != nil {
+					return nil, decodeError5518
 				}
-				dst.TargetApplication = decodedValue5513
+				dst.TargetApplication = decodedValue5517
 			}
 		}
 	}
@@ -24072,11 +24103,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 					}
 				}
 				var value int64
-				decodedValue5515, decodeError5516 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
-				if decodeError5516 != nil {
-					return nil, decodeError5516
+				decodedValue5519, decodeError5520 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
+				if decodeError5520 != nil {
+					return nil, decodeError5520
 				}
-				value = decodedValue5515
+				value = decodedValue5519
 				dst.ApproximatePresenceCount = &value
 			}
 		}
@@ -24091,11 +24122,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 					}
 				}
 				var value int64
-				decodedValue5517, decodeError5518 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
-				if decodeError5518 != nil {
-					return nil, decodeError5518
+				decodedValue5521, decodeError5522 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
+				if decodeError5522 != nil {
+					return nil, decodeError5522
 				}
-				value = decodedValue5517
+				value = decodedValue5521
 				dst.ApproximateMemberCount = &value
 			}
 		}
@@ -24104,11 +24135,11 @@ func (c *conversion) nodeSnapshotInvite(n *ingressNode, path string, parent int6
 		item := n.get("expires_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5519, decodeError5520 := ingressTimestamp(item, c, fieldPath(path, "ExpiresAt"))
-				if decodeError5520 != nil {
-					return nil, decodeError5520
+				decodedValue5523, decodeError5524 := ingressTimestamp(item, c, fieldPath(path, "ExpiresAt"))
+				if decodeError5524 != nil {
+					return nil, decodeError5524
 				}
-				dst.ExpiresAt = decodedValue5519
+				dst.ExpiresAt = decodedValue5523
 			}
 		}
 	}
@@ -24144,11 +24175,11 @@ func (c *conversion) nodeSnapshotLabel(n *ingressNode, path string, parent int64
 					}
 				}
 				var value int64
-				decodedValue5521, decodeError5522 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError5522 != nil {
-					return nil, decodeError5522
+				decodedValue5525, decodeError5526 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError5526 != nil {
+					return nil, decodeError5526
 				}
-				value = decodedValue5521
+				value = decodedValue5525
 				dst.Id = &value
 			}
 		}
@@ -24158,11 +24189,11 @@ func (c *conversion) nodeSnapshotLabel(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5523, decodeError5524 := ingressString(item, c, fieldPath(path, "Label"))
-				if decodeError5524 != nil {
-					return nil, decodeError5524
+				decodedValue5527, decodeError5528 := ingressString(item, c, fieldPath(path, "Label"))
+				if decodeError5528 != nil {
+					return nil, decodeError5528
 				}
-				value = decodedValue5523
+				value = decodedValue5527
 				dst.Label = &value
 			}
 		}
@@ -24172,11 +24203,11 @@ func (c *conversion) nodeSnapshotLabel(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5525, decodeError5526 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5526 != nil {
-					return nil, decodeError5526
+				decodedValue5529, decodeError5530 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5530 != nil {
+					return nil, decodeError5530
 				}
-				value = decodedValue5525
+				value = decodedValue5529
 				dst.Description = &value
 			}
 		}
@@ -24185,11 +24216,11 @@ func (c *conversion) nodeSnapshotLabel(n *ingressNode, path string, parent int64
 		item := n.get("component")
 		if item != nil {
 			if !item.null {
-				decodedValue5527, decodeError5528 := c.nodeSnapshotMessageComponent(item, fieldPath(path, "Component"), parent)
-				if decodeError5528 != nil {
-					return nil, decodeError5528
+				decodedValue5531, decodeError5532 := c.nodeSnapshotMessageComponent(item, fieldPath(path, "Component"), parent)
+				if decodeError5532 != nil {
+					return nil, decodeError5532
 				}
-				dst.Component = decodedValue5527
+				dst.Component = decodedValue5531
 			}
 		}
 	}
@@ -24225,11 +24256,11 @@ func (c *conversion) nodeSnapshotMediaGallery(n *ingressNode, path string, paren
 					}
 				}
 				var value int64
-				decodedValue5529, decodeError5530 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError5530 != nil {
-					return nil, decodeError5530
+				decodedValue5533, decodeError5534 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError5534 != nil {
+					return nil, decodeError5534
 				}
-				value = decodedValue5529
+				value = decodedValue5533
 				dst.Id = &value
 			}
 		}
@@ -24238,11 +24269,11 @@ func (c *conversion) nodeSnapshotMediaGallery(n *ingressNode, path string, paren
 		item := n.get("items")
 		if item != nil {
 			if !item.null {
-				decodedValue5531, decodeError5532 := c.nodeDomainMediaGalleryItemList(item, fieldPath(path, "Items"), parent)
-				if decodeError5532 != nil {
-					return nil, decodeError5532
+				decodedValue5535, decodeError5536 := c.nodeDomainMediaGalleryItemList(item, fieldPath(path, "Items"), parent)
+				if decodeError5536 != nil {
+					return nil, decodeError5536
 				}
-				dst.Items = decodedValue5531
+				dst.Items = decodedValue5535
 			}
 		}
 	}
@@ -24272,11 +24303,11 @@ func (c *conversion) nodeSnapshotMediaGalleryItem(n *ingressNode, path string, p
 		item := n.get("media")
 		if item != nil {
 			if !item.null {
-				decodedValue5533, decodeError5534 := c.nodeSnapshotUnfurledMediaItem(item, fieldPath(path, "Media"), parent)
-				if decodeError5534 != nil {
-					return nil, decodeError5534
+				decodedValue5537, decodeError5538 := c.nodeSnapshotUnfurledMediaItem(item, fieldPath(path, "Media"), parent)
+				if decodeError5538 != nil {
+					return nil, decodeError5538
 				}
-				dst.Media = decodedValue5533
+				dst.Media = decodedValue5537
 			}
 		}
 	}
@@ -24285,11 +24316,11 @@ func (c *conversion) nodeSnapshotMediaGalleryItem(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5535, decodeError5536 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5536 != nil {
-					return nil, decodeError5536
+				decodedValue5539, decodeError5540 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5540 != nil {
+					return nil, decodeError5540
 				}
-				value = decodedValue5535
+				value = decodedValue5539
 				dst.Description = &value
 			}
 		}
@@ -24299,11 +24330,11 @@ func (c *conversion) nodeSnapshotMediaGalleryItem(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5537, decodeError5538 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
-				if decodeError5538 != nil {
-					return nil, decodeError5538
+				decodedValue5541, decodeError5542 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
+				if decodeError5542 != nil {
+					return nil, decodeError5542
 				}
-				value = decodedValue5537
+				value = decodedValue5541
 				dst.Spoiler = &value
 			}
 		}
@@ -24335,11 +24366,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5539, decodeError5540 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5540 != nil {
-					return nil, decodeError5540
+				decodedValue5543, decodeError5544 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5544 != nil {
+					return nil, decodeError5544
 				}
-				value = decodedValue5539
+				value = decodedValue5543
 				dst.GuildId = &value
 			}
 		}
@@ -24348,11 +24379,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		item := n.get("joined_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5541, decodeError5542 := ingressTimestamp(item, c, fieldPath(path, "JoinedAt"))
-				if decodeError5542 != nil {
-					return nil, decodeError5542
+				decodedValue5545, decodeError5546 := ingressTimestamp(item, c, fieldPath(path, "JoinedAt"))
+				if decodeError5546 != nil {
+					return nil, decodeError5546
 				}
-				dst.JoinedAt = decodedValue5541
+				dst.JoinedAt = decodedValue5545
 			}
 		}
 	}
@@ -24361,11 +24392,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5543, decodeError5544 := ingressString(item, c, fieldPath(path, "Nick"))
-				if decodeError5544 != nil {
-					return nil, decodeError5544
+				decodedValue5547, decodeError5548 := ingressString(item, c, fieldPath(path, "Nick"))
+				if decodeError5548 != nil {
+					return nil, decodeError5548
 				}
-				value = decodedValue5543
+				value = decodedValue5547
 				dst.Nick = &value
 			}
 		}
@@ -24375,11 +24406,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5545, decodeError5546 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
-				if decodeError5546 != nil {
-					return nil, decodeError5546
+				decodedValue5549, decodeError5550 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
+				if decodeError5550 != nil {
+					return nil, decodeError5550
 				}
-				value = decodedValue5545
+				value = decodedValue5549
 				dst.Deaf = &value
 			}
 		}
@@ -24389,11 +24420,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5547, decodeError5548 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
-				if decodeError5548 != nil {
-					return nil, decodeError5548
+				decodedValue5551, decodeError5552 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
+				if decodeError5552 != nil {
+					return nil, decodeError5552
 				}
-				value = decodedValue5547
+				value = decodedValue5551
 				dst.Mute = &value
 			}
 		}
@@ -24403,11 +24434,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5549, decodeError5550 := ingressString(item, c, fieldPath(path, "Avatar"))
-				if decodeError5550 != nil {
-					return nil, decodeError5550
+				decodedValue5553, decodeError5554 := ingressString(item, c, fieldPath(path, "Avatar"))
+				if decodeError5554 != nil {
+					return nil, decodeError5554
 				}
-				value = decodedValue5549
+				value = decodedValue5553
 				dst.Avatar = &value
 			}
 		}
@@ -24417,11 +24448,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5551, decodeError5552 := ingressString(item, c, fieldPath(path, "Banner"))
-				if decodeError5552 != nil {
-					return nil, decodeError5552
+				decodedValue5555, decodeError5556 := ingressString(item, c, fieldPath(path, "Banner"))
+				if decodeError5556 != nil {
+					return nil, decodeError5556
 				}
-				value = decodedValue5551
+				value = decodedValue5555
 				dst.Banner = &value
 			}
 		}
@@ -24430,11 +24461,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5553, decodeError5554 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5554 != nil {
-					return nil, decodeError5554
+				decodedValue5557, decodeError5558 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5558 != nil {
+					return nil, decodeError5558
 				}
-				dst.User = decodedValue5553
+				dst.User = decodedValue5557
 			}
 		}
 	}
@@ -24442,11 +24473,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue5555, decodeError5556 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
-				if decodeError5556 != nil {
-					return nil, decodeError5556
+				decodedValue5559, decodeError5560 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
+				if decodeError5560 != nil {
+					return nil, decodeError5560
 				}
-				dst.Roles = decodedValue5555
+				dst.Roles = decodedValue5559
 			}
 		}
 	}
@@ -24454,11 +24485,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		item := n.get("premium_since")
 		if item != nil {
 			if !item.null {
-				decodedValue5557, decodeError5558 := ingressTimestamp(item, c, fieldPath(path, "PremiumSince"))
-				if decodeError5558 != nil {
-					return nil, decodeError5558
+				decodedValue5561, decodeError5562 := ingressTimestamp(item, c, fieldPath(path, "PremiumSince"))
+				if decodeError5562 != nil {
+					return nil, decodeError5562
 				}
-				dst.PremiumSince = decodedValue5557
+				dst.PremiumSince = decodedValue5561
 			}
 		}
 	}
@@ -24472,11 +24503,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 					}
 				}
 				var value uint64
-				decodedValue5559, decodeError5560 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5560 != nil {
-					return nil, decodeError5560
+				decodedValue5563, decodeError5564 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5564 != nil {
+					return nil, decodeError5564
 				}
-				value = decodedValue5559
+				value = decodedValue5563
 				dst.Flags = &value
 			}
 		}
@@ -24486,11 +24517,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5561, decodeError5562 := ingressScalar[bool](item, c, fieldPath(path, "Pending"))
-				if decodeError5562 != nil {
-					return nil, decodeError5562
+				decodedValue5565, decodeError5566 := ingressScalar[bool](item, c, fieldPath(path, "Pending"))
+				if decodeError5566 != nil {
+					return nil, decodeError5566
 				}
-				value = decodedValue5561
+				value = decodedValue5565
 				dst.Pending = &value
 			}
 		}
@@ -24503,11 +24534,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 					return nil, err
 				}
 				var value string
-				decodedValue5563, decodeError5564 := ingressString(item, c, fieldPath(path, "Permissions"))
-				if decodeError5564 != nil {
-					return nil, decodeError5564
+				decodedValue5567, decodeError5568 := ingressString(item, c, fieldPath(path, "Permissions"))
+				if decodeError5568 != nil {
+					return nil, decodeError5568
 				}
-				value = decodedValue5563
+				value = decodedValue5567
 				dst.Permissions = &value
 			}
 		}
@@ -24516,11 +24547,11 @@ func (c *conversion) nodeSnapshotMember(n *ingressNode, path string, parent int6
 		item := n.get("communication_disabled_until")
 		if item != nil {
 			if !item.null {
-				decodedValue5565, decodeError5566 := ingressTimestamp(item, c, fieldPath(path, "CommunicationDisabledUntil"))
-				if decodeError5566 != nil {
-					return nil, decodeError5566
+				decodedValue5569, decodeError5570 := ingressTimestamp(item, c, fieldPath(path, "CommunicationDisabledUntil"))
+				if decodeError5570 != nil {
+					return nil, decodeError5570
 				}
-				dst.CommunicationDisabledUntil = decodedValue5565
+				dst.CommunicationDisabledUntil = decodedValue5569
 			}
 		}
 	}
@@ -24551,11 +24582,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5567, decodeError5568 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5568 != nil {
-					return nil, decodeError5568
+				decodedValue5571, decodeError5572 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5572 != nil {
+					return nil, decodeError5572
 				}
-				value = decodedValue5567
+				value = decodedValue5571
 				dst.Id = &value
 			}
 		}
@@ -24565,11 +24596,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5569, decodeError5570 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError5570 != nil {
-					return nil, decodeError5570
+				decodedValue5573, decodeError5574 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError5574 != nil {
+					return nil, decodeError5574
 				}
-				value = decodedValue5569
+				value = decodedValue5573
 				dst.ChannelId = &value
 			}
 		}
@@ -24579,11 +24610,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5571, decodeError5572 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5572 != nil {
-					return nil, decodeError5572
+				decodedValue5575, decodeError5576 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5576 != nil {
+					return nil, decodeError5576
 				}
-				value = decodedValue5571
+				value = decodedValue5575
 				dst.GuildId = &value
 			}
 		}
@@ -24593,11 +24624,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5573, decodeError5574 := ingressString(item, c, fieldPath(path, "Content"))
-				if decodeError5574 != nil {
-					return nil, decodeError5574
+				decodedValue5577, decodeError5578 := ingressString(item, c, fieldPath(path, "Content"))
+				if decodeError5578 != nil {
+					return nil, decodeError5578
 				}
-				value = decodedValue5573
+				value = decodedValue5577
 				dst.Content = &value
 			}
 		}
@@ -24606,11 +24637,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("timestamp")
 		if item != nil {
 			if !item.null {
-				decodedValue5575, decodeError5576 := ingressTimestamp(item, c, fieldPath(path, "Timestamp"))
-				if decodeError5576 != nil {
-					return nil, decodeError5576
+				decodedValue5579, decodeError5580 := ingressTimestamp(item, c, fieldPath(path, "Timestamp"))
+				if decodeError5580 != nil {
+					return nil, decodeError5580
 				}
-				dst.Timestamp = decodedValue5575
+				dst.Timestamp = decodedValue5579
 			}
 		}
 	}
@@ -24618,11 +24649,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("edited_timestamp")
 		if item != nil {
 			if !item.null {
-				decodedValue5577, decodeError5578 := ingressTimestamp(item, c, fieldPath(path, "EditedTimestamp"))
-				if decodeError5578 != nil {
-					return nil, decodeError5578
+				decodedValue5581, decodeError5582 := ingressTimestamp(item, c, fieldPath(path, "EditedTimestamp"))
+				if decodeError5582 != nil {
+					return nil, decodeError5582
 				}
-				dst.EditedTimestamp = decodedValue5577
+				dst.EditedTimestamp = decodedValue5581
 			}
 		}
 	}
@@ -24630,11 +24661,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("mention_roles")
 		if item != nil {
 			if !item.null {
-				decodedValue5579, decodeError5580 := c.nodeDomainStringList(item, fieldPath(path, "MentionRoles"), parent)
-				if decodeError5580 != nil {
-					return nil, decodeError5580
+				decodedValue5583, decodeError5584 := c.nodeDomainStringList(item, fieldPath(path, "MentionRoles"), parent)
+				if decodeError5584 != nil {
+					return nil, decodeError5584
 				}
-				dst.MentionRoles = decodedValue5579
+				dst.MentionRoles = decodedValue5583
 			}
 		}
 	}
@@ -24643,11 +24674,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5581, decodeError5582 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
-				if decodeError5582 != nil {
-					return nil, decodeError5582
+				decodedValue5585, decodeError5586 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
+				if decodeError5586 != nil {
+					return nil, decodeError5586
 				}
-				value = decodedValue5581
+				value = decodedValue5585
 				dst.Tts = &value
 			}
 		}
@@ -24657,11 +24688,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5583, decodeError5584 := ingressScalar[bool](item, c, fieldPath(path, "MentionEveryone"))
-				if decodeError5584 != nil {
-					return nil, decodeError5584
+				decodedValue5587, decodeError5588 := ingressScalar[bool](item, c, fieldPath(path, "MentionEveryone"))
+				if decodeError5588 != nil {
+					return nil, decodeError5588
 				}
-				value = decodedValue5583
+				value = decodedValue5587
 				dst.MentionEveryone = &value
 			}
 		}
@@ -24670,11 +24701,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("author")
 		if item != nil {
 			if !item.null {
-				decodedValue5585, decodeError5586 := c.nodeSnapshotUser(item, fieldPath(path, "Author"), parent)
-				if decodeError5586 != nil {
-					return nil, decodeError5586
+				decodedValue5589, decodeError5590 := c.nodeSnapshotUser(item, fieldPath(path, "Author"), parent)
+				if decodeError5590 != nil {
+					return nil, decodeError5590
 				}
-				dst.Author = decodedValue5585
+				dst.Author = decodedValue5589
 			}
 		}
 	}
@@ -24682,11 +24713,23 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("attachments")
 		if item != nil {
 			if !item.null {
-				decodedValue5587, decodeError5588 := c.nodeDomainMessageAttachmentList(item, fieldPath(path, "Attachments"), parent)
-				if decodeError5588 != nil {
-					return nil, decodeError5588
+				decodedValue5591, decodeError5592 := c.nodeDomainMessageAttachmentList(item, fieldPath(path, "Attachments"), parent)
+				if decodeError5592 != nil {
+					return nil, decodeError5592
 				}
-				dst.Attachments = decodedValue5587
+				dst.Attachments = decodedValue5591
+			}
+		}
+	}
+	{
+		item := n.get("components")
+		if item != nil {
+			if !item.null {
+				decodedValue5593, decodeError5594 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError5594 != nil {
+					return nil, decodeError5594
+				}
+				dst.Components = decodedValue5593
 			}
 		}
 	}
@@ -24694,11 +24737,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("embeds")
 		if item != nil {
 			if !item.null {
-				decodedValue5589, decodeError5590 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
-				if decodeError5590 != nil {
-					return nil, decodeError5590
+				decodedValue5595, decodeError5596 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
+				if decodeError5596 != nil {
+					return nil, decodeError5596
 				}
-				dst.Embeds = decodedValue5589
+				dst.Embeds = decodedValue5595
 			}
 		}
 	}
@@ -24706,11 +24749,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("mentions")
 		if item != nil {
 			if !item.null {
-				decodedValue5591, decodeError5592 := c.nodeDomainUserList(item, fieldPath(path, "Mentions"), parent)
-				if decodeError5592 != nil {
-					return nil, decodeError5592
+				decodedValue5597, decodeError5598 := c.nodeDomainUserList(item, fieldPath(path, "Mentions"), parent)
+				if decodeError5598 != nil {
+					return nil, decodeError5598
 				}
-				dst.Mentions = decodedValue5591
+				dst.Mentions = decodedValue5597
 			}
 		}
 	}
@@ -24718,11 +24761,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("reactions")
 		if item != nil {
 			if !item.null {
-				decodedValue5593, decodeError5594 := c.nodeDomainMessageReactionsList(item, fieldPath(path, "Reactions"), parent)
-				if decodeError5594 != nil {
-					return nil, decodeError5594
+				decodedValue5599, decodeError5600 := c.nodeDomainMessageReactionsList(item, fieldPath(path, "Reactions"), parent)
+				if decodeError5600 != nil {
+					return nil, decodeError5600
 				}
-				dst.Reactions = decodedValue5593
+				dst.Reactions = decodedValue5599
 			}
 		}
 	}
@@ -24731,11 +24774,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5595, decodeError5596 := ingressScalar[bool](item, c, fieldPath(path, "Pinned"))
-				if decodeError5596 != nil {
-					return nil, decodeError5596
+				decodedValue5601, decodeError5602 := ingressScalar[bool](item, c, fieldPath(path, "Pinned"))
+				if decodeError5602 != nil {
+					return nil, decodeError5602
 				}
-				value = decodedValue5595
+				value = decodedValue5601
 				dst.Pinned = &value
 			}
 		}
@@ -24750,11 +24793,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue5597, decodeError5598 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError5598 != nil {
-					return nil, decodeError5598
+				decodedValue5603, decodeError5604 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError5604 != nil {
+					return nil, decodeError5604
 				}
-				value = decodedValue5597
+				value = decodedValue5603
 				dst.Type = &value
 			}
 		}
@@ -24764,11 +24807,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5599, decodeError5600 := ingressString(item, c, fieldPath(path, "WebhookID"))
-				if decodeError5600 != nil {
-					return nil, decodeError5600
+				decodedValue5605, decodeError5606 := ingressString(item, c, fieldPath(path, "WebhookID"))
+				if decodeError5606 != nil {
+					return nil, decodeError5606
 				}
-				value = decodedValue5599
+				value = decodedValue5605
 				dst.WebhookId = &value
 			}
 		}
@@ -24777,11 +24820,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("member")
 		if item != nil {
 			if !item.null {
-				decodedValue5601, decodeError5602 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
-				if decodeError5602 != nil {
-					return nil, decodeError5602
+				decodedValue5607, decodeError5608 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
+				if decodeError5608 != nil {
+					return nil, decodeError5608
 				}
-				dst.Member = decodedValue5601
+				dst.Member = decodedValue5607
 			}
 		}
 	}
@@ -24789,11 +24832,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("mention_channels")
 		if item != nil {
 			if !item.null {
-				decodedValue5603, decodeError5604 := c.nodeDomainChannelList(item, fieldPath(path, "MentionChannels"), parent)
-				if decodeError5604 != nil {
-					return nil, decodeError5604
+				decodedValue5609, decodeError5610 := c.nodeDomainChannelList(item, fieldPath(path, "MentionChannels"), parent)
+				if decodeError5610 != nil {
+					return nil, decodeError5610
 				}
-				dst.MentionChannels = decodedValue5603
+				dst.MentionChannels = decodedValue5609
 			}
 		}
 	}
@@ -24801,11 +24844,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("activity")
 		if item != nil {
 			if !item.null {
-				decodedValue5605, decodeError5606 := c.nodeSnapshotMessageActivity(item, fieldPath(path, "Activity"), parent)
-				if decodeError5606 != nil {
-					return nil, decodeError5606
+				decodedValue5611, decodeError5612 := c.nodeSnapshotMessageActivity(item, fieldPath(path, "Activity"), parent)
+				if decodeError5612 != nil {
+					return nil, decodeError5612
 				}
-				dst.Activity = decodedValue5605
+				dst.Activity = decodedValue5611
 			}
 		}
 	}
@@ -24813,11 +24856,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("application")
 		if item != nil {
 			if !item.null {
-				decodedValue5607, decodeError5608 := c.nodeSnapshotMessageApplication(item, fieldPath(path, "Application"), parent)
-				if decodeError5608 != nil {
-					return nil, decodeError5608
+				decodedValue5613, decodeError5614 := c.nodeSnapshotMessageApplication(item, fieldPath(path, "Application"), parent)
+				if decodeError5614 != nil {
+					return nil, decodeError5614
 				}
-				dst.Application = decodedValue5607
+				dst.Application = decodedValue5613
 			}
 		}
 	}
@@ -24825,11 +24868,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("message_reference")
 		if item != nil {
 			if !item.null {
-				decodedValue5609, decodeError5610 := c.nodeSnapshotMessageReference(item, fieldPath(path, "MessageReference"), parent)
-				if decodeError5610 != nil {
-					return nil, decodeError5610
+				decodedValue5615, decodeError5616 := c.nodeSnapshotMessageReference(item, fieldPath(path, "MessageReference"), parent)
+				if decodeError5616 != nil {
+					return nil, decodeError5616
 				}
-				dst.MessageReference = decodedValue5609
+				dst.MessageReference = decodedValue5615
 			}
 		}
 	}
@@ -24837,11 +24880,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("referenced_message")
 		if item != nil {
 			if !item.null {
-				decodedValue5611, decodeError5612 := c.nodeSnapshotMessage(item, fieldPath(path, "ReferencedMessage"), parent)
-				if decodeError5612 != nil {
-					return nil, decodeError5612
+				decodedValue5617, decodeError5618 := c.nodeSnapshotMessage(item, fieldPath(path, "ReferencedMessage"), parent)
+				if decodeError5618 != nil {
+					return nil, decodeError5618
 				}
-				dst.ReferencedMessage = decodedValue5611
+				dst.ReferencedMessage = decodedValue5617
 			}
 		}
 	}
@@ -24849,11 +24892,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("message_snapshots")
 		if item != nil {
 			if !item.null {
-				decodedValue5613, decodeError5614 := c.nodeDomainMessageSnapshotList(item, fieldPath(path, "MessageSnapshots"), parent)
-				if decodeError5614 != nil {
-					return nil, decodeError5614
+				decodedValue5619, decodeError5620 := c.nodeDomainMessageSnapshotList(item, fieldPath(path, "MessageSnapshots"), parent)
+				if decodeError5620 != nil {
+					return nil, decodeError5620
 				}
-				dst.MessageSnapshots = decodedValue5613
+				dst.MessageSnapshots = decodedValue5619
 			}
 		}
 	}
@@ -24861,11 +24904,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("interaction")
 		if item != nil {
 			if !item.null {
-				decodedValue5615, decodeError5616 := c.nodeSnapshotMessageInteraction(item, fieldPath(path, "Interaction"), parent)
-				if decodeError5616 != nil {
-					return nil, decodeError5616
+				decodedValue5621, decodeError5622 := c.nodeSnapshotMessageInteraction(item, fieldPath(path, "Interaction"), parent)
+				if decodeError5622 != nil {
+					return nil, decodeError5622
 				}
-				dst.Interaction = decodedValue5615
+				dst.Interaction = decodedValue5621
 			}
 		}
 	}
@@ -24873,11 +24916,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("interaction_metadata")
 		if item != nil {
 			if !item.null {
-				decodedValue5617, decodeError5618 := c.nodeSnapshotMessageInteractionMetadata(item, fieldPath(path, "InteractionMetadata"), parent)
-				if decodeError5618 != nil {
-					return nil, decodeError5618
+				decodedValue5623, decodeError5624 := c.nodeSnapshotMessageInteractionMetadata(item, fieldPath(path, "InteractionMetadata"), parent)
+				if decodeError5624 != nil {
+					return nil, decodeError5624
 				}
-				dst.InteractionMetadata = decodedValue5617
+				dst.InteractionMetadata = decodedValue5623
 			}
 		}
 	}
@@ -24891,11 +24934,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 					}
 				}
 				var value uint64
-				decodedValue5619, decodeError5620 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5620 != nil {
-					return nil, decodeError5620
+				decodedValue5625, decodeError5626 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5626 != nil {
+					return nil, decodeError5626
 				}
-				value = decodedValue5619
+				value = decodedValue5625
 				dst.Flags = &value
 			}
 		}
@@ -24904,11 +24947,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("thread")
 		if item != nil {
 			if !item.null {
-				decodedValue5621, decodeError5622 := c.nodeSnapshotChannel(item, fieldPath(path, "Thread"), parent)
-				if decodeError5622 != nil {
-					return nil, decodeError5622
+				decodedValue5627, decodeError5628 := c.nodeSnapshotChannel(item, fieldPath(path, "Thread"), parent)
+				if decodeError5628 != nil {
+					return nil, decodeError5628
 				}
-				dst.Thread = decodedValue5621
+				dst.Thread = decodedValue5627
 			}
 		}
 	}
@@ -24916,11 +24959,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("sticker_items")
 		if item != nil {
 			if !item.null {
-				decodedValue5623, decodeError5624 := c.nodeDomainStickerItemList(item, fieldPath(path, "StickerItems"), parent)
-				if decodeError5624 != nil {
-					return nil, decodeError5624
+				decodedValue5629, decodeError5630 := c.nodeDomainStickerItemList(item, fieldPath(path, "StickerItems"), parent)
+				if decodeError5630 != nil {
+					return nil, decodeError5630
 				}
-				dst.StickerItems = decodedValue5623
+				dst.StickerItems = decodedValue5629
 			}
 		}
 	}
@@ -24928,11 +24971,11 @@ func (c *conversion) nodeSnapshotMessage(n *ingressNode, path string, parent int
 		item := n.get("poll")
 		if item != nil {
 			if !item.null {
-				decodedValue5625, decodeError5626 := c.nodeSnapshotPoll(item, fieldPath(path, "Poll"), parent)
-				if decodeError5626 != nil {
-					return nil, decodeError5626
+				decodedValue5631, decodeError5632 := c.nodeSnapshotPoll(item, fieldPath(path, "Poll"), parent)
+				if decodeError5632 != nil {
+					return nil, decodeError5632
 				}
-				dst.Poll = decodedValue5625
+				dst.Poll = decodedValue5631
 			}
 		}
 	}
@@ -24968,11 +25011,11 @@ func (c *conversion) nodeSnapshotMessageActivity(n *ingressNode, path string, pa
 					}
 				}
 				var value int64
-				decodedValue5627, decodeError5628 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError5628 != nil {
-					return nil, decodeError5628
+				decodedValue5633, decodeError5634 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError5634 != nil {
+					return nil, decodeError5634
 				}
-				value = decodedValue5627
+				value = decodedValue5633
 				dst.Type = &value
 			}
 		}
@@ -24982,11 +25025,11 @@ func (c *conversion) nodeSnapshotMessageActivity(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5629, decodeError5630 := ingressString(item, c, fieldPath(path, "PartyID"))
-				if decodeError5630 != nil {
-					return nil, decodeError5630
+				decodedValue5635, decodeError5636 := ingressString(item, c, fieldPath(path, "PartyID"))
+				if decodeError5636 != nil {
+					return nil, decodeError5636
 				}
-				value = decodedValue5629
+				value = decodedValue5635
 				dst.PartyId = &value
 			}
 		}
@@ -25017,11 +25060,11 @@ func (c *conversion) nodeSnapshotMessageAllowedMentions(n *ingressNode, path str
 		item := n.get("parse")
 		if item != nil {
 			if !item.null {
-				decodedValue5631, decodeError5632 := c.nodeDomainStringList(item, fieldPath(path, "Parse"), parent)
-				if decodeError5632 != nil {
-					return nil, decodeError5632
+				decodedValue5637, decodeError5638 := c.nodeDomainStringList(item, fieldPath(path, "Parse"), parent)
+				if decodeError5638 != nil {
+					return nil, decodeError5638
 				}
-				dst.Parse = decodedValue5631
+				dst.Parse = decodedValue5637
 			}
 		}
 	}
@@ -25029,11 +25072,11 @@ func (c *conversion) nodeSnapshotMessageAllowedMentions(n *ingressNode, path str
 		item := n.get("roles")
 		if item != nil {
 			if !item.null {
-				decodedValue5633, decodeError5634 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
-				if decodeError5634 != nil {
-					return nil, decodeError5634
+				decodedValue5639, decodeError5640 := c.nodeDomainStringList(item, fieldPath(path, "Roles"), parent)
+				if decodeError5640 != nil {
+					return nil, decodeError5640
 				}
-				dst.Roles = decodedValue5633
+				dst.Roles = decodedValue5639
 			}
 		}
 	}
@@ -25041,11 +25084,11 @@ func (c *conversion) nodeSnapshotMessageAllowedMentions(n *ingressNode, path str
 		item := n.get("users")
 		if item != nil {
 			if !item.null {
-				decodedValue5635, decodeError5636 := c.nodeDomainStringList(item, fieldPath(path, "Users"), parent)
-				if decodeError5636 != nil {
-					return nil, decodeError5636
+				decodedValue5641, decodeError5642 := c.nodeDomainStringList(item, fieldPath(path, "Users"), parent)
+				if decodeError5642 != nil {
+					return nil, decodeError5642
 				}
-				dst.Users = decodedValue5635
+				dst.Users = decodedValue5641
 			}
 		}
 	}
@@ -25054,11 +25097,11 @@ func (c *conversion) nodeSnapshotMessageAllowedMentions(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5637, decodeError5638 := ingressScalar[bool](item, c, fieldPath(path, "RepliedUser"))
-				if decodeError5638 != nil {
-					return nil, decodeError5638
+				decodedValue5643, decodeError5644 := ingressScalar[bool](item, c, fieldPath(path, "RepliedUser"))
+				if decodeError5644 != nil {
+					return nil, decodeError5644
 				}
-				value = decodedValue5637
+				value = decodedValue5643
 				dst.RepliedUser = &value
 			}
 		}
@@ -25090,11 +25133,11 @@ func (c *conversion) nodeSnapshotMessageApplication(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5639, decodeError5640 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5640 != nil {
-					return nil, decodeError5640
+				decodedValue5645, decodeError5646 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5646 != nil {
+					return nil, decodeError5646
 				}
-				value = decodedValue5639
+				value = decodedValue5645
 				dst.Id = &value
 			}
 		}
@@ -25104,11 +25147,11 @@ func (c *conversion) nodeSnapshotMessageApplication(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5641, decodeError5642 := ingressString(item, c, fieldPath(path, "CoverImage"))
-				if decodeError5642 != nil {
-					return nil, decodeError5642
+				decodedValue5647, decodeError5648 := ingressString(item, c, fieldPath(path, "CoverImage"))
+				if decodeError5648 != nil {
+					return nil, decodeError5648
 				}
-				value = decodedValue5641
+				value = decodedValue5647
 				dst.CoverImage = &value
 			}
 		}
@@ -25118,11 +25161,11 @@ func (c *conversion) nodeSnapshotMessageApplication(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5643, decodeError5644 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5644 != nil {
-					return nil, decodeError5644
+				decodedValue5649, decodeError5650 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5650 != nil {
+					return nil, decodeError5650
 				}
-				value = decodedValue5643
+				value = decodedValue5649
 				dst.Description = &value
 			}
 		}
@@ -25132,11 +25175,11 @@ func (c *conversion) nodeSnapshotMessageApplication(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5645, decodeError5646 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError5646 != nil {
-					return nil, decodeError5646
+				decodedValue5651, decodeError5652 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError5652 != nil {
+					return nil, decodeError5652
 				}
-				value = decodedValue5645
+				value = decodedValue5651
 				dst.Icon = &value
 			}
 		}
@@ -25146,11 +25189,11 @@ func (c *conversion) nodeSnapshotMessageApplication(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5647, decodeError5648 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5648 != nil {
-					return nil, decodeError5648
+				decodedValue5653, decodeError5654 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5654 != nil {
+					return nil, decodeError5654
 				}
-				value = decodedValue5647
+				value = decodedValue5653
 				dst.Name = &value
 			}
 		}
@@ -25182,11 +25225,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5649, decodeError5650 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5650 != nil {
-					return nil, decodeError5650
+				decodedValue5655, decodeError5656 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5656 != nil {
+					return nil, decodeError5656
 				}
-				value = decodedValue5649
+				value = decodedValue5655
 				dst.Id = &value
 			}
 		}
@@ -25196,11 +25239,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5651, decodeError5652 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError5652 != nil {
-					return nil, decodeError5652
+				decodedValue5657, decodeError5658 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5658 != nil {
+					return nil, decodeError5658
 				}
-				value = decodedValue5651
+				value = decodedValue5657
 				dst.Url = &value
 			}
 		}
@@ -25210,11 +25253,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5653, decodeError5654 := ingressString(item, c, fieldPath(path, "ProxyURL"))
-				if decodeError5654 != nil {
-					return nil, decodeError5654
+				decodedValue5659, decodeError5660 := ingressString(item, c, fieldPath(path, "ProxyURL"))
+				if decodeError5660 != nil {
+					return nil, decodeError5660
 				}
-				value = decodedValue5653
+				value = decodedValue5659
 				dst.ProxyUrl = &value
 			}
 		}
@@ -25224,11 +25267,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5655, decodeError5656 := ingressString(item, c, fieldPath(path, "Filename"))
-				if decodeError5656 != nil {
-					return nil, decodeError5656
+				decodedValue5661, decodeError5662 := ingressString(item, c, fieldPath(path, "Filename"))
+				if decodeError5662 != nil {
+					return nil, decodeError5662
 				}
-				value = decodedValue5655
+				value = decodedValue5661
 				dst.Filename = &value
 			}
 		}
@@ -25238,11 +25281,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5657, decodeError5658 := ingressString(item, c, fieldPath(path, "ContentType"))
-				if decodeError5658 != nil {
-					return nil, decodeError5658
+				decodedValue5663, decodeError5664 := ingressString(item, c, fieldPath(path, "ContentType"))
+				if decodeError5664 != nil {
+					return nil, decodeError5664
 				}
-				value = decodedValue5657
+				value = decodedValue5663
 				dst.ContentType = &value
 			}
 		}
@@ -25257,11 +25300,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 					}
 				}
 				var value int64
-				decodedValue5659, decodeError5660 := ingressNumericScalar[int64](item, c, fieldPath(path, "Width"))
-				if decodeError5660 != nil {
-					return nil, decodeError5660
+				decodedValue5665, decodeError5666 := ingressNumericScalar[int64](item, c, fieldPath(path, "Width"))
+				if decodeError5666 != nil {
+					return nil, decodeError5666
 				}
-				value = decodedValue5659
+				value = decodedValue5665
 				dst.Width = &value
 			}
 		}
@@ -25276,11 +25319,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 					}
 				}
 				var value int64
-				decodedValue5661, decodeError5662 := ingressNumericScalar[int64](item, c, fieldPath(path, "Height"))
-				if decodeError5662 != nil {
-					return nil, decodeError5662
+				decodedValue5667, decodeError5668 := ingressNumericScalar[int64](item, c, fieldPath(path, "Height"))
+				if decodeError5668 != nil {
+					return nil, decodeError5668
 				}
-				value = decodedValue5661
+				value = decodedValue5667
 				dst.Height = &value
 			}
 		}
@@ -25295,11 +25338,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 					}
 				}
 				var value int64
-				decodedValue5663, decodeError5664 := ingressNumericScalar[int64](item, c, fieldPath(path, "Size"))
-				if decodeError5664 != nil {
-					return nil, decodeError5664
+				decodedValue5669, decodeError5670 := ingressNumericScalar[int64](item, c, fieldPath(path, "Size"))
+				if decodeError5670 != nil {
+					return nil, decodeError5670
 				}
-				value = decodedValue5663
+				value = decodedValue5669
 				dst.Size = &value
 			}
 		}
@@ -25309,11 +25352,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5665, decodeError5666 := ingressScalar[bool](item, c, fieldPath(path, "Ephemeral"))
-				if decodeError5666 != nil {
-					return nil, decodeError5666
+				decodedValue5671, decodeError5672 := ingressScalar[bool](item, c, fieldPath(path, "Ephemeral"))
+				if decodeError5672 != nil {
+					return nil, decodeError5672
 				}
-				value = decodedValue5665
+				value = decodedValue5671
 				dst.Ephemeral = &value
 			}
 		}
@@ -25323,11 +25366,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value float64
-				decodedValue5667, decodeError5668 := ingressFloat(item, c, fieldPath(path, "DurationSecs"))
-				if decodeError5668 != nil {
-					return nil, decodeError5668
+				decodedValue5673, decodeError5674 := ingressFloat(item, c, fieldPath(path, "DurationSecs"))
+				if decodeError5674 != nil {
+					return nil, decodeError5674
 				}
-				value = decodedValue5667
+				value = decodedValue5673
 				dst.DurationSecs = &value
 			}
 		}
@@ -25337,11 +25380,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5669, decodeError5670 := ingressString(item, c, fieldPath(path, "Waveform"))
-				if decodeError5670 != nil {
-					return nil, decodeError5670
+				decodedValue5675, decodeError5676 := ingressString(item, c, fieldPath(path, "Waveform"))
+				if decodeError5676 != nil {
+					return nil, decodeError5676
 				}
-				value = decodedValue5669
+				value = decodedValue5675
 				dst.Waveform = &value
 			}
 		}
@@ -25356,11 +25399,11 @@ func (c *conversion) nodeSnapshotMessageAttachment(n *ingressNode, path string, 
 					}
 				}
 				var value uint64
-				decodedValue5671, decodeError5672 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5672 != nil {
-					return nil, decodeError5672
+				decodedValue5677, decodeError5678 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5678 != nil {
+					return nil, decodeError5678
 				}
-				value = decodedValue5671
+				value = decodedValue5677
 				dst.Flags = &value
 			}
 		}
@@ -25392,11 +25435,11 @@ func (c *conversion) nodeSnapshotMessageComponentInteractionData(n *ingressNode,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5673, decodeError5674 := ingressString(item, c, fieldPath(path, "CustomID"))
-				if decodeError5674 != nil {
-					return nil, decodeError5674
+				decodedValue5679, decodeError5680 := ingressString(item, c, fieldPath(path, "CustomID"))
+				if decodeError5680 != nil {
+					return nil, decodeError5680
 				}
-				value = decodedValue5673
+				value = decodedValue5679
 				dst.CustomId = &value
 			}
 		}
@@ -25411,11 +25454,11 @@ func (c *conversion) nodeSnapshotMessageComponentInteractionData(n *ingressNode,
 					}
 				}
 				var value uint64
-				decodedValue5675, decodeError5676 := ingressNumericScalar[uint64](item, c, fieldPath(path, "ComponentType"))
-				if decodeError5676 != nil {
-					return nil, decodeError5676
+				decodedValue5681, decodeError5682 := ingressNumericScalar[uint64](item, c, fieldPath(path, "ComponentType"))
+				if decodeError5682 != nil {
+					return nil, decodeError5682
 				}
-				value = decodedValue5675
+				value = decodedValue5681
 				dst.ComponentType = &value
 			}
 		}
@@ -25424,11 +25467,11 @@ func (c *conversion) nodeSnapshotMessageComponentInteractionData(n *ingressNode,
 		item := n.get("resolved")
 		if item != nil {
 			if !item.null {
-				decodedValue5677, decodeError5678 := c.nodeSnapshotComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
-				if decodeError5678 != nil {
-					return nil, decodeError5678
+				decodedValue5683, decodeError5684 := c.nodeSnapshotComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
+				if decodeError5684 != nil {
+					return nil, decodeError5684
 				}
-				dst.Resolved = decodedValue5677
+				dst.Resolved = decodedValue5683
 			}
 		}
 	}
@@ -25436,11 +25479,11 @@ func (c *conversion) nodeSnapshotMessageComponentInteractionData(n *ingressNode,
 		item := n.get("values")
 		if item != nil {
 			if !item.null {
-				decodedValue5679, decodeError5680 := c.nodeDomainStringList(item, fieldPath(path, "Values"), parent)
-				if decodeError5680 != nil {
-					return nil, decodeError5680
+				decodedValue5685, decodeError5686 := c.nodeDomainStringList(item, fieldPath(path, "Values"), parent)
+				if decodeError5686 != nil {
+					return nil, decodeError5686
 				}
-				dst.Values = decodedValue5679
+				dst.Values = decodedValue5685
 			}
 		}
 	}
@@ -25457,22 +25500,22 @@ func (c *conversion) nodeSnapshotMessageEdit(n *ingressNode, path string, parent
 	{
 		item := n.get("content")
 		if item != nil {
-			decodedValue5681, decodeError5682 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-			if decodeError5682 != nil {
-				return nil, decodeError5682
+			decodedValue5687, decodeError5688 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
+			if decodeError5688 != nil {
+				return nil, decodeError5688
 			}
-			dst.Content = decodedValue5681
+			dst.Content = decodedValue5687
 		}
 	}
 	{
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue5683, decodeError5684 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError5684 != nil {
-					return nil, decodeError5684
+				decodedValue5689, decodeError5690 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError5690 != nil {
+					return nil, decodeError5690
 				}
-				dst.Components = decodedValue5683
+				dst.Components = decodedValue5689
 			}
 		}
 	}
@@ -25480,11 +25523,11 @@ func (c *conversion) nodeSnapshotMessageEdit(n *ingressNode, path string, parent
 		item := n.get("embeds")
 		if item != nil {
 			if !item.null {
-				decodedValue5685, decodeError5686 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
-				if decodeError5686 != nil {
-					return nil, decodeError5686
+				decodedValue5691, decodeError5692 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
+				if decodeError5692 != nil {
+					return nil, decodeError5692
 				}
-				dst.Embeds = decodedValue5685
+				dst.Embeds = decodedValue5691
 			}
 		}
 	}
@@ -25492,11 +25535,11 @@ func (c *conversion) nodeSnapshotMessageEdit(n *ingressNode, path string, parent
 		item := n.get("allowed_mentions")
 		if item != nil {
 			if !item.null {
-				decodedValue5687, decodeError5688 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
-				if decodeError5688 != nil {
-					return nil, decodeError5688
+				decodedValue5693, decodeError5694 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+				if decodeError5694 != nil {
+					return nil, decodeError5694
 				}
-				dst.AllowedMentions = decodedValue5687
+				dst.AllowedMentions = decodedValue5693
 			}
 		}
 	}
@@ -25510,11 +25553,11 @@ func (c *conversion) nodeSnapshotMessageEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value uint64
-				decodedValue5689, decodeError5690 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5690 != nil {
-					return nil, decodeError5690
+				decodedValue5695, decodeError5696 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5696 != nil {
+					return nil, decodeError5696
 				}
-				value = decodedValue5689
+				value = decodedValue5695
 				dst.Flags = &value
 			}
 		}
@@ -25523,11 +25566,11 @@ func (c *conversion) nodeSnapshotMessageEdit(n *ingressNode, path string, parent
 		item := n.get("attachments")
 		if item != nil {
 			if !item.null {
-				decodedValue5691, decodeError5692 := c.nodeAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
-				if decodeError5692 != nil {
-					return nil, decodeError5692
+				decodedValue5697, decodeError5698 := c.nodeAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
+				if decodeError5698 != nil {
+					return nil, decodeError5698
 				}
-				dst.Attachments = decodedValue5691
+				dst.Attachments = decodedValue5697
 			}
 		}
 	}
@@ -25535,11 +25578,11 @@ func (c *conversion) nodeSnapshotMessageEdit(n *ingressNode, path string, parent
 		item := n.get("ID")
 		if item != nil {
 			if !item.null {
-				decodedValue5693, decodeError5694 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5694 != nil {
-					return nil, decodeError5694
+				decodedValue5699, decodeError5700 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5700 != nil {
+					return nil, decodeError5700
 				}
-				dst.Id = decodedValue5693
+				dst.Id = decodedValue5699
 			}
 		}
 	}
@@ -25547,11 +25590,11 @@ func (c *conversion) nodeSnapshotMessageEdit(n *ingressNode, path string, parent
 		item := n.get("Channel")
 		if item != nil {
 			if !item.null {
-				decodedValue5695, decodeError5696 := ingressString(item, c, fieldPath(path, "Channel"))
-				if decodeError5696 != nil {
-					return nil, decodeError5696
+				decodedValue5701, decodeError5702 := ingressString(item, c, fieldPath(path, "Channel"))
+				if decodeError5702 != nil {
+					return nil, decodeError5702
 				}
-				dst.ChannelId = decodedValue5695
+				dst.ChannelId = decodedValue5701
 			}
 		}
 	}
@@ -25582,11 +25625,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5697, decodeError5698 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError5698 != nil {
-					return nil, decodeError5698
+				decodedValue5703, decodeError5704 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5704 != nil {
+					return nil, decodeError5704
 				}
-				value = decodedValue5697
+				value = decodedValue5703
 				dst.Url = &value
 			}
 		}
@@ -25596,11 +25639,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5699, decodeError5700 := ingressString(item, c, fieldPath(path, "Type"))
-				if decodeError5700 != nil {
-					return nil, decodeError5700
+				decodedValue5705, decodeError5706 := ingressString(item, c, fieldPath(path, "Type"))
+				if decodeError5706 != nil {
+					return nil, decodeError5706
 				}
-				value = decodedValue5699
+				value = decodedValue5705
 				dst.Type = &value
 			}
 		}
@@ -25610,11 +25653,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5701, decodeError5702 := ingressString(item, c, fieldPath(path, "Title"))
-				if decodeError5702 != nil {
-					return nil, decodeError5702
+				decodedValue5707, decodeError5708 := ingressString(item, c, fieldPath(path, "Title"))
+				if decodeError5708 != nil {
+					return nil, decodeError5708
 				}
-				value = decodedValue5701
+				value = decodedValue5707
 				dst.Title = &value
 			}
 		}
@@ -25624,11 +25667,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5703, decodeError5704 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError5704 != nil {
-					return nil, decodeError5704
+				decodedValue5709, decodeError5710 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError5710 != nil {
+					return nil, decodeError5710
 				}
-				value = decodedValue5703
+				value = decodedValue5709
 				dst.Description = &value
 			}
 		}
@@ -25638,11 +25681,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5705, decodeError5706 := ingressString(item, c, fieldPath(path, "Timestamp"))
-				if decodeError5706 != nil {
-					return nil, decodeError5706
+				decodedValue5711, decodeError5712 := ingressString(item, c, fieldPath(path, "Timestamp"))
+				if decodeError5712 != nil {
+					return nil, decodeError5712
 				}
-				value = decodedValue5705
+				value = decodedValue5711
 				dst.Timestamp = &value
 			}
 		}
@@ -25657,11 +25700,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 					}
 				}
 				var value int64
-				decodedValue5707, decodeError5708 := ingressNumericScalar[int64](item, c, fieldPath(path, "Color"))
-				if decodeError5708 != nil {
-					return nil, decodeError5708
+				decodedValue5713, decodeError5714 := ingressNumericScalar[int64](item, c, fieldPath(path, "Color"))
+				if decodeError5714 != nil {
+					return nil, decodeError5714
 				}
-				value = decodedValue5707
+				value = decodedValue5713
 				dst.Color = &value
 			}
 		}
@@ -25670,11 +25713,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		item := n.get("footer")
 		if item != nil {
 			if !item.null {
-				decodedValue5709, decodeError5710 := c.nodeSnapshotMessageEmbedFooter(item, fieldPath(path, "Footer"), parent)
-				if decodeError5710 != nil {
-					return nil, decodeError5710
+				decodedValue5715, decodeError5716 := c.nodeSnapshotMessageEmbedFooter(item, fieldPath(path, "Footer"), parent)
+				if decodeError5716 != nil {
+					return nil, decodeError5716
 				}
-				dst.Footer = decodedValue5709
+				dst.Footer = decodedValue5715
 			}
 		}
 	}
@@ -25682,11 +25725,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		item := n.get("image")
 		if item != nil {
 			if !item.null {
-				decodedValue5711, decodeError5712 := c.nodeSnapshotMessageEmbedImage(item, fieldPath(path, "Image"), parent)
-				if decodeError5712 != nil {
-					return nil, decodeError5712
+				decodedValue5717, decodeError5718 := c.nodeSnapshotMessageEmbedImage(item, fieldPath(path, "Image"), parent)
+				if decodeError5718 != nil {
+					return nil, decodeError5718
 				}
-				dst.Image = decodedValue5711
+				dst.Image = decodedValue5717
 			}
 		}
 	}
@@ -25694,11 +25737,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		item := n.get("thumbnail")
 		if item != nil {
 			if !item.null {
-				decodedValue5713, decodeError5714 := c.nodeSnapshotMessageEmbedThumbnail(item, fieldPath(path, "Thumbnail"), parent)
-				if decodeError5714 != nil {
-					return nil, decodeError5714
+				decodedValue5719, decodeError5720 := c.nodeSnapshotMessageEmbedThumbnail(item, fieldPath(path, "Thumbnail"), parent)
+				if decodeError5720 != nil {
+					return nil, decodeError5720
 				}
-				dst.Thumbnail = decodedValue5713
+				dst.Thumbnail = decodedValue5719
 			}
 		}
 	}
@@ -25706,11 +25749,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		item := n.get("video")
 		if item != nil {
 			if !item.null {
-				decodedValue5715, decodeError5716 := c.nodeSnapshotMessageEmbedVideo(item, fieldPath(path, "Video"), parent)
-				if decodeError5716 != nil {
-					return nil, decodeError5716
+				decodedValue5721, decodeError5722 := c.nodeSnapshotMessageEmbedVideo(item, fieldPath(path, "Video"), parent)
+				if decodeError5722 != nil {
+					return nil, decodeError5722
 				}
-				dst.Video = decodedValue5715
+				dst.Video = decodedValue5721
 			}
 		}
 	}
@@ -25718,11 +25761,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		item := n.get("provider")
 		if item != nil {
 			if !item.null {
-				decodedValue5717, decodeError5718 := c.nodeSnapshotMessageEmbedProvider(item, fieldPath(path, "Provider"), parent)
-				if decodeError5718 != nil {
-					return nil, decodeError5718
+				decodedValue5723, decodeError5724 := c.nodeSnapshotMessageEmbedProvider(item, fieldPath(path, "Provider"), parent)
+				if decodeError5724 != nil {
+					return nil, decodeError5724
 				}
-				dst.Provider = decodedValue5717
+				dst.Provider = decodedValue5723
 			}
 		}
 	}
@@ -25730,11 +25773,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		item := n.get("author")
 		if item != nil {
 			if !item.null {
-				decodedValue5719, decodeError5720 := c.nodeSnapshotMessageEmbedAuthor(item, fieldPath(path, "Author"), parent)
-				if decodeError5720 != nil {
-					return nil, decodeError5720
+				decodedValue5725, decodeError5726 := c.nodeSnapshotMessageEmbedAuthor(item, fieldPath(path, "Author"), parent)
+				if decodeError5726 != nil {
+					return nil, decodeError5726
 				}
-				dst.Author = decodedValue5719
+				dst.Author = decodedValue5725
 			}
 		}
 	}
@@ -25742,11 +25785,11 @@ func (c *conversion) nodeSnapshotMessageEmbed(n *ingressNode, path string, paren
 		item := n.get("fields")
 		if item != nil {
 			if !item.null {
-				decodedValue5721, decodeError5722 := c.nodeDomainMessageEmbedFieldList(item, fieldPath(path, "Fields"), parent)
-				if decodeError5722 != nil {
-					return nil, decodeError5722
+				decodedValue5727, decodeError5728 := c.nodeDomainMessageEmbedFieldList(item, fieldPath(path, "Fields"), parent)
+				if decodeError5728 != nil {
+					return nil, decodeError5728
 				}
-				dst.Fields = decodedValue5721
+				dst.Fields = decodedValue5727
 			}
 		}
 	}
@@ -25777,11 +25820,11 @@ func (c *conversion) nodeSnapshotMessageEmbedAuthor(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5723, decodeError5724 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError5724 != nil {
-					return nil, decodeError5724
+				decodedValue5729, decodeError5730 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5730 != nil {
+					return nil, decodeError5730
 				}
-				value = decodedValue5723
+				value = decodedValue5729
 				dst.Url = &value
 			}
 		}
@@ -25791,11 +25834,11 @@ func (c *conversion) nodeSnapshotMessageEmbedAuthor(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5725, decodeError5726 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5726 != nil {
-					return nil, decodeError5726
+				decodedValue5731, decodeError5732 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5732 != nil {
+					return nil, decodeError5732
 				}
-				value = decodedValue5725
+				value = decodedValue5731
 				dst.Name = &value
 			}
 		}
@@ -25805,11 +25848,11 @@ func (c *conversion) nodeSnapshotMessageEmbedAuthor(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5727, decodeError5728 := ingressString(item, c, fieldPath(path, "IconURL"))
-				if decodeError5728 != nil {
-					return nil, decodeError5728
+				decodedValue5733, decodeError5734 := ingressString(item, c, fieldPath(path, "IconURL"))
+				if decodeError5734 != nil {
+					return nil, decodeError5734
 				}
-				value = decodedValue5727
+				value = decodedValue5733
 				dst.IconUrl = &value
 			}
 		}
@@ -25819,11 +25862,11 @@ func (c *conversion) nodeSnapshotMessageEmbedAuthor(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5729, decodeError5730 := ingressString(item, c, fieldPath(path, "ProxyIconURL"))
-				if decodeError5730 != nil {
-					return nil, decodeError5730
+				decodedValue5735, decodeError5736 := ingressString(item, c, fieldPath(path, "ProxyIconURL"))
+				if decodeError5736 != nil {
+					return nil, decodeError5736
 				}
-				value = decodedValue5729
+				value = decodedValue5735
 				dst.ProxyIconUrl = &value
 			}
 		}
@@ -25855,11 +25898,11 @@ func (c *conversion) nodeSnapshotMessageEmbedField(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5731, decodeError5732 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5732 != nil {
-					return nil, decodeError5732
+				decodedValue5737, decodeError5738 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5738 != nil {
+					return nil, decodeError5738
 				}
-				value = decodedValue5731
+				value = decodedValue5737
 				dst.Name = &value
 			}
 		}
@@ -25869,11 +25912,11 @@ func (c *conversion) nodeSnapshotMessageEmbedField(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5733, decodeError5734 := ingressString(item, c, fieldPath(path, "Value"))
-				if decodeError5734 != nil {
-					return nil, decodeError5734
+				decodedValue5739, decodeError5740 := ingressString(item, c, fieldPath(path, "Value"))
+				if decodeError5740 != nil {
+					return nil, decodeError5740
 				}
-				value = decodedValue5733
+				value = decodedValue5739
 				dst.Value = &value
 			}
 		}
@@ -25883,11 +25926,11 @@ func (c *conversion) nodeSnapshotMessageEmbedField(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5735, decodeError5736 := ingressScalar[bool](item, c, fieldPath(path, "Inline"))
-				if decodeError5736 != nil {
-					return nil, decodeError5736
+				decodedValue5741, decodeError5742 := ingressScalar[bool](item, c, fieldPath(path, "Inline"))
+				if decodeError5742 != nil {
+					return nil, decodeError5742
 				}
-				value = decodedValue5735
+				value = decodedValue5741
 				dst.Inline = &value
 			}
 		}
@@ -25919,11 +25962,11 @@ func (c *conversion) nodeSnapshotMessageEmbedFooter(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5737, decodeError5738 := ingressString(item, c, fieldPath(path, "Text"))
-				if decodeError5738 != nil {
-					return nil, decodeError5738
+				decodedValue5743, decodeError5744 := ingressString(item, c, fieldPath(path, "Text"))
+				if decodeError5744 != nil {
+					return nil, decodeError5744
 				}
-				value = decodedValue5737
+				value = decodedValue5743
 				dst.Text = &value
 			}
 		}
@@ -25933,11 +25976,11 @@ func (c *conversion) nodeSnapshotMessageEmbedFooter(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5739, decodeError5740 := ingressString(item, c, fieldPath(path, "IconURL"))
-				if decodeError5740 != nil {
-					return nil, decodeError5740
+				decodedValue5745, decodeError5746 := ingressString(item, c, fieldPath(path, "IconURL"))
+				if decodeError5746 != nil {
+					return nil, decodeError5746
 				}
-				value = decodedValue5739
+				value = decodedValue5745
 				dst.IconUrl = &value
 			}
 		}
@@ -25947,11 +25990,11 @@ func (c *conversion) nodeSnapshotMessageEmbedFooter(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5741, decodeError5742 := ingressString(item, c, fieldPath(path, "ProxyIconURL"))
-				if decodeError5742 != nil {
-					return nil, decodeError5742
+				decodedValue5747, decodeError5748 := ingressString(item, c, fieldPath(path, "ProxyIconURL"))
+				if decodeError5748 != nil {
+					return nil, decodeError5748
 				}
-				value = decodedValue5741
+				value = decodedValue5747
 				dst.ProxyIconUrl = &value
 			}
 		}
@@ -25983,11 +26026,11 @@ func (c *conversion) nodeSnapshotMessageEmbedImage(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5743, decodeError5744 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError5744 != nil {
-					return nil, decodeError5744
+				decodedValue5749, decodeError5750 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5750 != nil {
+					return nil, decodeError5750
 				}
-				value = decodedValue5743
+				value = decodedValue5749
 				dst.Url = &value
 			}
 		}
@@ -25997,11 +26040,11 @@ func (c *conversion) nodeSnapshotMessageEmbedImage(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5745, decodeError5746 := ingressString(item, c, fieldPath(path, "ProxyURL"))
-				if decodeError5746 != nil {
-					return nil, decodeError5746
+				decodedValue5751, decodeError5752 := ingressString(item, c, fieldPath(path, "ProxyURL"))
+				if decodeError5752 != nil {
+					return nil, decodeError5752
 				}
-				value = decodedValue5745
+				value = decodedValue5751
 				dst.ProxyUrl = &value
 			}
 		}
@@ -26016,11 +26059,11 @@ func (c *conversion) nodeSnapshotMessageEmbedImage(n *ingressNode, path string, 
 					}
 				}
 				var value int64
-				decodedValue5747, decodeError5748 := ingressNumericScalar[int64](item, c, fieldPath(path, "Width"))
-				if decodeError5748 != nil {
-					return nil, decodeError5748
+				decodedValue5753, decodeError5754 := ingressNumericScalar[int64](item, c, fieldPath(path, "Width"))
+				if decodeError5754 != nil {
+					return nil, decodeError5754
 				}
-				value = decodedValue5747
+				value = decodedValue5753
 				dst.Width = &value
 			}
 		}
@@ -26035,11 +26078,11 @@ func (c *conversion) nodeSnapshotMessageEmbedImage(n *ingressNode, path string, 
 					}
 				}
 				var value int64
-				decodedValue5749, decodeError5750 := ingressNumericScalar[int64](item, c, fieldPath(path, "Height"))
-				if decodeError5750 != nil {
-					return nil, decodeError5750
+				decodedValue5755, decodeError5756 := ingressNumericScalar[int64](item, c, fieldPath(path, "Height"))
+				if decodeError5756 != nil {
+					return nil, decodeError5756
 				}
-				value = decodedValue5749
+				value = decodedValue5755
 				dst.Height = &value
 			}
 		}
@@ -26071,11 +26114,11 @@ func (c *conversion) nodeSnapshotMessageEmbedProvider(n *ingressNode, path strin
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5751, decodeError5752 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError5752 != nil {
-					return nil, decodeError5752
+				decodedValue5757, decodeError5758 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5758 != nil {
+					return nil, decodeError5758
 				}
-				value = decodedValue5751
+				value = decodedValue5757
 				dst.Url = &value
 			}
 		}
@@ -26085,11 +26128,11 @@ func (c *conversion) nodeSnapshotMessageEmbedProvider(n *ingressNode, path strin
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5753, decodeError5754 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5754 != nil {
-					return nil, decodeError5754
+				decodedValue5759, decodeError5760 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5760 != nil {
+					return nil, decodeError5760
 				}
-				value = decodedValue5753
+				value = decodedValue5759
 				dst.Name = &value
 			}
 		}
@@ -26121,11 +26164,11 @@ func (c *conversion) nodeSnapshotMessageEmbedThumbnail(n *ingressNode, path stri
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5755, decodeError5756 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError5756 != nil {
-					return nil, decodeError5756
+				decodedValue5761, decodeError5762 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5762 != nil {
+					return nil, decodeError5762
 				}
-				value = decodedValue5755
+				value = decodedValue5761
 				dst.Url = &value
 			}
 		}
@@ -26135,86 +26178,12 @@ func (c *conversion) nodeSnapshotMessageEmbedThumbnail(n *ingressNode, path stri
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5757, decodeError5758 := ingressString(item, c, fieldPath(path, "ProxyURL"))
-				if decodeError5758 != nil {
-					return nil, decodeError5758
-				}
-				value = decodedValue5757
-				dst.ProxyUrl = &value
-			}
-		}
-	}
-	{
-		item := n.get("width")
-		if item != nil {
-			if !item.null {
-				if !item.null {
-					if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "Width")); err != nil {
-						return nil, err
-					}
-				}
-				var value int64
-				decodedValue5759, decodeError5760 := ingressNumericScalar[int64](item, c, fieldPath(path, "Width"))
-				if decodeError5760 != nil {
-					return nil, decodeError5760
-				}
-				value = decodedValue5759
-				dst.Width = &value
-			}
-		}
-	}
-	{
-		item := n.get("height")
-		if item != nil {
-			if !item.null {
-				if !item.null {
-					if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "Height")); err != nil {
-						return nil, err
-					}
-				}
-				var value int64
-				decodedValue5761, decodeError5762 := ingressNumericScalar[int64](item, c, fieldPath(path, "Height"))
-				if decodeError5762 != nil {
-					return nil, decodeError5762
-				}
-				value = decodedValue5761
-				dst.Height = &value
-			}
-		}
-	}
-	return dst, nil
-}
-func ProjectMessageEmbedVideoJSON(ctx context.Context, raw []byte, encoder core.CredentialEncoder, policy ProjectionPolicy) (*wire.MessageEmbedVideo, error) {
-	c := newConversion("StructToProto", "MessageEmbedVideo")
-	c.ctx = ctx
-	c.encoder = encoder
-	c.policy = policy
-	c.projecting = true
-	node, err := parseIngress(raw, c)
-	if err != nil {
-		return nil, err
-	}
-	return c.nodeSnapshotMessageEmbedVideo(node, "", 0)
-}
-func (c *conversion) nodeSnapshotMessageEmbedVideo(n *ingressNode, path string, parent int64) (*wire.MessageEmbedVideo, error) {
-	if n == nil {
-		return nil, nil
-	}
-	if n.object == nil {
-		return nil, c.fail("InvalidValue", path, "expected domain JSON object")
-	}
-	dst := &wire.MessageEmbedVideo{}
-	{
-		item := n.get("url")
-		if item != nil {
-			if !item.null {
-				var value string
-				decodedValue5763, decodeError5764 := ingressString(item, c, fieldPath(path, "URL"))
+				decodedValue5763, decodeError5764 := ingressString(item, c, fieldPath(path, "ProxyURL"))
 				if decodeError5764 != nil {
 					return nil, decodeError5764
 				}
 				value = decodedValue5763
-				dst.Url = &value
+				dst.ProxyUrl = &value
 			}
 		}
 	}
@@ -26258,6 +26227,80 @@ func (c *conversion) nodeSnapshotMessageEmbedVideo(n *ingressNode, path string, 
 	}
 	return dst, nil
 }
+func ProjectMessageEmbedVideoJSON(ctx context.Context, raw []byte, encoder core.CredentialEncoder, policy ProjectionPolicy) (*wire.MessageEmbedVideo, error) {
+	c := newConversion("StructToProto", "MessageEmbedVideo")
+	c.ctx = ctx
+	c.encoder = encoder
+	c.policy = policy
+	c.projecting = true
+	node, err := parseIngress(raw, c)
+	if err != nil {
+		return nil, err
+	}
+	return c.nodeSnapshotMessageEmbedVideo(node, "", 0)
+}
+func (c *conversion) nodeSnapshotMessageEmbedVideo(n *ingressNode, path string, parent int64) (*wire.MessageEmbedVideo, error) {
+	if n == nil {
+		return nil, nil
+	}
+	if n.object == nil {
+		return nil, c.fail("InvalidValue", path, "expected domain JSON object")
+	}
+	dst := &wire.MessageEmbedVideo{}
+	{
+		item := n.get("url")
+		if item != nil {
+			if !item.null {
+				var value string
+				decodedValue5769, decodeError5770 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError5770 != nil {
+					return nil, decodeError5770
+				}
+				value = decodedValue5769
+				dst.Url = &value
+			}
+		}
+	}
+	{
+		item := n.get("width")
+		if item != nil {
+			if !item.null {
+				if !item.null {
+					if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "Width")); err != nil {
+						return nil, err
+					}
+				}
+				var value int64
+				decodedValue5771, decodeError5772 := ingressNumericScalar[int64](item, c, fieldPath(path, "Width"))
+				if decodeError5772 != nil {
+					return nil, decodeError5772
+				}
+				value = decodedValue5771
+				dst.Width = &value
+			}
+		}
+	}
+	{
+		item := n.get("height")
+		if item != nil {
+			if !item.null {
+				if !item.null {
+					if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "Height")); err != nil {
+						return nil, err
+					}
+				}
+				var value int64
+				decodedValue5773, decodeError5774 := ingressNumericScalar[int64](item, c, fieldPath(path, "Height"))
+				if decodeError5774 != nil {
+					return nil, decodeError5774
+				}
+				value = decodedValue5773
+				dst.Height = &value
+			}
+		}
+	}
+	return dst, nil
+}
 func ProjectMessageInteractionJSON(ctx context.Context, raw []byte, encoder core.CredentialEncoder, policy ProjectionPolicy) (*wire.MessageInteraction, error) {
 	c := newConversion("StructToProto", "MessageInteraction")
 	c.ctx = ctx
@@ -26283,11 +26326,11 @@ func (c *conversion) nodeSnapshotMessageInteraction(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5769, decodeError5770 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5770 != nil {
-					return nil, decodeError5770
+				decodedValue5775, decodeError5776 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5776 != nil {
+					return nil, decodeError5776
 				}
-				value = decodedValue5769
+				value = decodedValue5775
 				dst.Id = &value
 			}
 		}
@@ -26302,11 +26345,11 @@ func (c *conversion) nodeSnapshotMessageInteraction(n *ingressNode, path string,
 					}
 				}
 				var value uint32
-				decodedValue5771, decodeError5772 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError5772 != nil {
-					return nil, decodeError5772
+				decodedValue5777, decodeError5778 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError5778 != nil {
+					return nil, decodeError5778
 				}
-				value = decodedValue5771
+				value = decodedValue5777
 				dst.Type = &value
 			}
 		}
@@ -26316,11 +26359,11 @@ func (c *conversion) nodeSnapshotMessageInteraction(n *ingressNode, path string,
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5773, decodeError5774 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5774 != nil {
-					return nil, decodeError5774
+				decodedValue5779, decodeError5780 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5780 != nil {
+					return nil, decodeError5780
 				}
-				value = decodedValue5773
+				value = decodedValue5779
 				dst.Name = &value
 			}
 		}
@@ -26329,11 +26372,11 @@ func (c *conversion) nodeSnapshotMessageInteraction(n *ingressNode, path string,
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5775, decodeError5776 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5776 != nil {
-					return nil, decodeError5776
+				decodedValue5781, decodeError5782 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5782 != nil {
+					return nil, decodeError5782
 				}
-				dst.User = decodedValue5775
+				dst.User = decodedValue5781
 			}
 		}
 	}
@@ -26341,11 +26384,11 @@ func (c *conversion) nodeSnapshotMessageInteraction(n *ingressNode, path string,
 		item := n.get("member")
 		if item != nil {
 			if !item.null {
-				decodedValue5777, decodeError5778 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
-				if decodeError5778 != nil {
-					return nil, decodeError5778
+				decodedValue5783, decodeError5784 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
+				if decodeError5784 != nil {
+					return nil, decodeError5784
 				}
-				dst.Member = decodedValue5777
+				dst.Member = decodedValue5783
 			}
 		}
 	}
@@ -26376,11 +26419,11 @@ func (c *conversion) nodeSnapshotMessageInteractionMetadata(n *ingressNode, path
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5779, decodeError5780 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5780 != nil {
-					return nil, decodeError5780
+				decodedValue5785, decodeError5786 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5786 != nil {
+					return nil, decodeError5786
 				}
-				value = decodedValue5779
+				value = decodedValue5785
 				dst.Id = &value
 			}
 		}
@@ -26395,11 +26438,11 @@ func (c *conversion) nodeSnapshotMessageInteractionMetadata(n *ingressNode, path
 					}
 				}
 				var value uint32
-				decodedValue5781, decodeError5782 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
-				if decodeError5782 != nil {
-					return nil, decodeError5782
+				decodedValue5787, decodeError5788 := ingressNumericScalar[uint32](item, c, fieldPath(path, "Type"))
+				if decodeError5788 != nil {
+					return nil, decodeError5788
 				}
-				value = decodedValue5781
+				value = decodedValue5787
 				dst.Type = &value
 			}
 		}
@@ -26408,11 +26451,11 @@ func (c *conversion) nodeSnapshotMessageInteractionMetadata(n *ingressNode, path
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5783, decodeError5784 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5784 != nil {
-					return nil, decodeError5784
+				decodedValue5789, decodeError5790 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5790 != nil {
+					return nil, decodeError5790
 				}
-				dst.User = decodedValue5783
+				dst.User = decodedValue5789
 			}
 		}
 	}
@@ -26420,11 +26463,11 @@ func (c *conversion) nodeSnapshotMessageInteractionMetadata(n *ingressNode, path
 		item := n.get("authorizing_integration_owners")
 		if item != nil {
 			if !item.null {
-				decodedValue5785, decodeError5786 := c.nodeDomainUint64ToStringMap(item, fieldPath(path, "AuthorizingIntegrationOwners"), parent)
-				if decodeError5786 != nil {
-					return nil, decodeError5786
+				decodedValue5791, decodeError5792 := c.nodeDomainUint64ToStringMap(item, fieldPath(path, "AuthorizingIntegrationOwners"), parent)
+				if decodeError5792 != nil {
+					return nil, decodeError5792
 				}
-				dst.AuthorizingIntegrationOwners = decodedValue5785
+				dst.AuthorizingIntegrationOwners = decodedValue5791
 			}
 		}
 	}
@@ -26433,11 +26476,11 @@ func (c *conversion) nodeSnapshotMessageInteractionMetadata(n *ingressNode, path
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5787, decodeError5788 := ingressString(item, c, fieldPath(path, "OriginalResponseMessageID"))
-				if decodeError5788 != nil {
-					return nil, decodeError5788
+				decodedValue5793, decodeError5794 := ingressString(item, c, fieldPath(path, "OriginalResponseMessageID"))
+				if decodeError5794 != nil {
+					return nil, decodeError5794
 				}
-				value = decodedValue5787
+				value = decodedValue5793
 				dst.OriginalResponseMessageId = &value
 			}
 		}
@@ -26447,11 +26490,11 @@ func (c *conversion) nodeSnapshotMessageInteractionMetadata(n *ingressNode, path
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5789, decodeError5790 := ingressString(item, c, fieldPath(path, "InteractedMessageID"))
-				if decodeError5790 != nil {
-					return nil, decodeError5790
+				decodedValue5795, decodeError5796 := ingressString(item, c, fieldPath(path, "InteractedMessageID"))
+				if decodeError5796 != nil {
+					return nil, decodeError5796
 				}
-				value = decodedValue5789
+				value = decodedValue5795
 				dst.InteractedMessageId = &value
 			}
 		}
@@ -26460,11 +26503,11 @@ func (c *conversion) nodeSnapshotMessageInteractionMetadata(n *ingressNode, path
 		item := n.get("triggering_interaction_metadata")
 		if item != nil {
 			if !item.null {
-				decodedValue5791, decodeError5792 := c.nodeSnapshotMessageInteractionMetadata(item, fieldPath(path, "TriggeringInteractionMetadata"), parent)
-				if decodeError5792 != nil {
-					return nil, decodeError5792
+				decodedValue5797, decodeError5798 := c.nodeSnapshotMessageInteractionMetadata(item, fieldPath(path, "TriggeringInteractionMetadata"), parent)
+				if decodeError5798 != nil {
+					return nil, decodeError5798
 				}
-				dst.TriggeringInteractionMetadata = decodedValue5791
+				dst.TriggeringInteractionMetadata = decodedValue5797
 			}
 		}
 	}
@@ -26494,11 +26537,11 @@ func (c *conversion) nodeSnapshotMessagePin(n *ingressNode, path string, parent 
 		item := n.get("pinned_at")
 		if item != nil {
 			if !item.null {
-				decodedValue5793, decodeError5794 := ingressTimestamp(item, c, fieldPath(path, "PinnedAt"))
-				if decodeError5794 != nil {
-					return nil, decodeError5794
+				decodedValue5799, decodeError5800 := ingressTimestamp(item, c, fieldPath(path, "PinnedAt"))
+				if decodeError5800 != nil {
+					return nil, decodeError5800
 				}
-				dst.PinnedAt = decodedValue5793
+				dst.PinnedAt = decodedValue5799
 			}
 		}
 	}
@@ -26506,11 +26549,11 @@ func (c *conversion) nodeSnapshotMessagePin(n *ingressNode, path string, parent 
 		item := n.get("message")
 		if item != nil {
 			if !item.null {
-				decodedValue5795, decodeError5796 := c.nodeSnapshotMessage(item, fieldPath(path, "Message"), parent)
-				if decodeError5796 != nil {
-					return nil, decodeError5796
+				decodedValue5801, decodeError5802 := c.nodeSnapshotMessage(item, fieldPath(path, "Message"), parent)
+				if decodeError5802 != nil {
+					return nil, decodeError5802
 				}
-				dst.Message = decodedValue5795
+				dst.Message = decodedValue5801
 			}
 		}
 	}
@@ -26541,11 +26584,11 @@ func (c *conversion) nodeSnapshotMessageReaction(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5797, decodeError5798 := ingressString(item, c, fieldPath(path, "UserID"))
-				if decodeError5798 != nil {
-					return nil, decodeError5798
+				decodedValue5803, decodeError5804 := ingressString(item, c, fieldPath(path, "UserID"))
+				if decodeError5804 != nil {
+					return nil, decodeError5804
 				}
-				value = decodedValue5797
+				value = decodedValue5803
 				dst.UserId = &value
 			}
 		}
@@ -26555,11 +26598,11 @@ func (c *conversion) nodeSnapshotMessageReaction(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5799, decodeError5800 := ingressString(item, c, fieldPath(path, "MessageID"))
-				if decodeError5800 != nil {
-					return nil, decodeError5800
+				decodedValue5805, decodeError5806 := ingressString(item, c, fieldPath(path, "MessageID"))
+				if decodeError5806 != nil {
+					return nil, decodeError5806
 				}
-				value = decodedValue5799
+				value = decodedValue5805
 				dst.MessageId = &value
 			}
 		}
@@ -26568,11 +26611,11 @@ func (c *conversion) nodeSnapshotMessageReaction(n *ingressNode, path string, pa
 		item := n.get("emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue5801, decodeError5802 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
-				if decodeError5802 != nil {
-					return nil, decodeError5802
+				decodedValue5807, decodeError5808 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
+				if decodeError5808 != nil {
+					return nil, decodeError5808
 				}
-				dst.Emoji = decodedValue5801
+				dst.Emoji = decodedValue5807
 			}
 		}
 	}
@@ -26581,11 +26624,11 @@ func (c *conversion) nodeSnapshotMessageReaction(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5803, decodeError5804 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError5804 != nil {
-					return nil, decodeError5804
+				decodedValue5809, decodeError5810 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError5810 != nil {
+					return nil, decodeError5810
 				}
-				value = decodedValue5803
+				value = decodedValue5809
 				dst.ChannelId = &value
 			}
 		}
@@ -26595,11 +26638,11 @@ func (c *conversion) nodeSnapshotMessageReaction(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5805, decodeError5806 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5806 != nil {
-					return nil, decodeError5806
+				decodedValue5811, decodeError5812 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5812 != nil {
+					return nil, decodeError5812
 				}
-				value = decodedValue5805
+				value = decodedValue5811
 				dst.GuildId = &value
 			}
 		}
@@ -26636,11 +26679,11 @@ func (c *conversion) nodeSnapshotMessageReactions(n *ingressNode, path string, p
 					}
 				}
 				var value int64
-				decodedValue5807, decodeError5808 := ingressNumericScalar[int64](item, c, fieldPath(path, "Count"))
-				if decodeError5808 != nil {
-					return nil, decodeError5808
+				decodedValue5813, decodeError5814 := ingressNumericScalar[int64](item, c, fieldPath(path, "Count"))
+				if decodeError5814 != nil {
+					return nil, decodeError5814
 				}
-				value = decodedValue5807
+				value = decodedValue5813
 				dst.Count = &value
 			}
 		}
@@ -26650,11 +26693,11 @@ func (c *conversion) nodeSnapshotMessageReactions(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5809, decodeError5810 := ingressScalar[bool](item, c, fieldPath(path, "Me"))
-				if decodeError5810 != nil {
-					return nil, decodeError5810
+				decodedValue5815, decodeError5816 := ingressScalar[bool](item, c, fieldPath(path, "Me"))
+				if decodeError5816 != nil {
+					return nil, decodeError5816
 				}
-				value = decodedValue5809
+				value = decodedValue5815
 				dst.Me = &value
 			}
 		}
@@ -26663,11 +26706,11 @@ func (c *conversion) nodeSnapshotMessageReactions(n *ingressNode, path string, p
 		item := n.get("emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue5811, decodeError5812 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
-				if decodeError5812 != nil {
-					return nil, decodeError5812
+				decodedValue5817, decodeError5818 := c.nodeSnapshotEmoji(item, fieldPath(path, "Emoji"), parent)
+				if decodeError5818 != nil {
+					return nil, decodeError5818
 				}
-				dst.Emoji = decodedValue5811
+				dst.Emoji = decodedValue5817
 			}
 		}
 	}
@@ -26703,11 +26746,11 @@ func (c *conversion) nodeSnapshotMessageReference(n *ingressNode, path string, p
 					}
 				}
 				var value int64
-				decodedValue5813, decodeError5814 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError5814 != nil {
-					return nil, decodeError5814
+				decodedValue5819, decodeError5820 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError5820 != nil {
+					return nil, decodeError5820
 				}
-				value = decodedValue5813
+				value = decodedValue5819
 				dst.Type = &value
 			}
 		}
@@ -26717,11 +26760,11 @@ func (c *conversion) nodeSnapshotMessageReference(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5815, decodeError5816 := ingressString(item, c, fieldPath(path, "MessageID"))
-				if decodeError5816 != nil {
-					return nil, decodeError5816
+				decodedValue5821, decodeError5822 := ingressString(item, c, fieldPath(path, "MessageID"))
+				if decodeError5822 != nil {
+					return nil, decodeError5822
 				}
-				value = decodedValue5815
+				value = decodedValue5821
 				dst.MessageId = &value
 			}
 		}
@@ -26731,11 +26774,11 @@ func (c *conversion) nodeSnapshotMessageReference(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5817, decodeError5818 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError5818 != nil {
-					return nil, decodeError5818
+				decodedValue5823, decodeError5824 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError5824 != nil {
+					return nil, decodeError5824
 				}
-				value = decodedValue5817
+				value = decodedValue5823
 				dst.ChannelId = &value
 			}
 		}
@@ -26745,11 +26788,11 @@ func (c *conversion) nodeSnapshotMessageReference(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5819, decodeError5820 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError5820 != nil {
-					return nil, decodeError5820
+				decodedValue5825, decodeError5826 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError5826 != nil {
+					return nil, decodeError5826
 				}
-				value = decodedValue5819
+				value = decodedValue5825
 				dst.GuildId = &value
 			}
 		}
@@ -26759,11 +26802,11 @@ func (c *conversion) nodeSnapshotMessageReference(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5821, decodeError5822 := ingressScalar[bool](item, c, fieldPath(path, "FailIfNotExists"))
-				if decodeError5822 != nil {
-					return nil, decodeError5822
+				decodedValue5827, decodeError5828 := ingressScalar[bool](item, c, fieldPath(path, "FailIfNotExists"))
+				if decodeError5828 != nil {
+					return nil, decodeError5828
 				}
-				value = decodedValue5821
+				value = decodedValue5827
 				dst.FailIfNotExists = &value
 			}
 		}
@@ -26783,11 +26826,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5823, decodeError5824 := ingressString(item, c, fieldPath(path, "Content"))
-				if decodeError5824 != nil {
-					return nil, decodeError5824
+				decodedValue5829, decodeError5830 := ingressString(item, c, fieldPath(path, "Content"))
+				if decodeError5830 != nil {
+					return nil, decodeError5830
 				}
-				value = decodedValue5823
+				value = decodedValue5829
 				dst.Content = &value
 			}
 		}
@@ -26796,11 +26839,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		item := n.get("embeds")
 		if item != nil {
 			if !item.null {
-				decodedValue5825, decodeError5826 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
-				if decodeError5826 != nil {
-					return nil, decodeError5826
+				decodedValue5831, decodeError5832 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
+				if decodeError5832 != nil {
+					return nil, decodeError5832
 				}
-				dst.Embeds = decodedValue5825
+				dst.Embeds = decodedValue5831
 			}
 		}
 	}
@@ -26809,11 +26852,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5827, decodeError5828 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
-				if decodeError5828 != nil {
-					return nil, decodeError5828
+				decodedValue5833, decodeError5834 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
+				if decodeError5834 != nil {
+					return nil, decodeError5834
 				}
-				value = decodedValue5827
+				value = decodedValue5833
 				dst.Tts = &value
 			}
 		}
@@ -26822,11 +26865,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue5829, decodeError5830 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError5830 != nil {
-					return nil, decodeError5830
+				decodedValue5835, decodeError5836 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError5836 != nil {
+					return nil, decodeError5836
 				}
-				dst.Components = decodedValue5829
+				dst.Components = decodedValue5835
 			}
 		}
 	}
@@ -26834,11 +26877,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		item := n.get("allowed_mentions")
 		if item != nil {
 			if !item.null {
-				decodedValue5831, decodeError5832 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
-				if decodeError5832 != nil {
-					return nil, decodeError5832
+				decodedValue5837, decodeError5838 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+				if decodeError5838 != nil {
+					return nil, decodeError5838
 				}
-				dst.AllowedMentions = decodedValue5831
+				dst.AllowedMentions = decodedValue5837
 			}
 		}
 	}
@@ -26846,11 +26889,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		item := n.get("message_reference")
 		if item != nil {
 			if !item.null {
-				decodedValue5833, decodeError5834 := c.nodeSnapshotMessageReference(item, fieldPath(path, "Reference"), parent)
-				if decodeError5834 != nil {
-					return nil, decodeError5834
+				decodedValue5839, decodeError5840 := c.nodeSnapshotMessageReference(item, fieldPath(path, "Reference"), parent)
+				if decodeError5840 != nil {
+					return nil, decodeError5840
 				}
-				dst.Reference = decodedValue5833
+				dst.Reference = decodedValue5839
 			}
 		}
 	}
@@ -26858,11 +26901,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		item := n.get("sticker_ids")
 		if item != nil {
 			if !item.null {
-				decodedValue5835, decodeError5836 := c.nodeDomainStringList(item, fieldPath(path, "StickerIDs"), parent)
-				if decodeError5836 != nil {
-					return nil, decodeError5836
+				decodedValue5841, decodeError5842 := c.nodeDomainStringList(item, fieldPath(path, "StickerIDs"), parent)
+				if decodeError5842 != nil {
+					return nil, decodeError5842
 				}
-				dst.StickerIds = decodedValue5835
+				dst.StickerIds = decodedValue5841
 			}
 		}
 	}
@@ -26876,11 +26919,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 					}
 				}
 				var value uint64
-				decodedValue5837, decodeError5838 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5838 != nil {
-					return nil, decodeError5838
+				decodedValue5843, decodeError5844 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5844 != nil {
+					return nil, decodeError5844
 				}
-				value = decodedValue5837
+				value = decodedValue5843
 				dst.Flags = &value
 			}
 		}
@@ -26889,11 +26932,11 @@ func (c *conversion) nodeSnapshotMessageSend(n *ingressNode, path string, parent
 		item := n.get("poll")
 		if item != nil {
 			if !item.null {
-				decodedValue5839, decodeError5840 := c.nodeSnapshotPoll(item, fieldPath(path, "Poll"), parent)
-				if decodeError5840 != nil {
-					return nil, decodeError5840
+				decodedValue5845, decodeError5846 := c.nodeSnapshotPoll(item, fieldPath(path, "Poll"), parent)
+				if decodeError5846 != nil {
+					return nil, decodeError5846
 				}
-				dst.Poll = decodedValue5839
+				dst.Poll = decodedValue5845
 			}
 		}
 	}
@@ -26923,11 +26966,11 @@ func (c *conversion) nodeSnapshotMessageSnapshot(n *ingressNode, path string, pa
 		item := n.get("message")
 		if item != nil {
 			if !item.null {
-				decodedValue5841, decodeError5842 := c.nodeSnapshotMessage(item, fieldPath(path, "Message"), parent)
-				if decodeError5842 != nil {
-					return nil, decodeError5842
+				decodedValue5847, decodeError5848 := c.nodeSnapshotMessage(item, fieldPath(path, "Message"), parent)
+				if decodeError5848 != nil {
+					return nil, decodeError5848
 				}
-				dst.Message = decodedValue5841
+				dst.Message = decodedValue5847
 			}
 		}
 	}
@@ -26958,12 +27001,24 @@ func (c *conversion) nodeSnapshotModalSubmitInteractionData(n *ingressNode, path
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5843, decodeError5844 := ingressString(item, c, fieldPath(path, "CustomID"))
-				if decodeError5844 != nil {
-					return nil, decodeError5844
+				decodedValue5849, decodeError5850 := ingressString(item, c, fieldPath(path, "CustomID"))
+				if decodeError5850 != nil {
+					return nil, decodeError5850
 				}
-				value = decodedValue5843
+				value = decodedValue5849
 				dst.CustomId = &value
+			}
+		}
+	}
+	{
+		item := n.get("components")
+		if item != nil {
+			if !item.null {
+				decodedValue5851, decodeError5852 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError5852 != nil {
+					return nil, decodeError5852
+				}
+				dst.Components = decodedValue5851
 			}
 		}
 	}
@@ -26971,11 +27026,11 @@ func (c *conversion) nodeSnapshotModalSubmitInteractionData(n *ingressNode, path
 		item := n.get("resolved")
 		if item != nil {
 			if !item.null {
-				decodedValue5845, decodeError5846 := c.nodeSnapshotComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
-				if decodeError5846 != nil {
-					return nil, decodeError5846
+				decodedValue5853, decodeError5854 := c.nodeSnapshotComponentInteractionDataResolved(item, fieldPath(path, "Resolved"), parent)
+				if decodeError5854 != nil {
+					return nil, decodeError5854
 				}
-				dst.Resolved = decodedValue5845
+				dst.Resolved = decodedValue5853
 			}
 		}
 	}
@@ -27009,11 +27064,11 @@ func (c *conversion) nodeSnapshotParty(n *ingressNode, path string, parent int64
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5847, decodeError5848 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5848 != nil {
-					return nil, decodeError5848
+				decodedValue5855, decodeError5856 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5856 != nil {
+					return nil, decodeError5856
 				}
-				value = decodedValue5847
+				value = decodedValue5855
 				dst.Id = &value
 			}
 		}
@@ -27022,11 +27077,11 @@ func (c *conversion) nodeSnapshotParty(n *ingressNode, path string, parent int64
 		item := n.get("size")
 		if item != nil {
 			if !item.null {
-				decodedValue5849, decodeError5850 := c.nodeDomainSint64List(item, fieldPath(path, "Size"), parent)
-				if decodeError5850 != nil {
-					return nil, decodeError5850
+				decodedValue5857, decodeError5858 := c.nodeDomainSint64List(item, fieldPath(path, "Size"), parent)
+				if decodeError5858 != nil {
+					return nil, decodeError5858
 				}
-				dst.Size = decodedValue5849
+				dst.Size = decodedValue5857
 			}
 		}
 	}
@@ -27057,11 +27112,11 @@ func (c *conversion) nodeSnapshotPermissionOverwrite(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5851, decodeError5852 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5852 != nil {
-					return nil, decodeError5852
+				decodedValue5859, decodeError5860 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5860 != nil {
+					return nil, decodeError5860
 				}
-				value = decodedValue5851
+				value = decodedValue5859
 				dst.Id = &value
 			}
 		}
@@ -27076,11 +27131,11 @@ func (c *conversion) nodeSnapshotPermissionOverwrite(n *ingressNode, path string
 					}
 				}
 				var value int64
-				decodedValue5853, decodeError5854 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError5854 != nil {
-					return nil, decodeError5854
+				decodedValue5861, decodeError5862 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError5862 != nil {
+					return nil, decodeError5862
 				}
-				value = decodedValue5853
+				value = decodedValue5861
 				dst.Type = &value
 			}
 		}
@@ -27093,11 +27148,11 @@ func (c *conversion) nodeSnapshotPermissionOverwrite(n *ingressNode, path string
 					return nil, err
 				}
 				var value string
-				decodedValue5855, decodeError5856 := ingressString(item, c, fieldPath(path, "Deny"))
-				if decodeError5856 != nil {
-					return nil, decodeError5856
+				decodedValue5863, decodeError5864 := ingressString(item, c, fieldPath(path, "Deny"))
+				if decodeError5864 != nil {
+					return nil, decodeError5864
 				}
-				value = decodedValue5855
+				value = decodedValue5863
 				dst.Deny = &value
 			}
 		}
@@ -27110,11 +27165,11 @@ func (c *conversion) nodeSnapshotPermissionOverwrite(n *ingressNode, path string
 					return nil, err
 				}
 				var value string
-				decodedValue5857, decodeError5858 := ingressString(item, c, fieldPath(path, "Allow"))
-				if decodeError5858 != nil {
-					return nil, decodeError5858
+				decodedValue5865, decodeError5866 := ingressString(item, c, fieldPath(path, "Allow"))
+				if decodeError5866 != nil {
+					return nil, decodeError5866
 				}
-				value = decodedValue5857
+				value = decodedValue5865
 				dst.Allow = &value
 			}
 		}
@@ -27145,11 +27200,11 @@ func (c *conversion) nodeSnapshotPoll(n *ingressNode, path string, parent int64)
 		item := n.get("question")
 		if item != nil {
 			if !item.null {
-				decodedValue5859, decodeError5860 := c.nodeSnapshotPollMedia(item, fieldPath(path, "Question"), parent)
-				if decodeError5860 != nil {
-					return nil, decodeError5860
+				decodedValue5867, decodeError5868 := c.nodeSnapshotPollMedia(item, fieldPath(path, "Question"), parent)
+				if decodeError5868 != nil {
+					return nil, decodeError5868
 				}
-				dst.Question = decodedValue5859
+				dst.Question = decodedValue5867
 			}
 		}
 	}
@@ -27157,11 +27212,11 @@ func (c *conversion) nodeSnapshotPoll(n *ingressNode, path string, parent int64)
 		item := n.get("answers")
 		if item != nil {
 			if !item.null {
-				decodedValue5861, decodeError5862 := c.nodeDomainPollAnswerList(item, fieldPath(path, "Answers"), parent)
-				if decodeError5862 != nil {
-					return nil, decodeError5862
+				decodedValue5869, decodeError5870 := c.nodeDomainPollAnswerList(item, fieldPath(path, "Answers"), parent)
+				if decodeError5870 != nil {
+					return nil, decodeError5870
 				}
-				dst.Answers = decodedValue5861
+				dst.Answers = decodedValue5869
 			}
 		}
 	}
@@ -27170,11 +27225,11 @@ func (c *conversion) nodeSnapshotPoll(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5863, decodeError5864 := ingressScalar[bool](item, c, fieldPath(path, "AllowMultiselect"))
-				if decodeError5864 != nil {
-					return nil, decodeError5864
+				decodedValue5871, decodeError5872 := ingressScalar[bool](item, c, fieldPath(path, "AllowMultiselect"))
+				if decodeError5872 != nil {
+					return nil, decodeError5872
 				}
-				value = decodedValue5863
+				value = decodedValue5871
 				dst.AllowMultiselect = &value
 			}
 		}
@@ -27189,11 +27244,11 @@ func (c *conversion) nodeSnapshotPoll(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value int64
-				decodedValue5865, decodeError5866 := ingressNumericScalar[int64](item, c, fieldPath(path, "LayoutType"))
-				if decodeError5866 != nil {
-					return nil, decodeError5866
+				decodedValue5873, decodeError5874 := ingressNumericScalar[int64](item, c, fieldPath(path, "LayoutType"))
+				if decodeError5874 != nil {
+					return nil, decodeError5874
 				}
-				value = decodedValue5865
+				value = decodedValue5873
 				dst.LayoutType = &value
 			}
 		}
@@ -27208,11 +27263,11 @@ func (c *conversion) nodeSnapshotPoll(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value int64
-				decodedValue5867, decodeError5868 := ingressNumericScalar[int64](item, c, fieldPath(path, "Duration"))
-				if decodeError5868 != nil {
-					return nil, decodeError5868
+				decodedValue5875, decodeError5876 := ingressNumericScalar[int64](item, c, fieldPath(path, "Duration"))
+				if decodeError5876 != nil {
+					return nil, decodeError5876
 				}
-				value = decodedValue5867
+				value = decodedValue5875
 				dst.Duration = &value
 			}
 		}
@@ -27221,11 +27276,11 @@ func (c *conversion) nodeSnapshotPoll(n *ingressNode, path string, parent int64)
 		item := n.get("results")
 		if item != nil {
 			if !item.null {
-				decodedValue5869, decodeError5870 := c.nodeSnapshotPollResults(item, fieldPath(path, "Results"), parent)
-				if decodeError5870 != nil {
-					return nil, decodeError5870
+				decodedValue5877, decodeError5878 := c.nodeSnapshotPollResults(item, fieldPath(path, "Results"), parent)
+				if decodeError5878 != nil {
+					return nil, decodeError5878
 				}
-				dst.Results = decodedValue5869
+				dst.Results = decodedValue5877
 			}
 		}
 	}
@@ -27233,11 +27288,11 @@ func (c *conversion) nodeSnapshotPoll(n *ingressNode, path string, parent int64)
 		item := n.get("expiry")
 		if item != nil {
 			if !item.null {
-				decodedValue5871, decodeError5872 := ingressTimestamp(item, c, fieldPath(path, "Expiry"))
-				if decodeError5872 != nil {
-					return nil, decodeError5872
+				decodedValue5879, decodeError5880 := ingressTimestamp(item, c, fieldPath(path, "Expiry"))
+				if decodeError5880 != nil {
+					return nil, decodeError5880
 				}
-				dst.Expiry = decodedValue5871
+				dst.Expiry = decodedValue5879
 			}
 		}
 	}
@@ -27273,11 +27328,11 @@ func (c *conversion) nodeSnapshotPollAnswer(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue5873, decodeError5874 := ingressNumericScalar[int64](item, c, fieldPath(path, "AnswerID"))
-				if decodeError5874 != nil {
-					return nil, decodeError5874
+				decodedValue5881, decodeError5882 := ingressNumericScalar[int64](item, c, fieldPath(path, "AnswerID"))
+				if decodeError5882 != nil {
+					return nil, decodeError5882
 				}
-				value = decodedValue5873
+				value = decodedValue5881
 				dst.AnswerId = &value
 			}
 		}
@@ -27286,11 +27341,11 @@ func (c *conversion) nodeSnapshotPollAnswer(n *ingressNode, path string, parent 
 		item := n.get("poll_media")
 		if item != nil {
 			if !item.null {
-				decodedValue5875, decodeError5876 := c.nodeSnapshotPollMedia(item, fieldPath(path, "Media"), parent)
-				if decodeError5876 != nil {
-					return nil, decodeError5876
+				decodedValue5883, decodeError5884 := c.nodeSnapshotPollMedia(item, fieldPath(path, "Media"), parent)
+				if decodeError5884 != nil {
+					return nil, decodeError5884
 				}
-				dst.Media = decodedValue5875
+				dst.Media = decodedValue5883
 			}
 		}
 	}
@@ -27326,11 +27381,11 @@ func (c *conversion) nodeSnapshotPollAnswerCount(n *ingressNode, path string, pa
 					}
 				}
 				var value int64
-				decodedValue5877, decodeError5878 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError5878 != nil {
-					return nil, decodeError5878
+				decodedValue5885, decodeError5886 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError5886 != nil {
+					return nil, decodeError5886
 				}
-				value = decodedValue5877
+				value = decodedValue5885
 				dst.Id = &value
 			}
 		}
@@ -27345,11 +27400,11 @@ func (c *conversion) nodeSnapshotPollAnswerCount(n *ingressNode, path string, pa
 					}
 				}
 				var value int64
-				decodedValue5879, decodeError5880 := ingressNumericScalar[int64](item, c, fieldPath(path, "Count"))
-				if decodeError5880 != nil {
-					return nil, decodeError5880
+				decodedValue5887, decodeError5888 := ingressNumericScalar[int64](item, c, fieldPath(path, "Count"))
+				if decodeError5888 != nil {
+					return nil, decodeError5888
 				}
-				value = decodedValue5879
+				value = decodedValue5887
 				dst.Count = &value
 			}
 		}
@@ -27359,11 +27414,11 @@ func (c *conversion) nodeSnapshotPollAnswerCount(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5881, decodeError5882 := ingressScalar[bool](item, c, fieldPath(path, "MeVoted"))
-				if decodeError5882 != nil {
-					return nil, decodeError5882
+				decodedValue5889, decodeError5890 := ingressScalar[bool](item, c, fieldPath(path, "MeVoted"))
+				if decodeError5890 != nil {
+					return nil, decodeError5890
 				}
-				value = decodedValue5881
+				value = decodedValue5889
 				dst.MeVoted = &value
 			}
 		}
@@ -27395,11 +27450,11 @@ func (c *conversion) nodeSnapshotPollMedia(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5883, decodeError5884 := ingressString(item, c, fieldPath(path, "Text"))
-				if decodeError5884 != nil {
-					return nil, decodeError5884
+				decodedValue5891, decodeError5892 := ingressString(item, c, fieldPath(path, "Text"))
+				if decodeError5892 != nil {
+					return nil, decodeError5892
 				}
-				value = decodedValue5883
+				value = decodedValue5891
 				dst.Text = &value
 			}
 		}
@@ -27408,11 +27463,11 @@ func (c *conversion) nodeSnapshotPollMedia(n *ingressNode, path string, parent i
 		item := n.get("emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue5885, decodeError5886 := c.nodeSnapshotComponentEmoji(item, fieldPath(path, "Emoji"), parent)
-				if decodeError5886 != nil {
-					return nil, decodeError5886
+				decodedValue5893, decodeError5894 := c.nodeSnapshotComponentEmoji(item, fieldPath(path, "Emoji"), parent)
+				if decodeError5894 != nil {
+					return nil, decodeError5894
 				}
-				dst.Emoji = decodedValue5885
+				dst.Emoji = decodedValue5893
 			}
 		}
 	}
@@ -27443,11 +27498,11 @@ func (c *conversion) nodeSnapshotPollResults(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5887, decodeError5888 := ingressScalar[bool](item, c, fieldPath(path, "Finalized"))
-				if decodeError5888 != nil {
-					return nil, decodeError5888
+				decodedValue5895, decodeError5896 := ingressScalar[bool](item, c, fieldPath(path, "Finalized"))
+				if decodeError5896 != nil {
+					return nil, decodeError5896
 				}
-				value = decodedValue5887
+				value = decodedValue5895
 				dst.Finalized = &value
 			}
 		}
@@ -27456,11 +27511,11 @@ func (c *conversion) nodeSnapshotPollResults(n *ingressNode, path string, parent
 		item := n.get("answer_counts")
 		if item != nil {
 			if !item.null {
-				decodedValue5889, decodeError5890 := c.nodeDomainPollAnswerCountList(item, fieldPath(path, "AnswerCounts"), parent)
-				if decodeError5890 != nil {
-					return nil, decodeError5890
+				decodedValue5897, decodeError5898 := c.nodeDomainPollAnswerCountList(item, fieldPath(path, "AnswerCounts"), parent)
+				if decodeError5898 != nil {
+					return nil, decodeError5898
 				}
-				dst.AnswerCounts = decodedValue5889
+				dst.AnswerCounts = decodedValue5897
 			}
 		}
 	}
@@ -27490,11 +27545,11 @@ func (c *conversion) nodeSnapshotPresence(n *ingressNode, path string, parent in
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue5891, decodeError5892 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError5892 != nil {
-					return nil, decodeError5892
+				decodedValue5899, decodeError5900 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError5900 != nil {
+					return nil, decodeError5900
 				}
-				dst.User = decodedValue5891
+				dst.User = decodedValue5899
 			}
 		}
 	}
@@ -27503,11 +27558,11 @@ func (c *conversion) nodeSnapshotPresence(n *ingressNode, path string, parent in
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5893, decodeError5894 := ingressString(item, c, fieldPath(path, "Status"))
-				if decodeError5894 != nil {
-					return nil, decodeError5894
+				decodedValue5901, decodeError5902 := ingressString(item, c, fieldPath(path, "Status"))
+				if decodeError5902 != nil {
+					return nil, decodeError5902
 				}
-				value = decodedValue5893
+				value = decodedValue5901
 				dst.Status = &value
 			}
 		}
@@ -27516,11 +27571,11 @@ func (c *conversion) nodeSnapshotPresence(n *ingressNode, path string, parent in
 		item := n.get("activities")
 		if item != nil {
 			if !item.null {
-				decodedValue5895, decodeError5896 := c.nodeDomainActivityList(item, fieldPath(path, "Activities"), parent)
-				if decodeError5896 != nil {
-					return nil, decodeError5896
+				decodedValue5903, decodeError5904 := c.nodeDomainActivityList(item, fieldPath(path, "Activities"), parent)
+				if decodeError5904 != nil {
+					return nil, decodeError5904
 				}
-				dst.Activities = decodedValue5895
+				dst.Activities = decodedValue5903
 			}
 		}
 	}
@@ -27534,11 +27589,11 @@ func (c *conversion) nodeSnapshotPresence(n *ingressNode, path string, parent in
 					}
 				}
 				var value int64
-				decodedValue5897, decodeError5898 := ingressNumericScalar[int64](item, c, fieldPath(path, "Since"))
-				if decodeError5898 != nil {
-					return nil, decodeError5898
+				decodedValue5905, decodeError5906 := ingressNumericScalar[int64](item, c, fieldPath(path, "Since"))
+				if decodeError5906 != nil {
+					return nil, decodeError5906
 				}
-				value = decodedValue5897
+				value = decodedValue5905
 				dst.Since = &value
 			}
 		}
@@ -27547,11 +27602,11 @@ func (c *conversion) nodeSnapshotPresence(n *ingressNode, path string, parent in
 		item := n.get("client_status")
 		if item != nil {
 			if !item.null {
-				decodedValue5899, decodeError5900 := c.nodeSnapshotClientStatus(item, fieldPath(path, "ClientStatus"), parent)
-				if decodeError5900 != nil {
-					return nil, decodeError5900
+				decodedValue5907, decodeError5908 := c.nodeSnapshotClientStatus(item, fieldPath(path, "ClientStatus"), parent)
+				if decodeError5908 != nil {
+					return nil, decodeError5908
 				}
-				dst.ClientStatus = decodedValue5899
+				dst.ClientStatus = decodedValue5907
 			}
 		}
 	}
@@ -27587,11 +27642,11 @@ func (c *conversion) nodeSnapshotReadState(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue5901, decodeError5902 := ingressNumericScalar[int64](item, c, fieldPath(path, "MentionCount"))
-				if decodeError5902 != nil {
-					return nil, decodeError5902
+				decodedValue5909, decodeError5910 := ingressNumericScalar[int64](item, c, fieldPath(path, "MentionCount"))
+				if decodeError5910 != nil {
+					return nil, decodeError5910
 				}
-				value = decodedValue5901
+				value = decodedValue5909
 				dst.MentionCount = &value
 			}
 		}
@@ -27601,11 +27656,11 @@ func (c *conversion) nodeSnapshotReadState(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5903, decodeError5904 := ingressString(item, c, fieldPath(path, "LastMessageID"))
-				if decodeError5904 != nil {
-					return nil, decodeError5904
+				decodedValue5911, decodeError5912 := ingressString(item, c, fieldPath(path, "LastMessageID"))
+				if decodeError5912 != nil {
+					return nil, decodeError5912
 				}
-				value = decodedValue5903
+				value = decodedValue5911
 				dst.LastMessageId = &value
 			}
 		}
@@ -27615,11 +27670,11 @@ func (c *conversion) nodeSnapshotReadState(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5905, decodeError5906 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5906 != nil {
-					return nil, decodeError5906
+				decodedValue5913, decodeError5914 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5914 != nil {
+					return nil, decodeError5914
 				}
-				value = decodedValue5905
+				value = decodedValue5913
 				dst.Id = &value
 			}
 		}
@@ -27651,11 +27706,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5907, decodeError5908 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5908 != nil {
-					return nil, decodeError5908
+				decodedValue5915, decodeError5916 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5916 != nil {
+					return nil, decodeError5916
 				}
-				value = decodedValue5907
+				value = decodedValue5915
 				dst.Id = &value
 			}
 		}
@@ -27665,11 +27720,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5909, decodeError5910 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5910 != nil {
-					return nil, decodeError5910
+				decodedValue5917, decodeError5918 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5918 != nil {
+					return nil, decodeError5918
 				}
-				value = decodedValue5909
+				value = decodedValue5917
 				dst.Name = &value
 			}
 		}
@@ -27679,11 +27734,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5911, decodeError5912 := ingressScalar[bool](item, c, fieldPath(path, "Managed"))
-				if decodeError5912 != nil {
-					return nil, decodeError5912
+				decodedValue5919, decodeError5920 := ingressScalar[bool](item, c, fieldPath(path, "Managed"))
+				if decodeError5920 != nil {
+					return nil, decodeError5920
 				}
-				value = decodedValue5911
+				value = decodedValue5919
 				dst.Managed = &value
 			}
 		}
@@ -27693,11 +27748,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5913, decodeError5914 := ingressScalar[bool](item, c, fieldPath(path, "Mentionable"))
-				if decodeError5914 != nil {
-					return nil, decodeError5914
+				decodedValue5921, decodeError5922 := ingressScalar[bool](item, c, fieldPath(path, "Mentionable"))
+				if decodeError5922 != nil {
+					return nil, decodeError5922
 				}
-				value = decodedValue5913
+				value = decodedValue5921
 				dst.Mentionable = &value
 			}
 		}
@@ -27707,11 +27762,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5915, decodeError5916 := ingressScalar[bool](item, c, fieldPath(path, "Hoist"))
-				if decodeError5916 != nil {
-					return nil, decodeError5916
+				decodedValue5923, decodeError5924 := ingressScalar[bool](item, c, fieldPath(path, "Hoist"))
+				if decodeError5924 != nil {
+					return nil, decodeError5924
 				}
-				value = decodedValue5915
+				value = decodedValue5923
 				dst.Hoist = &value
 			}
 		}
@@ -27726,11 +27781,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value int64
-				decodedValue5917, decodeError5918 := ingressNumericScalar[int64](item, c, fieldPath(path, "Color"))
-				if decodeError5918 != nil {
-					return nil, decodeError5918
+				decodedValue5925, decodeError5926 := ingressNumericScalar[int64](item, c, fieldPath(path, "Color"))
+				if decodeError5926 != nil {
+					return nil, decodeError5926
 				}
-				value = decodedValue5917
+				value = decodedValue5925
 				dst.Color = &value
 			}
 		}
@@ -27745,11 +27800,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value int64
-				decodedValue5919, decodeError5920 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
-				if decodeError5920 != nil {
-					return nil, decodeError5920
+				decodedValue5927, decodeError5928 := ingressNumericScalar[int64](item, c, fieldPath(path, "Position"))
+				if decodeError5928 != nil {
+					return nil, decodeError5928
 				}
-				value = decodedValue5919
+				value = decodedValue5927
 				dst.Position = &value
 			}
 		}
@@ -27762,11 +27817,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 					return nil, err
 				}
 				var value string
-				decodedValue5921, decodeError5922 := ingressString(item, c, fieldPath(path, "Permissions"))
-				if decodeError5922 != nil {
-					return nil, decodeError5922
+				decodedValue5929, decodeError5930 := ingressString(item, c, fieldPath(path, "Permissions"))
+				if decodeError5930 != nil {
+					return nil, decodeError5930
 				}
-				value = decodedValue5921
+				value = decodedValue5929
 				dst.Permissions = &value
 			}
 		}
@@ -27776,11 +27831,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5923, decodeError5924 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError5924 != nil {
-					return nil, decodeError5924
+				decodedValue5931, decodeError5932 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError5932 != nil {
+					return nil, decodeError5932
 				}
-				value = decodedValue5923
+				value = decodedValue5931
 				dst.Icon = &value
 			}
 		}
@@ -27790,11 +27845,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5925, decodeError5926 := ingressString(item, c, fieldPath(path, "UnicodeEmoji"))
-				if decodeError5926 != nil {
-					return nil, decodeError5926
+				decodedValue5933, decodeError5934 := ingressString(item, c, fieldPath(path, "UnicodeEmoji"))
+				if decodeError5934 != nil {
+					return nil, decodeError5934
 				}
-				value = decodedValue5925
+				value = decodedValue5933
 				dst.UnicodeEmoji = &value
 			}
 		}
@@ -27809,11 +27864,11 @@ func (c *conversion) nodeSnapshotRole(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value uint64
-				decodedValue5927, decodeError5928 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5928 != nil {
-					return nil, decodeError5928
+				decodedValue5935, decodeError5936 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5936 != nil {
+					return nil, decodeError5936
 				}
-				value = decodedValue5927
+				value = decodedValue5935
 				dst.Flags = &value
 			}
 		}
@@ -27833,11 +27888,11 @@ func (c *conversion) nodeSnapshotRoleParams(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5929, decodeError5930 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5930 != nil {
-					return nil, decodeError5930
+				decodedValue5937, decodeError5938 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5938 != nil {
+					return nil, decodeError5938
 				}
-				value = decodedValue5929
+				value = decodedValue5937
 				dst.Name = &value
 			}
 		}
@@ -27852,11 +27907,11 @@ func (c *conversion) nodeSnapshotRoleParams(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue5931, decodeError5932 := ingressNumericScalar[int64](item, c, fieldPath(path, "Color"))
-				if decodeError5932 != nil {
-					return nil, decodeError5932
+				decodedValue5939, decodeError5940 := ingressNumericScalar[int64](item, c, fieldPath(path, "Color"))
+				if decodeError5940 != nil {
+					return nil, decodeError5940
 				}
-				value = decodedValue5931
+				value = decodedValue5939
 				dst.Color = &value
 			}
 		}
@@ -27866,11 +27921,11 @@ func (c *conversion) nodeSnapshotRoleParams(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5933, decodeError5934 := ingressScalar[bool](item, c, fieldPath(path, "Hoist"))
-				if decodeError5934 != nil {
-					return nil, decodeError5934
+				decodedValue5941, decodeError5942 := ingressScalar[bool](item, c, fieldPath(path, "Hoist"))
+				if decodeError5942 != nil {
+					return nil, decodeError5942
 				}
-				value = decodedValue5933
+				value = decodedValue5941
 				dst.Hoist = &value
 			}
 		}
@@ -27883,11 +27938,11 @@ func (c *conversion) nodeSnapshotRoleParams(n *ingressNode, path string, parent 
 					return nil, err
 				}
 				var value string
-				decodedValue5935, decodeError5936 := ingressString(item, c, fieldPath(path, "Permissions"))
-				if decodeError5936 != nil {
-					return nil, decodeError5936
+				decodedValue5943, decodeError5944 := ingressString(item, c, fieldPath(path, "Permissions"))
+				if decodeError5944 != nil {
+					return nil, decodeError5944
 				}
-				value = decodedValue5935
+				value = decodedValue5943
 				dst.Permissions = &value
 			}
 		}
@@ -27897,11 +27952,11 @@ func (c *conversion) nodeSnapshotRoleParams(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5937, decodeError5938 := ingressScalar[bool](item, c, fieldPath(path, "Mentionable"))
-				if decodeError5938 != nil {
-					return nil, decodeError5938
+				decodedValue5945, decodeError5946 := ingressScalar[bool](item, c, fieldPath(path, "Mentionable"))
+				if decodeError5946 != nil {
+					return nil, decodeError5946
 				}
-				value = decodedValue5937
+				value = decodedValue5945
 				dst.Mentionable = &value
 			}
 		}
@@ -27909,21 +27964,21 @@ func (c *conversion) nodeSnapshotRoleParams(n *ingressNode, path string, parent 
 	{
 		item := n.get("unicode_emoji")
 		if item != nil {
-			decodedValue5939, decodeError5940 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UnicodeEmoji"), parent)
-			if decodeError5940 != nil {
-				return nil, decodeError5940
+			decodedValue5947, decodeError5948 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "UnicodeEmoji"), parent)
+			if decodeError5948 != nil {
+				return nil, decodeError5948
 			}
-			dst.UnicodeEmoji = decodedValue5939
+			dst.UnicodeEmoji = decodedValue5947
 		}
 	}
 	{
 		item := n.get("icon")
 		if item != nil {
-			decodedValue5941, decodeError5942 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
-			if decodeError5942 != nil {
-				return nil, decodeError5942
+			decodedValue5949, decodeError5950 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Icon"), parent)
+			if decodeError5950 != nil {
+				return nil, decodeError5950
 			}
-			dst.Icon = decodedValue5941
+			dst.Icon = decodedValue5949
 		}
 	}
 	return dst, nil
@@ -27953,11 +28008,11 @@ func (c *conversion) nodeSnapshotSKU(n *ingressNode, path string, parent int64) 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5943, decodeError5944 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5944 != nil {
-					return nil, decodeError5944
+				decodedValue5951, decodeError5952 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError5952 != nil {
+					return nil, decodeError5952
 				}
-				value = decodedValue5943
+				value = decodedValue5951
 				dst.Id = &value
 			}
 		}
@@ -27972,11 +28027,11 @@ func (c *conversion) nodeSnapshotSKU(n *ingressNode, path string, parent int64) 
 					}
 				}
 				var value int64
-				decodedValue5945, decodeError5946 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError5946 != nil {
-					return nil, decodeError5946
+				decodedValue5953, decodeError5954 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError5954 != nil {
+					return nil, decodeError5954
 				}
-				value = decodedValue5945
+				value = decodedValue5953
 				dst.Type = &value
 			}
 		}
@@ -27986,11 +28041,11 @@ func (c *conversion) nodeSnapshotSKU(n *ingressNode, path string, parent int64) 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5947, decodeError5948 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError5948 != nil {
-					return nil, decodeError5948
+				decodedValue5955, decodeError5956 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError5956 != nil {
+					return nil, decodeError5956
 				}
-				value = decodedValue5947
+				value = decodedValue5955
 				dst.ApplicationId = &value
 			}
 		}
@@ -28000,11 +28055,11 @@ func (c *conversion) nodeSnapshotSKU(n *ingressNode, path string, parent int64) 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5949, decodeError5950 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError5950 != nil {
-					return nil, decodeError5950
+				decodedValue5957, decodeError5958 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError5958 != nil {
+					return nil, decodeError5958
 				}
-				value = decodedValue5949
+				value = decodedValue5957
 				dst.Name = &value
 			}
 		}
@@ -28014,11 +28069,11 @@ func (c *conversion) nodeSnapshotSKU(n *ingressNode, path string, parent int64) 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5951, decodeError5952 := ingressString(item, c, fieldPath(path, "Slug"))
-				if decodeError5952 != nil {
-					return nil, decodeError5952
+				decodedValue5959, decodeError5960 := ingressString(item, c, fieldPath(path, "Slug"))
+				if decodeError5960 != nil {
+					return nil, decodeError5960
 				}
-				value = decodedValue5951
+				value = decodedValue5959
 				dst.Slug = &value
 			}
 		}
@@ -28033,11 +28088,11 @@ func (c *conversion) nodeSnapshotSKU(n *ingressNode, path string, parent int64) 
 					}
 				}
 				var value uint64
-				decodedValue5953, decodeError5954 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError5954 != nil {
-					return nil, decodeError5954
+				decodedValue5961, decodeError5962 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError5962 != nil {
+					return nil, decodeError5962
 				}
-				value = decodedValue5953
+				value = decodedValue5961
 				dst.Flags = &value
 			}
 		}
@@ -28069,11 +28124,11 @@ func (c *conversion) nodeSnapshotSecrets(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5955, decodeError5956 := ingressString(item, c, fieldPath(path, "Join"))
-				if decodeError5956 != nil {
-					return nil, decodeError5956
+				decodedValue5963, decodeError5964 := ingressString(item, c, fieldPath(path, "Join"))
+				if decodeError5964 != nil {
+					return nil, decodeError5964
 				}
-				value = decodedValue5955
+				value = decodedValue5963
 				dst.Join = &value
 			}
 		}
@@ -28083,11 +28138,11 @@ func (c *conversion) nodeSnapshotSecrets(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5957, decodeError5958 := ingressString(item, c, fieldPath(path, "Spectate"))
-				if decodeError5958 != nil {
-					return nil, decodeError5958
+				decodedValue5965, decodeError5966 := ingressString(item, c, fieldPath(path, "Spectate"))
+				if decodeError5966 != nil {
+					return nil, decodeError5966
 				}
-				value = decodedValue5957
+				value = decodedValue5965
 				dst.Spectate = &value
 			}
 		}
@@ -28097,11 +28152,11 @@ func (c *conversion) nodeSnapshotSecrets(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5959, decodeError5960 := ingressString(item, c, fieldPath(path, "Match"))
-				if decodeError5960 != nil {
-					return nil, decodeError5960
+				decodedValue5967, decodeError5968 := ingressString(item, c, fieldPath(path, "Match"))
+				if decodeError5968 != nil {
+					return nil, decodeError5968
 				}
-				value = decodedValue5959
+				value = decodedValue5967
 				dst.Match = &value
 			}
 		}
@@ -28138,11 +28193,11 @@ func (c *conversion) nodeSnapshotSection(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue5961, decodeError5962 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError5962 != nil {
-					return nil, decodeError5962
+				decodedValue5969, decodeError5970 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError5970 != nil {
+					return nil, decodeError5970
 				}
-				value = decodedValue5961
+				value = decodedValue5969
 				dst.Id = &value
 			}
 		}
@@ -28151,11 +28206,11 @@ func (c *conversion) nodeSnapshotSection(n *ingressNode, path string, parent int
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue5963, decodeError5964 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError5964 != nil {
-					return nil, decodeError5964
+				decodedValue5971, decodeError5972 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError5972 != nil {
+					return nil, decodeError5972
 				}
-				dst.Components = decodedValue5963
+				dst.Components = decodedValue5971
 			}
 		}
 	}
@@ -28163,11 +28218,11 @@ func (c *conversion) nodeSnapshotSection(n *ingressNode, path string, parent int
 		item := n.get("accessory")
 		if item != nil {
 			if !item.null {
-				decodedValue5965, decodeError5966 := c.nodeSnapshotMessageComponent(item, fieldPath(path, "Accessory"), parent)
-				if decodeError5966 != nil {
-					return nil, decodeError5966
+				decodedValue5973, decodeError5974 := c.nodeSnapshotMessageComponent(item, fieldPath(path, "Accessory"), parent)
+				if decodeError5974 != nil {
+					return nil, decodeError5974
 				}
-				dst.Accessory = decodedValue5965
+				dst.Accessory = decodedValue5973
 			}
 		}
 	}
@@ -28203,11 +28258,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 					}
 				}
 				var value uint64
-				decodedValue5967, decodeError5968 := ingressNumericScalar[uint64](item, c, fieldPath(path, "MenuType"))
-				if decodeError5968 != nil {
-					return nil, decodeError5968
+				decodedValue5975, decodeError5976 := ingressNumericScalar[uint64](item, c, fieldPath(path, "MenuType"))
+				if decodeError5976 != nil {
+					return nil, decodeError5976
 				}
-				value = decodedValue5967
+				value = decodedValue5975
 				dst.MenuType = &value
 			}
 		}
@@ -28217,11 +28272,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5969, decodeError5970 := ingressString(item, c, fieldPath(path, "CustomID"))
-				if decodeError5970 != nil {
-					return nil, decodeError5970
+				decodedValue5977, decodeError5978 := ingressString(item, c, fieldPath(path, "CustomID"))
+				if decodeError5978 != nil {
+					return nil, decodeError5978
 				}
-				value = decodedValue5969
+				value = decodedValue5977
 				dst.CustomId = &value
 			}
 		}
@@ -28231,11 +28286,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5971, decodeError5972 := ingressString(item, c, fieldPath(path, "Placeholder"))
-				if decodeError5972 != nil {
-					return nil, decodeError5972
+				decodedValue5979, decodeError5980 := ingressString(item, c, fieldPath(path, "Placeholder"))
+				if decodeError5980 != nil {
+					return nil, decodeError5980
 				}
-				value = decodedValue5971
+				value = decodedValue5979
 				dst.Placeholder = &value
 			}
 		}
@@ -28250,11 +28305,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue5973, decodeError5974 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinValues"))
-				if decodeError5974 != nil {
-					return nil, decodeError5974
+				decodedValue5981, decodeError5982 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinValues"))
+				if decodeError5982 != nil {
+					return nil, decodeError5982
 				}
-				value = decodedValue5973
+				value = decodedValue5981
 				dst.MinValues = &value
 			}
 		}
@@ -28269,11 +28324,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue5975, decodeError5976 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxValues"))
-				if decodeError5976 != nil {
-					return nil, decodeError5976
+				decodedValue5983, decodeError5984 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxValues"))
+				if decodeError5984 != nil {
+					return nil, decodeError5984
 				}
-				value = decodedValue5975
+				value = decodedValue5983
 				dst.MaxValues = &value
 			}
 		}
@@ -28282,11 +28337,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		item := n.get("default_values")
 		if item != nil {
 			if !item.null {
-				decodedValue5977, decodeError5978 := c.nodeDomainSelectMenuDefaultValueList(item, fieldPath(path, "DefaultValues"), parent)
-				if decodeError5978 != nil {
-					return nil, decodeError5978
+				decodedValue5985, decodeError5986 := c.nodeDomainSelectMenuDefaultValueList(item, fieldPath(path, "DefaultValues"), parent)
+				if decodeError5986 != nil {
+					return nil, decodeError5986
 				}
-				dst.DefaultValues = decodedValue5977
+				dst.DefaultValues = decodedValue5985
 			}
 		}
 	}
@@ -28294,11 +28349,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		item := n.get("options")
 		if item != nil {
 			if !item.null {
-				decodedValue5979, decodeError5980 := c.nodeDomainSelectMenuOptionList(item, fieldPath(path, "Options"), parent)
-				if decodeError5980 != nil {
-					return nil, decodeError5980
+				decodedValue5987, decodeError5988 := c.nodeDomainSelectMenuOptionList(item, fieldPath(path, "Options"), parent)
+				if decodeError5988 != nil {
+					return nil, decodeError5988
 				}
-				dst.Options = decodedValue5979
+				dst.Options = decodedValue5987
 			}
 		}
 	}
@@ -28307,11 +28362,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5981, decodeError5982 := ingressScalar[bool](item, c, fieldPath(path, "Disabled"))
-				if decodeError5982 != nil {
-					return nil, decodeError5982
+				decodedValue5989, decodeError5990 := ingressScalar[bool](item, c, fieldPath(path, "Disabled"))
+				if decodeError5990 != nil {
+					return nil, decodeError5990
 				}
-				value = decodedValue5981
+				value = decodedValue5989
 				dst.Disabled = &value
 			}
 		}
@@ -28321,11 +28376,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue5983, decodeError5984 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
-				if decodeError5984 != nil {
-					return nil, decodeError5984
+				decodedValue5991, decodeError5992 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
+				if decodeError5992 != nil {
+					return nil, decodeError5992
 				}
-				value = decodedValue5983
+				value = decodedValue5991
 				dst.Required = &value
 			}
 		}
@@ -28334,11 +28389,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		item := n.get("channel_types")
 		if item != nil {
 			if !item.null {
-				decodedValue5985, decodeError5986 := c.nodeDomainSint64List(item, fieldPath(path, "ChannelTypes"), parent)
-				if decodeError5986 != nil {
-					return nil, decodeError5986
+				decodedValue5993, decodeError5994 := c.nodeDomainSint64List(item, fieldPath(path, "ChannelTypes"), parent)
+				if decodeError5994 != nil {
+					return nil, decodeError5994
 				}
-				dst.ChannelTypes = decodedValue5985
+				dst.ChannelTypes = decodedValue5993
 			}
 		}
 	}
@@ -28352,11 +28407,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue5987, decodeError5988 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError5988 != nil {
-					return nil, decodeError5988
+				decodedValue5995, decodeError5996 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError5996 != nil {
+					return nil, decodeError5996
 				}
-				value = decodedValue5987
+				value = decodedValue5995
 				dst.Id = &value
 			}
 		}
@@ -28365,11 +28420,11 @@ func (c *conversion) nodeSnapshotSelectMenu(n *ingressNode, path string, parent 
 		item := n.get("values")
 		if item != nil {
 			if !item.null {
-				decodedValue5989, decodeError5990 := c.nodeDomainStringList(item, fieldPath(path, "Values"), parent)
-				if decodeError5990 != nil {
-					return nil, decodeError5990
+				decodedValue5997, decodeError5998 := c.nodeDomainStringList(item, fieldPath(path, "Values"), parent)
+				if decodeError5998 != nil {
+					return nil, decodeError5998
 				}
-				dst.Values = decodedValue5989
+				dst.Values = decodedValue5997
 			}
 		}
 	}
@@ -28411,11 +28466,11 @@ func (c *conversion) nodeSnapshotSelectMenuDefaultValue(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5991, decodeError5992 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError5992 != nil {
-					return nil, decodeError5992
+				decodedValue5999, decodeError6000 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6000 != nil {
+					return nil, decodeError6000
 				}
-				value = decodedValue5991
+				value = decodedValue5999
 				dst.Id = &value
 			}
 		}
@@ -28425,11 +28480,11 @@ func (c *conversion) nodeSnapshotSelectMenuDefaultValue(n *ingressNode, path str
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5993, decodeError5994 := ingressString(item, c, fieldPath(path, "Type"))
-				if decodeError5994 != nil {
-					return nil, decodeError5994
+				decodedValue6001, decodeError6002 := ingressString(item, c, fieldPath(path, "Type"))
+				if decodeError6002 != nil {
+					return nil, decodeError6002
 				}
-				value = decodedValue5993
+				value = decodedValue6001
 				dst.Type = &value
 			}
 		}
@@ -28461,11 +28516,11 @@ func (c *conversion) nodeSnapshotSelectMenuOption(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5995, decodeError5996 := ingressString(item, c, fieldPath(path, "Label"))
-				if decodeError5996 != nil {
-					return nil, decodeError5996
+				decodedValue6003, decodeError6004 := ingressString(item, c, fieldPath(path, "Label"))
+				if decodeError6004 != nil {
+					return nil, decodeError6004
 				}
-				value = decodedValue5995
+				value = decodedValue6003
 				dst.Label = &value
 			}
 		}
@@ -28475,11 +28530,11 @@ func (c *conversion) nodeSnapshotSelectMenuOption(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5997, decodeError5998 := ingressString(item, c, fieldPath(path, "Value"))
-				if decodeError5998 != nil {
-					return nil, decodeError5998
+				decodedValue6005, decodeError6006 := ingressString(item, c, fieldPath(path, "Value"))
+				if decodeError6006 != nil {
+					return nil, decodeError6006
 				}
-				value = decodedValue5997
+				value = decodedValue6005
 				dst.Value = &value
 			}
 		}
@@ -28489,11 +28544,11 @@ func (c *conversion) nodeSnapshotSelectMenuOption(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue5999, decodeError6000 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError6000 != nil {
-					return nil, decodeError6000
+				decodedValue6007, decodeError6008 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError6008 != nil {
+					return nil, decodeError6008
 				}
-				value = decodedValue5999
+				value = decodedValue6007
 				dst.Description = &value
 			}
 		}
@@ -28502,11 +28557,11 @@ func (c *conversion) nodeSnapshotSelectMenuOption(n *ingressNode, path string, p
 		item := n.get("emoji")
 		if item != nil {
 			if !item.null {
-				decodedValue6001, decodeError6002 := c.nodeSnapshotComponentEmoji(item, fieldPath(path, "Emoji"), parent)
-				if decodeError6002 != nil {
-					return nil, decodeError6002
+				decodedValue6009, decodeError6010 := c.nodeSnapshotComponentEmoji(item, fieldPath(path, "Emoji"), parent)
+				if decodeError6010 != nil {
+					return nil, decodeError6010
 				}
-				dst.Emoji = decodedValue6001
+				dst.Emoji = decodedValue6009
 			}
 		}
 	}
@@ -28515,11 +28570,11 @@ func (c *conversion) nodeSnapshotSelectMenuOption(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6003, decodeError6004 := ingressScalar[bool](item, c, fieldPath(path, "Default"))
-				if decodeError6004 != nil {
-					return nil, decodeError6004
+				decodedValue6011, decodeError6012 := ingressScalar[bool](item, c, fieldPath(path, "Default"))
+				if decodeError6012 != nil {
+					return nil, decodeError6012
 				}
-				value = decodedValue6003
+				value = decodedValue6011
 				dst.Default = &value
 			}
 		}
@@ -28556,11 +28611,11 @@ func (c *conversion) nodeSnapshotSeparator(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue6005, decodeError6006 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError6006 != nil {
-					return nil, decodeError6006
+				decodedValue6013, decodeError6014 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError6014 != nil {
+					return nil, decodeError6014
 				}
-				value = decodedValue6005
+				value = decodedValue6013
 				dst.Id = &value
 			}
 		}
@@ -28570,11 +28625,11 @@ func (c *conversion) nodeSnapshotSeparator(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6007, decodeError6008 := ingressScalar[bool](item, c, fieldPath(path, "Divider"))
-				if decodeError6008 != nil {
-					return nil, decodeError6008
+				decodedValue6015, decodeError6016 := ingressScalar[bool](item, c, fieldPath(path, "Divider"))
+				if decodeError6016 != nil {
+					return nil, decodeError6016
 				}
-				value = decodedValue6007
+				value = decodedValue6015
 				dst.Divider = &value
 			}
 		}
@@ -28589,11 +28644,11 @@ func (c *conversion) nodeSnapshotSeparator(n *ingressNode, path string, parent i
 					}
 				}
 				var value uint64
-				decodedValue6009, decodeError6010 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Spacing"))
-				if decodeError6010 != nil {
-					return nil, decodeError6010
+				decodedValue6017, decodeError6018 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Spacing"))
+				if decodeError6018 != nil {
+					return nil, decodeError6018
 				}
-				value = decodedValue6009
+				value = decodedValue6017
 				dst.Spacing = &value
 			}
 		}
@@ -28630,11 +28685,11 @@ func (c *conversion) nodeSnapshotSessionInformation(n *ingressNode, path string,
 					}
 				}
 				var value int64
-				decodedValue6011, decodeError6012 := ingressNumericScalar[int64](item, c, fieldPath(path, "Total"))
-				if decodeError6012 != nil {
-					return nil, decodeError6012
+				decodedValue6019, decodeError6020 := ingressNumericScalar[int64](item, c, fieldPath(path, "Total"))
+				if decodeError6020 != nil {
+					return nil, decodeError6020
 				}
-				value = decodedValue6011
+				value = decodedValue6019
 				dst.Total = &value
 			}
 		}
@@ -28649,11 +28704,11 @@ func (c *conversion) nodeSnapshotSessionInformation(n *ingressNode, path string,
 					}
 				}
 				var value int64
-				decodedValue6013, decodeError6014 := ingressNumericScalar[int64](item, c, fieldPath(path, "Remaining"))
-				if decodeError6014 != nil {
-					return nil, decodeError6014
+				decodedValue6021, decodeError6022 := ingressNumericScalar[int64](item, c, fieldPath(path, "Remaining"))
+				if decodeError6022 != nil {
+					return nil, decodeError6022
 				}
-				value = decodedValue6013
+				value = decodedValue6021
 				dst.Remaining = &value
 			}
 		}
@@ -28668,11 +28723,11 @@ func (c *conversion) nodeSnapshotSessionInformation(n *ingressNode, path string,
 					}
 				}
 				var value int64
-				decodedValue6015, decodeError6016 := ingressNumericScalar[int64](item, c, fieldPath(path, "ResetAfter"))
-				if decodeError6016 != nil {
-					return nil, decodeError6016
+				decodedValue6023, decodeError6024 := ingressNumericScalar[int64](item, c, fieldPath(path, "ResetAfter"))
+				if decodeError6024 != nil {
+					return nil, decodeError6024
 				}
-				value = decodedValue6015
+				value = decodedValue6023
 				dst.ResetAfter = &value
 			}
 		}
@@ -28687,11 +28742,11 @@ func (c *conversion) nodeSnapshotSessionInformation(n *ingressNode, path string,
 					}
 				}
 				var value int64
-				decodedValue6017, decodeError6018 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxConcurrency"))
-				if decodeError6018 != nil {
-					return nil, decodeError6018
+				decodedValue6025, decodeError6026 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxConcurrency"))
+				if decodeError6026 != nil {
+					return nil, decodeError6026
 				}
-				value = decodedValue6017
+				value = decodedValue6025
 				dst.MaxConcurrency = &value
 			}
 		}
@@ -28723,11 +28778,11 @@ func (c *conversion) nodeSnapshotStageInstance(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6019, decodeError6020 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6020 != nil {
-					return nil, decodeError6020
+				decodedValue6027, decodeError6028 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6028 != nil {
+					return nil, decodeError6028
 				}
-				value = decodedValue6019
+				value = decodedValue6027
 				dst.Id = &value
 			}
 		}
@@ -28737,11 +28792,11 @@ func (c *conversion) nodeSnapshotStageInstance(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6021, decodeError6022 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError6022 != nil {
-					return nil, decodeError6022
+				decodedValue6029, decodeError6030 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError6030 != nil {
+					return nil, decodeError6030
 				}
-				value = decodedValue6021
+				value = decodedValue6029
 				dst.GuildId = &value
 			}
 		}
@@ -28751,11 +28806,11 @@ func (c *conversion) nodeSnapshotStageInstance(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6023, decodeError6024 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError6024 != nil {
-					return nil, decodeError6024
+				decodedValue6031, decodeError6032 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError6032 != nil {
+					return nil, decodeError6032
 				}
-				value = decodedValue6023
+				value = decodedValue6031
 				dst.ChannelId = &value
 			}
 		}
@@ -28765,11 +28820,11 @@ func (c *conversion) nodeSnapshotStageInstance(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6025, decodeError6026 := ingressString(item, c, fieldPath(path, "Topic"))
-				if decodeError6026 != nil {
-					return nil, decodeError6026
+				decodedValue6033, decodeError6034 := ingressString(item, c, fieldPath(path, "Topic"))
+				if decodeError6034 != nil {
+					return nil, decodeError6034
 				}
-				value = decodedValue6025
+				value = decodedValue6033
 				dst.Topic = &value
 			}
 		}
@@ -28784,11 +28839,11 @@ func (c *conversion) nodeSnapshotStageInstance(n *ingressNode, path string, pare
 					}
 				}
 				var value int64
-				decodedValue6027, decodeError6028 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
-				if decodeError6028 != nil {
-					return nil, decodeError6028
+				decodedValue6035, decodeError6036 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
+				if decodeError6036 != nil {
+					return nil, decodeError6036
 				}
-				value = decodedValue6027
+				value = decodedValue6035
 				dst.PrivacyLevel = &value
 			}
 		}
@@ -28798,11 +28853,11 @@ func (c *conversion) nodeSnapshotStageInstance(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6029, decodeError6030 := ingressScalar[bool](item, c, fieldPath(path, "DiscoverableDisabled"))
-				if decodeError6030 != nil {
-					return nil, decodeError6030
+				decodedValue6037, decodeError6038 := ingressScalar[bool](item, c, fieldPath(path, "DiscoverableDisabled"))
+				if decodeError6038 != nil {
+					return nil, decodeError6038
 				}
-				value = decodedValue6029
+				value = decodedValue6037
 				dst.DiscoverableDisabled = &value
 			}
 		}
@@ -28812,11 +28867,11 @@ func (c *conversion) nodeSnapshotStageInstance(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6031, decodeError6032 := ingressString(item, c, fieldPath(path, "GuildScheduledEventID"))
-				if decodeError6032 != nil {
-					return nil, decodeError6032
+				decodedValue6039, decodeError6040 := ingressString(item, c, fieldPath(path, "GuildScheduledEventID"))
+				if decodeError6040 != nil {
+					return nil, decodeError6040
 				}
-				value = decodedValue6031
+				value = decodedValue6039
 				dst.GuildScheduledEventId = &value
 			}
 		}
@@ -28848,11 +28903,11 @@ func (c *conversion) nodeSnapshotStageInstanceParams(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6033, decodeError6034 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError6034 != nil {
-					return nil, decodeError6034
+				decodedValue6041, decodeError6042 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError6042 != nil {
+					return nil, decodeError6042
 				}
-				value = decodedValue6033
+				value = decodedValue6041
 				dst.ChannelId = &value
 			}
 		}
@@ -28862,11 +28917,11 @@ func (c *conversion) nodeSnapshotStageInstanceParams(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6035, decodeError6036 := ingressString(item, c, fieldPath(path, "Topic"))
-				if decodeError6036 != nil {
-					return nil, decodeError6036
+				decodedValue6043, decodeError6044 := ingressString(item, c, fieldPath(path, "Topic"))
+				if decodeError6044 != nil {
+					return nil, decodeError6044
 				}
-				value = decodedValue6035
+				value = decodedValue6043
 				dst.Topic = &value
 			}
 		}
@@ -28881,11 +28936,11 @@ func (c *conversion) nodeSnapshotStageInstanceParams(n *ingressNode, path string
 					}
 				}
 				var value int64
-				decodedValue6037, decodeError6038 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
-				if decodeError6038 != nil {
-					return nil, decodeError6038
+				decodedValue6045, decodeError6046 := ingressNumericScalar[int64](item, c, fieldPath(path, "PrivacyLevel"))
+				if decodeError6046 != nil {
+					return nil, decodeError6046
 				}
-				value = decodedValue6037
+				value = decodedValue6045
 				dst.PrivacyLevel = &value
 			}
 		}
@@ -28895,11 +28950,11 @@ func (c *conversion) nodeSnapshotStageInstanceParams(n *ingressNode, path string
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6039, decodeError6040 := ingressScalar[bool](item, c, fieldPath(path, "SendStartNotification"))
-				if decodeError6040 != nil {
-					return nil, decodeError6040
+				decodedValue6047, decodeError6048 := ingressScalar[bool](item, c, fieldPath(path, "SendStartNotification"))
+				if decodeError6048 != nil {
+					return nil, decodeError6048
 				}
-				value = decodedValue6039
+				value = decodedValue6047
 				dst.SendStartNotification = &value
 			}
 		}
@@ -28931,11 +28986,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6041, decodeError6042 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6042 != nil {
-					return nil, decodeError6042
+				decodedValue6049, decodeError6050 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6050 != nil {
+					return nil, decodeError6050
 				}
-				value = decodedValue6041
+				value = decodedValue6049
 				dst.Id = &value
 			}
 		}
@@ -28945,11 +29000,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6043, decodeError6044 := ingressString(item, c, fieldPath(path, "PackID"))
-				if decodeError6044 != nil {
-					return nil, decodeError6044
+				decodedValue6051, decodeError6052 := ingressString(item, c, fieldPath(path, "PackID"))
+				if decodeError6052 != nil {
+					return nil, decodeError6052
 				}
-				value = decodedValue6043
+				value = decodedValue6051
 				dst.PackId = &value
 			}
 		}
@@ -28959,11 +29014,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6045, decodeError6046 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6046 != nil {
-					return nil, decodeError6046
+				decodedValue6053, decodeError6054 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6054 != nil {
+					return nil, decodeError6054
 				}
-				value = decodedValue6045
+				value = decodedValue6053
 				dst.Name = &value
 			}
 		}
@@ -28973,11 +29028,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6047, decodeError6048 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError6048 != nil {
-					return nil, decodeError6048
+				decodedValue6055, decodeError6056 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError6056 != nil {
+					return nil, decodeError6056
 				}
-				value = decodedValue6047
+				value = decodedValue6055
 				dst.Description = &value
 			}
 		}
@@ -28987,11 +29042,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6049, decodeError6050 := ingressString(item, c, fieldPath(path, "Tags"))
-				if decodeError6050 != nil {
-					return nil, decodeError6050
+				decodedValue6057, decodeError6058 := ingressString(item, c, fieldPath(path, "Tags"))
+				if decodeError6058 != nil {
+					return nil, decodeError6058
 				}
-				value = decodedValue6049
+				value = decodedValue6057
 				dst.Tags = &value
 			}
 		}
@@ -29006,11 +29061,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue6051, decodeError6052 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError6052 != nil {
-					return nil, decodeError6052
+				decodedValue6059, decodeError6060 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError6060 != nil {
+					return nil, decodeError6060
 				}
-				value = decodedValue6051
+				value = decodedValue6059
 				dst.Type = &value
 			}
 		}
@@ -29025,11 +29080,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue6053, decodeError6054 := ingressNumericScalar[int64](item, c, fieldPath(path, "FormatType"))
-				if decodeError6054 != nil {
-					return nil, decodeError6054
+				decodedValue6061, decodeError6062 := ingressNumericScalar[int64](item, c, fieldPath(path, "FormatType"))
+				if decodeError6062 != nil {
+					return nil, decodeError6062
 				}
-				value = decodedValue6053
+				value = decodedValue6061
 				dst.FormatType = &value
 			}
 		}
@@ -29039,11 +29094,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6055, decodeError6056 := ingressScalar[bool](item, c, fieldPath(path, "Available"))
-				if decodeError6056 != nil {
-					return nil, decodeError6056
+				decodedValue6063, decodeError6064 := ingressScalar[bool](item, c, fieldPath(path, "Available"))
+				if decodeError6064 != nil {
+					return nil, decodeError6064
 				}
-				value = decodedValue6055
+				value = decodedValue6063
 				dst.Available = &value
 			}
 		}
@@ -29053,11 +29108,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6057, decodeError6058 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError6058 != nil {
-					return nil, decodeError6058
+				decodedValue6065, decodeError6066 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError6066 != nil {
+					return nil, decodeError6066
 				}
-				value = decodedValue6057
+				value = decodedValue6065
 				dst.GuildId = &value
 			}
 		}
@@ -29066,11 +29121,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue6059, decodeError6060 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError6060 != nil {
-					return nil, decodeError6060
+				decodedValue6067, decodeError6068 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError6068 != nil {
+					return nil, decodeError6068
 				}
-				dst.User = decodedValue6059
+				dst.User = decodedValue6067
 			}
 		}
 	}
@@ -29084,11 +29139,11 @@ func (c *conversion) nodeSnapshotSticker(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue6061, decodeError6062 := ingressNumericScalar[int64](item, c, fieldPath(path, "SortValue"))
-				if decodeError6062 != nil {
-					return nil, decodeError6062
+				decodedValue6069, decodeError6070 := ingressNumericScalar[int64](item, c, fieldPath(path, "SortValue"))
+				if decodeError6070 != nil {
+					return nil, decodeError6070
 				}
-				value = decodedValue6061
+				value = decodedValue6069
 				dst.SortValue = &value
 			}
 		}
@@ -29120,11 +29175,11 @@ func (c *conversion) nodeSnapshotStickerItem(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6063, decodeError6064 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6064 != nil {
-					return nil, decodeError6064
+				decodedValue6071, decodeError6072 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6072 != nil {
+					return nil, decodeError6072
 				}
-				value = decodedValue6063
+				value = decodedValue6071
 				dst.Id = &value
 			}
 		}
@@ -29134,11 +29189,11 @@ func (c *conversion) nodeSnapshotStickerItem(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6065, decodeError6066 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6066 != nil {
-					return nil, decodeError6066
+				decodedValue6073, decodeError6074 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6074 != nil {
+					return nil, decodeError6074
 				}
-				value = decodedValue6065
+				value = decodedValue6073
 				dst.Name = &value
 			}
 		}
@@ -29153,11 +29208,11 @@ func (c *conversion) nodeSnapshotStickerItem(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue6067, decodeError6068 := ingressNumericScalar[int64](item, c, fieldPath(path, "FormatType"))
-				if decodeError6068 != nil {
-					return nil, decodeError6068
+				decodedValue6075, decodeError6076 := ingressNumericScalar[int64](item, c, fieldPath(path, "FormatType"))
+				if decodeError6076 != nil {
+					return nil, decodeError6076
 				}
-				value = decodedValue6067
+				value = decodedValue6075
 				dst.FormatType = &value
 			}
 		}
@@ -29189,11 +29244,11 @@ func (c *conversion) nodeSnapshotStickerPack(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6069, decodeError6070 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6070 != nil {
-					return nil, decodeError6070
+				decodedValue6077, decodeError6078 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6078 != nil {
+					return nil, decodeError6078
 				}
-				value = decodedValue6069
+				value = decodedValue6077
 				dst.Id = &value
 			}
 		}
@@ -29202,11 +29257,11 @@ func (c *conversion) nodeSnapshotStickerPack(n *ingressNode, path string, parent
 		item := n.get("stickers")
 		if item != nil {
 			if !item.null {
-				decodedValue6071, decodeError6072 := c.nodeDomainStickerList(item, fieldPath(path, "Stickers"), parent)
-				if decodeError6072 != nil {
-					return nil, decodeError6072
+				decodedValue6079, decodeError6080 := c.nodeDomainStickerList(item, fieldPath(path, "Stickers"), parent)
+				if decodeError6080 != nil {
+					return nil, decodeError6080
 				}
-				dst.Stickers = decodedValue6071
+				dst.Stickers = decodedValue6079
 			}
 		}
 	}
@@ -29215,11 +29270,11 @@ func (c *conversion) nodeSnapshotStickerPack(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6073, decodeError6074 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6074 != nil {
-					return nil, decodeError6074
+				decodedValue6081, decodeError6082 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6082 != nil {
+					return nil, decodeError6082
 				}
-				value = decodedValue6073
+				value = decodedValue6081
 				dst.Name = &value
 			}
 		}
@@ -29229,11 +29284,11 @@ func (c *conversion) nodeSnapshotStickerPack(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6075, decodeError6076 := ingressString(item, c, fieldPath(path, "SKUID"))
-				if decodeError6076 != nil {
-					return nil, decodeError6076
+				decodedValue6083, decodeError6084 := ingressString(item, c, fieldPath(path, "SKUID"))
+				if decodeError6084 != nil {
+					return nil, decodeError6084
 				}
-				value = decodedValue6075
+				value = decodedValue6083
 				dst.Skuid = &value
 			}
 		}
@@ -29243,11 +29298,11 @@ func (c *conversion) nodeSnapshotStickerPack(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6077, decodeError6078 := ingressString(item, c, fieldPath(path, "CoverStickerID"))
-				if decodeError6078 != nil {
-					return nil, decodeError6078
+				decodedValue6085, decodeError6086 := ingressString(item, c, fieldPath(path, "CoverStickerID"))
+				if decodeError6086 != nil {
+					return nil, decodeError6086
 				}
-				value = decodedValue6077
+				value = decodedValue6085
 				dst.CoverStickerId = &value
 			}
 		}
@@ -29257,11 +29312,11 @@ func (c *conversion) nodeSnapshotStickerPack(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6079, decodeError6080 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError6080 != nil {
-					return nil, decodeError6080
+				decodedValue6087, decodeError6088 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError6088 != nil {
+					return nil, decodeError6088
 				}
-				value = decodedValue6079
+				value = decodedValue6087
 				dst.Description = &value
 			}
 		}
@@ -29271,11 +29326,11 @@ func (c *conversion) nodeSnapshotStickerPack(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6081, decodeError6082 := ingressString(item, c, fieldPath(path, "BannerAssetID"))
-				if decodeError6082 != nil {
-					return nil, decodeError6082
+				decodedValue6089, decodeError6090 := ingressString(item, c, fieldPath(path, "BannerAssetID"))
+				if decodeError6090 != nil {
+					return nil, decodeError6090
 				}
-				value = decodedValue6081
+				value = decodedValue6089
 				dst.BannerAssetId = &value
 			}
 		}
@@ -29307,11 +29362,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6083, decodeError6084 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6084 != nil {
-					return nil, decodeError6084
+				decodedValue6091, decodeError6092 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6092 != nil {
+					return nil, decodeError6092
 				}
-				value = decodedValue6083
+				value = decodedValue6091
 				dst.Id = &value
 			}
 		}
@@ -29321,11 +29376,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6085, decodeError6086 := ingressString(item, c, fieldPath(path, "UserID"))
-				if decodeError6086 != nil {
-					return nil, decodeError6086
+				decodedValue6093, decodeError6094 := ingressString(item, c, fieldPath(path, "UserID"))
+				if decodeError6094 != nil {
+					return nil, decodeError6094
 				}
-				value = decodedValue6085
+				value = decodedValue6093
 				dst.UserId = &value
 			}
 		}
@@ -29334,11 +29389,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		item := n.get("sku_ids")
 		if item != nil {
 			if !item.null {
-				decodedValue6087, decodeError6088 := c.nodeDomainStringList(item, fieldPath(path, "SKUIDs"), parent)
-				if decodeError6088 != nil {
-					return nil, decodeError6088
+				decodedValue6095, decodeError6096 := c.nodeDomainStringList(item, fieldPath(path, "SKUIDs"), parent)
+				if decodeError6096 != nil {
+					return nil, decodeError6096
 				}
-				dst.SkuIds = decodedValue6087
+				dst.SkuIds = decodedValue6095
 			}
 		}
 	}
@@ -29346,11 +29401,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		item := n.get("entitlement_ids")
 		if item != nil {
 			if !item.null {
-				decodedValue6089, decodeError6090 := c.nodeDomainStringList(item, fieldPath(path, "EntitlementIDs"), parent)
-				if decodeError6090 != nil {
-					return nil, decodeError6090
+				decodedValue6097, decodeError6098 := c.nodeDomainStringList(item, fieldPath(path, "EntitlementIDs"), parent)
+				if decodeError6098 != nil {
+					return nil, decodeError6098
 				}
-				dst.EntitlementIds = decodedValue6089
+				dst.EntitlementIds = decodedValue6097
 			}
 		}
 	}
@@ -29358,11 +29413,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		item := n.get("renewal_sku_ids")
 		if item != nil {
 			if !item.null {
-				decodedValue6091, decodeError6092 := c.nodeDomainStringList(item, fieldPath(path, "RenewalSKUIDs"), parent)
-				if decodeError6092 != nil {
-					return nil, decodeError6092
+				decodedValue6099, decodeError6100 := c.nodeDomainStringList(item, fieldPath(path, "RenewalSKUIDs"), parent)
+				if decodeError6100 != nil {
+					return nil, decodeError6100
 				}
-				dst.RenewalSkuIds = decodedValue6091
+				dst.RenewalSkuIds = decodedValue6099
 			}
 		}
 	}
@@ -29370,11 +29425,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		item := n.get("current_period_start")
 		if item != nil {
 			if !item.null {
-				decodedValue6093, decodeError6094 := ingressTimestamp(item, c, fieldPath(path, "CurrentPeriodStart"))
-				if decodeError6094 != nil {
-					return nil, decodeError6094
+				decodedValue6101, decodeError6102 := ingressTimestamp(item, c, fieldPath(path, "CurrentPeriodStart"))
+				if decodeError6102 != nil {
+					return nil, decodeError6102
 				}
-				dst.CurrentPeriodStart = decodedValue6093
+				dst.CurrentPeriodStart = decodedValue6101
 			}
 		}
 	}
@@ -29382,11 +29437,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		item := n.get("current_period_end")
 		if item != nil {
 			if !item.null {
-				decodedValue6095, decodeError6096 := ingressTimestamp(item, c, fieldPath(path, "CurrentPeriodEnd"))
-				if decodeError6096 != nil {
-					return nil, decodeError6096
+				decodedValue6103, decodeError6104 := ingressTimestamp(item, c, fieldPath(path, "CurrentPeriodEnd"))
+				if decodeError6104 != nil {
+					return nil, decodeError6104
 				}
-				dst.CurrentPeriodEnd = decodedValue6095
+				dst.CurrentPeriodEnd = decodedValue6103
 			}
 		}
 	}
@@ -29400,11 +29455,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 					}
 				}
 				var value int64
-				decodedValue6097, decodeError6098 := ingressNumericScalar[int64](item, c, fieldPath(path, "Status"))
-				if decodeError6098 != nil {
-					return nil, decodeError6098
+				decodedValue6105, decodeError6106 := ingressNumericScalar[int64](item, c, fieldPath(path, "Status"))
+				if decodeError6106 != nil {
+					return nil, decodeError6106
 				}
-				value = decodedValue6097
+				value = decodedValue6105
 				dst.Status = &value
 			}
 		}
@@ -29413,11 +29468,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		item := n.get("canceled_at")
 		if item != nil {
 			if !item.null {
-				decodedValue6099, decodeError6100 := ingressTimestamp(item, c, fieldPath(path, "CanceledAt"))
-				if decodeError6100 != nil {
-					return nil, decodeError6100
+				decodedValue6107, decodeError6108 := ingressTimestamp(item, c, fieldPath(path, "CanceledAt"))
+				if decodeError6108 != nil {
+					return nil, decodeError6108
 				}
-				dst.CanceledAt = decodedValue6099
+				dst.CanceledAt = decodedValue6107
 			}
 		}
 	}
@@ -29426,11 +29481,11 @@ func (c *conversion) nodeSnapshotSubscription(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6101, decodeError6102 := ingressString(item, c, fieldPath(path, "Country"))
-				if decodeError6102 != nil {
-					return nil, decodeError6102
+				decodedValue6109, decodeError6110 := ingressString(item, c, fieldPath(path, "Country"))
+				if decodeError6110 != nil {
+					return nil, decodeError6110
 				}
-				value = decodedValue6101
+				value = decodedValue6109
 				dst.Country = &value
 			}
 		}
@@ -29462,11 +29517,11 @@ func (c *conversion) nodeSnapshotTeam(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6103, decodeError6104 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6104 != nil {
-					return nil, decodeError6104
+				decodedValue6111, decodeError6112 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6112 != nil {
+					return nil, decodeError6112
 				}
-				value = decodedValue6103
+				value = decodedValue6111
 				dst.Id = &value
 			}
 		}
@@ -29476,11 +29531,11 @@ func (c *conversion) nodeSnapshotTeam(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6105, decodeError6106 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6106 != nil {
-					return nil, decodeError6106
+				decodedValue6113, decodeError6114 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6114 != nil {
+					return nil, decodeError6114
 				}
-				value = decodedValue6105
+				value = decodedValue6113
 				dst.Name = &value
 			}
 		}
@@ -29490,11 +29545,11 @@ func (c *conversion) nodeSnapshotTeam(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6107, decodeError6108 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError6108 != nil {
-					return nil, decodeError6108
+				decodedValue6115, decodeError6116 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError6116 != nil {
+					return nil, decodeError6116
 				}
-				value = decodedValue6107
+				value = decodedValue6115
 				dst.Description = &value
 			}
 		}
@@ -29504,11 +29559,11 @@ func (c *conversion) nodeSnapshotTeam(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6109, decodeError6110 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError6110 != nil {
-					return nil, decodeError6110
+				decodedValue6117, decodeError6118 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError6118 != nil {
+					return nil, decodeError6118
 				}
-				value = decodedValue6109
+				value = decodedValue6117
 				dst.Icon = &value
 			}
 		}
@@ -29518,11 +29573,11 @@ func (c *conversion) nodeSnapshotTeam(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6111, decodeError6112 := ingressString(item, c, fieldPath(path, "OwnerID"))
-				if decodeError6112 != nil {
-					return nil, decodeError6112
+				decodedValue6119, decodeError6120 := ingressString(item, c, fieldPath(path, "OwnerID"))
+				if decodeError6120 != nil {
+					return nil, decodeError6120
 				}
-				value = decodedValue6111
+				value = decodedValue6119
 				dst.OwnerId = &value
 			}
 		}
@@ -29531,11 +29586,11 @@ func (c *conversion) nodeSnapshotTeam(n *ingressNode, path string, parent int64)
 		item := n.get("members")
 		if item != nil {
 			if !item.null {
-				decodedValue6113, decodeError6114 := c.nodeDomainTeamMemberList(item, fieldPath(path, "Members"), parent)
-				if decodeError6114 != nil {
-					return nil, decodeError6114
+				decodedValue6121, decodeError6122 := c.nodeDomainTeamMemberList(item, fieldPath(path, "Members"), parent)
+				if decodeError6122 != nil {
+					return nil, decodeError6122
 				}
-				dst.Members = decodedValue6113
+				dst.Members = decodedValue6121
 			}
 		}
 	}
@@ -29565,11 +29620,11 @@ func (c *conversion) nodeSnapshotTeamMember(n *ingressNode, path string, parent 
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue6115, decodeError6116 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError6116 != nil {
-					return nil, decodeError6116
+				decodedValue6123, decodeError6124 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError6124 != nil {
+					return nil, decodeError6124
 				}
-				dst.User = decodedValue6115
+				dst.User = decodedValue6123
 			}
 		}
 	}
@@ -29578,11 +29633,11 @@ func (c *conversion) nodeSnapshotTeamMember(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6117, decodeError6118 := ingressString(item, c, fieldPath(path, "TeamID"))
-				if decodeError6118 != nil {
-					return nil, decodeError6118
+				decodedValue6125, decodeError6126 := ingressString(item, c, fieldPath(path, "TeamID"))
+				if decodeError6126 != nil {
+					return nil, decodeError6126
 				}
-				value = decodedValue6117
+				value = decodedValue6125
 				dst.TeamId = &value
 			}
 		}
@@ -29597,11 +29652,11 @@ func (c *conversion) nodeSnapshotTeamMember(n *ingressNode, path string, parent 
 					}
 				}
 				var value int64
-				decodedValue6119, decodeError6120 := ingressNumericScalar[int64](item, c, fieldPath(path, "MembershipState"))
-				if decodeError6120 != nil {
-					return nil, decodeError6120
+				decodedValue6127, decodeError6128 := ingressNumericScalar[int64](item, c, fieldPath(path, "MembershipState"))
+				if decodeError6128 != nil {
+					return nil, decodeError6128
 				}
-				value = decodedValue6119
+				value = decodedValue6127
 				dst.MembershipState = &value
 			}
 		}
@@ -29610,11 +29665,11 @@ func (c *conversion) nodeSnapshotTeamMember(n *ingressNode, path string, parent 
 		item := n.get("permissions")
 		if item != nil {
 			if !item.null {
-				decodedValue6121, decodeError6122 := c.nodeDomainStringList(item, fieldPath(path, "Permissions"), parent)
-				if decodeError6122 != nil {
-					return nil, decodeError6122
+				decodedValue6129, decodeError6130 := c.nodeDomainStringList(item, fieldPath(path, "Permissions"), parent)
+				if decodeError6130 != nil {
+					return nil, decodeError6130
 				}
-				dst.Permissions = decodedValue6121
+				dst.Permissions = decodedValue6129
 			}
 		}
 	}
@@ -29645,11 +29700,11 @@ func (c *conversion) nodeSnapshotTextDisplay(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6123, decodeError6124 := ingressString(item, c, fieldPath(path, "Content"))
-				if decodeError6124 != nil {
-					return nil, decodeError6124
+				decodedValue6131, decodeError6132 := ingressString(item, c, fieldPath(path, "Content"))
+				if decodeError6132 != nil {
+					return nil, decodeError6132
 				}
-				value = decodedValue6123
+				value = decodedValue6131
 				dst.Content = &value
 			}
 		}
@@ -29681,11 +29736,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6125, decodeError6126 := ingressString(item, c, fieldPath(path, "CustomID"))
-				if decodeError6126 != nil {
-					return nil, decodeError6126
+				decodedValue6133, decodeError6134 := ingressString(item, c, fieldPath(path, "CustomID"))
+				if decodeError6134 != nil {
+					return nil, decodeError6134
 				}
-				value = decodedValue6125
+				value = decodedValue6133
 				dst.CustomId = &value
 			}
 		}
@@ -29695,11 +29750,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6127, decodeError6128 := ingressString(item, c, fieldPath(path, "Label"))
-				if decodeError6128 != nil {
-					return nil, decodeError6128
+				decodedValue6135, decodeError6136 := ingressString(item, c, fieldPath(path, "Label"))
+				if decodeError6136 != nil {
+					return nil, decodeError6136
 				}
-				value = decodedValue6127
+				value = decodedValue6135
 				dst.Label = &value
 			}
 		}
@@ -29714,11 +29769,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 					}
 				}
 				var value uint64
-				decodedValue6129, decodeError6130 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Style"))
-				if decodeError6130 != nil {
-					return nil, decodeError6130
+				decodedValue6137, decodeError6138 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Style"))
+				if decodeError6138 != nil {
+					return nil, decodeError6138
 				}
-				value = decodedValue6129
+				value = decodedValue6137
 				dst.Style = &value
 			}
 		}
@@ -29728,11 +29783,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6131, decodeError6132 := ingressString(item, c, fieldPath(path, "Placeholder"))
-				if decodeError6132 != nil {
-					return nil, decodeError6132
+				decodedValue6139, decodeError6140 := ingressString(item, c, fieldPath(path, "Placeholder"))
+				if decodeError6140 != nil {
+					return nil, decodeError6140
 				}
-				value = decodedValue6131
+				value = decodedValue6139
 				dst.Placeholder = &value
 			}
 		}
@@ -29742,11 +29797,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6133, decodeError6134 := ingressString(item, c, fieldPath(path, "Value"))
-				if decodeError6134 != nil {
-					return nil, decodeError6134
+				decodedValue6141, decodeError6142 := ingressString(item, c, fieldPath(path, "Value"))
+				if decodeError6142 != nil {
+					return nil, decodeError6142
 				}
-				value = decodedValue6133
+				value = decodedValue6141
 				dst.Value = &value
 			}
 		}
@@ -29756,11 +29811,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6135, decodeError6136 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
-				if decodeError6136 != nil {
-					return nil, decodeError6136
+				decodedValue6143, decodeError6144 := ingressScalar[bool](item, c, fieldPath(path, "Required"))
+				if decodeError6144 != nil {
+					return nil, decodeError6144
 				}
-				value = decodedValue6135
+				value = decodedValue6143
 				dst.Required = &value
 			}
 		}
@@ -29775,11 +29830,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue6137, decodeError6138 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinLength"))
-				if decodeError6138 != nil {
-					return nil, decodeError6138
+				decodedValue6145, decodeError6146 := ingressNumericScalar[int64](item, c, fieldPath(path, "MinLength"))
+				if decodeError6146 != nil {
+					return nil, decodeError6146
 				}
-				value = decodedValue6137
+				value = decodedValue6145
 				dst.MinLength = &value
 			}
 		}
@@ -29794,11 +29849,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue6139, decodeError6140 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxLength"))
-				if decodeError6140 != nil {
-					return nil, decodeError6140
+				decodedValue6147, decodeError6148 := ingressNumericScalar[int64](item, c, fieldPath(path, "MaxLength"))
+				if decodeError6148 != nil {
+					return nil, decodeError6148
 				}
-				value = decodedValue6139
+				value = decodedValue6147
 				dst.MaxLength = &value
 			}
 		}
@@ -29813,11 +29868,11 @@ func (c *conversion) nodeSnapshotTextInput(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue6141, decodeError6142 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError6142 != nil {
-					return nil, decodeError6142
+				decodedValue6149, decodeError6150 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError6150 != nil {
+					return nil, decodeError6150
 				}
-				value = decodedValue6141
+				value = decodedValue6149
 				dst.Id = &value
 			}
 		}
@@ -29849,11 +29904,11 @@ func (c *conversion) nodeSnapshotThreadMember(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6143, decodeError6144 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6144 != nil {
-					return nil, decodeError6144
+				decodedValue6151, decodeError6152 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6152 != nil {
+					return nil, decodeError6152
 				}
-				value = decodedValue6143
+				value = decodedValue6151
 				dst.Id = &value
 			}
 		}
@@ -29863,11 +29918,11 @@ func (c *conversion) nodeSnapshotThreadMember(n *ingressNode, path string, paren
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6145, decodeError6146 := ingressString(item, c, fieldPath(path, "UserID"))
-				if decodeError6146 != nil {
-					return nil, decodeError6146
+				decodedValue6153, decodeError6154 := ingressString(item, c, fieldPath(path, "UserID"))
+				if decodeError6154 != nil {
+					return nil, decodeError6154
 				}
-				value = decodedValue6145
+				value = decodedValue6153
 				dst.UserId = &value
 			}
 		}
@@ -29876,11 +29931,11 @@ func (c *conversion) nodeSnapshotThreadMember(n *ingressNode, path string, paren
 		item := n.get("join_timestamp")
 		if item != nil {
 			if !item.null {
-				decodedValue6147, decodeError6148 := ingressTimestamp(item, c, fieldPath(path, "JoinTimestamp"))
-				if decodeError6148 != nil {
-					return nil, decodeError6148
+				decodedValue6155, decodeError6156 := ingressTimestamp(item, c, fieldPath(path, "JoinTimestamp"))
+				if decodeError6156 != nil {
+					return nil, decodeError6156
 				}
-				dst.JoinTimestamp = decodedValue6147
+				dst.JoinTimestamp = decodedValue6155
 			}
 		}
 	}
@@ -29894,11 +29949,11 @@ func (c *conversion) nodeSnapshotThreadMember(n *ingressNode, path string, paren
 					}
 				}
 				var value uint64
-				decodedValue6149, decodeError6150 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError6150 != nil {
-					return nil, decodeError6150
+				decodedValue6157, decodeError6158 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError6158 != nil {
+					return nil, decodeError6158
 				}
-				value = decodedValue6149
+				value = decodedValue6157
 				dst.Flags = &value
 			}
 		}
@@ -29907,11 +29962,11 @@ func (c *conversion) nodeSnapshotThreadMember(n *ingressNode, path string, paren
 		item := n.get("member")
 		if item != nil {
 			if !item.null {
-				decodedValue6151, decodeError6152 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
-				if decodeError6152 != nil {
-					return nil, decodeError6152
+				decodedValue6159, decodeError6160 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
+				if decodeError6160 != nil {
+					return nil, decodeError6160
 				}
-				dst.Member = decodedValue6151
+				dst.Member = decodedValue6159
 			}
 		}
 	}
@@ -29942,11 +29997,11 @@ func (c *conversion) nodeSnapshotThreadMetadata(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6153, decodeError6154 := ingressScalar[bool](item, c, fieldPath(path, "Archived"))
-				if decodeError6154 != nil {
-					return nil, decodeError6154
+				decodedValue6161, decodeError6162 := ingressScalar[bool](item, c, fieldPath(path, "Archived"))
+				if decodeError6162 != nil {
+					return nil, decodeError6162
 				}
-				value = decodedValue6153
+				value = decodedValue6161
 				dst.Archived = &value
 			}
 		}
@@ -29961,11 +30016,11 @@ func (c *conversion) nodeSnapshotThreadMetadata(n *ingressNode, path string, par
 					}
 				}
 				var value int64
-				decodedValue6155, decodeError6156 := ingressNumericScalar[int64](item, c, fieldPath(path, "AutoArchiveDuration"))
-				if decodeError6156 != nil {
-					return nil, decodeError6156
+				decodedValue6163, decodeError6164 := ingressNumericScalar[int64](item, c, fieldPath(path, "AutoArchiveDuration"))
+				if decodeError6164 != nil {
+					return nil, decodeError6164
 				}
-				value = decodedValue6155
+				value = decodedValue6163
 				dst.AutoArchiveDuration = &value
 			}
 		}
@@ -29974,11 +30029,11 @@ func (c *conversion) nodeSnapshotThreadMetadata(n *ingressNode, path string, par
 		item := n.get("archive_timestamp")
 		if item != nil {
 			if !item.null {
-				decodedValue6157, decodeError6158 := ingressTimestamp(item, c, fieldPath(path, "ArchiveTimestamp"))
-				if decodeError6158 != nil {
-					return nil, decodeError6158
+				decodedValue6165, decodeError6166 := ingressTimestamp(item, c, fieldPath(path, "ArchiveTimestamp"))
+				if decodeError6166 != nil {
+					return nil, decodeError6166
 				}
-				dst.ArchiveTimestamp = decodedValue6157
+				dst.ArchiveTimestamp = decodedValue6165
 			}
 		}
 	}
@@ -29987,11 +30042,11 @@ func (c *conversion) nodeSnapshotThreadMetadata(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6159, decodeError6160 := ingressScalar[bool](item, c, fieldPath(path, "Locked"))
-				if decodeError6160 != nil {
-					return nil, decodeError6160
+				decodedValue6167, decodeError6168 := ingressScalar[bool](item, c, fieldPath(path, "Locked"))
+				if decodeError6168 != nil {
+					return nil, decodeError6168
 				}
-				value = decodedValue6159
+				value = decodedValue6167
 				dst.Locked = &value
 			}
 		}
@@ -30001,11 +30056,11 @@ func (c *conversion) nodeSnapshotThreadMetadata(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6161, decodeError6162 := ingressScalar[bool](item, c, fieldPath(path, "Invitable"))
-				if decodeError6162 != nil {
-					return nil, decodeError6162
+				decodedValue6169, decodeError6170 := ingressScalar[bool](item, c, fieldPath(path, "Invitable"))
+				if decodeError6170 != nil {
+					return nil, decodeError6170
 				}
-				value = decodedValue6161
+				value = decodedValue6169
 				dst.Invitable = &value
 			}
 		}
@@ -30037,11 +30092,11 @@ func (c *conversion) nodeSnapshotThreadStart(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6163, decodeError6164 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6164 != nil {
-					return nil, decodeError6164
+				decodedValue6171, decodeError6172 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6172 != nil {
+					return nil, decodeError6172
 				}
-				value = decodedValue6163
+				value = decodedValue6171
 				dst.Name = &value
 			}
 		}
@@ -30056,11 +30111,11 @@ func (c *conversion) nodeSnapshotThreadStart(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue6165, decodeError6166 := ingressNumericScalar[int64](item, c, fieldPath(path, "AutoArchiveDuration"))
-				if decodeError6166 != nil {
-					return nil, decodeError6166
+				decodedValue6173, decodeError6174 := ingressNumericScalar[int64](item, c, fieldPath(path, "AutoArchiveDuration"))
+				if decodeError6174 != nil {
+					return nil, decodeError6174
 				}
-				value = decodedValue6165
+				value = decodedValue6173
 				dst.AutoArchiveDuration = &value
 			}
 		}
@@ -30075,11 +30130,11 @@ func (c *conversion) nodeSnapshotThreadStart(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue6167, decodeError6168 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError6168 != nil {
-					return nil, decodeError6168
+				decodedValue6175, decodeError6176 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError6176 != nil {
+					return nil, decodeError6176
 				}
-				value = decodedValue6167
+				value = decodedValue6175
 				dst.Type = &value
 			}
 		}
@@ -30089,11 +30144,11 @@ func (c *conversion) nodeSnapshotThreadStart(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6169, decodeError6170 := ingressScalar[bool](item, c, fieldPath(path, "Invitable"))
-				if decodeError6170 != nil {
-					return nil, decodeError6170
+				decodedValue6177, decodeError6178 := ingressScalar[bool](item, c, fieldPath(path, "Invitable"))
+				if decodeError6178 != nil {
+					return nil, decodeError6178
 				}
-				value = decodedValue6169
+				value = decodedValue6177
 				dst.Invitable = &value
 			}
 		}
@@ -30108,11 +30163,11 @@ func (c *conversion) nodeSnapshotThreadStart(n *ingressNode, path string, parent
 					}
 				}
 				var value int64
-				decodedValue6171, decodeError6172 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
-				if decodeError6172 != nil {
-					return nil, decodeError6172
+				decodedValue6179, decodeError6180 := ingressNumericScalar[int64](item, c, fieldPath(path, "RateLimitPerUser"))
+				if decodeError6180 != nil {
+					return nil, decodeError6180
 				}
-				value = decodedValue6171
+				value = decodedValue6179
 				dst.RateLimitPerUser = &value
 			}
 		}
@@ -30121,11 +30176,11 @@ func (c *conversion) nodeSnapshotThreadStart(n *ingressNode, path string, parent
 		item := n.get("applied_tags")
 		if item != nil {
 			if !item.null {
-				decodedValue6173, decodeError6174 := c.nodeDomainStringList(item, fieldPath(path, "AppliedTags"), parent)
-				if decodeError6174 != nil {
-					return nil, decodeError6174
+				decodedValue6181, decodeError6182 := c.nodeDomainStringList(item, fieldPath(path, "AppliedTags"), parent)
+				if decodeError6182 != nil {
+					return nil, decodeError6182
 				}
-				dst.AppliedTags = decodedValue6173
+				dst.AppliedTags = decodedValue6181
 			}
 		}
 	}
@@ -30155,11 +30210,11 @@ func (c *conversion) nodeSnapshotThreadsList(n *ingressNode, path string, parent
 		item := n.get("threads")
 		if item != nil {
 			if !item.null {
-				decodedValue6175, decodeError6176 := c.nodeDomainChannelList(item, fieldPath(path, "Threads"), parent)
-				if decodeError6176 != nil {
-					return nil, decodeError6176
+				decodedValue6183, decodeError6184 := c.nodeDomainChannelList(item, fieldPath(path, "Threads"), parent)
+				if decodeError6184 != nil {
+					return nil, decodeError6184
 				}
-				dst.Threads = decodedValue6175
+				dst.Threads = decodedValue6183
 			}
 		}
 	}
@@ -30167,11 +30222,11 @@ func (c *conversion) nodeSnapshotThreadsList(n *ingressNode, path string, parent
 		item := n.get("members")
 		if item != nil {
 			if !item.null {
-				decodedValue6177, decodeError6178 := c.nodeDomainThreadMemberList(item, fieldPath(path, "Members"), parent)
-				if decodeError6178 != nil {
-					return nil, decodeError6178
+				decodedValue6185, decodeError6186 := c.nodeDomainThreadMemberList(item, fieldPath(path, "Members"), parent)
+				if decodeError6186 != nil {
+					return nil, decodeError6186
 				}
-				dst.Members = decodedValue6177
+				dst.Members = decodedValue6185
 			}
 		}
 	}
@@ -30180,11 +30235,11 @@ func (c *conversion) nodeSnapshotThreadsList(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6179, decodeError6180 := ingressScalar[bool](item, c, fieldPath(path, "HasMore"))
-				if decodeError6180 != nil {
-					return nil, decodeError6180
+				decodedValue6187, decodeError6188 := ingressScalar[bool](item, c, fieldPath(path, "HasMore"))
+				if decodeError6188 != nil {
+					return nil, decodeError6188
 				}
-				value = decodedValue6179
+				value = decodedValue6187
 				dst.HasMore = &value
 			}
 		}
@@ -30221,11 +30276,11 @@ func (c *conversion) nodeSnapshotThumbnail(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue6181, decodeError6182 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
-				if decodeError6182 != nil {
-					return nil, decodeError6182
+				decodedValue6189, decodeError6190 := ingressNumericScalar[int64](item, c, fieldPath(path, "ID"))
+				if decodeError6190 != nil {
+					return nil, decodeError6190
 				}
-				value = decodedValue6181
+				value = decodedValue6189
 				dst.Id = &value
 			}
 		}
@@ -30234,11 +30289,11 @@ func (c *conversion) nodeSnapshotThumbnail(n *ingressNode, path string, parent i
 		item := n.get("media")
 		if item != nil {
 			if !item.null {
-				decodedValue6183, decodeError6184 := c.nodeSnapshotUnfurledMediaItem(item, fieldPath(path, "Media"), parent)
-				if decodeError6184 != nil {
-					return nil, decodeError6184
+				decodedValue6191, decodeError6192 := c.nodeSnapshotUnfurledMediaItem(item, fieldPath(path, "Media"), parent)
+				if decodeError6192 != nil {
+					return nil, decodeError6192
 				}
-				dst.Media = decodedValue6183
+				dst.Media = decodedValue6191
 			}
 		}
 	}
@@ -30247,11 +30302,11 @@ func (c *conversion) nodeSnapshotThumbnail(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6185, decodeError6186 := ingressString(item, c, fieldPath(path, "Description"))
-				if decodeError6186 != nil {
-					return nil, decodeError6186
+				decodedValue6193, decodeError6194 := ingressString(item, c, fieldPath(path, "Description"))
+				if decodeError6194 != nil {
+					return nil, decodeError6194
 				}
-				value = decodedValue6185
+				value = decodedValue6193
 				dst.Description = &value
 			}
 		}
@@ -30261,11 +30316,11 @@ func (c *conversion) nodeSnapshotThumbnail(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6187, decodeError6188 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
-				if decodeError6188 != nil {
-					return nil, decodeError6188
+				decodedValue6195, decodeError6196 := ingressScalar[bool](item, c, fieldPath(path, "Spoiler"))
+				if decodeError6196 != nil {
+					return nil, decodeError6196
 				}
-				value = decodedValue6187
+				value = decodedValue6195
 				dst.Spoiler = &value
 			}
 		}
@@ -30296,17 +30351,12 @@ func (c *conversion) nodeSnapshotTimeStamps(n *ingressNode, path string, parent 
 		item := n.get("end")
 		if item != nil {
 			if !item.null {
-				if !item.null {
-					if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "EndTimestamp")); err != nil {
-						return nil, err
-					}
-				}
 				var value int64
-				decodedValue6189, decodeError6190 := ingressNumericScalar[int64](item, c, fieldPath(path, "EndTimestamp"))
-				if decodeError6190 != nil {
-					return nil, decodeError6190
+				codecValue6197, codecError6198 := ingressExactInt64(item, c, fieldPath(path, "EndTimestamp"))
+				if codecError6198 != nil {
+					return nil, codecError6198
 				}
-				value = decodedValue6189
+				value = codecValue6197
 				dst.EndTimestamp = &value
 			}
 		}
@@ -30315,17 +30365,12 @@ func (c *conversion) nodeSnapshotTimeStamps(n *ingressNode, path string, parent 
 		item := n.get("start")
 		if item != nil {
 			if !item.null {
-				if !item.null {
-					if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "StartTimestamp")); err != nil {
-						return nil, err
-					}
-				}
 				var value int64
-				decodedValue6191, decodeError6192 := ingressNumericScalar[int64](item, c, fieldPath(path, "StartTimestamp"))
-				if decodeError6192 != nil {
-					return nil, decodeError6192
+				codecValue6199, codecError6200 := ingressExactInt64(item, c, fieldPath(path, "StartTimestamp"))
+				if codecError6200 != nil {
+					return nil, codecError6200
 				}
-				value = decodedValue6191
+				value = codecValue6199
 				dst.StartTimestamp = &value
 			}
 		}
@@ -30357,11 +30402,11 @@ func (c *conversion) nodeSnapshotTooManyRequests(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6193, decodeError6194 := ingressString(item, c, fieldPath(path, "Bucket"))
-				if decodeError6194 != nil {
-					return nil, decodeError6194
+				decodedValue6201, decodeError6202 := ingressString(item, c, fieldPath(path, "Bucket"))
+				if decodeError6202 != nil {
+					return nil, decodeError6202
 				}
-				value = decodedValue6193
+				value = decodedValue6201
 				dst.Bucket = &value
 			}
 		}
@@ -30371,11 +30416,11 @@ func (c *conversion) nodeSnapshotTooManyRequests(n *ingressNode, path string, pa
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6195, decodeError6196 := ingressString(item, c, fieldPath(path, "Message"))
-				if decodeError6196 != nil {
-					return nil, decodeError6196
+				decodedValue6203, decodeError6204 := ingressString(item, c, fieldPath(path, "Message"))
+				if decodeError6204 != nil {
+					return nil, decodeError6204
 				}
-				value = decodedValue6195
+				value = decodedValue6203
 				dst.Message = &value
 			}
 		}
@@ -30384,17 +30429,12 @@ func (c *conversion) nodeSnapshotTooManyRequests(n *ingressNode, path string, pa
 		item := n.get("retry_after")
 		if item != nil {
 			if !item.null {
-				if !item.null {
-					if _, err := ingressNumericScalar[int64](item, c, fieldPath(path, "RetryAfter")); err != nil {
-						return nil, err
-					}
-				}
 				var value int64
-				decodedValue6197, decodeError6198 := ingressNumericScalar[int64](item, c, fieldPath(path, "RetryAfter"))
-				if decodeError6198 != nil {
-					return nil, decodeError6198
+				codecValue6205, codecError6206 := ingressSecondsDuration(item, c, fieldPath(path, "RetryAfter"))
+				if codecError6206 != nil {
+					return nil, codecError6206
 				}
-				value = decodedValue6197
+				value = codecValue6205
 				dst.RetryAfter = &value
 			}
 		}
@@ -30426,11 +30466,11 @@ func (c *conversion) nodeSnapshotUnfurledMediaItem(n *ingressNode, path string, 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6199, decodeError6200 := ingressString(item, c, fieldPath(path, "URL"))
-				if decodeError6200 != nil {
-					return nil, decodeError6200
+				decodedValue6207, decodeError6208 := ingressString(item, c, fieldPath(path, "URL"))
+				if decodeError6208 != nil {
+					return nil, decodeError6208
 				}
-				value = decodedValue6199
+				value = decodedValue6207
 				dst.Url = &value
 			}
 		}
@@ -30467,11 +30507,11 @@ func (c *conversion) nodeSnapshotUpdateStatusData(n *ingressNode, path string, p
 					}
 				}
 				var value int64
-				decodedValue6201, decodeError6202 := ingressNumericScalar[int64](item, c, fieldPath(path, "IdleSince"))
-				if decodeError6202 != nil {
-					return nil, decodeError6202
+				decodedValue6209, decodeError6210 := ingressNumericScalar[int64](item, c, fieldPath(path, "IdleSince"))
+				if decodeError6210 != nil {
+					return nil, decodeError6210
 				}
-				value = decodedValue6201
+				value = decodedValue6209
 				dst.IdleSince = &value
 			}
 		}
@@ -30480,11 +30520,11 @@ func (c *conversion) nodeSnapshotUpdateStatusData(n *ingressNode, path string, p
 		item := n.get("activities")
 		if item != nil {
 			if !item.null {
-				decodedValue6203, decodeError6204 := c.nodeDomainActivityList(item, fieldPath(path, "Activities"), parent)
-				if decodeError6204 != nil {
-					return nil, decodeError6204
+				decodedValue6211, decodeError6212 := c.nodeDomainActivityList(item, fieldPath(path, "Activities"), parent)
+				if decodeError6212 != nil {
+					return nil, decodeError6212
 				}
-				dst.Activities = decodedValue6203
+				dst.Activities = decodedValue6211
 			}
 		}
 	}
@@ -30493,11 +30533,11 @@ func (c *conversion) nodeSnapshotUpdateStatusData(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6205, decodeError6206 := ingressScalar[bool](item, c, fieldPath(path, "AFK"))
-				if decodeError6206 != nil {
-					return nil, decodeError6206
+				decodedValue6213, decodeError6214 := ingressScalar[bool](item, c, fieldPath(path, "AFK"))
+				if decodeError6214 != nil {
+					return nil, decodeError6214
 				}
-				value = decodedValue6205
+				value = decodedValue6213
 				dst.Afk = &value
 			}
 		}
@@ -30507,11 +30547,11 @@ func (c *conversion) nodeSnapshotUpdateStatusData(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6207, decodeError6208 := ingressString(item, c, fieldPath(path, "Status"))
-				if decodeError6208 != nil {
-					return nil, decodeError6208
+				decodedValue6215, decodeError6216 := ingressString(item, c, fieldPath(path, "Status"))
+				if decodeError6216 != nil {
+					return nil, decodeError6216
 				}
-				value = decodedValue6207
+				value = decodedValue6215
 				dst.Status = &value
 			}
 		}
@@ -30543,11 +30583,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6209, decodeError6210 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6210 != nil {
-					return nil, decodeError6210
+				decodedValue6217, decodeError6218 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6218 != nil {
+					return nil, decodeError6218
 				}
-				value = decodedValue6209
+				value = decodedValue6217
 				dst.Id = &value
 			}
 		}
@@ -30557,11 +30597,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6211, decodeError6212 := ingressString(item, c, fieldPath(path, "Email"))
-				if decodeError6212 != nil {
-					return nil, decodeError6212
+				decodedValue6219, decodeError6220 := ingressString(item, c, fieldPath(path, "Email"))
+				if decodeError6220 != nil {
+					return nil, decodeError6220
 				}
-				value = decodedValue6211
+				value = decodedValue6219
 				dst.Email = &value
 			}
 		}
@@ -30571,11 +30611,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6213, decodeError6214 := ingressString(item, c, fieldPath(path, "Username"))
-				if decodeError6214 != nil {
-					return nil, decodeError6214
+				decodedValue6221, decodeError6222 := ingressString(item, c, fieldPath(path, "Username"))
+				if decodeError6222 != nil {
+					return nil, decodeError6222
 				}
-				value = decodedValue6213
+				value = decodedValue6221
 				dst.Username = &value
 			}
 		}
@@ -30585,11 +30625,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6215, decodeError6216 := ingressString(item, c, fieldPath(path, "Avatar"))
-				if decodeError6216 != nil {
-					return nil, decodeError6216
+				decodedValue6223, decodeError6224 := ingressString(item, c, fieldPath(path, "Avatar"))
+				if decodeError6224 != nil {
+					return nil, decodeError6224
 				}
-				value = decodedValue6215
+				value = decodedValue6223
 				dst.Avatar = &value
 			}
 		}
@@ -30599,11 +30639,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6217, decodeError6218 := ingressString(item, c, fieldPath(path, "Locale"))
-				if decodeError6218 != nil {
-					return nil, decodeError6218
+				decodedValue6225, decodeError6226 := ingressString(item, c, fieldPath(path, "Locale"))
+				if decodeError6226 != nil {
+					return nil, decodeError6226
 				}
-				value = decodedValue6217
+				value = decodedValue6225
 				dst.Locale = &value
 			}
 		}
@@ -30613,11 +30653,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6219, decodeError6220 := ingressString(item, c, fieldPath(path, "Discriminator"))
-				if decodeError6220 != nil {
-					return nil, decodeError6220
+				decodedValue6227, decodeError6228 := ingressString(item, c, fieldPath(path, "Discriminator"))
+				if decodeError6228 != nil {
+					return nil, decodeError6228
 				}
-				value = decodedValue6219
+				value = decodedValue6227
 				dst.Discriminator = &value
 			}
 		}
@@ -30627,11 +30667,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6221, decodeError6222 := ingressString(item, c, fieldPath(path, "GlobalName"))
-				if decodeError6222 != nil {
-					return nil, decodeError6222
+				decodedValue6229, decodeError6230 := ingressString(item, c, fieldPath(path, "GlobalName"))
+				if decodeError6230 != nil {
+					return nil, decodeError6230
 				}
-				value = decodedValue6221
+				value = decodedValue6229
 				dst.GlobalName = &value
 			}
 		}
@@ -30641,11 +30681,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6223, decodeError6224 := ingressScalar[bool](item, c, fieldPath(path, "Verified"))
-				if decodeError6224 != nil {
-					return nil, decodeError6224
+				decodedValue6231, decodeError6232 := ingressScalar[bool](item, c, fieldPath(path, "Verified"))
+				if decodeError6232 != nil {
+					return nil, decodeError6232
 				}
-				value = decodedValue6223
+				value = decodedValue6231
 				dst.Verified = &value
 			}
 		}
@@ -30655,11 +30695,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6225, decodeError6226 := ingressScalar[bool](item, c, fieldPath(path, "MFAEnabled"))
-				if decodeError6226 != nil {
-					return nil, decodeError6226
+				decodedValue6233, decodeError6234 := ingressScalar[bool](item, c, fieldPath(path, "MFAEnabled"))
+				if decodeError6234 != nil {
+					return nil, decodeError6234
 				}
-				value = decodedValue6225
+				value = decodedValue6233
 				dst.MfaEnabled = &value
 			}
 		}
@@ -30669,11 +30709,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6227, decodeError6228 := ingressString(item, c, fieldPath(path, "Banner"))
-				if decodeError6228 != nil {
-					return nil, decodeError6228
+				decodedValue6235, decodeError6236 := ingressString(item, c, fieldPath(path, "Banner"))
+				if decodeError6236 != nil {
+					return nil, decodeError6236
 				}
-				value = decodedValue6227
+				value = decodedValue6235
 				dst.Banner = &value
 			}
 		}
@@ -30688,11 +30728,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value int64
-				decodedValue6229, decodeError6230 := ingressNumericScalar[int64](item, c, fieldPath(path, "AccentColor"))
-				if decodeError6230 != nil {
-					return nil, decodeError6230
+				decodedValue6237, decodeError6238 := ingressNumericScalar[int64](item, c, fieldPath(path, "AccentColor"))
+				if decodeError6238 != nil {
+					return nil, decodeError6238
 				}
-				value = decodedValue6229
+				value = decodedValue6237
 				dst.AccentColor = &value
 			}
 		}
@@ -30702,11 +30742,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6231, decodeError6232 := ingressScalar[bool](item, c, fieldPath(path, "Bot"))
-				if decodeError6232 != nil {
-					return nil, decodeError6232
+				decodedValue6239, decodeError6240 := ingressScalar[bool](item, c, fieldPath(path, "Bot"))
+				if decodeError6240 != nil {
+					return nil, decodeError6240
 				}
-				value = decodedValue6231
+				value = decodedValue6239
 				dst.Bot = &value
 			}
 		}
@@ -30721,11 +30761,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value uint64
-				decodedValue6233, decodeError6234 := ingressNumericScalar[uint64](item, c, fieldPath(path, "PublicFlags"))
-				if decodeError6234 != nil {
-					return nil, decodeError6234
+				decodedValue6241, decodeError6242 := ingressNumericScalar[uint64](item, c, fieldPath(path, "PublicFlags"))
+				if decodeError6242 != nil {
+					return nil, decodeError6242
 				}
-				value = decodedValue6233
+				value = decodedValue6241
 				dst.PublicFlags = &value
 			}
 		}
@@ -30740,11 +30780,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value int64
-				decodedValue6235, decodeError6236 := ingressNumericScalar[int64](item, c, fieldPath(path, "PremiumType"))
-				if decodeError6236 != nil {
-					return nil, decodeError6236
+				decodedValue6243, decodeError6244 := ingressNumericScalar[int64](item, c, fieldPath(path, "PremiumType"))
+				if decodeError6244 != nil {
+					return nil, decodeError6244
 				}
-				value = decodedValue6235
+				value = decodedValue6243
 				dst.PremiumType = &value
 			}
 		}
@@ -30754,11 +30794,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6237, decodeError6238 := ingressScalar[bool](item, c, fieldPath(path, "System"))
-				if decodeError6238 != nil {
-					return nil, decodeError6238
+				decodedValue6245, decodeError6246 := ingressScalar[bool](item, c, fieldPath(path, "System"))
+				if decodeError6246 != nil {
+					return nil, decodeError6246
 				}
-				value = decodedValue6237
+				value = decodedValue6245
 				dst.System = &value
 			}
 		}
@@ -30773,11 +30813,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 					}
 				}
 				var value uint64
-				decodedValue6239, decodeError6240 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError6240 != nil {
-					return nil, decodeError6240
+				decodedValue6247, decodeError6248 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError6248 != nil {
+					return nil, decodeError6248
 				}
-				value = decodedValue6239
+				value = decodedValue6247
 				dst.Flags = &value
 			}
 		}
@@ -30786,11 +30826,11 @@ func (c *conversion) nodeSnapshotUser(n *ingressNode, path string, parent int64)
 		item := n.get("primary_guild")
 		if item != nil {
 			if !item.null {
-				decodedValue6241, decodeError6242 := c.nodeSnapshotUserPrimaryGuild(item, fieldPath(path, "PrimaryGuild"), parent)
-				if decodeError6242 != nil {
-					return nil, decodeError6242
+				decodedValue6249, decodeError6250 := c.nodeSnapshotUserPrimaryGuild(item, fieldPath(path, "PrimaryGuild"), parent)
+				if decodeError6250 != nil {
+					return nil, decodeError6250
 				}
-				dst.PrimaryGuild = decodedValue6241
+				dst.PrimaryGuild = decodedValue6249
 			}
 		}
 	}
@@ -30821,11 +30861,11 @@ func (c *conversion) nodeSnapshotUserConnection(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6243, decodeError6244 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6244 != nil {
-					return nil, decodeError6244
+				decodedValue6251, decodeError6252 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6252 != nil {
+					return nil, decodeError6252
 				}
-				value = decodedValue6243
+				value = decodedValue6251
 				dst.Id = &value
 			}
 		}
@@ -30835,11 +30875,11 @@ func (c *conversion) nodeSnapshotUserConnection(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6245, decodeError6246 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6246 != nil {
-					return nil, decodeError6246
+				decodedValue6253, decodeError6254 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6254 != nil {
+					return nil, decodeError6254
 				}
-				value = decodedValue6245
+				value = decodedValue6253
 				dst.Name = &value
 			}
 		}
@@ -30849,11 +30889,11 @@ func (c *conversion) nodeSnapshotUserConnection(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6247, decodeError6248 := ingressString(item, c, fieldPath(path, "Type"))
-				if decodeError6248 != nil {
-					return nil, decodeError6248
+				decodedValue6255, decodeError6256 := ingressString(item, c, fieldPath(path, "Type"))
+				if decodeError6256 != nil {
+					return nil, decodeError6256
 				}
-				value = decodedValue6247
+				value = decodedValue6255
 				dst.Type = &value
 			}
 		}
@@ -30863,11 +30903,11 @@ func (c *conversion) nodeSnapshotUserConnection(n *ingressNode, path string, par
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6249, decodeError6250 := ingressScalar[bool](item, c, fieldPath(path, "Revoked"))
-				if decodeError6250 != nil {
-					return nil, decodeError6250
+				decodedValue6257, decodeError6258 := ingressScalar[bool](item, c, fieldPath(path, "Revoked"))
+				if decodeError6258 != nil {
+					return nil, decodeError6258
 				}
-				value = decodedValue6249
+				value = decodedValue6257
 				dst.Revoked = &value
 			}
 		}
@@ -30876,11 +30916,11 @@ func (c *conversion) nodeSnapshotUserConnection(n *ingressNode, path string, par
 		item := n.get("integrations")
 		if item != nil {
 			if !item.null {
-				decodedValue6251, decodeError6252 := c.nodeDomainIntegrationList(item, fieldPath(path, "Integrations"), parent)
-				if decodeError6252 != nil {
-					return nil, decodeError6252
+				decodedValue6259, decodeError6260 := c.nodeDomainIntegrationList(item, fieldPath(path, "Integrations"), parent)
+				if decodeError6260 != nil {
+					return nil, decodeError6260
 				}
-				dst.Integrations = decodedValue6251
+				dst.Integrations = decodedValue6259
 			}
 		}
 	}
@@ -30911,11 +30951,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6253, decodeError6254 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6254 != nil {
-					return nil, decodeError6254
+				decodedValue6261, decodeError6262 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6262 != nil {
+					return nil, decodeError6262
 				}
-				value = decodedValue6253
+				value = decodedValue6261
 				dst.Id = &value
 			}
 		}
@@ -30925,11 +30965,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6255, decodeError6256 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6256 != nil {
-					return nil, decodeError6256
+				decodedValue6263, decodeError6264 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6264 != nil {
+					return nil, decodeError6264
 				}
-				value = decodedValue6255
+				value = decodedValue6263
 				dst.Name = &value
 			}
 		}
@@ -30939,11 +30979,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6257, decodeError6258 := ingressString(item, c, fieldPath(path, "Icon"))
-				if decodeError6258 != nil {
-					return nil, decodeError6258
+				decodedValue6265, decodeError6266 := ingressString(item, c, fieldPath(path, "Icon"))
+				if decodeError6266 != nil {
+					return nil, decodeError6266
 				}
-				value = decodedValue6257
+				value = decodedValue6265
 				dst.Icon = &value
 			}
 		}
@@ -30953,11 +30993,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6259, decodeError6260 := ingressScalar[bool](item, c, fieldPath(path, "Owner"))
-				if decodeError6260 != nil {
-					return nil, decodeError6260
+				decodedValue6267, decodeError6268 := ingressScalar[bool](item, c, fieldPath(path, "Owner"))
+				if decodeError6268 != nil {
+					return nil, decodeError6268
 				}
-				value = decodedValue6259
+				value = decodedValue6267
 				dst.Owner = &value
 			}
 		}
@@ -30970,11 +31010,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 					return nil, err
 				}
 				var value string
-				decodedValue6261, decodeError6262 := ingressString(item, c, fieldPath(path, "Permissions"))
-				if decodeError6262 != nil {
-					return nil, decodeError6262
+				decodedValue6269, decodeError6270 := ingressString(item, c, fieldPath(path, "Permissions"))
+				if decodeError6270 != nil {
+					return nil, decodeError6270
 				}
-				value = decodedValue6261
+				value = decodedValue6269
 				dst.Permissions = &value
 			}
 		}
@@ -30983,11 +31023,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 		item := n.get("features")
 		if item != nil {
 			if !item.null {
-				decodedValue6263, decodeError6264 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
-				if decodeError6264 != nil {
-					return nil, decodeError6264
+				decodedValue6271, decodeError6272 := c.nodeDomainStringList(item, fieldPath(path, "Features"), parent)
+				if decodeError6272 != nil {
+					return nil, decodeError6272
 				}
-				dst.Features = decodedValue6263
+				dst.Features = decodedValue6271
 			}
 		}
 	}
@@ -31001,11 +31041,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue6265, decodeError6266 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
-				if decodeError6266 != nil {
-					return nil, decodeError6266
+				decodedValue6273, decodeError6274 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximateMemberCount"))
+				if decodeError6274 != nil {
+					return nil, decodeError6274
 				}
-				value = decodedValue6265
+				value = decodedValue6273
 				dst.ApproximateMemberCount = &value
 			}
 		}
@@ -31020,11 +31060,11 @@ func (c *conversion) nodeSnapshotUserGuild(n *ingressNode, path string, parent i
 					}
 				}
 				var value int64
-				decodedValue6267, decodeError6268 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
-				if decodeError6268 != nil {
-					return nil, decodeError6268
+				decodedValue6275, decodeError6276 := ingressNumericScalar[int64](item, c, fieldPath(path, "ApproximatePresenceCount"))
+				if decodeError6276 != nil {
+					return nil, decodeError6276
 				}
-				value = decodedValue6267
+				value = decodedValue6275
 				dst.ApproximatePresenceCount = &value
 			}
 		}
@@ -31056,11 +31096,11 @@ func (c *conversion) nodeSnapshotUserPrimaryGuild(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6269, decodeError6270 := ingressString(item, c, fieldPath(path, "IdentityGuildID"))
-				if decodeError6270 != nil {
-					return nil, decodeError6270
+				decodedValue6277, decodeError6278 := ingressString(item, c, fieldPath(path, "IdentityGuildID"))
+				if decodeError6278 != nil {
+					return nil, decodeError6278
 				}
-				value = decodedValue6269
+				value = decodedValue6277
 				dst.IdentityGuildId = &value
 			}
 		}
@@ -31070,11 +31110,11 @@ func (c *conversion) nodeSnapshotUserPrimaryGuild(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6271, decodeError6272 := ingressScalar[bool](item, c, fieldPath(path, "IdentityEnabled"))
-				if decodeError6272 != nil {
-					return nil, decodeError6272
+				decodedValue6279, decodeError6280 := ingressScalar[bool](item, c, fieldPath(path, "IdentityEnabled"))
+				if decodeError6280 != nil {
+					return nil, decodeError6280
 				}
-				value = decodedValue6271
+				value = decodedValue6279
 				dst.IdentityEnabled = &value
 			}
 		}
@@ -31084,11 +31124,11 @@ func (c *conversion) nodeSnapshotUserPrimaryGuild(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6273, decodeError6274 := ingressString(item, c, fieldPath(path, "Tag"))
-				if decodeError6274 != nil {
-					return nil, decodeError6274
+				decodedValue6281, decodeError6282 := ingressString(item, c, fieldPath(path, "Tag"))
+				if decodeError6282 != nil {
+					return nil, decodeError6282
 				}
-				value = decodedValue6273
+				value = decodedValue6281
 				dst.Tag = &value
 			}
 		}
@@ -31098,11 +31138,11 @@ func (c *conversion) nodeSnapshotUserPrimaryGuild(n *ingressNode, path string, p
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6275, decodeError6276 := ingressString(item, c, fieldPath(path, "Badge"))
-				if decodeError6276 != nil {
-					return nil, decodeError6276
+				decodedValue6283, decodeError6284 := ingressString(item, c, fieldPath(path, "Badge"))
+				if decodeError6284 != nil {
+					return nil, decodeError6284
 				}
-				value = decodedValue6275
+				value = decodedValue6283
 				dst.Badge = &value
 			}
 		}
@@ -31134,11 +31174,11 @@ func (c *conversion) nodeSnapshotVoiceRegion(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6277, decodeError6278 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6278 != nil {
-					return nil, decodeError6278
+				decodedValue6285, decodeError6286 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6286 != nil {
+					return nil, decodeError6286
 				}
-				value = decodedValue6277
+				value = decodedValue6285
 				dst.Id = &value
 			}
 		}
@@ -31148,11 +31188,11 @@ func (c *conversion) nodeSnapshotVoiceRegion(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6279, decodeError6280 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6280 != nil {
-					return nil, decodeError6280
+				decodedValue6287, decodeError6288 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6288 != nil {
+					return nil, decodeError6288
 				}
-				value = decodedValue6279
+				value = decodedValue6287
 				dst.Name = &value
 			}
 		}
@@ -31162,11 +31202,11 @@ func (c *conversion) nodeSnapshotVoiceRegion(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6281, decodeError6282 := ingressScalar[bool](item, c, fieldPath(path, "Optimal"))
-				if decodeError6282 != nil {
-					return nil, decodeError6282
+				decodedValue6289, decodeError6290 := ingressScalar[bool](item, c, fieldPath(path, "Optimal"))
+				if decodeError6290 != nil {
+					return nil, decodeError6290
 				}
-				value = decodedValue6281
+				value = decodedValue6289
 				dst.Optimal = &value
 			}
 		}
@@ -31176,11 +31216,11 @@ func (c *conversion) nodeSnapshotVoiceRegion(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6283, decodeError6284 := ingressScalar[bool](item, c, fieldPath(path, "Deprecated"))
-				if decodeError6284 != nil {
-					return nil, decodeError6284
+				decodedValue6291, decodeError6292 := ingressScalar[bool](item, c, fieldPath(path, "Deprecated"))
+				if decodeError6292 != nil {
+					return nil, decodeError6292
 				}
-				value = decodedValue6283
+				value = decodedValue6291
 				dst.Deprecated = &value
 			}
 		}
@@ -31190,11 +31230,11 @@ func (c *conversion) nodeSnapshotVoiceRegion(n *ingressNode, path string, parent
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6285, decodeError6286 := ingressScalar[bool](item, c, fieldPath(path, "Custom"))
-				if decodeError6286 != nil {
-					return nil, decodeError6286
+				decodedValue6293, decodeError6294 := ingressScalar[bool](item, c, fieldPath(path, "Custom"))
+				if decodeError6294 != nil {
+					return nil, decodeError6294
 				}
-				value = decodedValue6285
+				value = decodedValue6293
 				dst.Custom = &value
 			}
 		}
@@ -31226,11 +31266,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6287, decodeError6288 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError6288 != nil {
-					return nil, decodeError6288
+				decodedValue6295, decodeError6296 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError6296 != nil {
+					return nil, decodeError6296
 				}
-				value = decodedValue6287
+				value = decodedValue6295
 				dst.GuildId = &value
 			}
 		}
@@ -31240,11 +31280,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6289, decodeError6290 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError6290 != nil {
-					return nil, decodeError6290
+				decodedValue6297, decodeError6298 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError6298 != nil {
+					return nil, decodeError6298
 				}
-				value = decodedValue6289
+				value = decodedValue6297
 				dst.ChannelId = &value
 			}
 		}
@@ -31254,11 +31294,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6291, decodeError6292 := ingressString(item, c, fieldPath(path, "UserID"))
-				if decodeError6292 != nil {
-					return nil, decodeError6292
+				decodedValue6299, decodeError6300 := ingressString(item, c, fieldPath(path, "UserID"))
+				if decodeError6300 != nil {
+					return nil, decodeError6300
 				}
-				value = decodedValue6291
+				value = decodedValue6299
 				dst.UserId = &value
 			}
 		}
@@ -31267,11 +31307,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		item := n.get("member")
 		if item != nil {
 			if !item.null {
-				decodedValue6293, decodeError6294 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
-				if decodeError6294 != nil {
-					return nil, decodeError6294
+				decodedValue6301, decodeError6302 := c.nodeSnapshotMember(item, fieldPath(path, "Member"), parent)
+				if decodeError6302 != nil {
+					return nil, decodeError6302
 				}
-				dst.Member = decodedValue6293
+				dst.Member = decodedValue6301
 			}
 		}
 	}
@@ -31280,11 +31320,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6295, decodeError6296 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
-				if decodeError6296 != nil {
-					return nil, decodeError6296
+				decodedValue6303, decodeError6304 := ingressScalar[bool](item, c, fieldPath(path, "Deaf"))
+				if decodeError6304 != nil {
+					return nil, decodeError6304
 				}
-				value = decodedValue6295
+				value = decodedValue6303
 				dst.Deaf = &value
 			}
 		}
@@ -31294,11 +31334,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6297, decodeError6298 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
-				if decodeError6298 != nil {
-					return nil, decodeError6298
+				decodedValue6305, decodeError6306 := ingressScalar[bool](item, c, fieldPath(path, "Mute"))
+				if decodeError6306 != nil {
+					return nil, decodeError6306
 				}
-				value = decodedValue6297
+				value = decodedValue6305
 				dst.Mute = &value
 			}
 		}
@@ -31308,11 +31348,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6299, decodeError6300 := ingressScalar[bool](item, c, fieldPath(path, "SelfDeaf"))
-				if decodeError6300 != nil {
-					return nil, decodeError6300
+				decodedValue6307, decodeError6308 := ingressScalar[bool](item, c, fieldPath(path, "SelfDeaf"))
+				if decodeError6308 != nil {
+					return nil, decodeError6308
 				}
-				value = decodedValue6299
+				value = decodedValue6307
 				dst.SelfDeaf = &value
 			}
 		}
@@ -31322,11 +31362,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6301, decodeError6302 := ingressScalar[bool](item, c, fieldPath(path, "SelfMute"))
-				if decodeError6302 != nil {
-					return nil, decodeError6302
+				decodedValue6309, decodeError6310 := ingressScalar[bool](item, c, fieldPath(path, "SelfMute"))
+				if decodeError6310 != nil {
+					return nil, decodeError6310
 				}
-				value = decodedValue6301
+				value = decodedValue6309
 				dst.SelfMute = &value
 			}
 		}
@@ -31336,11 +31376,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6303, decodeError6304 := ingressScalar[bool](item, c, fieldPath(path, "SelfStream"))
-				if decodeError6304 != nil {
-					return nil, decodeError6304
+				decodedValue6311, decodeError6312 := ingressScalar[bool](item, c, fieldPath(path, "SelfStream"))
+				if decodeError6312 != nil {
+					return nil, decodeError6312
 				}
-				value = decodedValue6303
+				value = decodedValue6311
 				dst.SelfStream = &value
 			}
 		}
@@ -31350,11 +31390,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6305, decodeError6306 := ingressScalar[bool](item, c, fieldPath(path, "SelfVideo"))
-				if decodeError6306 != nil {
-					return nil, decodeError6306
+				decodedValue6313, decodeError6314 := ingressScalar[bool](item, c, fieldPath(path, "SelfVideo"))
+				if decodeError6314 != nil {
+					return nil, decodeError6314
 				}
-				value = decodedValue6305
+				value = decodedValue6313
 				dst.SelfVideo = &value
 			}
 		}
@@ -31364,11 +31404,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6307, decodeError6308 := ingressScalar[bool](item, c, fieldPath(path, "Suppress"))
-				if decodeError6308 != nil {
-					return nil, decodeError6308
+				decodedValue6315, decodeError6316 := ingressScalar[bool](item, c, fieldPath(path, "Suppress"))
+				if decodeError6316 != nil {
+					return nil, decodeError6316
 				}
-				value = decodedValue6307
+				value = decodedValue6315
 				dst.Suppress = &value
 			}
 		}
@@ -31377,11 +31417,11 @@ func (c *conversion) nodeSnapshotVoiceState(n *ingressNode, path string, parent 
 		item := n.get("request_to_speak_timestamp")
 		if item != nil {
 			if !item.null {
-				decodedValue6309, decodeError6310 := ingressTimestamp(item, c, fieldPath(path, "RequestToSpeakTimestamp"))
-				if decodeError6310 != nil {
-					return nil, decodeError6310
+				decodedValue6317, decodeError6318 := ingressTimestamp(item, c, fieldPath(path, "RequestToSpeakTimestamp"))
+				if decodeError6318 != nil {
+					return nil, decodeError6318
 				}
-				dst.RequestToSpeakTimestamp = decodedValue6309
+				dst.RequestToSpeakTimestamp = decodedValue6317
 			}
 		}
 	}
@@ -31412,11 +31452,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6311, decodeError6312 := ingressString(item, c, fieldPath(path, "ID"))
-				if decodeError6312 != nil {
-					return nil, decodeError6312
+				decodedValue6319, decodeError6320 := ingressString(item, c, fieldPath(path, "ID"))
+				if decodeError6320 != nil {
+					return nil, decodeError6320
 				}
-				value = decodedValue6311
+				value = decodedValue6319
 				dst.Id = &value
 			}
 		}
@@ -31431,11 +31471,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 					}
 				}
 				var value int64
-				decodedValue6313, decodeError6314 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
-				if decodeError6314 != nil {
-					return nil, decodeError6314
+				decodedValue6321, decodeError6322 := ingressNumericScalar[int64](item, c, fieldPath(path, "Type"))
+				if decodeError6322 != nil {
+					return nil, decodeError6322
 				}
-				value = decodedValue6313
+				value = decodedValue6321
 				dst.Type = &value
 			}
 		}
@@ -31445,11 +31485,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6315, decodeError6316 := ingressString(item, c, fieldPath(path, "GuildID"))
-				if decodeError6316 != nil {
-					return nil, decodeError6316
+				decodedValue6323, decodeError6324 := ingressString(item, c, fieldPath(path, "GuildID"))
+				if decodeError6324 != nil {
+					return nil, decodeError6324
 				}
-				value = decodedValue6315
+				value = decodedValue6323
 				dst.GuildId = &value
 			}
 		}
@@ -31459,11 +31499,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6317, decodeError6318 := ingressString(item, c, fieldPath(path, "ChannelID"))
-				if decodeError6318 != nil {
-					return nil, decodeError6318
+				decodedValue6325, decodeError6326 := ingressString(item, c, fieldPath(path, "ChannelID"))
+				if decodeError6326 != nil {
+					return nil, decodeError6326
 				}
-				value = decodedValue6317
+				value = decodedValue6325
 				dst.ChannelId = &value
 			}
 		}
@@ -31472,11 +31512,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 		item := n.get("user")
 		if item != nil {
 			if !item.null {
-				decodedValue6319, decodeError6320 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
-				if decodeError6320 != nil {
-					return nil, decodeError6320
+				decodedValue6327, decodeError6328 := c.nodeSnapshotUser(item, fieldPath(path, "User"), parent)
+				if decodeError6328 != nil {
+					return nil, decodeError6328
 				}
-				dst.User = decodedValue6319
+				dst.User = decodedValue6327
 			}
 		}
 	}
@@ -31485,11 +31525,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6321, decodeError6322 := ingressString(item, c, fieldPath(path, "Name"))
-				if decodeError6322 != nil {
-					return nil, decodeError6322
+				decodedValue6329, decodeError6330 := ingressString(item, c, fieldPath(path, "Name"))
+				if decodeError6330 != nil {
+					return nil, decodeError6330
 				}
-				value = decodedValue6321
+				value = decodedValue6329
 				dst.Name = &value
 			}
 		}
@@ -31499,11 +31539,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6323, decodeError6324 := ingressString(item, c, fieldPath(path, "Avatar"))
-				if decodeError6324 != nil {
-					return nil, decodeError6324
+				decodedValue6331, decodeError6332 := ingressString(item, c, fieldPath(path, "Avatar"))
+				if decodeError6332 != nil {
+					return nil, decodeError6332
 				}
-				value = decodedValue6323
+				value = decodedValue6331
 				dst.Avatar = &value
 			}
 		}
@@ -31554,11 +31594,11 @@ func (c *conversion) nodeSnapshotWebhook(n *ingressNode, path string, parent int
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6325, decodeError6326 := ingressString(item, c, fieldPath(path, "ApplicationID"))
-				if decodeError6326 != nil {
-					return nil, decodeError6326
+				decodedValue6333, decodeError6334 := ingressString(item, c, fieldPath(path, "ApplicationID"))
+				if decodeError6334 != nil {
+					return nil, decodeError6334
 				}
-				value = decodedValue6325
+				value = decodedValue6333
 				dst.ApplicationId = &value
 			}
 		}
@@ -31576,22 +31616,22 @@ func (c *conversion) nodeSnapshotWebhookEdit(n *ingressNode, path string, parent
 	{
 		item := n.get("content")
 		if item != nil {
-			decodedValue6327, decodeError6328 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
-			if decodeError6328 != nil {
-				return nil, decodeError6328
+			decodedValue6335, decodeError6336 := c.nodeflexmodulecorev2NullableString(item, fieldPath(path, "Content"), parent)
+			if decodeError6336 != nil {
+				return nil, decodeError6336
 			}
-			dst.Content = decodedValue6327
+			dst.Content = decodedValue6335
 		}
 	}
 	{
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue6329, decodeError6330 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError6330 != nil {
-					return nil, decodeError6330
+				decodedValue6337, decodeError6338 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError6338 != nil {
+					return nil, decodeError6338
 				}
-				dst.Components = decodedValue6329
+				dst.Components = decodedValue6337
 			}
 		}
 	}
@@ -31599,11 +31639,11 @@ func (c *conversion) nodeSnapshotWebhookEdit(n *ingressNode, path string, parent
 		item := n.get("embeds")
 		if item != nil {
 			if !item.null {
-				decodedValue6331, decodeError6332 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
-				if decodeError6332 != nil {
-					return nil, decodeError6332
+				decodedValue6339, decodeError6340 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
+				if decodeError6340 != nil {
+					return nil, decodeError6340
 				}
-				dst.Embeds = decodedValue6331
+				dst.Embeds = decodedValue6339
 			}
 		}
 	}
@@ -31611,11 +31651,11 @@ func (c *conversion) nodeSnapshotWebhookEdit(n *ingressNode, path string, parent
 		item := n.get("attachments")
 		if item != nil {
 			if !item.null {
-				decodedValue6333, decodeError6334 := c.nodeAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
-				if decodeError6334 != nil {
-					return nil, decodeError6334
+				decodedValue6341, decodeError6342 := c.nodeAttachmentEditList(item, fieldPath(path, "Attachments"), parent)
+				if decodeError6342 != nil {
+					return nil, decodeError6342
 				}
-				dst.Attachments = decodedValue6333
+				dst.Attachments = decodedValue6341
 			}
 		}
 	}
@@ -31623,11 +31663,11 @@ func (c *conversion) nodeSnapshotWebhookEdit(n *ingressNode, path string, parent
 		item := n.get("allowed_mentions")
 		if item != nil {
 			if !item.null {
-				decodedValue6335, decodeError6336 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
-				if decodeError6336 != nil {
-					return nil, decodeError6336
+				decodedValue6343, decodeError6344 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+				if decodeError6344 != nil {
+					return nil, decodeError6344
 				}
-				dst.AllowedMentions = decodedValue6335
+				dst.AllowedMentions = decodedValue6343
 			}
 		}
 	}
@@ -31641,11 +31681,11 @@ func (c *conversion) nodeSnapshotWebhookEdit(n *ingressNode, path string, parent
 					}
 				}
 				var value uint64
-				decodedValue6337, decodeError6338 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError6338 != nil {
-					return nil, decodeError6338
+				decodedValue6345, decodeError6346 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError6346 != nil {
+					return nil, decodeError6346
 				}
-				value = decodedValue6337
+				value = decodedValue6345
 				dst.Flags = &value
 			}
 		}
@@ -31665,11 +31705,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6339, decodeError6340 := ingressString(item, c, fieldPath(path, "Content"))
-				if decodeError6340 != nil {
-					return nil, decodeError6340
+				decodedValue6347, decodeError6348 := ingressString(item, c, fieldPath(path, "Content"))
+				if decodeError6348 != nil {
+					return nil, decodeError6348
 				}
-				value = decodedValue6339
+				value = decodedValue6347
 				dst.Content = &value
 			}
 		}
@@ -31679,11 +31719,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6341, decodeError6342 := ingressString(item, c, fieldPath(path, "Username"))
-				if decodeError6342 != nil {
-					return nil, decodeError6342
+				decodedValue6349, decodeError6350 := ingressString(item, c, fieldPath(path, "Username"))
+				if decodeError6350 != nil {
+					return nil, decodeError6350
 				}
-				value = decodedValue6341
+				value = decodedValue6349
 				dst.Username = &value
 			}
 		}
@@ -31693,11 +31733,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6343, decodeError6344 := ingressString(item, c, fieldPath(path, "AvatarURL"))
-				if decodeError6344 != nil {
-					return nil, decodeError6344
+				decodedValue6351, decodeError6352 := ingressString(item, c, fieldPath(path, "AvatarURL"))
+				if decodeError6352 != nil {
+					return nil, decodeError6352
 				}
-				value = decodedValue6343
+				value = decodedValue6351
 				dst.AvatarUrl = &value
 			}
 		}
@@ -31707,11 +31747,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value bool
-				decodedValue6345, decodeError6346 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
-				if decodeError6346 != nil {
-					return nil, decodeError6346
+				decodedValue6353, decodeError6354 := ingressScalar[bool](item, c, fieldPath(path, "TTS"))
+				if decodeError6354 != nil {
+					return nil, decodeError6354
 				}
-				value = decodedValue6345
+				value = decodedValue6353
 				dst.Tts = &value
 			}
 		}
@@ -31720,11 +31760,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		item := n.get("components")
 		if item != nil {
 			if !item.null {
-				decodedValue6347, decodeError6348 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
-				if decodeError6348 != nil {
-					return nil, decodeError6348
+				decodedValue6355, decodeError6356 := c.nodeComponentList(item, fieldPath(path, "Components"), parent)
+				if decodeError6356 != nil {
+					return nil, decodeError6356
 				}
-				dst.Components = decodedValue6347
+				dst.Components = decodedValue6355
 			}
 		}
 	}
@@ -31732,11 +31772,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		item := n.get("embeds")
 		if item != nil {
 			if !item.null {
-				decodedValue6349, decodeError6350 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
-				if decodeError6350 != nil {
-					return nil, decodeError6350
+				decodedValue6357, decodeError6358 := c.nodeEmbedList(item, fieldPath(path, "Embeds"), parent)
+				if decodeError6358 != nil {
+					return nil, decodeError6358
 				}
-				dst.Embeds = decodedValue6349
+				dst.Embeds = decodedValue6357
 			}
 		}
 	}
@@ -31744,11 +31784,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		item := n.get("attachments")
 		if item != nil {
 			if !item.null {
-				decodedValue6351, decodeError6352 := c.nodeDomainMessageAttachmentList(item, fieldPath(path, "Attachments"), parent)
-				if decodeError6352 != nil {
-					return nil, decodeError6352
+				decodedValue6359, decodeError6360 := c.nodeDomainMessageAttachmentList(item, fieldPath(path, "Attachments"), parent)
+				if decodeError6360 != nil {
+					return nil, decodeError6360
 				}
-				dst.Attachments = decodedValue6351
+				dst.Attachments = decodedValue6359
 			}
 		}
 	}
@@ -31756,11 +31796,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		item := n.get("allowed_mentions")
 		if item != nil {
 			if !item.null {
-				decodedValue6353, decodeError6354 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
-				if decodeError6354 != nil {
-					return nil, decodeError6354
+				decodedValue6361, decodeError6362 := c.nodeSnapshotMessageAllowedMentions(item, fieldPath(path, "AllowedMentions"), parent)
+				if decodeError6362 != nil {
+					return nil, decodeError6362
 				}
-				dst.AllowedMentions = decodedValue6353
+				dst.AllowedMentions = decodedValue6361
 			}
 		}
 	}
@@ -31774,11 +31814,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 					}
 				}
 				var value uint64
-				decodedValue6355, decodeError6356 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
-				if decodeError6356 != nil {
-					return nil, decodeError6356
+				decodedValue6363, decodeError6364 := ingressNumericScalar[uint64](item, c, fieldPath(path, "Flags"))
+				if decodeError6364 != nil {
+					return nil, decodeError6364
 				}
-				value = decodedValue6355
+				value = decodedValue6363
 				dst.Flags = &value
 			}
 		}
@@ -31788,11 +31828,11 @@ func (c *conversion) nodeSnapshotWebhookParams(n *ingressNode, path string, pare
 		if item != nil {
 			if !item.null {
 				var value string
-				decodedValue6357, decodeError6358 := ingressString(item, c, fieldPath(path, "ThreadName"))
-				if decodeError6358 != nil {
-					return nil, decodeError6358
+				decodedValue6365, decodeError6366 := ingressString(item, c, fieldPath(path, "ThreadName"))
+				if decodeError6366 != nil {
+					return nil, decodeError6366
 				}
-				value = decodedValue6357
+				value = decodedValue6365
 				dst.ThreadName = &value
 			}
 		}
@@ -31936,11 +31976,11 @@ func ProjectApplicationCommandPermissionsUpdateEvent(ctx context.Context, raw []
 		if n.has("id", "application_id", "guild_id", "permissions") {
 			item = n.without()
 		}
-		decodedValue6359, decodeError6360 := c.nodeEventGuildApplicationCommandPermissionsField(item, "GuildApplicationCommandPermissions", 0)
-		if decodeError6360 != nil {
-			return nil, decodeError6360
+		decodedValue6367, decodeError6368 := c.nodeEventGuildApplicationCommandPermissionsField(item, "GuildApplicationCommandPermissions", 0)
+		if decodeError6368 != nil {
+			return nil, decodeError6368
 		}
-		dst.GuildApplicationCommandPermissions = decodedValue6359
+		dst.GuildApplicationCommandPermissions = decodedValue6367
 	}
 	return dst, nil
 }
@@ -31957,91 +31997,91 @@ func ProjectAutoModerationActionExecutionEvent(ctx context.Context, raw []byte, 
 	dst := &wire.AutoModerationActionExecutionEvent{}
 	{
 		item := n.get("guild_id")
-		decodedValue6361, decodeError6362 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6362 != nil {
-			return nil, decodeError6362
-		}
-		dst.GuildId = decodedValue6361
-	}
-	{
-		item := n.get("action")
-		decodedValue6363, decodeError6364 := c.nodeEventAutoModerationActionField(item, "Action", 0)
-		if decodeError6364 != nil {
-			return nil, decodeError6364
-		}
-		dst.Action = decodedValue6363
-	}
-	{
-		item := n.get("rule_id")
-		decodedValue6365, decodeError6366 := c.nodeEventStringField(item, "RuleID", 0)
-		if decodeError6366 != nil {
-			return nil, decodeError6366
-		}
-		dst.RuleId = decodedValue6365
-	}
-	{
-		item := n.get("rule_trigger_type")
-		decodedValue6367, decodeError6368 := c.nodeEventInt64Field(item, "RuleTriggerType", 0)
-		if decodeError6368 != nil {
-			return nil, decodeError6368
-		}
-		dst.RuleTriggerType = decodedValue6367
-	}
-	{
-		item := n.get("user_id")
-		decodedValue6369, decodeError6370 := c.nodeEventStringField(item, "UserID", 0)
+		decodedValue6369, decodeError6370 := c.nodeEventStringField(item, "GuildID", 0)
 		if decodeError6370 != nil {
 			return nil, decodeError6370
 		}
-		dst.UserId = decodedValue6369
+		dst.GuildId = decodedValue6369
 	}
 	{
-		item := n.get("channel_id")
-		decodedValue6371, decodeError6372 := c.nodeEventStringField(item, "ChannelID", 0)
+		item := n.get("action")
+		decodedValue6371, decodeError6372 := c.nodeEventAutoModerationActionField(item, "Action", 0)
 		if decodeError6372 != nil {
 			return nil, decodeError6372
 		}
-		dst.ChannelId = decodedValue6371
+		dst.Action = decodedValue6371
 	}
 	{
-		item := n.get("message_id")
-		decodedValue6373, decodeError6374 := c.nodeEventStringField(item, "MessageID", 0)
+		item := n.get("rule_id")
+		decodedValue6373, decodeError6374 := c.nodeEventStringField(item, "RuleID", 0)
 		if decodeError6374 != nil {
 			return nil, decodeError6374
 		}
-		dst.MessageId = decodedValue6373
+		dst.RuleId = decodedValue6373
 	}
 	{
-		item := n.get("alert_system_message_id")
-		decodedValue6375, decodeError6376 := c.nodeEventStringField(item, "AlertSystemMessageID", 0)
+		item := n.get("rule_trigger_type")
+		decodedValue6375, decodeError6376 := c.nodeEventInt64Field(item, "RuleTriggerType", 0)
 		if decodeError6376 != nil {
 			return nil, decodeError6376
 		}
-		dst.AlertSystemMessageId = decodedValue6375
+		dst.RuleTriggerType = decodedValue6375
 	}
 	{
-		item := n.get("content")
-		decodedValue6377, decodeError6378 := c.nodeEventStringField(item, "Content", 0)
+		item := n.get("user_id")
+		decodedValue6377, decodeError6378 := c.nodeEventStringField(item, "UserID", 0)
 		if decodeError6378 != nil {
 			return nil, decodeError6378
 		}
-		dst.Content = decodedValue6377
+		dst.UserId = decodedValue6377
 	}
 	{
-		item := n.get("matched_keyword")
-		decodedValue6379, decodeError6380 := c.nodeEventStringField(item, "MatchedKeyword", 0)
+		item := n.get("channel_id")
+		decodedValue6379, decodeError6380 := c.nodeEventStringField(item, "ChannelID", 0)
 		if decodeError6380 != nil {
 			return nil, decodeError6380
 		}
-		dst.MatchedKeyword = decodedValue6379
+		dst.ChannelId = decodedValue6379
 	}
 	{
-		item := n.get("matched_content")
-		decodedValue6381, decodeError6382 := c.nodeEventStringField(item, "MatchedContent", 0)
+		item := n.get("message_id")
+		decodedValue6381, decodeError6382 := c.nodeEventStringField(item, "MessageID", 0)
 		if decodeError6382 != nil {
 			return nil, decodeError6382
 		}
-		dst.MatchedContent = decodedValue6381
+		dst.MessageId = decodedValue6381
+	}
+	{
+		item := n.get("alert_system_message_id")
+		decodedValue6383, decodeError6384 := c.nodeEventStringField(item, "AlertSystemMessageID", 0)
+		if decodeError6384 != nil {
+			return nil, decodeError6384
+		}
+		dst.AlertSystemMessageId = decodedValue6383
+	}
+	{
+		item := n.get("content")
+		decodedValue6385, decodeError6386 := c.nodeEventStringField(item, "Content", 0)
+		if decodeError6386 != nil {
+			return nil, decodeError6386
+		}
+		dst.Content = decodedValue6385
+	}
+	{
+		item := n.get("matched_keyword")
+		decodedValue6387, decodeError6388 := c.nodeEventStringField(item, "MatchedKeyword", 0)
+		if decodeError6388 != nil {
+			return nil, decodeError6388
+		}
+		dst.MatchedKeyword = decodedValue6387
+	}
+	{
+		item := n.get("matched_content")
+		decodedValue6389, decodeError6390 := c.nodeEventStringField(item, "MatchedContent", 0)
+		if decodeError6390 != nil {
+			return nil, decodeError6390
+		}
+		dst.MatchedContent = decodedValue6389
 	}
 	return dst, nil
 }
@@ -32061,11 +32101,11 @@ func ProjectAutoModerationRuleCreateEvent(ctx context.Context, raw []byte, sourc
 		if n.has("id", "guild_id", "name", "creator_id", "event_type", "trigger_type", "trigger_metadata", "actions", "enabled", "exempt_roles", "exempt_channels") {
 			item = n.without()
 		}
-		decodedValue6383, decodeError6384 := c.nodeEventAutoModerationRuleField(item, "AutoModerationRule", 0)
-		if decodeError6384 != nil {
-			return nil, decodeError6384
+		decodedValue6391, decodeError6392 := c.nodeEventAutoModerationRuleField(item, "AutoModerationRule", 0)
+		if decodeError6392 != nil {
+			return nil, decodeError6392
 		}
-		dst.AutoModerationRule = decodedValue6383
+		dst.AutoModerationRule = decodedValue6391
 	}
 	return dst, nil
 }
@@ -32085,11 +32125,11 @@ func ProjectAutoModerationRuleDeleteEvent(ctx context.Context, raw []byte, sourc
 		if n.has("id", "guild_id", "name", "creator_id", "event_type", "trigger_type", "trigger_metadata", "actions", "enabled", "exempt_roles", "exempt_channels") {
 			item = n.without()
 		}
-		decodedValue6385, decodeError6386 := c.nodeEventAutoModerationRuleField(item, "AutoModerationRule", 0)
-		if decodeError6386 != nil {
-			return nil, decodeError6386
+		decodedValue6393, decodeError6394 := c.nodeEventAutoModerationRuleField(item, "AutoModerationRule", 0)
+		if decodeError6394 != nil {
+			return nil, decodeError6394
 		}
-		dst.AutoModerationRule = decodedValue6385
+		dst.AutoModerationRule = decodedValue6393
 	}
 	return dst, nil
 }
@@ -32109,11 +32149,11 @@ func ProjectAutoModerationRuleUpdateEvent(ctx context.Context, raw []byte, sourc
 		if n.has("id", "guild_id", "name", "creator_id", "event_type", "trigger_type", "trigger_metadata", "actions", "enabled", "exempt_roles", "exempt_channels") {
 			item = n.without()
 		}
-		decodedValue6387, decodeError6388 := c.nodeEventAutoModerationRuleField(item, "AutoModerationRule", 0)
-		if decodeError6388 != nil {
-			return nil, decodeError6388
+		decodedValue6395, decodeError6396 := c.nodeEventAutoModerationRuleField(item, "AutoModerationRule", 0)
+		if decodeError6396 != nil {
+			return nil, decodeError6396
 		}
-		dst.AutoModerationRule = decodedValue6387
+		dst.AutoModerationRule = decodedValue6395
 	}
 	return dst, nil
 }
@@ -32133,11 +32173,11 @@ func ProjectChannelCreateEvent(ctx context.Context, raw []byte, source *discordg
 		if n.has("id", "guild_id", "name", "topic", "type", "last_message_id", "last_pin_timestamp", "message_count", "member_count", "nsfw", "icon", "position", "bitrate", "recipients", "permission_overwrites", "user_limit", "parent_id", "rate_limit_per_user", "owner_id", "application_id", "thread_metadata", "thread_member", "flags", "available_tags", "applied_tags", "default_reaction_emoji", "default_thread_rate_limit_per_user", "default_sort_order", "default_forum_layout") {
 			item = n.without()
 		}
-		decodedValue6389, decodeError6390 := c.nodeEventChannelField(item, "Channel", 0)
-		if decodeError6390 != nil {
-			return nil, decodeError6390
+		decodedValue6397, decodeError6398 := c.nodeEventChannelField(item, "Channel", 0)
+		if decodeError6398 != nil {
+			return nil, decodeError6398
 		}
-		dst.Channel = decodedValue6389
+		dst.Channel = decodedValue6397
 	}
 	return dst, nil
 }
@@ -32157,11 +32197,11 @@ func ProjectChannelDeleteEvent(ctx context.Context, raw []byte, source *discordg
 		if n.has("id", "guild_id", "name", "topic", "type", "last_message_id", "last_pin_timestamp", "message_count", "member_count", "nsfw", "icon", "position", "bitrate", "recipients", "permission_overwrites", "user_limit", "parent_id", "rate_limit_per_user", "owner_id", "application_id", "thread_metadata", "thread_member", "flags", "available_tags", "applied_tags", "default_reaction_emoji", "default_thread_rate_limit_per_user", "default_sort_order", "default_forum_layout") {
 			item = n.without()
 		}
-		decodedValue6391, decodeError6392 := c.nodeEventChannelField(item, "Channel", 0)
-		if decodeError6392 != nil {
-			return nil, decodeError6392
+		decodedValue6399, decodeError6400 := c.nodeEventChannelField(item, "Channel", 0)
+		if decodeError6400 != nil {
+			return nil, decodeError6400
 		}
-		dst.Channel = decodedValue6391
+		dst.Channel = decodedValue6399
 	}
 	if source != nil && source.BeforeDelete != nil {
 		v, err := c.toChannel(source.BeforeDelete, "BeforeDelete")
@@ -32185,27 +32225,27 @@ func ProjectChannelPinsUpdateEvent(ctx context.Context, raw []byte, source *disc
 	dst := &wire.ChannelPinsUpdateEvent{}
 	{
 		item := n.get("last_pin_timestamp")
-		decodedValue6393, decodeError6394 := c.nodeEventStringField(item, "LastPinTimestamp", 0)
-		if decodeError6394 != nil {
-			return nil, decodeError6394
+		decodedValue6401, decodeError6402 := c.nodeEventStringField(item, "LastPinTimestamp", 0)
+		if decodeError6402 != nil {
+			return nil, decodeError6402
 		}
-		dst.LastPinTimestamp = decodedValue6393
+		dst.LastPinTimestamp = decodedValue6401
 	}
 	{
 		item := n.get("channel_id")
-		decodedValue6395, decodeError6396 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6396 != nil {
-			return nil, decodeError6396
+		decodedValue6403, decodeError6404 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6404 != nil {
+			return nil, decodeError6404
 		}
-		dst.ChannelId = decodedValue6395
+		dst.ChannelId = decodedValue6403
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6397, decodeError6398 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6398 != nil {
-			return nil, decodeError6398
+		decodedValue6405, decodeError6406 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6406 != nil {
+			return nil, decodeError6406
 		}
-		dst.GuildId = decodedValue6397
+		dst.GuildId = decodedValue6405
 	}
 	return dst, nil
 }
@@ -32225,11 +32265,11 @@ func ProjectChannelUpdateEvent(ctx context.Context, raw []byte, source *discordg
 		if n.has("id", "guild_id", "name", "topic", "type", "last_message_id", "last_pin_timestamp", "message_count", "member_count", "nsfw", "icon", "position", "bitrate", "recipients", "permission_overwrites", "user_limit", "parent_id", "rate_limit_per_user", "owner_id", "application_id", "thread_metadata", "thread_member", "flags", "available_tags", "applied_tags", "default_reaction_emoji", "default_thread_rate_limit_per_user", "default_sort_order", "default_forum_layout") {
 			item = n.without()
 		}
-		decodedValue6399, decodeError6400 := c.nodeEventChannelField(item, "Channel", 0)
-		if decodeError6400 != nil {
-			return nil, decodeError6400
+		decodedValue6407, decodeError6408 := c.nodeEventChannelField(item, "Channel", 0)
+		if decodeError6408 != nil {
+			return nil, decodeError6408
 		}
-		dst.Channel = decodedValue6399
+		dst.Channel = decodedValue6407
 	}
 	if source != nil && source.BeforeUpdate != nil {
 		v, err := c.toChannel(source.BeforeUpdate, "BeforeUpdate")
@@ -32256,11 +32296,11 @@ func ProjectEntitlementCreateEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("id", "sku_id", "application_id", "user_id", "type", "deleted", "starts_at", "ends_at", "guild_id", "consumed", "subscription_id") {
 			item = n.without()
 		}
-		decodedValue6401, decodeError6402 := c.nodeEventEntitlementField(item, "Entitlement", 0)
-		if decodeError6402 != nil {
-			return nil, decodeError6402
+		decodedValue6409, decodeError6410 := c.nodeEventEntitlementField(item, "Entitlement", 0)
+		if decodeError6410 != nil {
+			return nil, decodeError6410
 		}
-		dst.Entitlement = decodedValue6401
+		dst.Entitlement = decodedValue6409
 	}
 	return dst, nil
 }
@@ -32280,11 +32320,11 @@ func ProjectEntitlementDeleteEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("id", "sku_id", "application_id", "user_id", "type", "deleted", "starts_at", "ends_at", "guild_id", "consumed", "subscription_id") {
 			item = n.without()
 		}
-		decodedValue6403, decodeError6404 := c.nodeEventEntitlementField(item, "Entitlement", 0)
-		if decodeError6404 != nil {
-			return nil, decodeError6404
+		decodedValue6411, decodeError6412 := c.nodeEventEntitlementField(item, "Entitlement", 0)
+		if decodeError6412 != nil {
+			return nil, decodeError6412
 		}
-		dst.Entitlement = decodedValue6403
+		dst.Entitlement = decodedValue6411
 	}
 	return dst, nil
 }
@@ -32304,11 +32344,11 @@ func ProjectEntitlementUpdateEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("id", "sku_id", "application_id", "user_id", "type", "deleted", "starts_at", "ends_at", "guild_id", "consumed", "subscription_id") {
 			item = n.without()
 		}
-		decodedValue6405, decodeError6406 := c.nodeEventEntitlementField(item, "Entitlement", 0)
-		if decodeError6406 != nil {
-			return nil, decodeError6406
+		decodedValue6413, decodeError6414 := c.nodeEventEntitlementField(item, "Entitlement", 0)
+		if decodeError6414 != nil {
+			return nil, decodeError6414
 		}
-		dst.Entitlement = decodedValue6405
+		dst.Entitlement = decodedValue6413
 	}
 	return dst, nil
 }
@@ -32328,19 +32368,19 @@ func ProjectGuildAuditLogEntryCreateEvent(ctx context.Context, raw []byte, sourc
 		if n.has("target_id", "changes", "user_id", "id", "action_type", "options", "reason") {
 			item = n.without("guild_id")
 		}
-		decodedValue6407, decodeError6408 := c.nodeEventAuditLogEntryField(item, "AuditLogEntry", 0)
-		if decodeError6408 != nil {
-			return nil, decodeError6408
+		decodedValue6415, decodeError6416 := c.nodeEventAuditLogEntryField(item, "AuditLogEntry", 0)
+		if decodeError6416 != nil {
+			return nil, decodeError6416
 		}
-		dst.AuditLogEntry = decodedValue6407
+		dst.AuditLogEntry = decodedValue6415
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6409, decodeError6410 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6410 != nil {
-			return nil, decodeError6410
+		decodedValue6417, decodeError6418 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6418 != nil {
+			return nil, decodeError6418
 		}
-		dst.GuildId = decodedValue6409
+		dst.GuildId = decodedValue6417
 	}
 	return dst, nil
 }
@@ -32357,19 +32397,19 @@ func ProjectGuildBanAddEvent(ctx context.Context, raw []byte, source *discordgo.
 	dst := &wire.GuildBanAddEvent{}
 	{
 		item := n.get("user")
-		decodedValue6411, decodeError6412 := c.nodeEventUserField(item, "User", 0)
-		if decodeError6412 != nil {
-			return nil, decodeError6412
+		decodedValue6419, decodeError6420 := c.nodeEventUserField(item, "User", 0)
+		if decodeError6420 != nil {
+			return nil, decodeError6420
 		}
-		dst.User = decodedValue6411
+		dst.User = decodedValue6419
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6413, decodeError6414 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6414 != nil {
-			return nil, decodeError6414
+		decodedValue6421, decodeError6422 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6422 != nil {
+			return nil, decodeError6422
 		}
-		dst.GuildId = decodedValue6413
+		dst.GuildId = decodedValue6421
 	}
 	return dst, nil
 }
@@ -32386,19 +32426,19 @@ func ProjectGuildBanRemoveEvent(ctx context.Context, raw []byte, source *discord
 	dst := &wire.GuildBanRemoveEvent{}
 	{
 		item := n.get("user")
-		decodedValue6415, decodeError6416 := c.nodeEventUserField(item, "User", 0)
-		if decodeError6416 != nil {
-			return nil, decodeError6416
+		decodedValue6423, decodeError6424 := c.nodeEventUserField(item, "User", 0)
+		if decodeError6424 != nil {
+			return nil, decodeError6424
 		}
-		dst.User = decodedValue6415
+		dst.User = decodedValue6423
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6417, decodeError6418 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6418 != nil {
-			return nil, decodeError6418
+		decodedValue6425, decodeError6426 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6426 != nil {
+			return nil, decodeError6426
 		}
-		dst.GuildId = decodedValue6417
+		dst.GuildId = decodedValue6425
 	}
 	return dst, nil
 }
@@ -32418,11 +32458,11 @@ func ProjectGuildCreateEvent(ctx context.Context, raw []byte, source *discordgo.
 		if n.has("id", "name", "icon", "region", "afk_channel_id", "owner_id", "owner", "joined_at", "discovery_splash", "splash", "afk_timeout", "member_count", "verification_level", "large", "default_message_notifications", "roles", "emojis", "stickers", "members", "presences", "max_presences", "max_members", "channels", "threads", "voice_states", "unavailable", "explicit_content_filter", "nsfw_level", "features", "mfa_level", "application_id", "widget_enabled", "widget_channel_id", "system_channel_id", "system_channel_flags", "rules_channel_id", "vanity_url_code", "description", "banner", "premium_tier", "premium_subscription_count", "preferred_locale", "public_updates_channel_id", "max_video_channel_users", "approximate_member_count", "approximate_presence_count", "permissions", "stage_instances") {
 			item = n.without()
 		}
-		decodedValue6419, decodeError6420 := c.nodeEventGuildField(item, "Guild", 0)
-		if decodeError6420 != nil {
-			return nil, decodeError6420
+		decodedValue6427, decodeError6428 := c.nodeEventGuildField(item, "Guild", 0)
+		if decodeError6428 != nil {
+			return nil, decodeError6428
 		}
-		dst.Guild = decodedValue6419
+		dst.Guild = decodedValue6427
 	}
 	return dst, nil
 }
@@ -32442,11 +32482,11 @@ func ProjectGuildDeleteEvent(ctx context.Context, raw []byte, source *discordgo.
 		if n.has("id", "name", "icon", "region", "afk_channel_id", "owner_id", "owner", "joined_at", "discovery_splash", "splash", "afk_timeout", "member_count", "verification_level", "large", "default_message_notifications", "roles", "emojis", "stickers", "members", "presences", "max_presences", "max_members", "channels", "threads", "voice_states", "unavailable", "explicit_content_filter", "nsfw_level", "features", "mfa_level", "application_id", "widget_enabled", "widget_channel_id", "system_channel_id", "system_channel_flags", "rules_channel_id", "vanity_url_code", "description", "banner", "premium_tier", "premium_subscription_count", "preferred_locale", "public_updates_channel_id", "max_video_channel_users", "approximate_member_count", "approximate_presence_count", "permissions", "stage_instances") {
 			item = n.without()
 		}
-		decodedValue6421, decodeError6422 := c.nodeEventGuildField(item, "Guild", 0)
-		if decodeError6422 != nil {
-			return nil, decodeError6422
+		decodedValue6429, decodeError6430 := c.nodeEventGuildField(item, "Guild", 0)
+		if decodeError6430 != nil {
+			return nil, decodeError6430
 		}
-		dst.Guild = decodedValue6421
+		dst.Guild = decodedValue6429
 	}
 	if source != nil && source.BeforeDelete != nil {
 		v, err := c.toGuild(source.BeforeDelete, "BeforeDelete")
@@ -32470,19 +32510,19 @@ func ProjectGuildEmojisUpdateEvent(ctx context.Context, raw []byte, source *disc
 	dst := &wire.GuildEmojisUpdateEvent{}
 	{
 		item := n.get("guild_id")
-		decodedValue6423, decodeError6424 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6424 != nil {
-			return nil, decodeError6424
+		decodedValue6431, decodeError6432 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6432 != nil {
+			return nil, decodeError6432
 		}
-		dst.GuildId = decodedValue6423
+		dst.GuildId = decodedValue6431
 	}
 	{
 		item := n.get("emojis")
-		decodedValue6425, decodeError6426 := c.nodeEventEmojiListField(item, "Emojis", 0)
-		if decodeError6426 != nil {
-			return nil, decodeError6426
+		decodedValue6433, decodeError6434 := c.nodeEventEmojiListField(item, "Emojis", 0)
+		if decodeError6434 != nil {
+			return nil, decodeError6434
 		}
-		dst.Emojis = decodedValue6425
+		dst.Emojis = decodedValue6433
 	}
 	return dst, nil
 }
@@ -32499,11 +32539,11 @@ func ProjectGuildIntegrationsUpdateEvent(ctx context.Context, raw []byte, source
 	dst := &wire.GuildIntegrationsUpdateEvent{}
 	{
 		item := n.get("guild_id")
-		decodedValue6427, decodeError6428 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6428 != nil {
-			return nil, decodeError6428
+		decodedValue6435, decodeError6436 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6436 != nil {
+			return nil, decodeError6436
 		}
-		dst.GuildId = decodedValue6427
+		dst.GuildId = decodedValue6435
 	}
 	return dst, nil
 }
@@ -32520,59 +32560,59 @@ func ProjectGuildMembersChunkEvent(ctx context.Context, raw []byte, source *disc
 	dst := &wire.GuildMembersChunkEvent{}
 	{
 		item := n.get("guild_id")
-		decodedValue6429, decodeError6430 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6430 != nil {
-			return nil, decodeError6430
-		}
-		dst.GuildId = decodedValue6429
-	}
-	{
-		item := n.get("members")
-		decodedValue6431, decodeError6432 := c.nodeEventMemberListField(item, "Members", 0)
-		if decodeError6432 != nil {
-			return nil, decodeError6432
-		}
-		dst.Members = decodedValue6431
-	}
-	{
-		item := n.get("chunk_index")
-		decodedValue6433, decodeError6434 := c.nodeEventInt64Field(item, "ChunkIndex", 0)
-		if decodeError6434 != nil {
-			return nil, decodeError6434
-		}
-		dst.ChunkIndex = decodedValue6433
-	}
-	{
-		item := n.get("chunk_count")
-		decodedValue6435, decodeError6436 := c.nodeEventInt64Field(item, "ChunkCount", 0)
-		if decodeError6436 != nil {
-			return nil, decodeError6436
-		}
-		dst.ChunkCount = decodedValue6435
-	}
-	{
-		item := n.get("not_found")
-		decodedValue6437, decodeError6438 := c.nodeEventStringListField(item, "NotFound", 0)
+		decodedValue6437, decodeError6438 := c.nodeEventStringField(item, "GuildID", 0)
 		if decodeError6438 != nil {
 			return nil, decodeError6438
 		}
-		dst.NotFound = decodedValue6437
+		dst.GuildId = decodedValue6437
 	}
 	{
-		item := n.get("presences")
-		decodedValue6439, decodeError6440 := c.nodeEventPresenceListField(item, "Presences", 0)
+		item := n.get("members")
+		decodedValue6439, decodeError6440 := c.nodeEventMemberListField(item, "Members", 0)
 		if decodeError6440 != nil {
 			return nil, decodeError6440
 		}
-		dst.Presences = decodedValue6439
+		dst.Members = decodedValue6439
 	}
 	{
-		item := n.get("nonce")
-		decodedValue6441, decodeError6442 := c.nodeEventStringField(item, "Nonce", 0)
+		item := n.get("chunk_index")
+		decodedValue6441, decodeError6442 := c.nodeEventInt64Field(item, "ChunkIndex", 0)
 		if decodeError6442 != nil {
 			return nil, decodeError6442
 		}
-		dst.Nonce = decodedValue6441
+		dst.ChunkIndex = decodedValue6441
+	}
+	{
+		item := n.get("chunk_count")
+		decodedValue6443, decodeError6444 := c.nodeEventInt64Field(item, "ChunkCount", 0)
+		if decodeError6444 != nil {
+			return nil, decodeError6444
+		}
+		dst.ChunkCount = decodedValue6443
+	}
+	{
+		item := n.get("not_found")
+		decodedValue6445, decodeError6446 := c.nodeEventStringListField(item, "NotFound", 0)
+		if decodeError6446 != nil {
+			return nil, decodeError6446
+		}
+		dst.NotFound = decodedValue6445
+	}
+	{
+		item := n.get("presences")
+		decodedValue6447, decodeError6448 := c.nodeEventPresenceListField(item, "Presences", 0)
+		if decodeError6448 != nil {
+			return nil, decodeError6448
+		}
+		dst.Presences = decodedValue6447
+	}
+	{
+		item := n.get("nonce")
+		decodedValue6449, decodeError6450 := c.nodeEventStringField(item, "Nonce", 0)
+		if decodeError6450 != nil {
+			return nil, decodeError6450
+		}
+		dst.Nonce = decodedValue6449
 	}
 	return dst, nil
 }
@@ -32592,11 +32632,11 @@ func ProjectGuildMemberAddEvent(ctx context.Context, raw []byte, source *discord
 		if n.has("guild_id", "joined_at", "nick", "deaf", "mute", "avatar", "banner", "user", "roles", "premium_since", "flags", "pending", "permissions", "communication_disabled_until") {
 			item = n.without()
 		}
-		decodedValue6443, decodeError6444 := c.nodeEventMemberField(item, "Member", 0)
-		if decodeError6444 != nil {
-			return nil, decodeError6444
+		decodedValue6451, decodeError6452 := c.nodeEventMemberField(item, "Member", 0)
+		if decodeError6452 != nil {
+			return nil, decodeError6452
 		}
-		dst.Member = decodedValue6443
+		dst.Member = decodedValue6451
 	}
 	return dst, nil
 }
@@ -32616,11 +32656,11 @@ func ProjectGuildMemberRemoveEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("guild_id", "joined_at", "nick", "deaf", "mute", "avatar", "banner", "user", "roles", "premium_since", "flags", "pending", "permissions", "communication_disabled_until") {
 			item = n.without()
 		}
-		decodedValue6445, decodeError6446 := c.nodeEventMemberField(item, "Member", 0)
-		if decodeError6446 != nil {
-			return nil, decodeError6446
+		decodedValue6453, decodeError6454 := c.nodeEventMemberField(item, "Member", 0)
+		if decodeError6454 != nil {
+			return nil, decodeError6454
 		}
-		dst.Member = decodedValue6445
+		dst.Member = decodedValue6453
 	}
 	if source != nil && source.BeforeDelete != nil {
 		v, err := c.toMember(source.BeforeDelete, "BeforeDelete")
@@ -32647,11 +32687,11 @@ func ProjectGuildMemberUpdateEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("guild_id", "joined_at", "nick", "deaf", "mute", "avatar", "banner", "user", "roles", "premium_since", "flags", "pending", "permissions", "communication_disabled_until") {
 			item = n.without()
 		}
-		decodedValue6447, decodeError6448 := c.nodeEventMemberField(item, "Member", 0)
-		if decodeError6448 != nil {
-			return nil, decodeError6448
+		decodedValue6455, decodeError6456 := c.nodeEventMemberField(item, "Member", 0)
+		if decodeError6456 != nil {
+			return nil, decodeError6456
 		}
-		dst.Member = decodedValue6447
+		dst.Member = decodedValue6455
 	}
 	if source != nil && source.BeforeUpdate != nil {
 		v, err := c.toMember(source.BeforeUpdate, "BeforeUpdate")
@@ -32678,11 +32718,11 @@ func ProjectGuildRoleCreateEvent(ctx context.Context, raw []byte, source *discor
 		if n.has("role", "guild_id") {
 			item = n.without()
 		}
-		decodedValue6449, decodeError6450 := c.nodeEventGuildRoleField(item, "GuildRole", 0)
-		if decodeError6450 != nil {
-			return nil, decodeError6450
+		decodedValue6457, decodeError6458 := c.nodeEventGuildRoleField(item, "GuildRole", 0)
+		if decodeError6458 != nil {
+			return nil, decodeError6458
 		}
-		dst.GuildRole = decodedValue6449
+		dst.GuildRole = decodedValue6457
 	}
 	return dst, nil
 }
@@ -32699,19 +32739,19 @@ func ProjectGuildRoleDeleteEvent(ctx context.Context, raw []byte, source *discor
 	dst := &wire.GuildRoleDeleteEvent{}
 	{
 		item := n.get("role_id")
-		decodedValue6451, decodeError6452 := c.nodeEventStringField(item, "RoleID", 0)
-		if decodeError6452 != nil {
-			return nil, decodeError6452
+		decodedValue6459, decodeError6460 := c.nodeEventStringField(item, "RoleID", 0)
+		if decodeError6460 != nil {
+			return nil, decodeError6460
 		}
-		dst.RoleId = decodedValue6451
+		dst.RoleId = decodedValue6459
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6453, decodeError6454 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6454 != nil {
-			return nil, decodeError6454
+		decodedValue6461, decodeError6462 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6462 != nil {
+			return nil, decodeError6462
 		}
-		dst.GuildId = decodedValue6453
+		dst.GuildId = decodedValue6461
 	}
 	if source != nil && source.BeforeDelete != nil {
 		v, err := c.toRole(source.BeforeDelete, "BeforeDelete")
@@ -32738,11 +32778,11 @@ func ProjectGuildRoleUpdateEvent(ctx context.Context, raw []byte, source *discor
 		if n.has("role", "guild_id") {
 			item = n.without()
 		}
-		decodedValue6455, decodeError6456 := c.nodeEventGuildRoleField(item, "GuildRole", 0)
-		if decodeError6456 != nil {
-			return nil, decodeError6456
+		decodedValue6463, decodeError6464 := c.nodeEventGuildRoleField(item, "GuildRole", 0)
+		if decodeError6464 != nil {
+			return nil, decodeError6464
 		}
-		dst.GuildRole = decodedValue6455
+		dst.GuildRole = decodedValue6463
 	}
 	if source != nil && source.BeforeUpdate != nil {
 		v, err := c.toRole(source.BeforeUpdate, "BeforeUpdate")
@@ -32769,11 +32809,11 @@ func ProjectGuildScheduledEventCreateEvent(ctx context.Context, raw []byte, sour
 		if n.has("id", "guild_id", "channel_id", "creator_id", "name", "description", "scheduled_start_time", "scheduled_end_time", "privacy_level", "status", "entity_type", "entity_id", "entity_metadata", "creator", "user_count", "image") {
 			item = n.without()
 		}
-		decodedValue6457, decodeError6458 := c.nodeEventGuildScheduledEventField(item, "GuildScheduledEvent", 0)
-		if decodeError6458 != nil {
-			return nil, decodeError6458
+		decodedValue6465, decodeError6466 := c.nodeEventGuildScheduledEventField(item, "GuildScheduledEvent", 0)
+		if decodeError6466 != nil {
+			return nil, decodeError6466
 		}
-		dst.GuildScheduledEvent = decodedValue6457
+		dst.GuildScheduledEvent = decodedValue6465
 	}
 	return dst, nil
 }
@@ -32793,11 +32833,11 @@ func ProjectGuildScheduledEventDeleteEvent(ctx context.Context, raw []byte, sour
 		if n.has("id", "guild_id", "channel_id", "creator_id", "name", "description", "scheduled_start_time", "scheduled_end_time", "privacy_level", "status", "entity_type", "entity_id", "entity_metadata", "creator", "user_count", "image") {
 			item = n.without()
 		}
-		decodedValue6459, decodeError6460 := c.nodeEventGuildScheduledEventField(item, "GuildScheduledEvent", 0)
-		if decodeError6460 != nil {
-			return nil, decodeError6460
+		decodedValue6467, decodeError6468 := c.nodeEventGuildScheduledEventField(item, "GuildScheduledEvent", 0)
+		if decodeError6468 != nil {
+			return nil, decodeError6468
 		}
-		dst.GuildScheduledEvent = decodedValue6459
+		dst.GuildScheduledEvent = decodedValue6467
 	}
 	return dst, nil
 }
@@ -32817,11 +32857,11 @@ func ProjectGuildScheduledEventUpdateEvent(ctx context.Context, raw []byte, sour
 		if n.has("id", "guild_id", "channel_id", "creator_id", "name", "description", "scheduled_start_time", "scheduled_end_time", "privacy_level", "status", "entity_type", "entity_id", "entity_metadata", "creator", "user_count", "image") {
 			item = n.without()
 		}
-		decodedValue6461, decodeError6462 := c.nodeEventGuildScheduledEventField(item, "GuildScheduledEvent", 0)
-		if decodeError6462 != nil {
-			return nil, decodeError6462
+		decodedValue6469, decodeError6470 := c.nodeEventGuildScheduledEventField(item, "GuildScheduledEvent", 0)
+		if decodeError6470 != nil {
+			return nil, decodeError6470
 		}
-		dst.GuildScheduledEvent = decodedValue6461
+		dst.GuildScheduledEvent = decodedValue6469
 	}
 	return dst, nil
 }
@@ -32838,27 +32878,27 @@ func ProjectGuildScheduledEventUserAddEvent(ctx context.Context, raw []byte, sou
 	dst := &wire.GuildScheduledEventUserAddEvent{}
 	{
 		item := n.get("guild_scheduled_event_id")
-		decodedValue6463, decodeError6464 := c.nodeEventStringField(item, "GuildScheduledEventID", 0)
-		if decodeError6464 != nil {
-			return nil, decodeError6464
+		decodedValue6471, decodeError6472 := c.nodeEventStringField(item, "GuildScheduledEventID", 0)
+		if decodeError6472 != nil {
+			return nil, decodeError6472
 		}
-		dst.GuildScheduledEventId = decodedValue6463
+		dst.GuildScheduledEventId = decodedValue6471
 	}
 	{
 		item := n.get("user_id")
-		decodedValue6465, decodeError6466 := c.nodeEventStringField(item, "UserID", 0)
-		if decodeError6466 != nil {
-			return nil, decodeError6466
+		decodedValue6473, decodeError6474 := c.nodeEventStringField(item, "UserID", 0)
+		if decodeError6474 != nil {
+			return nil, decodeError6474
 		}
-		dst.UserId = decodedValue6465
+		dst.UserId = decodedValue6473
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6467, decodeError6468 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6468 != nil {
-			return nil, decodeError6468
+		decodedValue6475, decodeError6476 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6476 != nil {
+			return nil, decodeError6476
 		}
-		dst.GuildId = decodedValue6467
+		dst.GuildId = decodedValue6475
 	}
 	return dst, nil
 }
@@ -32875,27 +32915,27 @@ func ProjectGuildScheduledEventUserRemoveEvent(ctx context.Context, raw []byte, 
 	dst := &wire.GuildScheduledEventUserRemoveEvent{}
 	{
 		item := n.get("guild_scheduled_event_id")
-		decodedValue6469, decodeError6470 := c.nodeEventStringField(item, "GuildScheduledEventID", 0)
-		if decodeError6470 != nil {
-			return nil, decodeError6470
+		decodedValue6477, decodeError6478 := c.nodeEventStringField(item, "GuildScheduledEventID", 0)
+		if decodeError6478 != nil {
+			return nil, decodeError6478
 		}
-		dst.GuildScheduledEventId = decodedValue6469
+		dst.GuildScheduledEventId = decodedValue6477
 	}
 	{
 		item := n.get("user_id")
-		decodedValue6471, decodeError6472 := c.nodeEventStringField(item, "UserID", 0)
-		if decodeError6472 != nil {
-			return nil, decodeError6472
+		decodedValue6479, decodeError6480 := c.nodeEventStringField(item, "UserID", 0)
+		if decodeError6480 != nil {
+			return nil, decodeError6480
 		}
-		dst.UserId = decodedValue6471
+		dst.UserId = decodedValue6479
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6473, decodeError6474 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6474 != nil {
-			return nil, decodeError6474
+		decodedValue6481, decodeError6482 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6482 != nil {
+			return nil, decodeError6482
 		}
-		dst.GuildId = decodedValue6473
+		dst.GuildId = decodedValue6481
 	}
 	return dst, nil
 }
@@ -32912,19 +32952,19 @@ func ProjectGuildStickersUpdateEvent(ctx context.Context, raw []byte, source *di
 	dst := &wire.GuildStickersUpdateEvent{}
 	{
 		item := n.get("guild_id")
-		decodedValue6475, decodeError6476 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6476 != nil {
-			return nil, decodeError6476
+		decodedValue6483, decodeError6484 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6484 != nil {
+			return nil, decodeError6484
 		}
-		dst.GuildId = decodedValue6475
+		dst.GuildId = decodedValue6483
 	}
 	{
 		item := n.get("stickers")
-		decodedValue6477, decodeError6478 := c.nodeEventStickerListField(item, "Stickers", 0)
-		if decodeError6478 != nil {
-			return nil, decodeError6478
+		decodedValue6485, decodeError6486 := c.nodeEventStickerListField(item, "Stickers", 0)
+		if decodeError6486 != nil {
+			return nil, decodeError6486
 		}
-		dst.Stickers = decodedValue6477
+		dst.Stickers = decodedValue6485
 	}
 	return dst, nil
 }
@@ -32944,11 +32984,11 @@ func ProjectGuildUpdateEvent(ctx context.Context, raw []byte, source *discordgo.
 		if n.has("id", "name", "icon", "region", "afk_channel_id", "owner_id", "owner", "joined_at", "discovery_splash", "splash", "afk_timeout", "member_count", "verification_level", "large", "default_message_notifications", "roles", "emojis", "stickers", "members", "presences", "max_presences", "max_members", "channels", "threads", "voice_states", "unavailable", "explicit_content_filter", "nsfw_level", "features", "mfa_level", "application_id", "widget_enabled", "widget_channel_id", "system_channel_id", "system_channel_flags", "rules_channel_id", "vanity_url_code", "description", "banner", "premium_tier", "premium_subscription_count", "preferred_locale", "public_updates_channel_id", "max_video_channel_users", "approximate_member_count", "approximate_presence_count", "permissions", "stage_instances") {
 			item = n.without()
 		}
-		decodedValue6479, decodeError6480 := c.nodeEventGuildField(item, "Guild", 0)
-		if decodeError6480 != nil {
-			return nil, decodeError6480
+		decodedValue6487, decodeError6488 := c.nodeEventGuildField(item, "Guild", 0)
+		if decodeError6488 != nil {
+			return nil, decodeError6488
 		}
-		dst.Guild = decodedValue6479
+		dst.Guild = decodedValue6487
 	}
 	return dst, nil
 }
@@ -32968,19 +33008,19 @@ func ProjectIntegrationCreateEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("id", "name", "type", "enabled", "syncing", "role_id", "enable_emoticons", "expire_behavior", "expire_grace_period", "user", "account", "synced_at") {
 			item = n.without("guild_id")
 		}
-		decodedValue6481, decodeError6482 := c.nodeEventIntegrationField(item, "Integration", 0)
-		if decodeError6482 != nil {
-			return nil, decodeError6482
+		decodedValue6489, decodeError6490 := c.nodeEventIntegrationField(item, "Integration", 0)
+		if decodeError6490 != nil {
+			return nil, decodeError6490
 		}
-		dst.Integration = decodedValue6481
+		dst.Integration = decodedValue6489
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6483, decodeError6484 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6484 != nil {
-			return nil, decodeError6484
+		decodedValue6491, decodeError6492 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6492 != nil {
+			return nil, decodeError6492
 		}
-		dst.GuildId = decodedValue6483
+		dst.GuildId = decodedValue6491
 	}
 	return dst, nil
 }
@@ -32997,27 +33037,27 @@ func ProjectIntegrationDeleteEvent(ctx context.Context, raw []byte, source *disc
 	dst := &wire.IntegrationDeleteEvent{}
 	{
 		item := n.get("id")
-		decodedValue6485, decodeError6486 := c.nodeEventStringField(item, "ID", 0)
-		if decodeError6486 != nil {
-			return nil, decodeError6486
+		decodedValue6493, decodeError6494 := c.nodeEventStringField(item, "ID", 0)
+		if decodeError6494 != nil {
+			return nil, decodeError6494
 		}
-		dst.Id = decodedValue6485
+		dst.Id = decodedValue6493
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6487, decodeError6488 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6488 != nil {
-			return nil, decodeError6488
+		decodedValue6495, decodeError6496 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6496 != nil {
+			return nil, decodeError6496
 		}
-		dst.GuildId = decodedValue6487
+		dst.GuildId = decodedValue6495
 	}
 	{
 		item := n.get("application_id")
-		decodedValue6489, decodeError6490 := c.nodeEventStringField(item, "ApplicationID", 0)
-		if decodeError6490 != nil {
-			return nil, decodeError6490
+		decodedValue6497, decodeError6498 := c.nodeEventStringField(item, "ApplicationID", 0)
+		if decodeError6498 != nil {
+			return nil, decodeError6498
 		}
-		dst.ApplicationId = decodedValue6489
+		dst.ApplicationId = decodedValue6497
 	}
 	return dst, nil
 }
@@ -33037,19 +33077,19 @@ func ProjectIntegrationUpdateEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("id", "name", "type", "enabled", "syncing", "role_id", "enable_emoticons", "expire_behavior", "expire_grace_period", "user", "account", "synced_at") {
 			item = n.without("guild_id")
 		}
-		decodedValue6491, decodeError6492 := c.nodeEventIntegrationField(item, "Integration", 0)
-		if decodeError6492 != nil {
-			return nil, decodeError6492
+		decodedValue6499, decodeError6500 := c.nodeEventIntegrationField(item, "Integration", 0)
+		if decodeError6500 != nil {
+			return nil, decodeError6500
 		}
-		dst.Integration = decodedValue6491
+		dst.Integration = decodedValue6499
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6493, decodeError6494 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6494 != nil {
-			return nil, decodeError6494
+		decodedValue6501, decodeError6502 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6502 != nil {
+			return nil, decodeError6502
 		}
-		dst.GuildId = decodedValue6493
+		dst.GuildId = decodedValue6501
 	}
 	return dst, nil
 }
@@ -33069,11 +33109,11 @@ func ProjectInteractionCreateEvent(ctx context.Context, raw []byte, source *disc
 		if n.has("id", "application_id", "type", "data", "guild_id", "channel_id", "message", "app_permissions", "member", "user", "locale", "guild_locale", "context", "authorizing_integration_owners", "token", "version", "entitlements") {
 			item = n.without()
 		}
-		decodedValue6495, decodeError6496 := c.nodeEventInteractionField(item, "Interaction", 0)
-		if decodeError6496 != nil {
-			return nil, decodeError6496
+		decodedValue6503, decodeError6504 := c.nodeEventInteractionField(item, "Interaction", 0)
+		if decodeError6504 != nil {
+			return nil, decodeError6504
 		}
-		dst.Interaction = decodedValue6495
+		dst.Interaction = decodedValue6503
 	}
 	return dst, nil
 }
@@ -33093,27 +33133,27 @@ func ProjectInviteCreateEvent(ctx context.Context, raw []byte, source *discordgo
 		if n.has("guild", "channel", "inviter", "code", "created_at", "max_age", "uses", "max_uses", "revoked", "temporary", "unique", "target_user", "target_type", "target_application", "approximate_presence_count", "approximate_member_count", "expires_at") {
 			item = n.without("channel_id", "guild_id")
 		}
-		decodedValue6497, decodeError6498 := c.nodeEventInviteField(item, "Invite", 0)
-		if decodeError6498 != nil {
-			return nil, decodeError6498
+		decodedValue6505, decodeError6506 := c.nodeEventInviteField(item, "Invite", 0)
+		if decodeError6506 != nil {
+			return nil, decodeError6506
 		}
-		dst.Invite = decodedValue6497
+		dst.Invite = decodedValue6505
 	}
 	{
 		item := n.get("channel_id")
-		decodedValue6499, decodeError6500 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6500 != nil {
-			return nil, decodeError6500
+		decodedValue6507, decodeError6508 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6508 != nil {
+			return nil, decodeError6508
 		}
-		dst.ChannelId = decodedValue6499
+		dst.ChannelId = decodedValue6507
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6501, decodeError6502 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6502 != nil {
-			return nil, decodeError6502
+		decodedValue6509, decodeError6510 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6510 != nil {
+			return nil, decodeError6510
 		}
-		dst.GuildId = decodedValue6501
+		dst.GuildId = decodedValue6509
 	}
 	return dst, nil
 }
@@ -33130,27 +33170,27 @@ func ProjectInviteDeleteEvent(ctx context.Context, raw []byte, source *discordgo
 	dst := &wire.InviteDeleteEvent{}
 	{
 		item := n.get("channel_id")
-		decodedValue6503, decodeError6504 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6504 != nil {
-			return nil, decodeError6504
+		decodedValue6511, decodeError6512 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6512 != nil {
+			return nil, decodeError6512
 		}
-		dst.ChannelId = decodedValue6503
+		dst.ChannelId = decodedValue6511
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6505, decodeError6506 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6506 != nil {
-			return nil, decodeError6506
+		decodedValue6513, decodeError6514 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6514 != nil {
+			return nil, decodeError6514
 		}
-		dst.GuildId = decodedValue6505
+		dst.GuildId = decodedValue6513
 	}
 	{
 		item := n.get("code")
-		decodedValue6507, decodeError6508 := c.nodeEventStringField(item, "Code", 0)
-		if decodeError6508 != nil {
-			return nil, decodeError6508
+		decodedValue6515, decodeError6516 := c.nodeEventStringField(item, "Code", 0)
+		if decodeError6516 != nil {
+			return nil, decodeError6516
 		}
-		dst.Code = decodedValue6507
+		dst.Code = decodedValue6515
 	}
 	return dst, nil
 }
@@ -33167,14 +33207,14 @@ func ProjectMessageCreateEvent(ctx context.Context, raw []byte, source *discordg
 	dst := &wire.MessageCreateEvent{}
 	{
 		var item *ingressNode
-		if n.has("id", "channel_id", "guild_id", "content", "timestamp", "edited_timestamp", "mention_roles", "tts", "mention_everyone", "author", "attachments", "embeds", "mentions", "reactions", "pinned", "type", "webhook_id", "member", "mention_channels", "activity", "application", "message_reference", "referenced_message", "message_snapshots", "interaction", "interaction_metadata", "flags", "thread", "sticker_items", "poll") {
+		if n.has("id", "channel_id", "guild_id", "content", "timestamp", "edited_timestamp", "mention_roles", "tts", "mention_everyone", "author", "attachments", "components", "embeds", "mentions", "reactions", "pinned", "type", "webhook_id", "member", "mention_channels", "activity", "application", "message_reference", "referenced_message", "message_snapshots", "interaction", "interaction_metadata", "flags", "thread", "sticker_items", "poll") {
 			item = n.without()
 		}
-		decodedValue6509, decodeError6510 := c.nodeEventMessageField(item, "Message", 0)
-		if decodeError6510 != nil {
-			return nil, decodeError6510
+		decodedValue6517, decodeError6518 := c.nodeEventMessageField(item, "Message", 0)
+		if decodeError6518 != nil {
+			return nil, decodeError6518
 		}
-		dst.Message = decodedValue6509
+		dst.Message = decodedValue6517
 	}
 	return dst, nil
 }
@@ -33191,14 +33231,14 @@ func ProjectMessageDeleteEvent(ctx context.Context, raw []byte, source *discordg
 	dst := &wire.MessageDeleteEvent{}
 	{
 		var item *ingressNode
-		if n.has("id", "channel_id", "guild_id", "content", "timestamp", "edited_timestamp", "mention_roles", "tts", "mention_everyone", "author", "attachments", "embeds", "mentions", "reactions", "pinned", "type", "webhook_id", "member", "mention_channels", "activity", "application", "message_reference", "referenced_message", "message_snapshots", "interaction", "interaction_metadata", "flags", "thread", "sticker_items", "poll") {
+		if n.has("id", "channel_id", "guild_id", "content", "timestamp", "edited_timestamp", "mention_roles", "tts", "mention_everyone", "author", "attachments", "components", "embeds", "mentions", "reactions", "pinned", "type", "webhook_id", "member", "mention_channels", "activity", "application", "message_reference", "referenced_message", "message_snapshots", "interaction", "interaction_metadata", "flags", "thread", "sticker_items", "poll") {
 			item = n.without()
 		}
-		decodedValue6511, decodeError6512 := c.nodeEventMessageField(item, "Message", 0)
-		if decodeError6512 != nil {
-			return nil, decodeError6512
+		decodedValue6519, decodeError6520 := c.nodeEventMessageField(item, "Message", 0)
+		if decodeError6520 != nil {
+			return nil, decodeError6520
 		}
-		dst.Message = decodedValue6511
+		dst.Message = decodedValue6519
 	}
 	if source != nil && source.BeforeDelete != nil {
 		v, err := c.toMessage(source.BeforeDelete, "BeforeDelete")
@@ -33222,27 +33262,27 @@ func ProjectMessageDeleteBulkEvent(ctx context.Context, raw []byte, source *disc
 	dst := &wire.MessageDeleteBulkEvent{}
 	{
 		item := n.get("ids")
-		decodedValue6513, decodeError6514 := c.nodeEventStringListField(item, "Messages", 0)
-		if decodeError6514 != nil {
-			return nil, decodeError6514
+		decodedValue6521, decodeError6522 := c.nodeEventStringListField(item, "Messages", 0)
+		if decodeError6522 != nil {
+			return nil, decodeError6522
 		}
-		dst.Ids = decodedValue6513
+		dst.Ids = decodedValue6521
 	}
 	{
 		item := n.get("channel_id")
-		decodedValue6515, decodeError6516 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6516 != nil {
-			return nil, decodeError6516
+		decodedValue6523, decodeError6524 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6524 != nil {
+			return nil, decodeError6524
 		}
-		dst.ChannelId = decodedValue6515
+		dst.ChannelId = decodedValue6523
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6517, decodeError6518 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6518 != nil {
-			return nil, decodeError6518
+		decodedValue6525, decodeError6526 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6526 != nil {
+			return nil, decodeError6526
 		}
-		dst.GuildId = decodedValue6517
+		dst.GuildId = decodedValue6525
 	}
 	return dst, nil
 }
@@ -33259,43 +33299,43 @@ func ProjectMessagePollVoteAddEvent(ctx context.Context, raw []byte, source *dis
 	dst := &wire.MessagePollVoteAddEvent{}
 	{
 		item := n.get("user_id")
-		decodedValue6519, decodeError6520 := c.nodeEventStringField(item, "UserID", 0)
-		if decodeError6520 != nil {
-			return nil, decodeError6520
-		}
-		dst.UserId = decodedValue6519
-	}
-	{
-		item := n.get("channel_id")
-		decodedValue6521, decodeError6522 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6522 != nil {
-			return nil, decodeError6522
-		}
-		dst.ChannelId = decodedValue6521
-	}
-	{
-		item := n.get("message_id")
-		decodedValue6523, decodeError6524 := c.nodeEventStringField(item, "MessageID", 0)
-		if decodeError6524 != nil {
-			return nil, decodeError6524
-		}
-		dst.MessageId = decodedValue6523
-	}
-	{
-		item := n.get("guild_id")
-		decodedValue6525, decodeError6526 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6526 != nil {
-			return nil, decodeError6526
-		}
-		dst.GuildId = decodedValue6525
-	}
-	{
-		item := n.get("answer_id")
-		decodedValue6527, decodeError6528 := c.nodeEventInt64Field(item, "AnswerID", 0)
+		decodedValue6527, decodeError6528 := c.nodeEventStringField(item, "UserID", 0)
 		if decodeError6528 != nil {
 			return nil, decodeError6528
 		}
-		dst.AnswerId = decodedValue6527
+		dst.UserId = decodedValue6527
+	}
+	{
+		item := n.get("channel_id")
+		decodedValue6529, decodeError6530 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6530 != nil {
+			return nil, decodeError6530
+		}
+		dst.ChannelId = decodedValue6529
+	}
+	{
+		item := n.get("message_id")
+		decodedValue6531, decodeError6532 := c.nodeEventStringField(item, "MessageID", 0)
+		if decodeError6532 != nil {
+			return nil, decodeError6532
+		}
+		dst.MessageId = decodedValue6531
+	}
+	{
+		item := n.get("guild_id")
+		decodedValue6533, decodeError6534 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6534 != nil {
+			return nil, decodeError6534
+		}
+		dst.GuildId = decodedValue6533
+	}
+	{
+		item := n.get("answer_id")
+		decodedValue6535, decodeError6536 := c.nodeEventInt64Field(item, "AnswerID", 0)
+		if decodeError6536 != nil {
+			return nil, decodeError6536
+		}
+		dst.AnswerId = decodedValue6535
 	}
 	return dst, nil
 }
@@ -33312,43 +33352,43 @@ func ProjectMessagePollVoteRemoveEvent(ctx context.Context, raw []byte, source *
 	dst := &wire.MessagePollVoteRemoveEvent{}
 	{
 		item := n.get("user_id")
-		decodedValue6529, decodeError6530 := c.nodeEventStringField(item, "UserID", 0)
-		if decodeError6530 != nil {
-			return nil, decodeError6530
-		}
-		dst.UserId = decodedValue6529
-	}
-	{
-		item := n.get("channel_id")
-		decodedValue6531, decodeError6532 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6532 != nil {
-			return nil, decodeError6532
-		}
-		dst.ChannelId = decodedValue6531
-	}
-	{
-		item := n.get("message_id")
-		decodedValue6533, decodeError6534 := c.nodeEventStringField(item, "MessageID", 0)
-		if decodeError6534 != nil {
-			return nil, decodeError6534
-		}
-		dst.MessageId = decodedValue6533
-	}
-	{
-		item := n.get("guild_id")
-		decodedValue6535, decodeError6536 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6536 != nil {
-			return nil, decodeError6536
-		}
-		dst.GuildId = decodedValue6535
-	}
-	{
-		item := n.get("answer_id")
-		decodedValue6537, decodeError6538 := c.nodeEventInt64Field(item, "AnswerID", 0)
+		decodedValue6537, decodeError6538 := c.nodeEventStringField(item, "UserID", 0)
 		if decodeError6538 != nil {
 			return nil, decodeError6538
 		}
-		dst.AnswerId = decodedValue6537
+		dst.UserId = decodedValue6537
+	}
+	{
+		item := n.get("channel_id")
+		decodedValue6539, decodeError6540 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6540 != nil {
+			return nil, decodeError6540
+		}
+		dst.ChannelId = decodedValue6539
+	}
+	{
+		item := n.get("message_id")
+		decodedValue6541, decodeError6542 := c.nodeEventStringField(item, "MessageID", 0)
+		if decodeError6542 != nil {
+			return nil, decodeError6542
+		}
+		dst.MessageId = decodedValue6541
+	}
+	{
+		item := n.get("guild_id")
+		decodedValue6543, decodeError6544 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6544 != nil {
+			return nil, decodeError6544
+		}
+		dst.GuildId = decodedValue6543
+	}
+	{
+		item := n.get("answer_id")
+		decodedValue6545, decodeError6546 := c.nodeEventInt64Field(item, "AnswerID", 0)
+		if decodeError6546 != nil {
+			return nil, decodeError6546
+		}
+		dst.AnswerId = decodedValue6545
 	}
 	return dst, nil
 }
@@ -33368,19 +33408,19 @@ func ProjectMessageReactionAddEvent(ctx context.Context, raw []byte, source *dis
 		if n.has("user_id", "message_id", "emoji", "channel_id", "guild_id") {
 			item = n.without("member")
 		}
-		decodedValue6539, decodeError6540 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
-		if decodeError6540 != nil {
-			return nil, decodeError6540
+		decodedValue6547, decodeError6548 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
+		if decodeError6548 != nil {
+			return nil, decodeError6548
 		}
-		dst.MessageReaction = decodedValue6539
+		dst.MessageReaction = decodedValue6547
 	}
 	{
 		item := n.get("member")
-		decodedValue6541, decodeError6542 := c.nodeEventMemberField(item, "Member", 0)
-		if decodeError6542 != nil {
-			return nil, decodeError6542
+		decodedValue6549, decodeError6550 := c.nodeEventMemberField(item, "Member", 0)
+		if decodeError6550 != nil {
+			return nil, decodeError6550
 		}
-		dst.Member = decodedValue6541
+		dst.Member = decodedValue6549
 	}
 	return dst, nil
 }
@@ -33400,11 +33440,11 @@ func ProjectMessageReactionRemoveEvent(ctx context.Context, raw []byte, source *
 		if n.has("user_id", "message_id", "emoji", "channel_id", "guild_id") {
 			item = n.without()
 		}
-		decodedValue6543, decodeError6544 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
-		if decodeError6544 != nil {
-			return nil, decodeError6544
+		decodedValue6551, decodeError6552 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
+		if decodeError6552 != nil {
+			return nil, decodeError6552
 		}
-		dst.MessageReaction = decodedValue6543
+		dst.MessageReaction = decodedValue6551
 	}
 	return dst, nil
 }
@@ -33424,11 +33464,11 @@ func ProjectMessageReactionRemoveAllEvent(ctx context.Context, raw []byte, sourc
 		if n.has("user_id", "message_id", "emoji", "channel_id", "guild_id") {
 			item = n.without()
 		}
-		decodedValue6545, decodeError6546 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
-		if decodeError6546 != nil {
-			return nil, decodeError6546
+		decodedValue6553, decodeError6554 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
+		if decodeError6554 != nil {
+			return nil, decodeError6554
 		}
-		dst.MessageReaction = decodedValue6545
+		dst.MessageReaction = decodedValue6553
 	}
 	return dst, nil
 }
@@ -33448,11 +33488,11 @@ func ProjectMessageReactionRemoveEmojiEvent(ctx context.Context, raw []byte, sou
 		if n.has("user_id", "message_id", "emoji", "channel_id", "guild_id") {
 			item = n.without()
 		}
-		decodedValue6547, decodeError6548 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
-		if decodeError6548 != nil {
-			return nil, decodeError6548
+		decodedValue6555, decodeError6556 := c.nodeEventMessageReactionField(item, "MessageReaction", 0)
+		if decodeError6556 != nil {
+			return nil, decodeError6556
 		}
-		dst.MessageReaction = decodedValue6547
+		dst.MessageReaction = decodedValue6555
 	}
 	return dst, nil
 }
@@ -33469,14 +33509,14 @@ func ProjectMessageUpdateEvent(ctx context.Context, raw []byte, source *discordg
 	dst := &wire.MessageUpdateEvent{}
 	{
 		var item *ingressNode
-		if n.has("id", "channel_id", "guild_id", "content", "timestamp", "edited_timestamp", "mention_roles", "tts", "mention_everyone", "author", "attachments", "embeds", "mentions", "reactions", "pinned", "type", "webhook_id", "member", "mention_channels", "activity", "application", "message_reference", "referenced_message", "message_snapshots", "interaction", "interaction_metadata", "flags", "thread", "sticker_items", "poll") {
+		if n.has("id", "channel_id", "guild_id", "content", "timestamp", "edited_timestamp", "mention_roles", "tts", "mention_everyone", "author", "attachments", "components", "embeds", "mentions", "reactions", "pinned", "type", "webhook_id", "member", "mention_channels", "activity", "application", "message_reference", "referenced_message", "message_snapshots", "interaction", "interaction_metadata", "flags", "thread", "sticker_items", "poll") {
 			item = n.without()
 		}
-		decodedValue6549, decodeError6550 := c.nodeEventMessageField(item, "Message", 0)
-		if decodeError6550 != nil {
-			return nil, decodeError6550
+		decodedValue6557, decodeError6558 := c.nodeEventMessageField(item, "Message", 0)
+		if decodeError6558 != nil {
+			return nil, decodeError6558
 		}
-		dst.Message = decodedValue6549
+		dst.Message = decodedValue6557
 	}
 	if source != nil && source.BeforeUpdate != nil {
 		v, err := c.toMessage(source.BeforeUpdate, "BeforeUpdate")
@@ -33503,19 +33543,19 @@ func ProjectPresenceUpdateEvent(ctx context.Context, raw []byte, source *discord
 		if n.has("user", "status", "activities", "since", "client_status") {
 			item = n.without("guild_id")
 		}
-		decodedValue6551, decodeError6552 := c.nodeEventPresenceField(item, "Presence", 0)
-		if decodeError6552 != nil {
-			return nil, decodeError6552
+		decodedValue6559, decodeError6560 := c.nodeEventPresenceField(item, "Presence", 0)
+		if decodeError6560 != nil {
+			return nil, decodeError6560
 		}
-		dst.Presence = decodedValue6551
+		dst.Presence = decodedValue6559
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6553, decodeError6554 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6554 != nil {
-			return nil, decodeError6554
+		decodedValue6561, decodeError6562 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6562 != nil {
+			return nil, decodeError6562
 		}
-		dst.GuildId = decodedValue6553
+		dst.GuildId = decodedValue6561
 	}
 	return dst, nil
 }
@@ -33532,43 +33572,43 @@ func ProjectReadyEvent(ctx context.Context, raw []byte, source *discordgo.Ready,
 	dst := &wire.ReadyEvent{}
 	{
 		item := n.get("v")
-		decodedValue6555, decodeError6556 := c.nodeEventInt64Field(item, "Version", 0)
-		if decodeError6556 != nil {
-			return nil, decodeError6556
-		}
-		dst.V = decodedValue6555
-	}
-	{
-		item := n.get("user")
-		decodedValue6557, decodeError6558 := c.nodeEventUserField(item, "User", 0)
-		if decodeError6558 != nil {
-			return nil, decodeError6558
-		}
-		dst.User = decodedValue6557
-	}
-	{
-		item := n.get("application")
-		decodedValue6559, decodeError6560 := c.nodeEventApplicationField(item, "Application", 0)
-		if decodeError6560 != nil {
-			return nil, decodeError6560
-		}
-		dst.Application = decodedValue6559
-	}
-	{
-		item := n.get("guilds")
-		decodedValue6561, decodeError6562 := c.nodeEventGuildListField(item, "Guilds", 0)
-		if decodeError6562 != nil {
-			return nil, decodeError6562
-		}
-		dst.Guilds = decodedValue6561
-	}
-	{
-		item := n.get("private_channels")
-		decodedValue6563, decodeError6564 := c.nodeEventChannelListField(item, "PrivateChannels", 0)
+		decodedValue6563, decodeError6564 := c.nodeEventInt64Field(item, "Version", 0)
 		if decodeError6564 != nil {
 			return nil, decodeError6564
 		}
-		dst.PrivateChannels = decodedValue6563
+		dst.V = decodedValue6563
+	}
+	{
+		item := n.get("user")
+		decodedValue6565, decodeError6566 := c.nodeEventUserField(item, "User", 0)
+		if decodeError6566 != nil {
+			return nil, decodeError6566
+		}
+		dst.User = decodedValue6565
+	}
+	{
+		item := n.get("application")
+		decodedValue6567, decodeError6568 := c.nodeEventApplicationField(item, "Application", 0)
+		if decodeError6568 != nil {
+			return nil, decodeError6568
+		}
+		dst.Application = decodedValue6567
+	}
+	{
+		item := n.get("guilds")
+		decodedValue6569, decodeError6570 := c.nodeEventGuildListField(item, "Guilds", 0)
+		if decodeError6570 != nil {
+			return nil, decodeError6570
+		}
+		dst.Guilds = decodedValue6569
+	}
+	{
+		item := n.get("private_channels")
+		decodedValue6571, decodeError6572 := c.nodeEventChannelListField(item, "PrivateChannels", 0)
+		if decodeError6572 != nil {
+			return nil, decodeError6572
+		}
+		dst.PrivateChannels = decodedValue6571
 	}
 	return dst, nil
 }
@@ -33588,11 +33628,11 @@ func ProjectStageInstanceCreateEvent(ctx context.Context, raw []byte, source *di
 		if n.has("id", "guild_id", "channel_id", "topic", "privacy_level", "discoverable_disabled", "guild_scheduled_event_id") {
 			item = n.without()
 		}
-		decodedValue6565, decodeError6566 := c.nodeEventStageInstanceField(item, "StageInstance", 0)
-		if decodeError6566 != nil {
-			return nil, decodeError6566
+		decodedValue6573, decodeError6574 := c.nodeEventStageInstanceField(item, "StageInstance", 0)
+		if decodeError6574 != nil {
+			return nil, decodeError6574
 		}
-		dst.StageInstance = decodedValue6565
+		dst.StageInstance = decodedValue6573
 	}
 	return dst, nil
 }
@@ -33612,11 +33652,11 @@ func ProjectStageInstanceDeleteEvent(ctx context.Context, raw []byte, source *di
 		if n.has("id", "guild_id", "channel_id", "topic", "privacy_level", "discoverable_disabled", "guild_scheduled_event_id") {
 			item = n.without()
 		}
-		decodedValue6567, decodeError6568 := c.nodeEventStageInstanceField(item, "StageInstance", 0)
-		if decodeError6568 != nil {
-			return nil, decodeError6568
+		decodedValue6575, decodeError6576 := c.nodeEventStageInstanceField(item, "StageInstance", 0)
+		if decodeError6576 != nil {
+			return nil, decodeError6576
 		}
-		dst.StageInstance = decodedValue6567
+		dst.StageInstance = decodedValue6575
 	}
 	return dst, nil
 }
@@ -33636,11 +33676,11 @@ func ProjectStageInstanceUpdateEvent(ctx context.Context, raw []byte, source *di
 		if n.has("id", "guild_id", "channel_id", "topic", "privacy_level", "discoverable_disabled", "guild_scheduled_event_id") {
 			item = n.without()
 		}
-		decodedValue6569, decodeError6570 := c.nodeEventStageInstanceField(item, "StageInstance", 0)
-		if decodeError6570 != nil {
-			return nil, decodeError6570
+		decodedValue6577, decodeError6578 := c.nodeEventStageInstanceField(item, "StageInstance", 0)
+		if decodeError6578 != nil {
+			return nil, decodeError6578
 		}
-		dst.StageInstance = decodedValue6569
+		dst.StageInstance = decodedValue6577
 	}
 	return dst, nil
 }
@@ -33660,11 +33700,11 @@ func ProjectSubscriptionCreateEvent(ctx context.Context, raw []byte, source *dis
 		if n.has("id", "user_id", "sku_ids", "entitlement_ids", "renewal_sku_ids", "current_period_start", "current_period_end", "status", "canceled_at", "country") {
 			item = n.without()
 		}
-		decodedValue6571, decodeError6572 := c.nodeEventSubscriptionField(item, "Subscription", 0)
-		if decodeError6572 != nil {
-			return nil, decodeError6572
+		decodedValue6579, decodeError6580 := c.nodeEventSubscriptionField(item, "Subscription", 0)
+		if decodeError6580 != nil {
+			return nil, decodeError6580
 		}
-		dst.Subscription = decodedValue6571
+		dst.Subscription = decodedValue6579
 	}
 	return dst, nil
 }
@@ -33684,11 +33724,11 @@ func ProjectSubscriptionDeleteEvent(ctx context.Context, raw []byte, source *dis
 		if n.has("id", "user_id", "sku_ids", "entitlement_ids", "renewal_sku_ids", "current_period_start", "current_period_end", "status", "canceled_at", "country") {
 			item = n.without()
 		}
-		decodedValue6573, decodeError6574 := c.nodeEventSubscriptionField(item, "Subscription", 0)
-		if decodeError6574 != nil {
-			return nil, decodeError6574
+		decodedValue6581, decodeError6582 := c.nodeEventSubscriptionField(item, "Subscription", 0)
+		if decodeError6582 != nil {
+			return nil, decodeError6582
 		}
-		dst.Subscription = decodedValue6573
+		dst.Subscription = decodedValue6581
 	}
 	return dst, nil
 }
@@ -33708,11 +33748,11 @@ func ProjectSubscriptionUpdateEvent(ctx context.Context, raw []byte, source *dis
 		if n.has("id", "user_id", "sku_ids", "entitlement_ids", "renewal_sku_ids", "current_period_start", "current_period_end", "status", "canceled_at", "country") {
 			item = n.without()
 		}
-		decodedValue6575, decodeError6576 := c.nodeEventSubscriptionField(item, "Subscription", 0)
-		if decodeError6576 != nil {
-			return nil, decodeError6576
+		decodedValue6583, decodeError6584 := c.nodeEventSubscriptionField(item, "Subscription", 0)
+		if decodeError6584 != nil {
+			return nil, decodeError6584
 		}
-		dst.Subscription = decodedValue6575
+		dst.Subscription = decodedValue6583
 	}
 	return dst, nil
 }
@@ -33732,19 +33772,19 @@ func ProjectThreadCreateEvent(ctx context.Context, raw []byte, source *discordgo
 		if n.has("id", "guild_id", "name", "topic", "type", "last_message_id", "last_pin_timestamp", "message_count", "member_count", "nsfw", "icon", "position", "bitrate", "recipients", "permission_overwrites", "user_limit", "parent_id", "rate_limit_per_user", "owner_id", "application_id", "thread_metadata", "thread_member", "flags", "available_tags", "applied_tags", "default_reaction_emoji", "default_thread_rate_limit_per_user", "default_sort_order", "default_forum_layout") {
 			item = n.without("newly_created")
 		}
-		decodedValue6577, decodeError6578 := c.nodeEventChannelField(item, "Channel", 0)
-		if decodeError6578 != nil {
-			return nil, decodeError6578
+		decodedValue6585, decodeError6586 := c.nodeEventChannelField(item, "Channel", 0)
+		if decodeError6586 != nil {
+			return nil, decodeError6586
 		}
-		dst.Channel = decodedValue6577
+		dst.Channel = decodedValue6585
 	}
 	{
 		item := n.get("newly_created")
-		decodedValue6579, decodeError6580 := c.nodeEventBoolField(item, "NewlyCreated", 0)
-		if decodeError6580 != nil {
-			return nil, decodeError6580
+		decodedValue6587, decodeError6588 := c.nodeEventBoolField(item, "NewlyCreated", 0)
+		if decodeError6588 != nil {
+			return nil, decodeError6588
 		}
-		dst.NewlyCreated = decodedValue6579
+		dst.NewlyCreated = decodedValue6587
 	}
 	return dst, nil
 }
@@ -33764,11 +33804,11 @@ func ProjectThreadDeleteEvent(ctx context.Context, raw []byte, source *discordgo
 		if n.has("id", "guild_id", "name", "topic", "type", "last_message_id", "last_pin_timestamp", "message_count", "member_count", "nsfw", "icon", "position", "bitrate", "recipients", "permission_overwrites", "user_limit", "parent_id", "rate_limit_per_user", "owner_id", "application_id", "thread_metadata", "thread_member", "flags", "available_tags", "applied_tags", "default_reaction_emoji", "default_thread_rate_limit_per_user", "default_sort_order", "default_forum_layout") {
 			item = n.without()
 		}
-		decodedValue6581, decodeError6582 := c.nodeEventChannelField(item, "Channel", 0)
-		if decodeError6582 != nil {
-			return nil, decodeError6582
+		decodedValue6589, decodeError6590 := c.nodeEventChannelField(item, "Channel", 0)
+		if decodeError6590 != nil {
+			return nil, decodeError6590
 		}
-		dst.Channel = decodedValue6581
+		dst.Channel = decodedValue6589
 	}
 	if source != nil && source.BeforeDelete != nil {
 		v, err := c.toChannel(source.BeforeDelete, "BeforeDelete")
@@ -33792,35 +33832,35 @@ func ProjectThreadListSyncEvent(ctx context.Context, raw []byte, source *discord
 	dst := &wire.ThreadListSyncEvent{}
 	{
 		item := n.get("guild_id")
-		decodedValue6583, decodeError6584 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6584 != nil {
-			return nil, decodeError6584
+		decodedValue6591, decodeError6592 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6592 != nil {
+			return nil, decodeError6592
 		}
-		dst.GuildId = decodedValue6583
+		dst.GuildId = decodedValue6591
 	}
 	{
 		item := n.get("channel_ids")
-		decodedValue6585, decodeError6586 := c.nodeEventStringListField(item, "ChannelIDs", 0)
-		if decodeError6586 != nil {
-			return nil, decodeError6586
+		decodedValue6593, decodeError6594 := c.nodeEventStringListField(item, "ChannelIDs", 0)
+		if decodeError6594 != nil {
+			return nil, decodeError6594
 		}
-		dst.ChannelIds = decodedValue6585
+		dst.ChannelIds = decodedValue6593
 	}
 	{
 		item := n.get("threads")
-		decodedValue6587, decodeError6588 := c.nodeEventChannelListField(item, "Threads", 0)
-		if decodeError6588 != nil {
-			return nil, decodeError6588
+		decodedValue6595, decodeError6596 := c.nodeEventChannelListField(item, "Threads", 0)
+		if decodeError6596 != nil {
+			return nil, decodeError6596
 		}
-		dst.Threads = decodedValue6587
+		dst.Threads = decodedValue6595
 	}
 	{
 		item := n.get("members")
-		decodedValue6589, decodeError6590 := c.nodeEventThreadMemberListField(item, "Members", 0)
-		if decodeError6590 != nil {
-			return nil, decodeError6590
+		decodedValue6597, decodeError6598 := c.nodeEventThreadMemberListField(item, "Members", 0)
+		if decodeError6598 != nil {
+			return nil, decodeError6598
 		}
-		dst.Members = decodedValue6589
+		dst.Members = decodedValue6597
 	}
 	return dst, nil
 }
@@ -33837,43 +33877,43 @@ func ProjectThreadMembersUpdateEvent(ctx context.Context, raw []byte, source *di
 	dst := &wire.ThreadMembersUpdateEvent{}
 	{
 		item := n.get("id")
-		decodedValue6591, decodeError6592 := c.nodeEventStringField(item, "ID", 0)
-		if decodeError6592 != nil {
-			return nil, decodeError6592
-		}
-		dst.Id = decodedValue6591
-	}
-	{
-		item := n.get("guild_id")
-		decodedValue6593, decodeError6594 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6594 != nil {
-			return nil, decodeError6594
-		}
-		dst.GuildId = decodedValue6593
-	}
-	{
-		item := n.get("member_count")
-		decodedValue6595, decodeError6596 := c.nodeEventInt64Field(item, "MemberCount", 0)
-		if decodeError6596 != nil {
-			return nil, decodeError6596
-		}
-		dst.MemberCount = decodedValue6595
-	}
-	{
-		item := n.get("added_members")
-		decodedValue6597, decodeError6598 := c.nodeEventAddedThreadMemberListField(item, "AddedMembers", 0)
-		if decodeError6598 != nil {
-			return nil, decodeError6598
-		}
-		dst.AddedMembers = decodedValue6597
-	}
-	{
-		item := n.get("removed_member_ids")
-		decodedValue6599, decodeError6600 := c.nodeEventStringListField(item, "RemovedMembers", 0)
+		decodedValue6599, decodeError6600 := c.nodeEventStringField(item, "ID", 0)
 		if decodeError6600 != nil {
 			return nil, decodeError6600
 		}
-		dst.RemovedMemberIds = decodedValue6599
+		dst.Id = decodedValue6599
+	}
+	{
+		item := n.get("guild_id")
+		decodedValue6601, decodeError6602 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6602 != nil {
+			return nil, decodeError6602
+		}
+		dst.GuildId = decodedValue6601
+	}
+	{
+		item := n.get("member_count")
+		decodedValue6603, decodeError6604 := c.nodeEventInt64Field(item, "MemberCount", 0)
+		if decodeError6604 != nil {
+			return nil, decodeError6604
+		}
+		dst.MemberCount = decodedValue6603
+	}
+	{
+		item := n.get("added_members")
+		decodedValue6605, decodeError6606 := c.nodeEventAddedThreadMemberListField(item, "AddedMembers", 0)
+		if decodeError6606 != nil {
+			return nil, decodeError6606
+		}
+		dst.AddedMembers = decodedValue6605
+	}
+	{
+		item := n.get("removed_member_ids")
+		decodedValue6607, decodeError6608 := c.nodeEventStringListField(item, "RemovedMembers", 0)
+		if decodeError6608 != nil {
+			return nil, decodeError6608
+		}
+		dst.RemovedMemberIds = decodedValue6607
 	}
 	return dst, nil
 }
@@ -33893,19 +33933,19 @@ func ProjectThreadMemberUpdateEvent(ctx context.Context, raw []byte, source *dis
 		if n.has("id", "user_id", "join_timestamp", "flags", "member") {
 			item = n.without("guild_id")
 		}
-		decodedValue6601, decodeError6602 := c.nodeEventThreadMemberField(item, "ThreadMember", 0)
-		if decodeError6602 != nil {
-			return nil, decodeError6602
+		decodedValue6609, decodeError6610 := c.nodeEventThreadMemberField(item, "ThreadMember", 0)
+		if decodeError6610 != nil {
+			return nil, decodeError6610
 		}
-		dst.ThreadMember = decodedValue6601
+		dst.ThreadMember = decodedValue6609
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6603, decodeError6604 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6604 != nil {
-			return nil, decodeError6604
+		decodedValue6611, decodeError6612 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6612 != nil {
+			return nil, decodeError6612
 		}
-		dst.GuildId = decodedValue6603
+		dst.GuildId = decodedValue6611
 	}
 	return dst, nil
 }
@@ -33925,11 +33965,11 @@ func ProjectThreadUpdateEvent(ctx context.Context, raw []byte, source *discordgo
 		if n.has("id", "guild_id", "name", "topic", "type", "last_message_id", "last_pin_timestamp", "message_count", "member_count", "nsfw", "icon", "position", "bitrate", "recipients", "permission_overwrites", "user_limit", "parent_id", "rate_limit_per_user", "owner_id", "application_id", "thread_metadata", "thread_member", "flags", "available_tags", "applied_tags", "default_reaction_emoji", "default_thread_rate_limit_per_user", "default_sort_order", "default_forum_layout") {
 			item = n.without()
 		}
-		decodedValue6605, decodeError6606 := c.nodeEventChannelField(item, "Channel", 0)
-		if decodeError6606 != nil {
-			return nil, decodeError6606
+		decodedValue6613, decodeError6614 := c.nodeEventChannelField(item, "Channel", 0)
+		if decodeError6614 != nil {
+			return nil, decodeError6614
 		}
-		dst.Channel = decodedValue6605
+		dst.Channel = decodedValue6613
 	}
 	if source != nil && source.BeforeUpdate != nil {
 		v, err := c.toChannel(source.BeforeUpdate, "BeforeUpdate")
@@ -33953,35 +33993,35 @@ func ProjectTypingStartEvent(ctx context.Context, raw []byte, source *discordgo.
 	dst := &wire.TypingStartEvent{}
 	{
 		item := n.get("user_id")
-		decodedValue6607, decodeError6608 := c.nodeEventStringField(item, "UserID", 0)
-		if decodeError6608 != nil {
-			return nil, decodeError6608
+		decodedValue6615, decodeError6616 := c.nodeEventStringField(item, "UserID", 0)
+		if decodeError6616 != nil {
+			return nil, decodeError6616
 		}
-		dst.UserId = decodedValue6607
+		dst.UserId = decodedValue6615
 	}
 	{
 		item := n.get("channel_id")
-		decodedValue6609, decodeError6610 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6610 != nil {
-			return nil, decodeError6610
+		decodedValue6617, decodeError6618 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6618 != nil {
+			return nil, decodeError6618
 		}
-		dst.ChannelId = decodedValue6609
+		dst.ChannelId = decodedValue6617
 	}
 	{
 		item := n.get("guild_id")
-		decodedValue6611, decodeError6612 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6612 != nil {
-			return nil, decodeError6612
+		decodedValue6619, decodeError6620 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6620 != nil {
+			return nil, decodeError6620
 		}
-		dst.GuildId = decodedValue6611
+		dst.GuildId = decodedValue6619
 	}
 	{
 		item := n.get("timestamp")
-		decodedValue6613, decodeError6614 := c.nodeEventInt64Field(item, "Timestamp", 0)
-		if decodeError6614 != nil {
-			return nil, decodeError6614
+		decodedValue6621, decodeError6622 := c.nodeEventInt64Field(item, "Timestamp", 0)
+		if decodeError6622 != nil {
+			return nil, decodeError6622
 		}
-		dst.Timestamp = decodedValue6613
+		dst.Timestamp = decodedValue6621
 	}
 	return dst, nil
 }
@@ -34001,11 +34041,11 @@ func ProjectUserUpdateEvent(ctx context.Context, raw []byte, source *discordgo.U
 		if n.has("id", "email", "username", "avatar", "locale", "discriminator", "global_name", "token", "verified", "mfa_enabled", "banner", "accent_color", "bot", "public_flags", "premium_type", "system", "flags", "primary_guild") {
 			item = n.without()
 		}
-		decodedValue6615, decodeError6616 := c.nodeEventUserField(item, "User", 0)
-		if decodeError6616 != nil {
-			return nil, decodeError6616
+		decodedValue6623, decodeError6624 := c.nodeEventUserField(item, "User", 0)
+		if decodeError6624 != nil {
+			return nil, decodeError6624
 		}
-		dst.User = decodedValue6615
+		dst.User = decodedValue6623
 	}
 	return dst, nil
 }
@@ -34025,11 +34065,11 @@ func ProjectVoiceStateUpdateEvent(ctx context.Context, raw []byte, source *disco
 		if n.has("guild_id", "channel_id", "user_id", "member", "session_id", "deaf", "mute", "self_deaf", "self_mute", "self_stream", "self_video", "suppress", "request_to_speak_timestamp") {
 			item = n.without()
 		}
-		decodedValue6617, decodeError6618 := c.nodeEventVoiceStateField(item, "VoiceState", 0)
-		if decodeError6618 != nil {
-			return nil, decodeError6618
+		decodedValue6625, decodeError6626 := c.nodeEventVoiceStateField(item, "VoiceState", 0)
+		if decodeError6626 != nil {
+			return nil, decodeError6626
 		}
-		dst.VoiceState = decodedValue6617
+		dst.VoiceState = decodedValue6625
 	}
 	if source != nil && source.BeforeUpdate != nil {
 		v, err := c.toVoiceState(source.BeforeUpdate, "BeforeUpdate")
@@ -34053,19 +34093,19 @@ func ProjectWebhooksUpdateEvent(ctx context.Context, raw []byte, source *discord
 	dst := &wire.WebhooksUpdateEvent{}
 	{
 		item := n.get("guild_id")
-		decodedValue6619, decodeError6620 := c.nodeEventStringField(item, "GuildID", 0)
-		if decodeError6620 != nil {
-			return nil, decodeError6620
+		decodedValue6627, decodeError6628 := c.nodeEventStringField(item, "GuildID", 0)
+		if decodeError6628 != nil {
+			return nil, decodeError6628
 		}
-		dst.GuildId = decodedValue6619
+		dst.GuildId = decodedValue6627
 	}
 	{
 		item := n.get("channel_id")
-		decodedValue6621, decodeError6622 := c.nodeEventStringField(item, "ChannelID", 0)
-		if decodeError6622 != nil {
-			return nil, decodeError6622
+		decodedValue6629, decodeError6630 := c.nodeEventStringField(item, "ChannelID", 0)
+		if decodeError6630 != nil {
+			return nil, decodeError6630
 		}
-		dst.ChannelId = decodedValue6621
+		dst.ChannelId = decodedValue6629
 	}
 	return dst, nil
 }

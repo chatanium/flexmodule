@@ -31,14 +31,10 @@ func integerValue(v any) (int64, bool) {
 		}
 		return n, true
 	case json.Number:
-		if !json.Valid([]byte(n)) {
+		i, ok := exactJSONInt64(string(n))
+		if !ok {
 			return 0, false
 		}
-		rational, ok := new(big.Rat).SetString(string(n))
-		if !ok || !rational.IsInt() || !rational.Num().IsInt64() {
-			return 0, false
-		}
-		i := rational.Num().Int64()
 		return i, i >= -maxInteractionInteger && i <= maxInteractionInteger
 	default:
 		return 0, false
@@ -53,22 +49,22 @@ func numberValue(v any) (float64, bool) {
 		if !json.Valid([]byte(n)) {
 			return 0, false
 		}
-		rational, ok := new(big.Rat).SetString(string(n))
-		if !ok {
-			return 0, false
-		}
-		limit := big.NewRat(int64(maxInteractionNumber), 1)
-		if rational.Cmp(limit) > 0 {
-			return 0, false
-		}
-		limit.Neg(limit)
-		if rational.Cmp(limit) < 0 {
-			return 0, false
-		}
 		var err error
 		f, err = strconv.ParseFloat(string(n), 64)
 		if err != nil {
 			return 0, false
+		}
+		if math.Abs(f) == maxInteractionNumber {
+			// Outward rounding distinguishes an exact boundary from a decimal
+			// just beyond it, without constructing an unbounded denominator.
+			exactBound, _, err := big.ParseFloat(string(n), 10, 64, big.AwayFromZero)
+			if err != nil {
+				return 0, false
+			}
+			exactBound.Abs(exactBound)
+			if exactBound.Cmp(big.NewFloat(maxInteractionNumber)) > 0 {
+				return 0, false
+			}
 		}
 	default:
 		return 0, false
