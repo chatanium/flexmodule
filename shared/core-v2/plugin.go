@@ -184,6 +184,7 @@ type HostPlugin struct {
 	factory    HelperServerFactory
 	registrars []HelperRegistrar
 	limits     TransportLimits
+	guard      *BrokerGuard
 	mu         sync.Mutex
 	started    bool
 }
@@ -195,8 +196,10 @@ var _ plugin.GRPCPlugin = (*HostPlugin)(nil)
 // be included). P4 must configure its go-plugin ClientConfig with AutoMTLS=true,
 // GRPCBrokerMultiplex=true, SkipHostEnv=true and AllowedProtocols=[ProtocolGRPC].
 // RunnerFunc, primary path confinement and instance cleanup remain host-owned.
-func NewHostPlugin(startup context.Context, factory HelperServerFactory, registrars []HelperRegistrar, limits TransportLimits) (*HostPlugin, error) {
-	if startup == nil || factory == nil || len(registrars) == 0 || !limits.valid() {
+// guard.DialOption must be installed on the same primary ClientConfig before
+// Client is called. Helper startup rejects absent/mismatched guard binding.
+func NewHostPlugin(startup context.Context, factory HelperServerFactory, registrars []HelperRegistrar, limits TransportLimits, guard *BrokerGuard) (*HostPlugin, error) {
+	if startup == nil || factory == nil || guard == nil || len(registrars) == 0 || !limits.valid() {
 		return nil, NewError(codes.InvalidArgument, ReasonInvalidArgument)
 	}
 	for _, registrar := range registrars {
@@ -204,7 +207,7 @@ func NewHostPlugin(startup context.Context, factory HelperServerFactory, registr
 			return nil, NewError(codes.InvalidArgument, ReasonInvalidArgument)
 		}
 	}
-	return &HostPlugin{startup: startup, factory: factory, registrars: append([]HelperRegistrar(nil), registrars...), limits: limits}, nil
+	return &HostPlugin{startup: startup, factory: factory, registrars: append([]HelperRegistrar(nil), registrars...), limits: limits, guard: guard}, nil
 }
 
 // PluginMap returns the complete host plugin map for application protocol v2.
@@ -226,6 +229,11 @@ func (p *HostPlugin) GRPCClient(lifetime context.Context, broker *plugin.GRPCBro
 	}
 	p.started = true
 	p.mu.Unlock()
+	startup, cancel := context.WithTimeout(p.startup, 30*time.Second)
+	defer cancel()
+	if err := p.guard.awaitPrimary(startup, lifetime, conn); err != nil {
+		return nil, err
+	}
 	a := &helperAcceptor{broker: broker, errors: make(chan error, 1)}
 	ready := make(chan error, 1)
 	done := make(chan struct{})
@@ -286,8 +294,6 @@ func (p *HostPlugin) GRPCClient(lifetime context.Context, broker *plugin.GRPCBro
 			a.errors <- NewError(codes.Unavailable, ReasonHelperUnavailable)
 		}
 	}()
-	startup, cancel := context.WithTimeout(p.startup, 30*time.Second)
-	defer cancel()
 	select {
 	case err := <-ready:
 		if err != nil {
