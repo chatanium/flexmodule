@@ -128,13 +128,15 @@ func (s *Service) Operations() []rt.OperationPolicy {
 			cap = ReceiveCapability
 		}
 		class := rt.FiniteOperation
-		if n == "StreamPlayback" || n == "SubscribeVoice" {
+		if n == "CreatePlaybackJob" || n == "StreamPlayback" || n == "SubscribeVoice" {
 			class = rt.LongLivedOperation
 		}
 		if n == "CancelPlaybackJob" || n == "UnsubscribeVoice" {
 			class = rt.OwnerCleanupOperation
 		}
-		out = append(out, rt.OperationPolicy{Backend: "discord", Operation: n, Capability: cap, Class: class, DrainSafe: class == rt.OwnerCleanupOperation})
+		// Finite controls/queries still require an exact live event work
+		// reference in drain. Owned cleanup is eligible by class alone.
+		out = append(out, rt.OperationPolicy{Backend: "discord", Operation: n, Capability: cap, Class: class, DrainSafe: class == rt.FiniteOperation})
 	}
 	return out
 }

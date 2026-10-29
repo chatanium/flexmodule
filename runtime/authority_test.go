@@ -132,12 +132,13 @@ func TestAwaitOperationSTARTGateDoesNotCreateAuthority(t *testing.T) {
 
 func TestDrainRequiresActiveWorkReference(t *testing.T) {
 	for _, tc := range []struct {
-		name                                                                 string
-		refs                                                                 []string
-		expiredWork, expiredDrain, cleanup, longLived, notDrainSafe, allowed bool
+		name                                                                                            string
+		refs                                                                                            []string
+		expiredWork, expiredDrain, cleanup, longLived, notDrainSafe, foreignWork, foreignScope, allowed bool
 	}{
 		{name: "active", refs: []string{"active"}, allowed: true},
 		{name: "unknown", refs: []string{"unknown"}},
+		{name: "foreign-active", refs: []string{"foreign-active"}, foreignWork: true},
 		{name: "missing"},
 		{name: "ambiguous", refs: []string{"active", "active"}},
 		{name: "completed-callback", refs: []string{"active"}, expiredWork: true},
@@ -145,6 +146,7 @@ func TestDrainRequiresActiveWorkReference(t *testing.T) {
 		{name: "long-lived", refs: []string{"active"}, longLived: true},
 		{name: "not-drain-safe", refs: []string{"active"}, notDrainSafe: true},
 		{name: "owner-cleanup", cleanup: true, allowed: true},
+		{name: "owner-cleanup-foreign-scope", cleanup: true, foreignScope: true},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			m := regressionManager()
@@ -155,6 +157,10 @@ func TestDrainRequiresActiveWorkReference(t *testing.T) {
 			work, cancelWork := context.WithCancel(context.Background())
 			defer cancelWork()
 			i.workRef, i.workContext = "active", work
+			if tc.foreignWork {
+				other := regressionInstance(t, m, "other")
+				other.workRef, other.workContext = "foreign-active", work
+			}
 			if tc.expiredWork {
 				cancelWork()
 			}
@@ -164,9 +170,11 @@ func TestDrainRequiresActiveWorkReference(t *testing.T) {
 			policy := m.operations[operationKey(regressionBackend, "write")]
 			if tc.cleanup {
 				policy.Class = OwnerCleanupOperation
+				policy.DrainSafe = false
 			}
 			if tc.longLived {
 				policy.Class = LongLivedOperation
+				policy.DrainSafe = false
 			}
 			if tc.notDrainSafe {
 				policy.DrainSafe = false
@@ -175,9 +183,17 @@ func TestDrainRequiresActiveWorkReference(t *testing.T) {
 			md := metadata.Pairs("module-id", "forged", "instance-id", "forged")
 			md[core.WorkRefMetadata] = tc.refs
 			ctx := regressionRPC(t, i, metadata.NewIncomingContext(context.Background(), md))
-			p, err := (&Authorizer{instance: i}).Authorize(ctx, AccessRequest{Backend: regressionBackend, Operation: "write", Scopes: []*wire.ResourceScope{regressionScope("group", "a")}})
+			scopes := []*wire.ResourceScope{regressionScope("group", "a")}
+			if tc.foreignScope {
+				scopes = []*wire.ResourceScope{regressionScope("group", "foreign")}
+			}
+			p, err := (&Authorizer{instance: i}).Authorize(ctx, AccessRequest{Backend: regressionBackend, Operation: "write", Scopes: scopes})
 			if !tc.allowed {
-				regressionError(t, err, codes.FailedPrecondition, "INSTANCE_DRAINING")
+				if tc.foreignScope {
+					regressionError(t, err, codes.PermissionDenied, "RESOURCE_SCOPE_DENIED")
+				} else {
+					regressionError(t, err, codes.FailedPrecondition, "INSTANCE_DRAINING")
+				}
 				if len(i.admissions) != 0 {
 					t.Fatal("denied DRAIN work created a lease")
 				}

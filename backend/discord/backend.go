@@ -241,7 +241,9 @@ func (b *Backend) Registration() runtime.BackendRegistration {
 	b.mu.Unlock()
 	r := runtime.BackendRegistration{ID: BackendID, Major: BackendMajor, Adapter: b, ValidateSelector: validateSelector, Register: b.register, ValidateConstraints: b.validateConstraints, ValidateConstraintsSubset: b.validateConstraintsSubset}
 	for _, op := range discordv2.CanonicalOperations() {
-		r.Operations = append(r.Operations, runtime.OperationPolicy{Backend: BackendID, Operation: op.Name, Capability: op.Capability, Class: runtime.FiniteOperation, InitSafe: strings.HasPrefix(op.Name, "ApplicationCommand"), ResourceFree: resourceFreeOperation(op.Name)})
+		// Only finite REST follow-ups may use the runtime's exact live event
+		// work reference during drain; lifecycle/resource admission stays closed.
+		r.Operations = append(r.Operations, runtime.OperationPolicy{Backend: BackendID, Operation: op.Name, Capability: op.Capability, Class: runtime.FiniteOperation, InitSafe: strings.HasPrefix(op.Name, "ApplicationCommand"), DrainSafe: op.Transport == "rest", ResourceFree: resourceFreeOperation(op.Name)})
 	}
 	for _, e := range discordv2.EventRegistry() {
 		r.Operations = append(r.Operations, runtime.OperationPolicy{Backend: BackendID, Operation: e.Capability, Capability: e.Capability, Class: runtime.FiniteOperation, ResourceFree: eventResourceFree(e.Name)})
@@ -250,7 +252,6 @@ func (b *Backend) Registration() runtime.BackendRegistration {
 	for _, x := range discordv2.BackendOwnershipOperations() {
 		p := runtime.OperationPolicy{Backend: BackendID, Operation: x.Name, Capability: x.Capability, InitSafe: true, Class: runtime.FiniteOperation}
 		if x.Name == "UnregisterInteractionRoutes" {
-			p.DrainSafe = true
 			p.Class = runtime.OwnerCleanupOperation
 		}
 		r.Operations = append(r.Operations, p)
