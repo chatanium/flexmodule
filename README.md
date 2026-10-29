@@ -13,6 +13,66 @@ Once our PoC implementation for multi-provider (Backend) is finalized, this code
 * **Module system integration based on gRPC (w. protobuf)**<br/>
 Ultimately, Chatanium's goal is to deploy/develop/operate better chatbots. Therefore, the existing module system has some limitations (https://github.com/thirdscam/chatanium/issues/10), and fixing them is our top priority. To solve these problems, we will implement a module system based on gRPC, which will provide cross-platform compilation and better security.
 
+## Build and generation
+
+The language floor is Go 1.24.0. The compiler is pinned to **Go 1.27.3** in
+`.go-version` and `tools/versions.mk`; build commands select it with `GOTOOLCHAIN`.
+Buf 1.50.0, protoc-gen-go v1.36.5, and protoc-gen-go-grpc v1.3.0 are installed
+under the ignored `.tools/bin` directory. If a version-manager shim cannot start
+the pinned compiler, set `BOOTSTRAP_GO` to an actual Go executable, or install
+the pinned distribution at `.tools/go/bin/go`.
+
+```sh
+make tools
+make build
+make build-media
+make buf
+make buf-check
+```
+
+| Command | Owned scope |
+|---|---|
+| `make build` | `bin/runtime` and `bin/test-module`; no native voice dependency |
+| `make build-media` | Go binaries for `chatanium-musicbot` and `voice-player-module`; does not install or invoke ffmpeg or yt-dlp |
+| `make build-all CGO_ENABLED=1` | All six maintained modules, including all root/SDK packages and both nested SDK examples |
+| `make buf` | Generate into staging, validate the exact output set, and publish only owned generated files |
+| `make buf-check` | Compare staged generation with checked-in outputs without changing them |
+| `make clean` | Remove only the explicitly listed build outputs; preserve unrelated files in `bin/` |
+| `make run` | Build successfully before launching the runtime with the operator's configuration |
+
+The maintained modules are the root, `discordgo`, `chatanium-musicbot`,
+`voice-player-module`, `discordgo/examples/linked_roles`, and
+`discordgo/examples/voice_receive`. Every DiscordGo consumer resolves to the
+same local `discordgo` tree. The two ignored `helper-service` modules are
+experiments, not production build inputs.
+
+The legacy SDK voice-receive example requires a C compiler, pkg-config, Opus,
+and opusfile development files. On Rocky Linux these are provided by
+`opus-devel`, `opusfile-devel`, and their dependencies; enable CGO explicitly
+for that full inventory build. Linux/amd64 and `CGO_ENABLED=0` are the ordinary
+defaults. Cross-compiling a CGO target additionally requires a matching `CC`
+and target libraries.
+
+Builds use read-only module files and publish each binary only after its
+compilation succeeds. Failed generation leaves existing generated files
+unchanged; a publication failure restores already replaced owned files.
+Generation and build publication are serialized independently. The optional
+native DAVE host bundle is a separate P5 deliverable, not an implicit part of
+ordinary or media-module compilation.
+
+### Implementation record
+
+- **2026-10-29 — P0 baseline:** pinned tools and local SDK resolution, restored
+  interaction converter compilation, and replaced destructive build/generation
+  commands. Ordinary and media binaries plus the complete six-module inventory
+  compiled. Deterministic regeneration, non-mutating drift detection, failed
+  build preservation, failed generation preservation, and rollback after a
+  partially published change were exercised. These checks do not certify v2
+  conversion semantics, sandbox isolation, or live Discord/voice behavior.
+- The [staged proposals](docs/proposals/flexmodule-0-build-and-dependency-baseline.md)
+  define the coordinated v2 cutover. The P0 runtime still uses v1; it is not a
+  completed or deployable v2 implementation.
+
 ## Local Discord browser debugging
 
 `.mcp.json` registers `discord-devtools` using Chrome DevTools MCP. It requires
