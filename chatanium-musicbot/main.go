@@ -193,26 +193,26 @@ func (m *musicBot) OnStage(ctx context.Context, req *corewire.StageRequest) (err
 		return errors.New("unsupported lifecycle stage")
 	}
 }
-func musicCommands() []*discordgo.ApplicationCommand {
-	stringOption := func(name, description string) *discordgo.ApplicationCommandOption {
-		return &discordgo.ApplicationCommandOption{Type: discordgo.ApplicationCommandOptionString, Name: name, Description: description, Required: true}
+func musicCommands() []*discord.ApplicationCommandView {
+	stringOption := func(name, description string) *discord.ApplicationCommandOptionView {
+		return &discord.ApplicationCommandOptionView{Type: discordgo.ApplicationCommandOptionString, Name: name, Description: description, Required: true}
 	}
-	commands := []*discordgo.ApplicationCommand{
-		{Name: "play", Description: "Accept an ordered bounded music request", Options: []*discordgo.ApplicationCommandOption{
+	commands := []*discord.ApplicationCommandView{
+		{Name: "play", Description: "Accept an ordered bounded music request", Options: []*discord.ApplicationCommandOptionView{
 			{Type: discordgo.ApplicationCommandOptionString, Name: "provider", Description: "Music provider", Required: true, Choices: []*discordgo.ApplicationCommandOptionChoice{{Name: "youtube", Value: "youtube"}}}, stringOption("query", "YouTube URL or search query")}},
-		{Name: "remove", Description: "Remove a waiting entry (never current)", Options: []*discordgo.ApplicationCommandOption{stringOption("entry", "Entry ID from /list")}},
+		{Name: "remove", Description: "Remove a waiting entry (never current)", Options: []*discord.ApplicationCommandOptionView{stringOption("entry", "Entry ID from /list")}},
 		{Name: "list", Description: "Show independent current and waiting playlist state"},
 		{Name: "pause", Description: "Pause the owned current playback job"},
 		{Name: "resume", Description: "Resume the same owned current playback job"},
 		{Name: "skip", Description: "Cancel current and wait for terminal and reader release"},
-		{Name: "loop", Description: "Loop only normally completed entries", Options: []*discordgo.ApplicationCommandOption{{Type: discordgo.ApplicationCommandOptionBoolean, Name: "enabled", Description: "Enable loop", Required: true}}},
+		{Name: "loop", Description: "Loop only normally completed entries", Options: []*discord.ApplicationCommandOptionView{{Type: discordgo.ApplicationCommandOptionBoolean, Name: "enabled", Description: "Enable loop", Required: true}}},
 	}
 	permissions := int64(discordgo.PermissionUseApplicationCommands)
 	contexts := []discordgo.InteractionContextType{discordgo.InteractionContextGuild}
 	integrations := []discordgo.ApplicationIntegrationType{discordgo.ApplicationIntegrationGuildInstall}
 	for _, c := range commands {
 		c.Type = discordgo.ChatApplicationCommand
-		c.DefaultMemberPermissions = &permissions
+		c.DefaultMemberPermissions = &discord.Nullable[int64]{Value: permissions}
 		c.Contexts = &contexts
 		c.IntegrationTypes = &integrations
 	}

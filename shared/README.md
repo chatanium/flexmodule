@@ -84,6 +84,26 @@ null are distinct. Interaction and webhook handles hold opaque credential refs,
 not raw tokens. Live host objects, voice session credentials and bot tokens do
 not cross the module boundary.
 
+Command create, edit, get, list and bulk-overwrite use `ApplicationCommandView`,
+including `ApplicationCommandToProto` and `ProtoToApplicationCommand`. Its
+`DefaultMemberPermissions` is `*Nullable[int64]`: nil means absent;
+`&Nullable[int64]{Null: true}` means explicit null (permission clear on edit);
+`&Nullable[int64]{Value: 0}` means explicit administrator-only zero; a nonzero
+`Value` retains the exact nonnegative permission mask. HTTP requests emit null,
+`"0"` or the decimal mask string respectively; absence omits the key. A normal
+Discord response with `default_member_permissions: null` therefore remains a
+present null, not an error, an omitted permission or administrator-only zero.
+Command options, including recursively nested options, use
+`ApplicationCommandOptionView`. Its `MaxValue *float64` and `MaxLength *int`
+preserve omission rather than inventing zero limits from SDK value-only fields.
+For example, an ordinary string autocomplete option with nil bounds sends neither
+`max_value` nor `max_length`; `MaxValue: new(float64(0))` sends an explicit numeric
+upper bound of zero, and `MaxLength: new(200)` sends a supported string limit.
+Other option fields, choices, context/integration lists and optional default
+flags retain their SDK-compatible types. There are no `discordgo.ApplicationCommand`
+or `discordgo.ApplicationCommandOption` compatibility overloads: rebuild and
+migrate callers to the views rather than collapsing presence.
+
 File readers are not protobuf fields: explicitly stream with
 `core.FileClient.Upload` and pass owner-bound `UploadedFileRef` values to typed
 Discord operations. Uploads use at most 256 KiB chunks, a separate 500 MiB

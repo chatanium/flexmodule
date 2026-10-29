@@ -24,7 +24,7 @@ var manifestJSON []byte
 
 type commandBinding struct {
 	GuildID, Name string
-	Permissions   *int64
+	Permissions   *discord.Nullable[int64]
 }
 type GeneralBot struct {
 	mu                           sync.Mutex

@@ -12718,7 +12718,7 @@
     {
       "source_type": "ApplicationCommand",
       "classification": "direct",
-      "safe_view": null,
+      "safe_view": "ApplicationCommandView",
       "entrypoints": [
         "ApplicationCommandToProto",
         "ProtoToApplicationCommand"
@@ -12826,7 +12826,7 @@
           "classification": "safe-wrapper",
           "decision": "Decimal permission bitmask; no floating-point or enum conversion. Nullable patch field: absent/value/null retained; endpoint rejects unsupported null.",
           "safe_go_field": "DefaultMemberPermissions",
-          "safe_go_type": "*int64",
+          "safe_go_type": "*Nullable[int64]",
           "wire_type": "flexmodule.core.v2.NullableString",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": "Nonnegative decimal permission bitmask; SDK int64 range 0..9223372036854775807; preserve absent/null/zero.",
@@ -12910,7 +12910,7 @@
           "classification": "safe-wrapper",
           "decision": "Concrete collection wrapper preserves absent versus present empty; retain order/map keys; reject nil elements, never skip.",
           "safe_go_field": "Options",
-          "safe_go_type": "[]*discordgo.ApplicationCommandOption",
+          "safe_go_type": "[]*ApplicationCommandOptionView",
           "wire_type": "DomainApplicationCommandOptionList",
           "partial_wire_type": "DomainNullableDomainDomainNullablePartialApplicationCommandOptionList",
           "numeric_contract": null,
@@ -13158,7 +13158,7 @@
     {
       "source_type": "ApplicationCommandOption",
       "classification": "direct",
-      "safe_view": null,
+      "safe_view": "ApplicationCommandOptionView",
       "entrypoints": [
         "ApplicationCommandOptionToProto",
         "ProtoToApplicationCommandOption"
@@ -13254,7 +13254,7 @@
           "classification": "safe-wrapper",
           "decision": "Concrete collection wrapper preserves absent versus present empty; retain order/map keys; reject nil elements, never skip.",
           "safe_go_field": "Options",
-          "safe_go_type": "[]*discordgo.ApplicationCommandOption",
+          "safe_go_type": "[]*ApplicationCommandOptionView",
           "wire_type": "DomainApplicationCommandOptionList",
           "partial_wire_type": "DomainNullableDomainDomainNullablePartialApplicationCommandOptionList",
           "numeric_contract": null,
@@ -13302,7 +13302,7 @@
           "classification": "direct",
           "decision": "Field-by-field conversion; source value is not mutated.",
           "safe_go_field": "MaxValue",
-          "safe_go_type": "float64",
+          "safe_go_type": "*float64",
           "wire_type": "double",
           "partial_wire_type": "DomainNullableDouble",
           "numeric_contract": "Source range finite IEEE-754 binary64; NaN/infinity rejected; checked conversion, no truncation/wrap; negative lengths/counts rejected.",
@@ -13326,7 +13326,7 @@
           "classification": "direct",
           "decision": "Field-by-field conversion; source value is not mutated.",
           "safe_go_field": "MaxLength",
-          "safe_go_type": "int",
+          "safe_go_type": "*int",
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
@@ -28999,6 +28999,13 @@
       "decision": "Parent-discriminated raw projection; SDK accessors receive concrete value variants"
     },
     "request_marshal_boundaries": {
+      "ApplicationCommand": [
+        "default_member_permissions"
+      ],
+      "ApplicationCommandOption": [
+        "max_value",
+        "max_length"
+      ],
       "GuildMemberParams": [
         "channel_id",
         "communication_disabled_until"
@@ -29006,7 +29013,7 @@
       "GuildScheduledEventParams": [
         "channel_id"
       ],
-      "decision": "Source custom null sentinels replaced by explicit presence-aware nullable views; no guessed SDK empty/zero normalization"
+      "decision": "SDK null/presence loss and custom null sentinels replaced by explicit presence-aware views; no guessed SDK empty/zero normalization"
     }
   }
 }

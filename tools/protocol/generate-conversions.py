@@ -53,9 +53,14 @@ for file in ['domain','events']:
 views={'MessageSend':'MessageSendView','MessageEdit':'MessageEditPatch','WebhookParams':'WebhookParamsView','WebhookEdit':'WebhookEditPatch','InteractionResponseData':'InteractionResponseDataView','AuditLogChange':'AuditLogChangeValue','AuditLogEntry':'AuditLogEntryView','GuildAuditLog':'GuildAuditLogView','GuildMemberAddParams':'GuildMemberAddParamsView'}
 nullable={(t['source_type'],f['source_field']) for t in M['types'] for f in t.get('fields',[]) if f.get('wire_type') and ('Nullable' in f['wire_type'])}
 for n,_ in nullable:
-    if n not in views and n != 'ApplicationCommand': views[n]=n+'View'
+    if n not in views: views[n]=n+'View'
 patches={'ChannelEdit','GuildParams','GuildMemberParams','RoleParams','GuildScheduledEventParams','GuildTemplateParams','MessageEdit','WebhookEdit','InteractionResponseData'}
 for n in patches:
+    views.setdefault(n,n+'View')
+# SDK value-only omitempty bounds cannot distinguish omission from numeric zero.
+# Reuse the patch-pointer policy for just these fields, including recursive options.
+presence_fields={('ApplicationCommandOption','MaxValue'),('ApplicationCommandOption','MaxLength')}
+for n,_ in presence_fields:
     views.setdefault(n,n+'View')
 # Propagate safe views through fixed SDK outer structs, never put a safe value in an SDK field.
 changed=True
@@ -65,7 +70,7 @@ while changed:
         if n in views or t['source_kind']!='struct' or n in {'Session','State','Identify','File'}: continue
         if any(any(re.search(r'\b'+re.escape(v)+r'\b',f['source_type']) for v in views) for f in t['fields']):
             views[n]=n+'View'; changed=True
-# ApplicationCommand's optional permission supports absent/value; explicit wire null is rejected.
+# ApplicationCommand uses the same explicit absent/null/value view as other nullable fields.
 
 def gtype(s):
     if s.startswith('*'): return '*'+gtype(s[1:])
@@ -100,6 +105,7 @@ def bare(s):
     return s
 def patchpointer(n,f):
     s=f['source_type'];name=f['source_field']
+    if (n,name) in presence_fields:return True
     return n in patches and not s.startswith(('*','[]','map[')) and bare(s) in {'string','bool','int','int64','int32','uint','uint8','uint16','uint32','uint64','float64'} and (n,name) not in nullable and name not in {'ID','Channel','ChannelID','Flags'}
 def viewfield(n,f):
     return 'ChannelID' if n=='MessageEdit' and f['source_field']=='Channel' else f['source_field']
@@ -267,12 +273,7 @@ for n,t in D.items():
                 emit(f'v,err := choice'+('ToWire' if d=='to' else 'FromWire')+f'({x},optionType,c,{p}); if err!=nil{{return nil,err}}; {y}=v')
             elif (n,fn) in nullable:
                 # Patches content *string deliberately reject null; other nullable fields expose typed Null.
-                if n=='ApplicationCommand':
-                    if d=='to':
-                        emit(f'if {x} != nil {{ if *{x}<0 {{ {fail("OutOfRange",p,"permissions must be nonnegative")} }};{y}=&corewire.NullableString{{Kind:&corewire.NullableString_Value{{Value:strconv.FormatInt(*{x},10)}}}} }}')
-                    else:
-                        emit(f'if {x} != nil {{ v,ok:={x}.Kind.(*corewire.NullableString_Value);if !ok || v==nil {{ {fail("InvalidPresence",p,"null permission cannot be represented by SDK")} }}; value,err:=parsePermissions(v.Value);if err!=nil{{ {fail("OutOfRange",p,"invalid decimal permissions")} }};{y}=&value }}')
-                elif n in {'MessageEdit','WebhookEdit','InteractionResponseData'}:
+                if n in {'MessageEdit','WebhookEdit','InteractionResponseData'}:
                     if d=='to':emit(f'if {x} != nil {{ {y}=&corewire.NullableString{{Kind:&corewire.NullableString_Value{{Value:*{x}}}}} }}')
                     else:emit(f'if {x} != nil {{ v,ok:={x}.Kind.(*corewire.NullableString_Value);if !ok || v==nil {{ {fail("InvalidPresence",p,"null content is not supported")} }}; {y}=copyPointer(&v.Value) }}')
                 else:
@@ -341,7 +342,7 @@ artifact['custom_json_review']={
     'hidden_field_decisions':[{'source_type':n,'source_field':field,'json_key':CUSTOM_JSON_KEYS.get((n,field)),'decision':'Source-reviewed custom polymorphic JSON decoder' if (n,field) in CUSTOM_JSON_KEYS else HIDDEN_JSON_EXCLUSIONS[n,field]} for n,field in sorted(hidden_fields)],
     'component_codecs':[{'source_type':n,'discriminators':values,'marshal_discriminator_key':'type','polymorphic_nested_keys':{'ActionsRow':['components'],'Section':['components','accessory'],'Container':['components'],'Label':['component']}.get(n,[]),'decision':'Static variant switch and declared source keys; SelectMenu type retains menu kind; explicit Button style is not default-normalized'} for n,values in M['component_discriminators'].items()],
     'interaction_data':{'json_key':'data','parent_key':'type','families':{'2':'ApplicationCommandInteractionData','4':'ApplicationCommandInteractionData','3':'MessageComponentInteractionData','5':'ModalSubmitInteractionData'},'decision':'Parent-discriminated raw projection; SDK accessors receive concrete value variants'},
-    'request_marshal_boundaries':{'GuildMemberParams':['channel_id','communication_disabled_until'],'GuildScheduledEventParams':['channel_id'],'decision':'Source custom null sentinels replaced by explicit presence-aware nullable views; no guessed SDK empty/zero normalization'},
+    'request_marshal_boundaries':{'ApplicationCommand':['default_member_permissions'],'ApplicationCommandOption':['max_value','max_length'],'GuildMemberParams':['channel_id','communication_disabled_until'],'GuildScheduledEventParams':['channel_id'],'decision':'SDK null/presence loss and custom null sentinels replaced by explicit presence-aware views; no guessed SDK empty/zero normalization'},
 }
 def field_receipt(n,f):
     result={'source_field':f['source_field'],'wire_field':f['wire_field'],'classification':f['classification'],'decision':f['decision'],'safe_go_field':viewfield(n,f),'safe_go_type':fieldtype(n,f) if n in views else gtype(f['source_type']),'wire_type':f['wire_type'],'partial_wire_type':f.get('partial_wire_type'),'numeric_contract':f.get('numeric_contract'),'implementation':'static checked to/from field conversion; recursive typed ingress'}
@@ -623,7 +624,7 @@ for family,variants,oneof in [('MessageComponent',list(M['component_discriminato
 # borrowed ingress tree but target ordinary snapshot DTOs directly.
 for n,t in D.items():
     if t['source_kind']!='struct' or n in {'Session','Identify','State','File'}:continue
-    if n not in views or n in {'AuditLogChange','AuditLogEntry','GuildAuditLog'}:
+    if n not in views or n in {'ApplicationCommand','ApplicationCommandOption','AuditLogChange','AuditLogEntry','GuildAuditLog'}:
         extra=',optionType discordgo.ApplicationCommandOptionType' if n=='ApplicationCommandOptionChoice' else ''
         rootparent='int64(optionType)' if extra else '0'
         emit(f'func Project{n}JSON(ctx context.Context,raw []byte,encoder core.CredentialEncoder,policy ProjectionPolicy{extra})(*wire.{n},error){{c:=newConversion("StructToProto","{n}");c.ctx=ctx;c.encoder=encoder;c.policy=policy;c.projecting=true;node,err:=parseIngress(raw,c);if err!=nil{{return nil,err}};return c.nodeSnapshot{n}(node,"",{rootparent})}}')

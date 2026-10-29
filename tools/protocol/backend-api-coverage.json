@@ -2257,11 +2257,11 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestMessageAttachmentClearIsNotAbsence",
       "resourceFields": {},
       "nonResourceIdFields": [],
       "mutationRoots": [],
-      "mutationRootsPolicy": "explicit operation-specific root selection in generated planner",
-      "behavioralProbe": "TestMessageAttachmentClearIsNotAbsence"
+      "mutationRootsPolicy": "explicit operation-specific root selection in generated planner"
     },
     {
       "operation": "ChannelMessagePin",
@@ -2385,14 +2385,14 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "responseBehavioralProbe": "TestMessageRESTProjectionPreservesExplicitEmptyAndZero",
       "resourceFields": {
         "channel_id": "channel_id"
       },
       "nonResourceIdFields": [],
       "mutationRoots": [
         "channel_id"
-      ],
-      "responseBehavioralProbe": "TestMessageRESTProjectionPreservesExplicitEmptyAndZero"
+      ]
     },
     {
       "operation": "ChannelMessageUnpin",
@@ -2541,6 +2541,7 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestChannelMessagesCursorAndQueryContract",
       "resourceFields": {
         "channel_id": "channel_id"
       },
@@ -2549,8 +2550,7 @@
         "after_id",
         "around_id"
       ],
-      "mutationRoots": [],
-      "behavioralProbe": "TestChannelMessagesCursorAndQueryContract"
+      "mutationRoots": []
     },
     {
       "operation": "ChannelMessagesBulkDelete",
@@ -2683,12 +2683,12 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "responseBehavioralProbe": "TestPinnedMessageRESTProjectionPreservesPaginationAndTimestamp",
       "resourceFields": {
         "channel_id": "channel_id"
       },
       "nonResourceIdFields": [],
-      "mutationRoots": [],
-      "responseBehavioralProbe": "TestPinnedMessageRESTProjectionPreservesPaginationAndTimestamp"
+      "mutationRoots": []
     },
     {
       "operation": "ChannelNewsFollow",
@@ -3428,10 +3428,10 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "responseBehavioralProbe": "TestGatewayBotRESTProjectionPreservesCompleteSnapshot",
       "resourceFields": {},
       "nonResourceIdFields": [],
-      "mutationRoots": [],
-      "responseBehavioralProbe": "TestGatewayBotRESTProjectionPreservesCompleteSnapshot"
+      "mutationRoots": []
     },
     {
       "operation": "Guild",
@@ -4204,14 +4204,14 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestMutatedGuildRootsAreIndependentOfPayloadChannels/GuildEdit",
       "resourceFields": {
         "guild_id": "guild_id"
       },
       "nonResourceIdFields": [],
       "mutationRoots": [
         "guild_id"
-      ],
-      "behavioralProbe": "TestMutatedGuildRootsAreIndependentOfPayloadChannels/GuildEdit"
+      ]
     },
     {
       "operation": "GuildEmbed",
@@ -4324,14 +4324,14 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestMutatedGuildRootsAreIndependentOfPayloadChannels/GuildEmbedEdit",
       "resourceFields": {
         "guild_id": "guild_id"
       },
       "nonResourceIdFields": [],
       "mutationRoots": [
         "guild_id"
-      ],
-      "behavioralProbe": "TestMutatedGuildRootsAreIndependentOfPayloadChannels/GuildEmbedEdit"
+      ]
     },
     {
       "operation": "GuildEmoji",
@@ -5173,6 +5173,7 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestMemberRoleReplacementPresenceAndGranularMemberRoot",
       "resourceFields": {
         "guild_id": "guild_id",
         "user_id": "user_id"
@@ -5181,8 +5182,7 @@
       "mutationRoots": [
         "user_id"
       ],
-      "roleReplacement": "only explicit roles wrapper; existing + submitted role lookup and protected guild root before mutation",
-      "behavioralProbe": "TestMemberRoleReplacementPresenceAndGranularMemberRoot"
+      "roleReplacement": "only explicit roles wrapper; existing + submitted role lookup and protected guild root before mutation"
     },
     {
       "operation": "GuildMemberNickname",
@@ -6191,12 +6191,12 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "responseBehavioralProbe": "TestExactCountProjectionAndWebhookNoWait",
       "resourceFields": {
         "guild_id": "guild_id"
       },
       "nonResourceIdFields": [],
-      "mutationRoots": [],
-      "responseBehavioralProbe": "TestExactCountProjectionAndWebhookNoWait"
+      "mutationRoots": []
     },
     {
       "operation": "GuildRoleReorder",
@@ -7418,13 +7418,13 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestInviteWithCountsQueryContract",
       "resourceFields": {
         "invite_id": "invite_id",
         "guild_scheduled_event_id": "scheduled_event_id"
       },
       "nonResourceIdFields": [],
-      "mutationRoots": [],
-      "behavioralProbe": "TestInviteWithCountsQueryContract"
+      "mutationRoots": []
     },
     {
       "operation": "InviteDelete",
@@ -8010,6 +8010,7 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestPollAnswerIsEndpointParameterNotAuthoritySelector",
       "resourceFields": {
         "channel_id": "channel_id",
         "message_id": "message_id"
@@ -8017,8 +8018,7 @@
       "nonResourceIdFields": [
         "answer_id"
       ],
-      "mutationRoots": [],
-      "behavioralProbe": "TestPollAnswerIsEndpointParameterNotAuthoritySelector"
+      "mutationRoots": []
     },
     {
       "operation": "PollExpire",
@@ -9427,13 +9427,13 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestUserGuildsWithCountsQueryContract",
       "resourceFields": {},
       "nonResourceIdFields": [
         "before_id",
         "after_id"
       ],
-      "mutationRoots": [],
-      "behavioralProbe": "TestUserGuildsWithCountsQueryContract"
+      "mutationRoots": []
     },
     {
       "operation": "UserUpdate",
@@ -9570,13 +9570,13 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "responseBehavioralProbe": "TestVoiceStateRESTProjectionPreservesFieldsWithoutSessionSecrets",
       "resourceFields": {
         "guild_id": "guild_id",
         "user_id": "user_id"
       },
       "nonResourceIdFields": [],
-      "mutationRoots": [],
-      "responseBehavioralProbe": "TestVoiceStateRESTProjectionPreservesFieldsWithoutSessionSecrets"
+      "mutationRoots": []
     },
     {
       "operation": "VoiceRegions",
@@ -10388,15 +10388,15 @@
         "auditReason": "explicit operation allowlist in supportsAuditReason; presence/conflict checked before IO",
         "locale": "fixed X-Discord-Locale only"
       },
+      "behavioralProbe": "TestThreadDestinationDoesNotRewriteCredentialParent",
+      "responseBehavioralProbe": "TestExactCountProjectionAndWebhookNoWait",
       "resourceFields": {
         "webhook_id": "webhook_id",
         "thread_id": "channel_id"
       },
       "nonResourceIdFields": [],
       "mutationRoots": [],
-      "mutationRootsPolicy": "explicit operation-specific root selection in generated planner",
-      "behavioralProbe": "TestThreadDestinationDoesNotRewriteCredentialParent",
-      "responseBehavioralProbe": "TestExactCountProjectionAndWebhookNoWait"
+      "mutationRootsPolicy": "explicit operation-specific root selection in generated planner"
     },
     {
       "operation": "WebhookWithToken",

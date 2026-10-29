@@ -2,7 +2,7 @@
   "generator": "python3 tools/protocol/generate-client.py",
   "inputSHA256": {
     "api-mapping.json": "2ce36bd9fe5de4df2caf8b04812bf78c37f8455f236782a2205306f2f97245d5",
-    "conversions_generated.go": "b1debfe2ba0b2d4ff6391b00dac89c0dae1985ec37d192598c525ad9a03f67fc"
+    "conversions_generated.go": "a3e919c22aaec09e2af80c42b4902fcc2f9dc03c0206ebab16a12cc61fd8ec27"
   },
   "counts": {
     "canonical": 153,
@@ -28,7 +28,7 @@
     {
       "name": "ApplicationCommand",
       "kind": "canonical",
-      "signature": "func (c *Client) ApplicationCommand(ctx context.Context, appID string, guildID string, cmdID string, options ...RequestOption) (*discordgo.ApplicationCommand, error)",
+      "signature": "func (c *Client) ApplicationCommand(ctx context.Context, appID string, guildID string, cmdID string, options ...RequestOption) (*ApplicationCommandView, error)",
       "fullMethod": "/flexmodule.discord.v2.Helper/ApplicationCommand",
       "request": "ApplicationCommandRequest",
       "response": "ApplicationCommandResponse",
@@ -38,13 +38,13 @@
         "cmd_id",
         "options"
       ],
-      "output": "*discordgo.ApplicationCommand",
+      "output": "*ApplicationCommandView",
       "source": "discordgo/restapi.go:3094-3108"
     },
     {
       "name": "ApplicationCommandBulkOverwrite",
       "kind": "canonical",
-      "signature": "func (c *Client) ApplicationCommandBulkOverwrite(ctx context.Context, appID string, guildID string, commands []*discordgo.ApplicationCommand, options ...RequestOption) ([]*discordgo.ApplicationCommand, error)",
+      "signature": "func (c *Client) ApplicationCommandBulkOverwrite(ctx context.Context, appID string, guildID string, commands []*ApplicationCommandView, options ...RequestOption) ([]*ApplicationCommandView, error)",
       "fullMethod": "/flexmodule.discord.v2.Helper/ApplicationCommandBulkOverwrite",
       "request": "ApplicationCommandBulkOverwriteRequest",
       "response": "ApplicationCommandBulkOverwriteResponse",
@@ -54,13 +54,13 @@
         "commands",
         "options"
       ],
-      "output": "[]*discordgo.ApplicationCommand",
+      "output": "[]*ApplicationCommandView",
       "source": "discordgo/restapi.go:3059-3073"
     },
     {
       "name": "ApplicationCommandCreate",
       "kind": "canonical",
-      "signature": "func (c *Client) ApplicationCommandCreate(ctx context.Context, appID string, guildID string, cmd *discordgo.ApplicationCommand, options ...RequestOption) (*discordgo.ApplicationCommand, error)",
+      "signature": "func (c *Client) ApplicationCommandCreate(ctx context.Context, appID string, guildID string, cmd *ApplicationCommandView, options ...RequestOption) (*ApplicationCommandView, error)",
       "fullMethod": "/flexmodule.discord.v2.Helper/ApplicationCommandCreate",
       "request": "ApplicationCommandCreateRequest",
       "response": "ApplicationCommandCreateResponse",
@@ -70,7 +70,7 @@
         "cmd",
         "options"
       ],
-      "output": "*discordgo.ApplicationCommand",
+      "output": "*ApplicationCommandView",
       "source": "discordgo/restapi.go:3019-3033"
     },
     {
@@ -92,7 +92,7 @@
     {
       "name": "ApplicationCommandEdit",
       "kind": "canonical",
-      "signature": "func (c *Client) ApplicationCommandEdit(ctx context.Context, appID string, guildID string, cmdID string, cmd *discordgo.ApplicationCommand, options ...RequestOption) (*discordgo.ApplicationCommand, error)",
+      "signature": "func (c *Client) ApplicationCommandEdit(ctx context.Context, appID string, guildID string, cmdID string, cmd *ApplicationCommandView, options ...RequestOption) (*ApplicationCommandView, error)",
       "fullMethod": "/flexmodule.discord.v2.Helper/ApplicationCommandEdit",
       "request": "ApplicationCommandEditRequest",
       "response": "ApplicationCommandEditResponse",
@@ -103,7 +103,7 @@
         "cmd",
         "options"
       ],
-      "output": "*discordgo.ApplicationCommand",
+      "output": "*ApplicationCommandView",
       "source": "discordgo/restapi.go:3040-3054"
     },
     {
@@ -125,7 +125,7 @@
     {
       "name": "ApplicationCommands",
       "kind": "canonical",
-      "signature": "func (c *Client) ApplicationCommands(ctx context.Context, appID string, guildID string, options ...RequestOption) ([]*discordgo.ApplicationCommand, error)",
+      "signature": "func (c *Client) ApplicationCommands(ctx context.Context, appID string, guildID string, options ...RequestOption) ([]*ApplicationCommandView, error)",
       "fullMethod": "/flexmodule.discord.v2.Helper/ApplicationCommands",
       "request": "ApplicationCommandsRequest",
       "response": "ApplicationCommandsResponse",
@@ -134,7 +134,7 @@
         "guild_id",
         "options"
       ],
-      "output": "[]*discordgo.ApplicationCommand",
+      "output": "[]*ApplicationCommandView",
       "source": "discordgo/restapi.go:3113-3127"
     },
     {

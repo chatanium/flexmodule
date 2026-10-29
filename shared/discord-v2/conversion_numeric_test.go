@@ -13,16 +13,16 @@ import (
 )
 
 func TestCommandPermissionsPreserveAbsentAndExplicitZero(t *testing.T) {
-	absent, err := discordv2.ApplicationCommandToProto(&discordgo.ApplicationCommand{Name: "absent"})
+	absent, err := discordv2.ApplicationCommandToProto(&discordv2.ApplicationCommandView{Name: "absent"})
 	if err != nil || absent.DefaultMemberPermissions != nil {
 		t.Fatalf("absent permission: %v, %v", absent, err)
 	}
-	zero, err := discordv2.ApplicationCommandToProto(&discordgo.ApplicationCommand{Name: "zero", DefaultMemberPermissions: new(int64(0))})
+	zero, err := discordv2.ApplicationCommandToProto(&discordv2.ApplicationCommandView{Name: "zero", DefaultMemberPermissions: &discordv2.Nullable[int64]{Value: 0}})
 	if err != nil || zero.DefaultMemberPermissions == nil || zero.DefaultMemberPermissions.GetValue() != "0" {
 		t.Fatalf("zero permission: %v, %v", zero, err)
 	}
 	decoded, err := discordv2.ProtoToApplicationCommand(&wire.ApplicationCommand{DefaultMemberPermissions: &corewire.NullableString{Kind: &corewire.NullableString_Value{Value: "0"}}})
-	if err != nil || decoded.DefaultMemberPermissions == nil || *decoded.DefaultMemberPermissions != 0 {
+	if err != nil || decoded.DefaultMemberPermissions == nil || decoded.DefaultMemberPermissions.Null || decoded.DefaultMemberPermissions.Value != 0 {
 		t.Fatalf("decoded explicit zero: %#v, %v", decoded, err)
 	}
 	for _, invalid := range []string{"-1", "9223372036854775808", "1.5", "not-a-permission"} {
@@ -163,7 +163,7 @@ func TestChoiceRequiresMatchingParentAndPreservesLocalizations(t *testing.T) {
 		t.Fatal("boolean parent accepted choice")
 	}
 	requireConversionError(t, err, "ProtoToStruct", "ApplicationCommandOptionChoice", "")
-	parent, err := discordv2.ApplicationCommandOptionToProto(&discordgo.ApplicationCommandOption{Type: discordgo.ApplicationCommandOptionInteger, Choices: []*discordgo.ApplicationCommandOptionChoice{choice}})
+	parent, err := discordv2.ApplicationCommandOptionToProto(&discordv2.ApplicationCommandOptionView{Type: discordgo.ApplicationCommandOptionInteger, Choices: []*discordgo.ApplicationCommandOptionChoice{choice}})
 	if parent != nil {
 		t.Fatal("parent failed to enforce choice type")
 	}

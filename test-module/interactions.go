@@ -271,7 +271,7 @@ func (b *GeneralBot) handleInteraction(ctx context.Context, p *wire.PartialInter
 		if !owned || binding.Name != data.Name || binding.GuildID != i.GuildID {
 			return b.reportFailure(ctx, h, commandRejection("command ID is not registered for this context"), false)
 		}
-		if required := binding.Permissions; required != nil && (i.Member == nil || (i.Member.Permissions&discordgo.PermissionAdministrator == 0 && (*required == 0 || i.Member.Permissions&*required != *required))) {
+		if required := binding.Permissions; required != nil && !required.Null && (i.Member == nil || (i.Member.Permissions&discordgo.PermissionAdministrator == 0 && (required.Value == 0 || i.Member.Permissions&required.Value != required.Value))) {
 			return b.reportFailure(ctx, h, commandRejection("caller lacks the command's Discord permissions"), false)
 		}
 		if i.Type == discordgo.InteractionApplicationCommandAutocomplete {

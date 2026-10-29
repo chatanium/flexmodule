@@ -15,20 +15,20 @@ import (
 func noMentions() *discordgo.MessageAllowedMentions {
 	return &discordgo.MessageAllowedMentions{Parse: []discordgo.AllowedMentionType{}}
 }
-func option(name, description string, kind discordgo.ApplicationCommandOptionType, required bool) *discordgo.ApplicationCommandOption {
-	return &discordgo.ApplicationCommandOption{Name: name, Description: description, Type: kind, Required: required}
+func option(name, description string, kind discordgo.ApplicationCommandOptionType, required bool) *discord.ApplicationCommandOptionView {
+	return &discord.ApplicationCommandOptionView{Name: name, Description: description, Type: kind, Required: required}
 }
-func (b *GeneralBot) commandDefinitions(guild string) []*discordgo.ApplicationCommand {
+func (b *GeneralBot) commandDefinitions(guild string) []*discord.ApplicationCommandView {
 	contexts := []discordgo.InteractionContextType{discordgo.InteractionContextGuild}
 	if guild == "" {
 		contexts = []discordgo.InteractionContextType{discordgo.InteractionContextBotDM}
 	}
 	integrations := []discordgo.ApplicationIntegrationType{discordgo.ApplicationIntegrationGuildInstall}
-	makeCommand := func(name, description string, permissions int64, options ...*discordgo.ApplicationCommandOption) *discordgo.ApplicationCommand {
+	makeCommand := func(name, description string, permissions int64, options ...*discord.ApplicationCommandOptionView) *discord.ApplicationCommandView {
 		sort.SliceStable(options, func(i, j int) bool { return options[i].Required && !options[j].Required })
-		return &discordgo.ApplicationCommand{Name: name, Type: discordgo.ChatApplicationCommand, Description: description, DefaultMemberPermissions: new(permissions), Contexts: &contexts, IntegrationTypes: &integrations, Options: options}
+		return &discord.ApplicationCommandView{Name: name, Type: discordgo.ChatApplicationCommand, Description: description, DefaultMemberPermissions: &discord.Nullable[int64]{Value: permissions}, Contexts: &contexts, IntegrationTypes: &integrations, Options: options}
 	}
-	out := []*discordgo.ApplicationCommand{makeCommand("hello", "Ordinary isolated module response", 0)}
+	out := []*discord.ApplicationCommandView{makeCommand("hello", "Ordinary isolated module response", 0)}
 	if b.forms {
 		search := option("topic", "Choose a form topic", discordgo.ApplicationCommandOptionString, false)
 		search.Autocomplete = true
@@ -46,19 +46,19 @@ func (b *GeneralBot) commandDefinitions(guild string) []*discordgo.ApplicationCo
 	channel := option("channel", "An explicitly approved audit response channel", discordgo.ApplicationCommandOptionChannel, false)
 	channel.ChannelTypes = []discordgo.ChannelType{discordgo.ChannelTypeGuildText}
 	out = append(out, makeCommand("settings", "Read or save the persistent audit reply channel", discordgo.PermissionManageGuild|discordgo.PermissionViewAuditLogs, channel), makeCommand("permission-check", "Explicit zero default permissions: administrators only", 0))
- if b.management[guild] == nil {
+	if b.management[guild] == nil {
 		return out
 	}
-	user := func() *discordgo.ApplicationCommandOption {
+	user := func() *discord.ApplicationCommandOptionView {
 		return option("user", "Operator-approved test member", discordgo.ApplicationCommandOptionUser, true)
 	}
-	role := func() *discordgo.ApplicationCommandOption {
+	role := func() *discord.ApplicationCommandOptionView {
 		return option("role", "Operator-approved test role", discordgo.ApplicationCommandOptionRole, true)
 	}
-	reason := func() *discordgo.ApplicationCommandOption {
+	reason := func() *discord.ApplicationCommandOptionView {
 		return option("reason", "Audit reason (no secrets)", discordgo.ApplicationCommandOptionString, true)
 	}
- start := len(out)
+	start := len(out)
 	out = append(out,
 		makeCommand("member-info", "Inspect a member without inventing absent user fields", discordgo.PermissionManageRoles, user()),
 		makeCommand("role-add", "Assign an approved test role", discordgo.PermissionManageRoles, user(), role(), reason()),
@@ -72,14 +72,14 @@ func (b *GeneralBot) commandDefinitions(guild string) []*discordgo.ApplicationCo
 		makeCommand("clear-timeout", "Explicitly clear an approved member timeout", discordgo.PermissionModerateMembers, user(), reason()),
 		makeCommand("audit-log", "Summarize audit changes while preserving exact JSON values", discordgo.PermissionViewAuditLogs),
 	)
- n := start
- for _, command := range out[start:] {
-  if b.management[guild][command.Name] {
-   out[n] = command
-   n++
-  }
- }
- return out[:n]
+	n := start
+	for _, command := range out[start:] {
+		if b.management[guild][command.Name] {
+			out[n] = command
+			n++
+		}
+	}
+	return out[:n]
 }
 
 type commandOptions map[string]*discordgo.ApplicationCommandInteractionDataOption
@@ -181,8 +181,8 @@ func (b *GeneralBot) executeCommand(ctx context.Context, h *discord.InteractionH
 		}
 		return "Saved audit reply channel: " + v.AuditReplyChannelID, nil
 	}
- if !g.Moderation.Enabled || !b.management[g.GuildID][name] {
-  return "", commandRejection("this management command is not enabled for approved resources")
+	if !g.Moderation.Enabled || !b.management[g.GuildID][name] {
+		return "", commandRejection("this management command is not enabled for approved resources")
 	}
 	user, err := o.text("user", false)
 	if err != nil {
@@ -202,19 +202,23 @@ func (b *GeneralBot) executeCommand(ctx context.Context, h *discord.InteractionH
 	audit := discord.WithAuditLogReason(reason)
 	switch name {
 	case "member-info":
-  if !contains(g.Moderation.ApprovedMemberIDs, user) {
-   return "", commandRejection("member lookup target is not explicitly approved")
+		if !contains(g.Moderation.ApprovedMemberIDs, user) {
+			return "", commandRejection("member lookup target is not explicitly approved")
 		}
-  if err := b.scopedOperation("GuildMember", userScope(g.GuildID, user)); err != nil { return "", err }
+		if err := b.scopedOperation("GuildMember", userScope(g.GuildID, user)); err != nil {
+			return "", err
+		}
 		member, err := b.api.GuildMember(ctx, g.GuildID, user)
 		if err != nil {
 			return "", err
 		}
-  var roles []*discordgo.Role
-  if allows(b.grants, rest("GuildRoles"), guildScope(g.GuildID)) {
-   roles, err = b.api.GuildRoles(ctx, g.GuildID)
-   if err != nil { return "", err }
-  }
+		var roles []*discordgo.Role
+		if allows(b.grants, rest("GuildRoles"), guildScope(g.GuildID)) {
+			roles, err = b.api.GuildRoles(ctx, g.GuildID)
+			if err != nil {
+				return "", err
+			}
+		}
 		if member == nil {
 			return "", commandRejection("member lookup returned no member")
 		}
@@ -241,10 +245,16 @@ func (b *GeneralBot) executeCommand(ctx context.Context, h *discord.InteractionH
 		if !contains(g.Moderation.ApprovedMemberIDs, user) || !contains(g.Moderation.ApprovedRoleIDs, role) {
 			return "", commandRejection("member or role is not explicitly approved")
 		}
-  operation := "GuildMemberRoleRemove"
-  if name == "role-add" { operation = "GuildMemberRoleAdd" }
-  if err = b.scopedOperation(operation, userScope(g.GuildID, user)); err != nil { return "", err }
-  if err = b.scopedOperation(operation, roleScope(g.GuildID, role)); err != nil { return "", err }
+		operation := "GuildMemberRoleRemove"
+		if name == "role-add" {
+			operation = "GuildMemberRoleAdd"
+		}
+		if err = b.scopedOperation(operation, userScope(g.GuildID, user)); err != nil {
+			return "", err
+		}
+		if err = b.scopedOperation(operation, roleScope(g.GuildID, role)); err != nil {
+			return "", err
+		}
 		if name == "role-add" {
 			err = b.api.GuildMemberRoleAdd(ctx, g.GuildID, user, role, audit)
 		} else {
@@ -258,9 +268,13 @@ func (b *GeneralBot) executeCommand(ctx context.Context, h *discord.InteractionH
 		if !contains(g.Moderation.ApprovedBanUserIDs, user) {
 			return "", commandRejection("ban/unban target is not explicitly approved")
 		}
-  operation := "GuildBanDelete"
-  if name == "ban" { operation = "GuildBanCreateWithReason" }
-  if err = b.scopedOperation(operation, userScope(g.GuildID, user)); err != nil { return "", err }
+		operation := "GuildBanDelete"
+		if name == "ban" {
+			operation = "GuildBanCreateWithReason"
+		}
+		if err = b.scopedOperation(operation, userScope(g.GuildID, user)); err != nil {
+			return "", err
+		}
 		if name == "ban" {
 			err = b.api.GuildBanCreateWithReason(ctx, g.GuildID, user, &reason, 0)
 		} else {
@@ -274,7 +288,9 @@ func (b *GeneralBot) executeCommand(ctx context.Context, h *discord.InteractionH
 		if !contains(g.Moderation.ApprovedTimeoutUserIDs, user) {
 			return "", commandRejection("timeout target is not explicitly approved")
 		}
-  if err = b.scopedOperation("GuildMemberEdit", userScope(g.GuildID, user)); err != nil { return "", err }
+		if err = b.scopedOperation("GuildMemberEdit", userScope(g.GuildID, user)); err != nil {
+			return "", err
+		}
 		until := &discord.Nullable[time.Time]{Null: true}
 		if name == "timeout" {
 			seconds, present, e := o.integer("seconds")
@@ -294,7 +310,9 @@ func (b *GeneralBot) executeCommand(ctx context.Context, h *discord.InteractionH
 	case "channel-create", "channel-edit", "channel-delete":
 		return b.channelCommand(ctx, g, name, o, audit)
 	case "audit-log":
-  if err = b.scopedOperation("GuildAuditLog", guildScope(g.GuildID)); err != nil { return "", err }
+		if err = b.scopedOperation("GuildAuditLog", guildScope(g.GuildID)); err != nil {
+			return "", err
+		}
 		log, e := b.api.GuildAuditLog(ctx, g.GuildID, "", "", 0, 10)
 		if e != nil {
 			return "", e
@@ -342,7 +360,9 @@ func (b *GeneralBot) executeCommand(ctx context.Context, h *discord.InteractionH
 			if !contains(g.AuditChannelIDs, setting.AuditReplyChannelID) {
 				return "", commandRejection("saved audit channel is not approved")
 			}
-   if e = b.scopedOperation("ChannelMessageSendComplex", channelScope(g.GuildID, setting.AuditReplyChannelID)); e != nil { return "", e }
+			if e = b.scopedOperation("ChannelMessageSendComplex", channelScope(g.GuildID, setting.AuditReplyChannelID)); e != nil {
+				return "", e
+			}
 			if _, e = b.api.ChannelMessageSendComplex(ctx, setting.AuditReplyChannelID, &discord.MessageSendView{Content: text, AllowedMentions: noMentions(), Flags: discordgo.MessageFlagsSuppressNotifications}); e != nil {
 				return "", e
 			}

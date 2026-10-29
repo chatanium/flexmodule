@@ -148,6 +148,9 @@ instance admission, credential purpose/expiry, and Discord permissions.
 
 - `/hello` returns a typed initial response with an embed, disabled mentions, and
   ephemeral flags. Basic commands preserve unset `DefaultMemberPermissions`.
+  Registration uses `ApplicationCommandView`; a returned Discord null permission
+  is preserved separately from absence and explicit zero. Callback authorization
+  retains the configured permission requirement, not a response-derived fallback.
 - `/permission-check` preserves explicit **zero** default member permissions and
   admits only a Discord administrator. `/settings` requires the combined
   `ManageGuild | ViewAuditLogs` mask. Other management commands carry their actual
