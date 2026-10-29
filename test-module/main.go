@@ -1,235 +1,333 @@
 package main
 
 import (
+	"context"
+	_ "embed"
+	"errors"
+	"fmt"
 	"os"
+	"sync"
+	"time"
 
-	"github.com/bwmarrin/discordgo"
-	"github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	broker "github.com/thirdscam/chatanium-flexmodule/shared"
-
-	Core "github.com/thirdscam/chatanium-flexmodule/shared/core-v1"
-	CorePlugin "github.com/thirdscam/chatanium-flexmodule/shared/core-v1/module"
-
-	Discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1"
-	DiscordPlugin "github.com/thirdscam/chatanium-flexmodule/shared/discord-v1/module"
+	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
+	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
+	core "github.com/thirdscam/chatanium-flexmodule/shared/core-v2"
+	discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
-var PERMISSIONS = Core.Permissions{
-	"DISCORD_V1_ON_CREATE_MESSAGE",
-	"DISCORD_V1_ON_CREATE_INTERACTION",
-	"DISCORD_V1_REQ_VOICE_STATE",
-	"DISCORD_V1_CREATE_VOICE_STREAM",
+//go:embed manifest.json
+var manifestJSON []byte
+
+type commandBinding struct {
+	GuildID, Name string
+	Permissions   *int64
+}
+type GeneralBot struct {
+	mu                           sync.Mutex
+	core                         core.CoreClient
+	api                          *discord.Client
+	files                        *core.FileClient
+	config                       GeneralExampleConfig
+	grants                       []*corewire.CapabilityGrant
+	store                        *SettingsStore
+	ready, running, stopped      bool
+	life                         context.Context
+	cancel                       context.CancelFunc
+	active                       int
+	changed                      chan struct{}
+	commands                     map[string]commandBinding
+	replies                      map[string]messageReply
+	claims                       []*wire.InteractionRouteClaim
+	forms, messages, attachments bool
+	management                   map[string]map[string]bool
+	disabled                     []string
 }
 
-var MANIFEST = Core.Manifest{
-	Name:        "TestModule",
-	Version:     "0.0.1",
-	Author:      "thirdscam",
-	Repository:  "github:thirdscam/chatanium-flexmodule",
-	Permissions: PERMISSIONS,
-}
-
-var log hclog.Logger
-
-type core struct {
-	// You don't necessarily need to use a variable named ready for your Core implementation like this.
-	// However, we recommend that you implement some other logic that allows you to control the IsReady field of Core.Status.
-	ready bool
-}
-
-// GetManifest returns the manifest of the plugin.
-//
-// Identify modules at runtime, and proactively check for required permissions.
-//
-// Note: out-of-permission features may be ignored based on runtime preferences.
-func (m *core) GetManifest() (Core.Manifest, error) {
-	return MANIFEST, nil
-}
-
-// GetStatus returns the status of the plugin.
-//
-// If IsReady is not true, no hooks will be called at runtime for the backend extension.
-func (m *core) GetStatus() (Core.Status, error) {
-	return Core.Status{
-		IsReady: m.ready,
-	}, nil
-}
-
-// OnStage is a Hook that signals that the runtime has entered a particular lifecycle stage.
-func (m *core) OnStage(stage string) {
-	log.Debug("OnStage", "stage", stage)
-	switch stage {
-	case "MODULE_INIT":
-		m.ready = true
-	case "MODULE_START":
-		// do something
-	case "MODULE_SHUTDOWN":
-		// do something
-	default:
+func (b *GeneralBot) bind(_ context.Context, conn grpc.ClientConnInterface) error {
+	var err error
+	if b.core, err = core.NewCoreClient(conn, core.JSONLimits{MaxBytes: 128 << 10, MaxDepth: 16}); err != nil {
+		return err
 	}
-}
-
-type discord struct {
-	// If you don't want to use all the hooks, you can embed this struct, which is an empty set
-	// of hooks, and use it similarly to implementing an abstract class.
-	Discord.AbstractHooks
-	helper Discord.Helper // Store helper instance for use in other methods
-}
-
-func (u *discord) OnInit(h Discord.Helper) Discord.InitResponse {
-	// Store helper for later use
-	u.helper = h
-
-	// Start goroutine to send messages every 2 seconds
-	// This demonstrates that the module can call helper functions persistently
-	// go func() {
-	// 	channelID := "1154789841654009886"
-	// 	counter := 0
-		
-	// 	for {
-	// 		time.Sleep(2 * time.Second)
-	// 		counter++
-			
-	// 		message := fmt.Sprintf("🤖 Persistent Helper Test #%d - Called from module goroutine at %s", 
-	// 			counter, time.Now().Format("15:04:05"))
-			
-	// 		_, err := u.helper.ChannelMessageSend(channelID, message)
-	// 		if err != nil {
-	// 			log.Error("Failed to send periodic message", "error", err, "counter", counter)
-	// 		} else {
-	// 			log.Info("Periodic message sent successfully", "counter", counter)
-	// 		}
-	// 	}
-	// }()
-
-	log.Info("Discord module initialized with persistent helper connection")
-
-	return Discord.InitResponse{
-		Interactions: []*discordgo.ApplicationCommand{
-			{
-				Name:        "test",
-				Description: "Test command",
-			},
-			{
-				Name:        "hello",
-				Description: "Say hello",
-			},
-		},
+	if b.api, err = discord.NewClient(conn); err != nil {
+		return err
 	}
+	b.files, err = core.NewFileClient(conn)
+	return err
 }
-
-func (u *discord) OnCreateChatMessage(m *discordgo.Message) error {
-	log.Debug("MESSAGE_CREATE", "message", hclog.Fmt("%+v", m))
-
-	// Don't respond to bot messages to avoid loops
-	if m.Author.Bot {
+func (b *GeneralBot) GetManifest(ctx context.Context) (*corewire.ModuleManifest, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	out := new(corewire.ModuleManifest)
+	if err := (protojson.UnmarshalOptions{DiscardUnknown: false}).Unmarshal(manifestJSON, out); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+func (b *GeneralBot) GetStatus(ctx context.Context) (*corewire.Status, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	b.mu.Lock()
+	defer b.mu.Unlock()
+	r := corewire.Readiness_READINESS_NOT_READY
+	detail := "not ready"
+	if b.ready {
+		r = corewire.Readiness_READINESS_READY
+		detail = fmt.Sprintf("disabled optional features: %v", b.disabled)
+	}
+	return &corewire.Status{Readiness: r, Detail: &detail}, nil
+}
+func (b *GeneralBot) OnStage(ctx context.Context, req *corewire.StageRequest) error {
+	if req == nil {
+		return errors.New("missing lifecycle stage")
+	}
+	switch req.Stage {
+	case corewire.Stage_STAGE_INIT:
+		return b.initialize(ctx, req.InitContext)
+	case corewire.Stage_STAGE_START:
+		b.mu.Lock()
+		defer b.mu.Unlock()
+		if !b.ready || b.running || b.stopped {
+			return errors.New("invalid START")
+		}
+		b.running = true
 		return nil
+	case corewire.Stage_STAGE_DRAIN:
+		b.mu.Lock()
+		b.running = false
+		b.ready = false
+		if b.cancel != nil {
+			b.cancel()
+		}
+		claims := b.claims
+		b.mu.Unlock()
+		err := b.join(ctx)
+		if len(claims) > 0 {
+			err = errors.Join(err, b.api.UnregisterInteractionRoutes(ctx, claims))
+		}
+		return err
+	case corewire.Stage_STAGE_STOP:
+		b.mu.Lock()
+		b.running = false
+		b.ready = false
+		b.stopped = true
+		if b.cancel != nil {
+			b.cancel()
+		}
+		b.mu.Unlock()
+		if err := b.join(ctx); err != nil {
+			return err
+		}
+		if b.store != nil {
+			return b.store.Close()
+		}
+		return nil
+	default:
+		return errors.New("unsupported lifecycle stage")
 	}
-
-	// Example: respond to "ping" with "pong"
-	if m.Content == "ping" && u.helper != nil {
-		_, err := u.helper.ChannelMessageSend(m.ChannelID, "pong! 🏓")
-		if err != nil {
-			log.Error("Failed to send pong message", "error", err)
+}
+func (b *GeneralBot) join(ctx context.Context) error {
+	for {
+		b.mu.Lock()
+		if b.active == 0 {
+			b.mu.Unlock()
+			return nil
+		}
+		changed := b.changed
+		b.mu.Unlock()
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-changed:
+		}
+	}
+}
+func (b *GeneralBot) initialize(ctx context.Context, init *corewire.InitContext) (result error) {
+	b.mu.Lock()
+	if b.life != nil || b.stopped || b.core == nil || b.api == nil || init == nil || init.Grants == nil {
+		b.mu.Unlock()
+		return errors.New("invalid INIT or missing helpers/grants")
+	}
+	b.life, b.cancel = context.WithCancel(context.Background())
+	b.changed = make(chan struct{})
+	b.mu.Unlock()
+	defer func() {
+		if result != nil {
+			b.cancel()
+			if b.store != nil {
+				result = errors.Join(result, b.store.Close())
+			}
+		}
+	}()
+	if err := require(init.Grants.CoreCapabilities, "core.config.read", map[string]string{}); err != nil {
+		return err
+	}
+	raw, err := b.core.GetConfig(ctx)
+	if err != nil {
+		return err
+	}
+	if raw == nil {
+		return errors.New("missing ordinary module config")
+	}
+	if err = decodeJSON(raw.Json, &b.config); err != nil {
+		return errors.New("invalid ordinary module config JSON")
+	}
+	if err = b.config.validate(); err != nil {
+		return err
+	}
+	for _, g := range init.Grants.Backends {
+		if g != nil && g.BackendId == "discord" && g.ProtocolMajor == 2 {
+			for _, c := range g.Capabilities {
+				if c != nil {
+					b.grants = append(b.grants, proto.Clone(c).(*corewire.CapabilityGrant))
+				}
+			}
+		}
+	}
+	if len(b.grants) == 0 {
+		return errors.New("Discord v2 backend unavailable")
+	}
+	scopes := []string{}
+	for _, g := range b.config.Guilds {
+		scopes = append(scopes, g.GuildID)
+	}
+	if b.config.AllowDM {
+		scopes = append(scopes, "")
+	}
+	if err = b.validateInteractionCapabilities(); err != nil {
+		return err
+	}
+	b.store, err = openGrantedSettings(ctx, init)
+	if err != nil {
+		return err
+	}
+	b.commands = map[string]commandBinding{}
+	b.management = map[string]map[string]bool{}
+	b.forms = b.config.EnableForms && allows(b.grants, "discord.routes.manage", appScope(b.config.ApplicationID, ""))
+	if b.config.EnableForms && !b.forms {
+		b.disabled = append(b.disabled, "forms")
+	}
+	b.messages = b.config.EnableMessages
+	b.attachments = b.config.EnableAttachments && allows(init.Grants.CoreCapabilities, "core.upload", map[string]string{})
+	for _, g := range b.config.Guilds {
+		for _, channel := range g.TextChannelIDs {
+			for _, op := range []string{"ChannelMessageSendComplex", "ChannelMessageEditComplex", "ChannelMessageDelete"} {
+				if !allows(b.grants, rest(op), channelScope(g.GuildID, channel)) {
+					b.messages = false
+					b.attachments = false
+				}
+			}
+			for _, event := range []string{"MESSAGE_CREATE", "MESSAGE_UPDATE", "MESSAGE_DELETE"} {
+				if !compatibleGrant(b.grants, "discord.event."+event, channelScope(g.GuildID, channel)) {
+					b.messages = false
+				}
+			}
+		}
+		if err = b.initializeManagement(ctx, g); err != nil {
+			return err
+		}
+		setting, ok, e := b.store.GetGuildSettings(ctx, g.GuildID)
+		if e != nil {
+			return e
+		}
+		if ok && setting.AuditReplyChannelID != "" && !contains(g.AuditChannelIDs, setting.AuditReplyChannelID) {
+			return errors.New("stored audit response channel is no longer approved")
+		}
+	}
+	if b.config.AllowDM {
+		for _, op := range []string{"ChannelMessageSendComplex", "ChannelMessageEditComplex", "ChannelMessageDelete"} {
+			if !allows(b.grants, rest(op), map[string]string{}) {
+				b.messages = false
+				b.attachments = false
+			}
+		}
+		for _, event := range []string{"MESSAGE_CREATE", "MESSAGE_UPDATE", "MESSAGE_DELETE"} {
+			if !compatibleGrant(b.grants, "discord.event."+event, map[string]string{"guild_id": ""}) {
+				b.messages = false
+			}
+		}
+	}
+	for _, op := range []string{"WebhookThreadExecute", "WebhookMessageEdit", "WebhookMessageDelete"} {
+		for _, known := range b.interactionPreflightScopes() {
+			if !compatibleGrant(b.grants, rest(op), known) {
+				b.attachments = false
+			}
+		}
+	}
+	if b.config.EnableMessages && !b.messages {
+		b.disabled = append(b.disabled, "messages")
+	}
+	if b.config.EnableAttachments && !b.attachments {
+		b.disabled = append(b.disabled, "attachments")
+	}
+	if b.forms {
+		b.claims = routeClaims(b.config.ApplicationID)
+		if err = b.api.RegisterInteractionRoutes(ctx, b.claims); err != nil {
 			return err
 		}
 	}
-
-	// Example: respond to "hello plugin" with an embed
-	if m.Content == "hello plugin" && u.helper != nil {
-		embed := &discordgo.MessageEmbed{
-			Title:       "Hello from Plugin!",
-			Description: "This is a response from the test plugin using helper functions.",
-			Color:       0x00ff00,
-			Type:       "rich",
-			Fields: []*discordgo.MessageEmbedField{
-				{
-					Name:   "Plugin Status",
-					Value:  "✅ Working correctly",
-					Inline: true,
-				},
-				{
-					Name:   "Helper Functions",
-					Value:  "✅ Available",
-					Inline: true,
-				},
-			},
-		}
-
-		_, err := u.helper.ChannelMessageSendEmbed(m.ChannelID, embed)
-		if err != nil {
-			log.Error("Failed to send embed message", "error", err)
-			return err
+	for _, guild := range scopes {
+		for _, cmd := range b.commandDefinitions(guild) {
+			created, e := b.api.ApplicationCommandCreate(ctx, b.config.ApplicationID, guild, cmd)
+			if e != nil {
+				return e
+			}
+			if created == nil || !snowflake(created.ID) {
+				return errors.New("command registration returned no command ID")
+			}
+			b.commands[created.ID] = commandBinding{GuildID: guild, Name: cmd.Name, Permissions: cmd.DefaultMemberPermissions}
 		}
 	}
-
+	b.mu.Lock()
+	b.ready = true
+	b.mu.Unlock()
 	return nil
 }
-
-func (u *discord) OnCreateInteraction(i *discordgo.Interaction) error {
-	log.Debug("INTERACTION_CREATE", "interaction", hclog.Fmt("%+v", i))
-
-	if i.Type == discordgo.InteractionApplicationCommand {
-		log.Debug("INTERACTION_CREATE", "i.Type", i.Type, "i.Data", i.Data)
-		cmdData := i.ApplicationCommandData()
-
-		switch cmdData.Name {
-		case "test":
-			log.Debug("INTERACTION_CREATE > test")
-			// Respond to the test command
-			if u.helper != nil {
-				err := u.helper.InteractionRespond(i, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: "This is a test response from the plugin! 🎉",
-					},
-				})
-				if err != nil {
-					log.Error("Failed to respond to interaction", "error", err)
-					return err
-				}
-			}
-		case "hello":
-			log.Debug("INTERACTION_CREATE > hello")
-			// Send a hello message
-			if u.helper != nil {
-				err := u.helper.InteractionRespond(i, &discordgo.InteractionResponse{
-					Type: discordgo.InteractionResponseChannelMessageWithSource,
-					Data: &discordgo.InteractionResponseData{
-						Content: "Hello! 👋 This message was sent using the helper function from the plugin!",
-						Embeds: []*discordgo.MessageEmbed{
-							{
-								Title:       "Plugin Helper Test",
-								Description: "This embed was created using the Discord helper functions!",
-								Color:       0x00ff00,
-							},
-						},
-					},
-				})
-				if err != nil {
-					log.Error("Failed to respond to interaction", "error", err)
-					return err
-				}
-			}
-		}
+func (b *GeneralBot) OnEvent(ctx context.Context, event *corewire.EventEnvelope) error {
+	b.mu.Lock()
+	if !b.running || b.stopped {
+		b.mu.Unlock()
+		return errors.New("event outside RUNNING")
 	}
-	return nil
+	b.active++
+	life := b.life
+	b.mu.Unlock()
+	defer func() { b.mu.Lock(); b.active--; close(b.changed); b.changed = make(chan struct{}); b.mu.Unlock() }()
+	bounded, cancel := context.WithTimeout(ctx, time.Duration(b.config.OperationTimeoutSeconds)*time.Second)
+	defer cancel()
+	stop := context.AfterFunc(life, cancel)
+	defer stop()
+	payload, err := discord.DecodeEvent(event)
+	if err != nil {
+		return err
+	}
+	switch e := payload.(type) {
+	case *wire.InteractionCreateEvent:
+		return b.handleInteraction(bounded, e.Interaction.GetValue())
+	case *wire.MessageCreateEvent:
+		return b.handleMessage(bounded, "create", e.Message.GetValue(), false)
+	case *wire.MessageUpdateEvent:
+		return b.handleMessage(bounded, "update", e.Message.GetValue(), e.BeforeUpdate != nil)
+	case *wire.MessageDeleteEvent:
+		return b.handleMessage(bounded, "delete", e.Message.GetValue(), e.BeforeDelete != nil)
+	default:
+		return errors.New("unexpected ordinary bot event")
+	}
 }
-
 func main() {
-	log = hclog.New(&hclog.LoggerOptions{
-		Name:       "TestModule",
-		Level:      hclog.LevelFromString("DEBUG"),
-		JSONFormat: true,
-		Output:     os.Stderr, // Use stderr to avoid conflicting with go-plugin's stdout handshake
-	})
-
-	// Set logger for discord module package to enable error logging before termination
-	DiscordPlugin.SetLogger(log)
-
-	broker.ServeToRuntime(map[string]plugin.Plugin{
-		"core-v1":    &CorePlugin.Plugin{Impl: &core{}},
-		"discord-v1": &DiscordPlugin.Plugin{Impl: &discord{}},
-	})
+	bot := new(GeneralBot)
+	p, err := core.NewModulePlugin(context.Background(), bot, bot.bind, core.TransportLimits{MaxReceiveBytes: 4 << 20, MaxSendBytes: 4 << 20})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "ordinary module bootstrap failed")
+		os.Exit(1)
+	}
+	defer p.Close()
+	plugin.Serve(p.ServeConfig())
 }
+
+var _ core.ModuleHooks = (*GeneralBot)(nil)
