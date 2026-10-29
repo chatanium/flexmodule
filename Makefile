@@ -29,7 +29,12 @@ GENERATED_FILES := common.pb.go \
 	discord-v1/discordgo.pb.go \
 	discord-v1/helper.pb.go discord-v1/helper_grpc.pb.go \
 	discord-v1/hook.pb.go discord-v1/hook_grpc.pb.go \
-	discord-v1/voice.pb.go discord-v1/voice_grpc.pb.go
+	discord-v1/voice.pb.go discord-v1/voice_grpc.pb.go \
+	core-v2/core.pb.go core-v2/core_grpc.pb.go \
+	discord-v2/domain.pb.go discord-v2/events.pb.go \
+	discord-v2/helper.pb.go discord-v2/helper_grpc.pb.go \
+	discord-v2/ownership.pb.go discord-v2/ownership_grpc.pb.go \
+	discord-v2/voice.pb.go discord-v2/voice_grpc.pb.go
 GENERATED_EXPECTED_FILES := $(GENERATED_FILES)
 export GENERATED_FILES GENERATED_EXPECTED_FILES BUILD_OUTPUTS
 
