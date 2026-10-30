@@ -275,6 +275,8 @@ Gateway 요청 성공은 write 성공이며 모든 chunk의 도착을 의미하�
 
 이벤트는 [P1](flexmodule-1-protocol-contracts.md)의 allowlisted typed `EventEnvelope`로만 인코딩합니다. 부분 update의 존재성을 SDK zero value로 잃기 전에 호스트에서 보존하고, 실제로 있을 때만 `BeforeUpdate`/`BeforeDelete` snapshot을 제공합니다. 공식 `STAGE_INSTANCE_CREATE`, `STAGE_INSTANCE_DELETE`, `STAGE_INSTANCE_UPDATE`가 실제 등록 이름이 되도록 현재 로컬 `STAGE_INSTANCE_EVENT_*` 이름과 생성 경로를 함께 수정합니다. 기존 오타를 alias로 유지하지 않습니다.
 
+`MESSAGE_CREATE`는 최상위 `author.id`를 사용자 범위 `user_id`에 넣고, `MESSAGE_UPDATE`도 payload에 해당 작성자 정보가 있을 때만 같은 규칙을 적용합니다. 런타임은 recipient 선택과 projection보다 먼저 이벤트 selector를 검사하므로, 작성자 정보는 재귀 리소스 검사뿐 아니라 최초 admission 범위에도 포함해야 합니다. 작성자가 빠진 partial update나 delete에서는 부분 member, 중첩 메시지 또는 cache snapshot에서 사용자 ID를 빌려오지 않습니다. 사용자 범위가 필요한 grant는 작성자를 확인할 수 없는 이벤트를 허용하지 않으며, 이를 전달하려고 grant나 Gateway intents를 넓히지 않습니다.
+
 READY는 안전한 snapshot만 전달하며 `SessionID`, `Shard`, `ResumeGatewayURL`을 제거합니다. raw event, voice server credential 및 synthetic control 이벤트를 전달하지 않습니다. 새 `MESSAGE_REACTION_REMOVE_EMOJI`를 포함한 67개 projection은 P1의 정확한 before snapshot 타입과 intent를 따릅니다. 일반 `VoiceStateUpdate` 및 REST `UserVoiceState`의 안전한 상태 관측은 playback/receive와 별도 기능이며 원시 join이나 channel 이동 권한을 주지 않습니다. 이벤트 수용, 순서, 메모리 상한과 drain은 P4를 따릅니다.
 
 ## 5. API Design

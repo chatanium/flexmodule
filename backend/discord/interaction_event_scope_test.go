@@ -7,6 +7,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
+	runtime "github.com/thirdscam/chatanium-flexmodule/runtime"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -127,6 +128,65 @@ func TestNonInteractionEventScopeStillChecksMessageAuthorAndTarget(t *testing.T)
 			}
 			if !test.allowed && status.Code(err) != codes.PermissionDenied {
 				t.Fatalf("message author or target scope was bypassed: %v", err)
+			}
+		})
+	}
+}
+
+func TestMessageEventScopeUsesPresentRootAuthorBeforeRuntimeAdmission(t *testing.T) {
+	b := &Backend{}
+	grant := &corewire.CapabilityGrant{ResourceScopes: []*corewire.ResourceScope{
+		scope(map[string]string{"guild_id": "10", "channel_id": "30", "user_id": "40"}),
+	}}
+	for _, name := range []string{"MESSAGE_CREATE", "MESSAGE_UPDATE"} {
+		t.Run(name, func(t *testing.T) {
+			raw := []byte(`{"id":"70","guild_id":"10","channel_id":"30","author":{"id":"40","bot":false},"attachments":[{"id":"80","filename":"tone.wav","size":576044}]}`)
+			target, err := b.eventScope(name, raw)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if target.GetSelector().ResourceIds["user_id"] != "40" {
+				t.Fatal("root message author was absent from the admission selector")
+			}
+			// Dispatcher checks the selector before invoking Recipient or Project.
+			// A later recursive author check cannot repair this earlier omission.
+			if !runtime.ResourceScopesSubset([]*corewire.ResourceScope{target}, grant.ResourceScopes) {
+				t.Fatal("runtime admission silently excludes the approved message author")
+			}
+			if err = eventResourceGraph(name, raw, target, grant); err != nil {
+				t.Fatal("approved message author failed recursive authorization")
+			}
+			for _, denied := range []struct{ from, to string }{
+				{`"guild_id":"10"`, `"guild_id":"11"`},
+				{`"channel_id":"30"`, `"channel_id":"31"`},
+				{`"id":"40"`, `"id":"41"`},
+			} {
+				changed := []byte(strings.Replace(string(raw), denied.from, denied.to, 1))
+				outside, err := b.eventScope(name, changed)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if runtime.ResourceScopesSubset([]*corewire.ResourceScope{outside}, grant.ResourceScopes) {
+					t.Fatal("an out-of-scope message passed the runtime selector gate")
+				}
+			}
+			if _, err = b.eventScope(name, []byte(`{"id":"70","guild_id":"10","channel_id":"30","author":{"id":"invalid"}}`)); err == nil {
+				t.Fatal("invalid root author ID became admission authority")
+			}
+		})
+	}
+	for _, tc := range []struct{ name, raw string }{
+		{"MESSAGE_CREATE", `{"id":"70","guild_id":"10","channel_id":"30","author":null}`},
+		{"MESSAGE_UPDATE", `{"id":"70","guild_id":"10","channel_id":"30","member":{"user":{"id":"40"}},"referenced_message":{"author":{"id":"40"}}}`},
+		{"MESSAGE_DELETE", `{"id":"70","guild_id":"10","channel_id":"30","author":{"id":"40"}}`},
+	} {
+		t.Run(tc.name+"/missing-authority", func(t *testing.T) {
+			target, err := b.eventScope(tc.name, []byte(tc.raw))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if target.GetSelector().ResourceIds["user_id"] != "" || runtime.ResourceScopesSubset([]*corewire.ResourceScope{target}, grant.ResourceScopes) {
+				t.Fatal("partial or delete payload invented root-author authority")
 			}
 		})
 	}

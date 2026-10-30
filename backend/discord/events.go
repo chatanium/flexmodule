@@ -334,23 +334,28 @@ func (b *Backend) eventScope(name string, raw []byte) (*corewire.ResourceScope, 
 		}
 		ids["application_id"] = b.config.ApplicationID
 	}
-	// DM interactions carry User, guild interactions Member.User. Neither branch
-	// fabricates a partial member's user or dereferences a missing Member.
+	// Message authors must reach the runtime's initial selector check, before
+	// recursive resource validation. Partial updates never borrow an actor.
 	var user struct {
 		ID string `json:"id"`
 	}
-	if data := fields["member"]; data != nil {
-		var member struct {
-			User *struct {
-				ID string `json:"id"`
-			} `json:"user"`
+	if name == "MESSAGE_CREATE" || name == "MESSAGE_UPDATE" {
+		json.Unmarshal(fields["author"], &user)
+	} else {
+		// DM interactions carry User; guild interactions carry Member.User.
+		if data := fields["member"]; data != nil {
+			var member struct {
+				User *struct {
+					ID string `json:"id"`
+				} `json:"user"`
+			}
+			if json.Unmarshal(data, &member) == nil && member.User != nil {
+				user.ID = member.User.ID
+			}
 		}
-		if json.Unmarshal(data, &member) == nil && member.User != nil {
-			user.ID = member.User.ID
+		if user.ID == "" {
+			json.Unmarshal(fields["user"], &user)
 		}
-	}
-	if user.ID == "" {
-		json.Unmarshal(fields["user"], &user)
 	}
 	if user.ID != "" {
 		ids["user_id"] = user.ID
