@@ -10,11 +10,16 @@ import sys
 
 sys.path.insert(0, '/source/tools/build')
 from artifacts import capture, checkout, check_elf_versions, digest, elf_closure, inventory, run, write_json
+sys.path.insert(0, '/source/tools')
+from sdk import provenance as sdk_provenance, resolve as resolve_sdk
 
 source = Path('/source')
 work = Path('/work')
-lock = json.loads((source / 'tools/native/native-lock.json').read_text())
-patch = source / 'tools/native/libdave.patch'
+sdk = json.loads((work / 'sdk-module.json').read_text())
+sdk_source = Path('/sdk')
+lock_path = sdk_source / 'tools/native/native-lock.json'
+lock = json.loads(lock_path.read_text())
+patch = sdk_source / 'tools/native/libdave.patch'
 if digest(patch) != lock['libdave']['patch_sha256']:
     raise RuntimeError('Unapproved libdave patch digest')
 work.mkdir(exist_ok=True)
@@ -111,7 +116,7 @@ for library in closure:
 provenance = bundle / 'provenance'
 provenance.mkdir()
 write_json(provenance / 'builder-abi.json', builder_abi)
-shutil.copy2(source / 'tools/native/native-lock.json', provenance / 'native-lock.json')
+shutil.copy2(lock_path, provenance / 'native-lock.json')
 shutil.copy2(patch, provenance / 'libdave.patch')
 shutil.copy2('/opt/flexmodule-builder/packages.txt', provenance / 'builder-packages.txt')
 (provenance / 'native-symbols.txt').write_text(symbols)
@@ -129,10 +134,19 @@ write_json(provenance / 'builder-source-sha256.json', {
     path: digest(source / path) for path in [
         'tools/native/build.py', 'tools/native/Builder.Dockerfile',
         'tools/native/repositories.repo', 'tools/build/artifacts.py', 'tools/build/voice.sh',
-        'tools/native/check_abi.py',
+        'tools/native/check_abi.py', 'tools/sdk.py', 'tools/versions.mk',
     ]
 })
 write_json(provenance / 'downloads.json', inventory(work / 'downloads'))
+write_json(provenance / 'sdk-module.json', sdk_provenance(sdk))
+write_json(provenance / 'sdk-native-assets-sha256.json', {
+    str(path.relative_to(sdk_source)): digest(path) for path in (lock_path, patch)
+})
+write_json(provenance / 'sdk-source-sha256.json', {
+    str(path.relative_to(sdk_source)): digest(path)
+    for path in sdk_source.rglob('*')
+    if path.is_file() and (path.suffix == '.go' or path.name in ('go.mod', 'go.sum'))
+})
 if os.environ.get('NATIVE_ONLY') == '1':
     write_json(provenance / 'bundle-sha256.json', inventory(bundle))
     print('Native-only source build complete: /work/prefix and /work/bundle; no root Go packages compiled.')
@@ -144,7 +158,10 @@ env.update(CGO_ENABLED='1', GOOS='linux', GOARCH='amd64', GOTOOLCHAIN='local', G
            GOPATH='/work/go', GOCACHE='/work/go-cache', GOMODCACHE='/work/go-modcache',
            CGO_CFLAGS='-I' + str(prefix / 'include'),
            CGO_LDFLAGS='-L' + str(lib.parent) + ' -Wl,-rpath,$ORIGIN/lib')
-run('/go/bin/go', '-C', source, 'build', '-mod=readonly', '-trimpath', '-tags=voice', '-o', bundle / 'runtime', '.', env=env)
+resolved_sdk = resolve_sdk('/go/bin/go', source)
+if sdk_provenance(resolved_sdk) != sdk_provenance(sdk):
+    raise RuntimeError('Native asset module differs from the application SDK dependency')
+run('/go/bin/go', '-C', source, 'build', '-mod=readonly', '-trimpath', '-tags=voice', '-o', bundle / 'runtime', './cmd/flexmodule', env=env)
 env['LD_LIBRARY_PATH'] = str(bundle / 'lib')
 run('/lib64/ld-linux-x86-64.so.2', '--list', bundle / 'runtime', env=env)
 (provenance / 'go-build-info.txt').write_text(capture('/go/bin/go', 'version', '-m', bundle / 'runtime'))

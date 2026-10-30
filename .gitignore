@@ -2,13 +2,11 @@
 /logs
 .env
 /.vscode
-/helper-service
 /.claude
 /.serena
 .mcp.json
 CLAUDE.md
 *.log
-claudedocs/*.md
 /.tools/
 __pycache__/
 *.py[cod]

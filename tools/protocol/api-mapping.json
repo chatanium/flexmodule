@@ -14,9 +14,18 @@
       "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
       "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
     },
-    "sourcePackageSHA256": "443acf8109c18439d2a056fded068ee1d046d32cf7273e3267f52cc8d653c68d",
+    "canonicalModule": "github.com/chatanium/discordgo; version and checksum come from the consuming Go module, not the historical upstream sdkVersion field",
+    "canonicalImportReview": "voice_gateway.go and voice_transport.go import the canonical module's internal/dave package. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities are stable inventory labels, not local checkout paths.",
+    "publicationSourceReview": "Published v0.30.0 incorporates gofmt doc-comment layout changes in logging.go and oauth2.go; the five reviewed Application method documentation fingerprints follow those comments without changing signatures, bodies, defaults or classifications. voice.go's active fingerprint corrects an already stale pin to the byte-identical source in main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
+    "retirementSourceReview": "The published voice.go matches existing main source but active inventories lagged its retirement handshake. VoiceConnection.leaveAck and leaveConfirmed are private runtime-only state: ordered null-channel observation closes the acknowledgement; DisconnectContext waits within CloseTimeout, joins confirmation errors, and retains the reservation until cleanup and confirmation. Two extra anonymous empty struct channel types are implementation-local. Other nested identity changes and public declaration fingerprints are source-position shifts plus the separately reviewed OAuth documentation formatting; no module exposure changes.",
+    "sourcePackageSHA256": "9b8a66d3a4401004e59f29f4d23bc04f361eb5b9c9fe1317e64e3fe71902a9a9",
     "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
-    "extraction": "go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json",
+    "sdkModule": {
+      "Path": "github.com/chatanium/discordgo",
+      "Sum": "h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=",
+      "Version": "v0.30.0"
+    },
+    "extraction": "go run -mod=readonly tools/protocol/extract-source.go -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
     "sourceFiles": [
       {
@@ -129,7 +138,7 @@
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
+        "sha256": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -147,7 +156,7 @@
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
+        "sha256": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -210,7 +219,7 @@
       },
       {
         "path": "discordgo/voice.go",
-        "sha256": "1e39dad8077b6f7f5e41485249c1e5635140284b0444f1725c3e5ceecc5a9f32",
+        "sha256": "b3761bff6cd5a700053d7267bca3ee1fd35809cedaabb9bac3531c247a9d700f",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -227,7 +236,7 @@
       },
       {
         "path": "discordgo/voice_gateway.go",
-        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
+        "sha256": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -268,7 +277,7 @@
       },
       {
         "path": "discordgo/voice_transport.go",
-        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
+        "sha256": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -301,21 +310,21 @@
         ]
       }
     ],
-    "rawSHA256": "eff63962705df3a6a03d25653df7a8fdbaa5f2d8de70624e5f2b1ee210b52316",
+    "rawSHA256": "75f923466bb0b198ef3ecd22dc515412c5ad782d4127902f5be49578ec4ab6d1",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   },
   "inputSHA256": {
-    "source-api.json": "6765ef0ec1b2978a55e02cf169d32111cd6080fc26a15d5231c2a7965688e973",
-    "source-ast.json": "51e191ad98db5a50bf6d8626899304fe3319228b41d0d742c92aaa09001a7e01",
+    "source-api.json": "9075ae498a6f8469ceac930d532169ace9dec409ece541ed035d5cdfa1da3698",
+    "source-ast.json": "b2879354b44c971e84346dce42ade55b29d156c3ba98077fea25db64c96d61a9",
     "source-baseline-v0.29.0.json": "bcff0ae6ad23ad7838b2852bf1c34cd21ca6451ac7b50dfdd5318936f3dbc7a0",
-    "source-events.json": "376868c590c1727a6c869a4dbd55f4eb50f3834346749e72df31c9ba3e5d8c31",
-    "source-extracted.json": "eff63962705df3a6a03d25653df7a8fdbaa5f2d8de70624e5f2b1ee210b52316",
-    "source-methods.json": "177bcb1280546ec2deb3ae983630225bf8f468edf7e0f58e3ef280fde91f96c1",
-    "source-policy.json": "795c12d9c6139e6141bfe3e1d2375104ba5f77795e07853b9927bfe39aa2a9af",
-    "source-public-declarations.json": "af52d79595613a17ddfaffb4aefd0d13219e3ce855beb78dbd48b1d230ddfaff",
-    "source-refresh-summary.json": "92aab72188d84bda1a2ffd4634efc19afdc354cab75d21ab4d53bae680c92ae0",
-    "source-type-closure.json": "95c230bf016a12da61cfd08dfbad2afe8e91eb3020f11543bf6505075bb50b66"
+    "source-events.json": "2afac8146f12c100b6eff5240f84163c8c523e8f057b36f3296db63b5873da8e",
+    "source-extracted.json": "75f923466bb0b198ef3ecd22dc515412c5ad782d4127902f5be49578ec4ab6d1",
+    "source-methods.json": "dd23ee6abc8f93813c2e7425018f0864d2362d30bc54e58c6c8ae6809e31134c",
+    "source-policy.json": "005e073376006e400dd025941bf31c3cd984fed9e2363297c64ad2bfc241716d",
+    "source-public-declarations.json": "a0caf85015b21b43a77d232099a4d46d088b934793b3ecb7e62b460433aa7fa0",
+    "source-refresh-summary.json": "3c676c672a6f20d370360d09e07a9bd8b2a6fb1affaa2af4abead40e8d610f8e",
+    "source-type-closure.json": "094753cebac10be0f366f857b34c56aca8cf04e9d3378183c7548e8a94a14a73"
   },
   "counts": {
     "sourceMethods": 240,
@@ -373,7 +382,7 @@
           "sourceType": "*Application"
         }
       ],
-      "source": "discordgo/oauth2.go:45-54",
+      "source": "discordgo/oauth2.go:46-55",
       "sourceSignature": "func (s *Session) Application(appID string) (st *Application, err error)",
       "requiredCredential": {
         "kind": "runtime_bot",
@@ -10017,7 +10026,7 @@
     },
     {
       "name": "Application",
-      "sourceRange": "discordgo/oauth2.go:45-54",
+      "sourceRange": "discordgo/oauth2.go:46-55",
       "sourceSignature": "func (s *Session) Application(appID string) (st *Application, err error)",
       "classification": "canonical_typed_bot_rpc",
       "reason": "GET /oauth2/applications/@me는 공식 Get Current Bot Application Information입니다. oauth2.go에 있다는 이유로 제외하지 않되 appID는 정확히 @me만 허용하며 임의 앱 ID의 소유자 조회로 확장하지 않습니다.",
@@ -10038,7 +10047,7 @@
     },
     {
       "name": "ApplicationAssets",
-      "sourceRange": "discordgo/oauth2.go:125-134",
+      "sourceRange": "discordgo/oauth2.go:129-138",
       "sourceSignature": "func (s *Session) ApplicationAssets(appID string) (ass []*Asset, err error)",
       "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
       "reason": "이 메서드는 /oauth2/applications/{id}/assets 레거시 경로를 사용합니다. 현재 공식 봇 Application Resource에 정의된 자산 조회 작업이 아니므로 비공식/소유자 경로를 허용 API로 승격하지 않습니다.",
@@ -10056,7 +10065,7 @@
     },
     {
       "name": "ApplicationBotCreate",
-      "sourceRange": "discordgo/oauth2.go:145-154",
+      "sourceRange": "discordgo/oauth2.go:149-158",
       "sourceSignature": "func (s *Session) ApplicationBotCreate(appID string) (st *User, err error)",
       "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
       "reason": "개발자/소유자 계정의 애플리케이션 관리 경로이며 현재 봇용 공식 애플리케이션 API가 아닙니다. OAuth 애플리케이션 생성/삭제 및 봇 토큰 생성/노출 서비스를 제공하지 않습니다.",
@@ -10225,7 +10234,7 @@
     },
     {
       "name": "ApplicationCreate",
-      "sourceRange": "discordgo/oauth2.go:71-85",
+      "sourceRange": "discordgo/oauth2.go:73-87",
       "sourceSignature": "func (s *Session) ApplicationCreate(ap *Application) (st *Application, err error)",
       "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
       "reason": "개발자/소유자 계정의 애플리케이션 관리 경로이며 현재 봇용 공식 애플리케이션 API가 아닙니다. OAuth 애플리케이션 생성/삭제 및 봇 토큰 생성/노출 서비스를 제공하지 않습니다.",
@@ -10242,7 +10251,7 @@
     },
     {
       "name": "ApplicationDelete",
-      "sourceRange": "discordgo/oauth2.go:107-115",
+      "sourceRange": "discordgo/oauth2.go:111-119",
       "sourceSignature": "func (s *Session) ApplicationDelete(appID string) (err error)",
       "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
       "reason": "개발자/소유자 계정의 애플리케이션 관리 경로이며 현재 봇용 공식 애플리케이션 API가 아닙니다. OAuth 애플리케이션 생성/삭제 및 봇 토큰 생성/노출 서비스를 제공하지 않습니다.",
@@ -10386,7 +10395,7 @@
     },
     {
       "name": "ApplicationUpdate",
-      "sourceRange": "discordgo/oauth2.go:89-103",
+      "sourceRange": "discordgo/oauth2.go:92-106",
       "sourceSignature": "func (s *Session) ApplicationUpdate(appID string, ap *Application) (st *Application, err error)",
       "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
       "reason": "개발자/소유자 계정의 애플리케이션 관리 경로이며 현재 봇용 공식 애플리케이션 API가 아닙니다. OAuth 애플리케이션 생성/삭제 및 봇 토큰 생성/노출 서비스를 제공하지 않습니다.",
@@ -10403,7 +10412,7 @@
     },
     {
       "name": "Applications",
-      "sourceRange": "discordgo/oauth2.go:57-66",
+      "sourceRange": "discordgo/oauth2.go:58-67",
       "sourceSignature": "func (s *Session) Applications() (st []*Application, err error)",
       "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
       "reason": "개발자/소유자 계정의 애플리케이션 관리 경로이며 현재 봇용 공식 애플리케이션 API가 아닙니다. OAuth 애플리케이션 생성/삭제 및 봇 토큰 생성/노출 서비스를 제공하지 않습니다.",
@@ -11586,7 +11595,7 @@
     },
     {
       "name": "ChannelVoiceJoinContext",
-      "sourceRange": "discordgo/voice.go:118-174",
+      "sourceRange": "discordgo/voice.go:120-176",
       "sourceSignature": "func (s *Session) ChannelVoiceJoinContext(ctx context.Context, guildID, channelID string, mute, deaf bool, config VoiceConfig) (*VoiceConnection, error)",
       "classification": "backend_internal_control_helper",
       "reason": "Host P5 reserves a fresh bounded native voice connection; context/config/VoiceConnection are internal, never raw join or native transport RPCs.",
@@ -15527,7 +15536,7 @@
     },
     {
       "name": "VoiceGatewayDispatch",
-      "sourceRange": "discordgo/voice.go:178-189",
+      "sourceRange": "discordgo/voice.go:180-191",
       "sourceSignature": "func (s *Session) VoiceGatewayDispatch(e *Event) error",
       "classification": "backend_internal_control_helper",
       "reason": "Host-only private voice credential dispatch into P5 native engine; raw Event/session/token data must never become a module RPC/DTO.",

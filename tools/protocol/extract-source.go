@@ -1,7 +1,7 @@
 // Command extract-source reads Go syntax only; it does not load or compile DiscordGo.
 // Run from the repository root:
 //
-//	go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json
+//	go run -mod=readonly tools/protocol/extract-source.go -out tools/protocol/inventory/source-extracted.json
 //
 // Then run python3 tools/protocol/refresh-inventory.py to apply reviewed policy.
 package main
@@ -19,7 +19,9 @@ import (
 	"go/printer"
 	"go/token"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -108,6 +110,7 @@ type publicDeclaration struct {
 }
 
 type catalog struct {
+	SDKModule            map[string]string   `json:"sdkModule"`
 	SourceFiles          []sourceFile        `json:"sourceFiles"`
 	Types                []sourceType        `json:"types"`
 	NestedTypes          []sourceType        `json:"nestedTypes"`
@@ -332,14 +335,33 @@ func extractMethod(in input, fn *ast.FuncDecl) method {
 }
 
 func main() {
-	sdk := flag.String("sdk", "discordgo", "SDK package directory, relative to the repository root")
+	sdk := flag.String("sdk", "github.com/chatanium/discordgo", "canonical SDK module import path (resolved from go.mod, never a local directory)")
 	out := flag.String("out", "tools/protocol/inventory/source-extracted.json", "raw source inventory output")
 	flag.Parse()
-	entries, err := os.ReadDir(*sdk)
+	if *sdk != "github.com/chatanium/discordgo" {
+		fail("SDK must be the required canonical github.com/chatanium/discordgo module")
+	}
+	command := exec.Command("python3", "tools/sdk.py", "--go", filepath.Join(runtime.GOROOT(), "bin", "go"), "--json")
+	command.Stderr = os.Stderr
+	metadata, err := command.Output()
+	if err != nil {
+		fail("resolve SDK module: %v", err)
+	}
+	var module struct {
+		Path    string
+		Version string
+		Sum     string
+		Dir     string
+	}
+	if err := json.Unmarshal(metadata, &module); err != nil {
+		fail("decode SDK module: %v", err)
+	}
+	entries, err := os.ReadDir(module.Dir)
 	if err != nil {
 		fail("read SDK: %v", err)
 	}
 	result := catalog{Types: []sourceType{}, NestedTypes: []sourceType{}, Methods: []method{}, Events: []event{}, PolymorphicExpansion: map[string][]string{"MessageComponent": {}, "InteractionData": {}}, EndpointDeclarations: map[string]string{}}
+	result.SDKModule = map[string]string{"Path": module.Path, "Version": module.Version, "Sum": module.Sum}
 	profiles := map[string]build.Context{}
 	for _, name := range []string{"ordinary", "native_voice"} {
 		ctx := build.Default
@@ -356,8 +378,10 @@ func main() {
 		if entry.IsDir() || !strings.HasSuffix(entry.Name(), ".go") || strings.HasSuffix(entry.Name(), "_test.go") {
 			continue
 		}
-		name := filepath.ToSlash(filepath.Join(*sdk, entry.Name()))
-		data, err := os.ReadFile(name)
+		// Keep stable logical inventory identities, not machine-specific cache
+		// paths. "discordgo/" labels catalog source; it is not a checkout path.
+		name := "discordgo/" + entry.Name()
+		data, err := os.ReadFile(filepath.Join(module.Dir, entry.Name()))
 		if err != nil {
 			fail("read %s: %v", name, err)
 		}
@@ -382,7 +406,7 @@ func main() {
 		}
 		active := []string{}
 		for profile, ctx := range profiles {
-			match, err := ctx.MatchFile(*sdk, entry.Name())
+			match, err := ctx.MatchFile(module.Dir, entry.Name())
 			if err != nil {
 				fail("build constraint %s: %v", name, err)
 			}

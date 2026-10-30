@@ -4,14 +4,25 @@
 Only API-owned source and its coverage inventory are written. No SDK REST method,
 reflection-based JSON mapping, compiler, formatter or protocol generator is run.
 """
+import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / 'tools'))
+from sdk import provenance, resolve
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--output-dir', type=Path,
+                    help='Stage all four Go outputs and coverage JSON here instead of publishing in the checkout')
+args = parser.parse_args()
+SDK = resolve()
 API = json.loads((ROOT / 'tools/protocol/api-mapping.json').read_text())
 DOMAIN = json.loads((ROOT / 'tools/protocol/domain-mapping.json').read_text())
-OUT = ROOT / 'backend/discord'
+OUT = args.output_dir if args.output_dir is not None else ROOT / 'internal/backend/discord'
+coverage_out = OUT / 'backend-api-coverage.json' if args.output_dir is not None else ROOT / 'tools/protocol/backend-api-coverage.json'
 OUT.mkdir(parents=True, exist_ok=True)
 PB = '\n'.join((ROOT / ('proto/discord-v2/' + f + '.pb.go')).read_text() for f in ('domain', 'helper'))
 FIELDS = {}
@@ -89,7 +100,7 @@ def field(req, name):
 
 # The source is used at generation time only; endpoint variables are not consulted
 # at runtime and cannot be overwritten by another package or a module.
-ENDPOINTS = (ROOT / 'discordgo/endpoints.go').read_text()
+ENDPOINTS = (Path(SDK['Dir']) / 'endpoints.go').read_text()
 CONSTANTS = {'EndpointAPI':'/api/v10/', 'APIVersion':'10', 'EndpointDiscord':'https://discord.com/'}
 FUNCS = {}
 for line in ENDPOINTS.splitlines():
@@ -136,7 +147,8 @@ def endpoint(expr, env):
     raise ValueError(('endpoint',expr,env))
 
 def source_method(op):
-    source=(ROOT/op['source'].split(':')[0]).read_text()
+    source_file=Path(op['source'].split(':',1)[0]).relative_to('discordgo')
+    source=(Path(SDK['Dir'])/source_file).read_text()
     m=re.search(r'func \(s \*Session\) '+op['name']+r'\(',source)
     start=source.index('{',m.start()); depth=1;i=start+1
     while depth:
@@ -462,6 +474,6 @@ for op in API['operations']:
     if name=='GuildMemberEdit':coverage[-1]['roleReplacement']='only explicit roles wrapper; existing + submitted role lookup and protected guild root before mutation'
 lines += ['default:return nil,invalidRequest("unknown REST operation")','}', 'if err=applyOptions(p,operation,reason,options);err!=nil{return nil,err}', 'return p,nil','}']
 emitfile('rest_plans_generated.go',lines)
-(ROOT/'tools/protocol/backend-api-coverage.json').write_text(json.dumps({'generator':'python3 tools/protocol/generate-backend-api.py','sourceProvenance':API['sourceProvenance'],'canonicalHelperHandlers':len(API['operations']),'managementDelegates':len(API['ownershipOperations']),'restPlans':coverage,'nonREST':[{'operation':o['name'],'delegate':'executeGateway','transport':o['transport']} for o in API['operations'] if o['transport']!='rest'],'management':API['ownershipOperations'],'evidence':'Static implementation coverage, not an exercised test result.'},indent=2)+'\n')
+coverage_out.write_text(json.dumps({'generator':'python3 tools/protocol/generate-backend-api.py','sdkModule':provenance(SDK),'sourceProvenance':API['sourceProvenance'],'canonicalHelperHandlers':len(API['operations']),'managementDelegates':len(API['ownershipOperations']),'restPlans':coverage,'nonREST':[{'operation':o['name'],'delegate':'executeGateway','transport':o['transport']} for o in API['operations'] if o['transport']!='rest'],'management':API['ownershipOperations'],'evidence':'Static implementation coverage, not an exercised test result.'},indent=2)+'\n')
 
 

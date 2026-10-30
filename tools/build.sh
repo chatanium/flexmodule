@@ -38,20 +38,15 @@ for target in "$@"; do
     [[ "$module" == . ]] || safe_path "$module"
     [[ -f "$module/go.mod" ]] || fail "Module missing: $module"
     printf 'Building %s (%s) -> %s [%s/%s, CGO=%s]\n' "$module" "$package" "$output" "$GOOS" "$GOARCH" "$CGO_ENABLED"
+    # Require the independently versioned canonical SDK, including for checks
+    # without an output binary. Replaces must never bypass the published module.
+    run python3 tools/sdk.py --go "$GO_BINARY" --module-dir "$ROOT/$module"
     if [[ "$output" == - ]]; then
         [[ "$mode" == build ]] || fail 'Test binaries require an owned output'
         run "$GO_BINARY" -C "$ROOT/$module" build -mod=readonly -trimpath -tags= "$package"
         continue
     fi
     case " $BUILD_OUTPUTS " in *" $output "*) ;; *) fail "Unowned build output: $output" ;; esac
-    # A consuming module must resolve the SDK locally, not silently fall back
-    # to upstream when a nested module's replace directive is missing.
-    temporary=$(mktemp "$ROOT/.tools/resolve.XXXXXXXX")
-    run "$GO_BINARY" -C "$ROOT/$module" list -mod=readonly -m -f '{{.Dir}}' github.com/bwmarrin/discordgo > "$temporary"
-    IFS= read -r resolved < "$temporary"
-    [[ "$(realpath -- "$resolved")" == "$ROOT/discordgo" ]] || fail "$module resolved DiscordGo to $resolved; require $ROOT/discordgo"
-    rm -f -- "$temporary"
-    temporary=
     safe_file "$output"
     mkdir -p -- "$(dirname -- "$output")"
     temporary=$(mktemp "$ROOT/$output.tmp.XXXXXXXX")

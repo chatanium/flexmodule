@@ -57,6 +57,8 @@ trap 'status=$?; stop_child; if [[ -n "$go_probe" ]]; then rm -f -- "$go_probe";
 
 use_go() {
     : "${GO_TOOLCHAIN:?Run this command through make (missing GO_TOOLCHAIN)}"
+    # An inherited GOROOT may belong to a different compiler distribution.
+    unset GOROOT
     export GOTOOLCHAIN=$GO_TOOLCHAIN GOWORK=off GOFLAGS=
     local actual
     # Version-manager shims may reject .go-version before Go can handle

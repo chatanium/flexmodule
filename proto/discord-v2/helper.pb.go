@@ -152,7 +152,7 @@ func (x *DiscordErrorDetail) GetFieldErrors() []*core_v2.FieldViolation {
 	return nil
 }
 
-// Source: discordgo/oauth2.go:45-54
+// Source: discordgo/oauth2.go:46-55
 type ApplicationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AppId         string                 `protobuf:"bytes,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`

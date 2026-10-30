@@ -1,8 +1,8 @@
 {
   "generator": "python3 tools/protocol/generate-client.py",
   "inputSHA256": {
-    "api-mapping.json": "2ce36bd9fe5de4df2caf8b04812bf78c37f8455f236782a2205306f2f97245d5",
-    "conversions_generated.go": "a3e919c22aaec09e2af80c42b4902fcc2f9dc03c0206ebab16a12cc61fd8ec27"
+    "api-mapping.json": "6481cc80a1929142c69df959525551f7a077f2f2f33432b6a3e3645812f6f32d",
+    "conversions_generated.go": "e6e2de1b397448210da015309a28f0217214801b5134a9253cad6a6ba7fe5287"
   },
   "counts": {
     "canonical": 153,
@@ -23,7 +23,7 @@
         "options"
       ],
       "output": "*discordgo.Application",
-      "source": "discordgo/oauth2.go:45-54"
+      "source": "discordgo/oauth2.go:46-55"
     },
     {
       "name": "ApplicationCommand",

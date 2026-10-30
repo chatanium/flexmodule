@@ -2214,16 +2214,16 @@
       "Name": "Asset",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 118,
+      "Line": 122,
       "Column": 6,
-      "End": 122,
+      "End": 126,
       "Fields": [
         {
           "Name": "Type",
           "Type": "int",
           "Tag": "`json:\"type\"`",
-          "Line": 119,
-          "End": 119,
+          "Line": 123,
+          "End": 123,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -2236,8 +2236,8 @@
           "Name": "ID",
           "Type": "string",
           "Tag": "`json:\"id\"`",
-          "Line": 120,
-          "End": 120,
+          "Line": 124,
+          "End": 124,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -2250,8 +2250,8 @@
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 121,
-          "End": 121,
+          "Line": 125,
+          "End": 125,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -23232,7 +23232,7 @@
       "File": "discordgo/voice.go",
       "Line": 98,
       "Column": 6,
-      "End": 114,
+      "End": 116,
       "Fields": [
         {
           "Name": "RWMutex",
@@ -23511,13 +23511,39 @@
             "bool"
           ],
           "ExternalReferences": []
+        },
+        {
+          "Name": "leaveAck",
+          "Type": "chan struct{}",
+          "Tag": "",
+          "Line": 114,
+          "End": 114,
+          "Exported": false,
+          "Embedded": false,
+          "Documentation": "",
+          "References": [],
+          "ExternalReferences": []
+        },
+        {
+          "Name": "leaveConfirmed",
+          "Type": "bool",
+          "Tag": "",
+          "Line": 115,
+          "End": 115,
+          "Exported": false,
+          "Embedded": false,
+          "Documentation": "",
+          "References": [
+            "bool"
+          ],
+          "ExternalReferences": []
         }
       ],
       "Exported": true,
       "Alias": false,
       "Scope": "package",
       "Documentation": "// VoiceConnection is host-owned and fixed to one guild/channel generation.\n// No public send/receive channels or channel-moving operation exist.",
-      "Declaration": "VoiceConnection struct {\n\tsync.RWMutex\n\tLogLevel                   int\n\tGuildID, ChannelID, UserID string\n\tsession                    *Session\n\tconfig                     VoiceConfig\n\tengine                     voiceEngine\n\tcredentials                chan struct{}\n\tsessionID, token, endpoint string\n\tmute, deaf                 bool\n\tstarted                    bool\n\tdisconnectGate             gatewayMutex\n\tdisconnected               bool\n\tdisconnectErr              error\n\tlocalClosed                bool\n\treleaseOnClose             bool\n}",
+      "Declaration": "VoiceConnection struct {\n\tsync.RWMutex\n\tLogLevel                   int\n\tGuildID, ChannelID, UserID string\n\tsession                    *Session\n\tconfig                     VoiceConfig\n\tengine                     voiceEngine\n\tcredentials                chan struct{}\n\tsessionID, token, endpoint string\n\tmute, deaf                 bool\n\tstarted                    bool\n\tdisconnectGate             gatewayMutex\n\tdisconnected               bool\n\tdisconnectErr              error\n\tlocalClosed                bool\n\treleaseOnClose             bool\n\tleaveAck                   chan struct{}\n\tleaveConfirmed             bool\n}",
       "References": [
         "Session",
         "VoiceConfig",
@@ -53332,12 +53358,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:46:51",
+      "Name": "anonymous@discordgo/logging.go:47:51",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 46,
+      "Line": 47,
       "Column": 51,
-      "End": 46,
+      "End": 47,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -53348,12 +53374,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:71:53",
+      "Name": "anonymous@discordgo/logging.go:72:53",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 71,
+      "Line": 72,
       "Column": 53,
-      "End": 71,
+      "End": 72,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -53364,12 +53390,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:84:61",
+      "Name": "anonymous@discordgo/logging.go:85:61",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 84,
+      "Line": 85,
       "Column": 61,
-      "End": 84,
+      "End": 85,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -53446,19 +53472,19 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/oauth2.go:73:10",
+      "Name": "anonymous@discordgo/oauth2.go:75:10",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 73,
+      "Line": 75,
       "Column": 10,
-      "End": 76,
+      "End": 78,
       "Fields": [
         {
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 74,
-          "End": 74,
+          "Line": 76,
+          "End": 76,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -53471,8 +53497,8 @@
           "Name": "Description",
           "Type": "string",
           "Tag": "`json:\"description\"`",
-          "Line": 75,
-          "End": 75,
+          "Line": 77,
+          "End": 77,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -53493,19 +53519,19 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/oauth2.go:91:10",
+      "Name": "anonymous@discordgo/oauth2.go:94:10",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 91,
+      "Line": 94,
       "Column": 10,
-      "End": 94,
+      "End": 97,
       "Fields": [
         {
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 92,
-          "End": 92,
+          "Line": 95,
+          "End": 95,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -53518,8 +53544,8 @@
           "Name": "Description",
           "Type": "string",
           "Tag": "`json:\"description\"`",
-          "Line": 93,
-          "End": 93,
+          "Line": 96,
+          "End": 96,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -55363,12 +55389,28 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/voice.go:147:155",
+      "Name": "anonymous@discordgo/voice.go:114:34",
       "Kind": "struct",
       "File": "discordgo/voice.go",
-      "Line": 147,
+      "Line": 114,
+      "Column": 34,
+      "End": 114,
+      "Fields": [],
+      "Exported": false,
+      "Alias": false,
+      "Scope": "anonymous",
+      "Documentation": "",
+      "Declaration": "struct{}",
+      "References": [],
+      "ExternalReferences": []
+    },
+    {
+      "Name": "anonymous@discordgo/voice.go:149:155",
+      "Kind": "struct",
+      "File": "discordgo/voice.go",
+      "Line": 149,
       "Column": 155,
-      "End": 147,
+      "End": 149,
       "Fields": [],
       "Exported": false,
       "Alias": false,
@@ -55379,27 +55421,11 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/voice.go:235:24",
-      "Kind": "struct",
-      "File": "discordgo/voice.go",
-      "Line": 235,
-      "Column": 24,
-      "End": 235,
-      "Fields": [],
-      "Exported": false,
-      "Alias": false,
-      "Scope": "anonymous",
-      "Documentation": "",
-      "Declaration": "struct{}",
-      "References": [],
-      "ExternalReferences": []
-    },
-    {
-      "Name": "anonymous@discordgo/voice.go:252:53",
+      "Name": "anonymous@discordgo/voice.go:252:24",
       "Kind": "struct",
       "File": "discordgo/voice.go",
       "Line": 252,
-      "Column": 53,
+      "Column": 24,
       "End": 252,
       "Fields": [],
       "Exported": false,
@@ -55411,12 +55437,44 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/voice.go:331:41",
+      "Name": "anonymous@discordgo/voice.go:269:53",
       "Kind": "struct",
       "File": "discordgo/voice.go",
-      "Line": 331,
+      "Line": 269,
+      "Column": 53,
+      "End": 269,
+      "Fields": [],
+      "Exported": false,
+      "Alias": false,
+      "Scope": "anonymous",
+      "Documentation": "",
+      "Declaration": "struct{}",
+      "References": [],
+      "ExternalReferences": []
+    },
+    {
+      "Name": "anonymous@discordgo/voice.go:323:19",
+      "Kind": "struct",
+      "File": "discordgo/voice.go",
+      "Line": 323,
+      "Column": 19,
+      "End": 323,
+      "Fields": [],
+      "Exported": false,
+      "Alias": false,
+      "Scope": "anonymous",
+      "Documentation": "",
+      "Declaration": "struct{}",
+      "References": [],
+      "ExternalReferences": []
+    },
+    {
+      "Name": "anonymous@discordgo/voice.go:373:41",
+      "Kind": "struct",
+      "File": "discordgo/voice.go",
+      "Line": 373,
       "Column": 41,
-      "End": 331,
+      "End": 373,
       "Fields": [],
       "Exported": false,
       "Alias": false,
@@ -65704,19 +65762,19 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:46:51:anonymous@discordgo/logging.go:46:51": {
+    "discordgo/logging.go:47:51:anonymous@discordgo/logging.go:47:51": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:71:53:anonymous@discordgo/logging.go:71:53": {
+    "discordgo/logging.go:72:53:anonymous@discordgo/logging.go:72:53": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:84:61:anonymous@discordgo/logging.go:84:61": {
+    "discordgo/logging.go:85:61:anonymous@discordgo/logging.go:85:61": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -65745,7 +65803,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/oauth2.go:73:10:anonymous@discordgo/oauth2.go:73:10": {
+    "discordgo/oauth2.go:75:10:anonymous@discordgo/oauth2.go:75:10": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "8cfba3bd0968cd9cab3cb263b00fecb4fd5e2c1cfa1dd36324b2c3e6add303e1",
       "fields": {
@@ -65762,7 +65820,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/oauth2.go:91:10:anonymous@discordgo/oauth2.go:91:10": {
+    "discordgo/oauth2.go:94:10:anonymous@discordgo/oauth2.go:94:10": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "8cfba3bd0968cd9cab3cb263b00fecb4fd5e2c1cfa1dd36324b2c3e6add303e1",
       "fields": {
@@ -66432,25 +66490,37 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/voice.go:147:155:anonymous@discordgo/voice.go:147:155": {
+    "discordgo/voice.go:114:34:anonymous@discordgo/voice.go:114:34": {
+      "classification": "SDK-local-or-anonymous-source-syntax",
+      "shapeSHA256": "fa4be9d52216b32f4a126f83329a4b6ebe86e7fcf1f2c012682b10a4f875af8e",
+      "fields": {},
+      "decision": "Private leaveAck channel element; empty struct carries retirement acknowledgement only, never module domain state."
+    },
+    "discordgo/voice.go:149:155:anonymous@discordgo/voice.go:149:155": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "fa4be9d52216b32f4a126f83329a4b6ebe86e7fcf1f2c012682b10a4f875af8e",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/voice.go:235:24:anonymous@discordgo/voice.go:235:24": {
+    "discordgo/voice.go:252:24:anonymous@discordgo/voice.go:252:24": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "fa4be9d52216b32f4a126f83329a4b6ebe86e7fcf1f2c012682b10a4f875af8e",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/voice.go:252:53:anonymous@discordgo/voice.go:252:53": {
+    "discordgo/voice.go:269:53:anonymous@discordgo/voice.go:269:53": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "fa4be9d52216b32f4a126f83329a4b6ebe86e7fcf1f2c012682b10a4f875af8e",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/voice.go:331:41:anonymous@discordgo/voice.go:331:41": {
+    "discordgo/voice.go:323:19:anonymous@discordgo/voice.go:323:19": {
+      "classification": "SDK-local-or-anonymous-source-syntax",
+      "shapeSHA256": "fa4be9d52216b32f4a126f83329a4b6ebe86e7fcf1f2c012682b10a4f875af8e",
+      "fields": {},
+      "decision": "Empty struct for the private retirement acknowledgement channel allocated by DisconnectContext; no payload or module DTO exposure."
+    },
+    "discordgo/voice.go:373:41:anonymous@discordgo/voice.go:373:41": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "fa4be9d52216b32f4a126f83329a4b6ebe86e7fcf1f2c012682b10a4f875af8e",
       "fields": {},
@@ -78546,7 +78616,7 @@
     },
     "VoiceConnection": {
       "classification": "runtime-only-source",
-      "shapeSHA256": "dd7f1baaaba24e6e15da42c06e136191d4d7b2f26a20e5cabb0b093203528129",
+      "shapeSHA256": "e358933b21e366f24172152d991200e65828ffaf72cc26bfc60cd3a9c2b6a1b8",
       "fields": {
         "RWMutex": {
           "classification": "runtime-only",
@@ -78667,10 +78737,22 @@
           "sourceType": "bool",
           "sourceTag": "",
           "decision": "Host-owned local P3/P5 transport/configuration/lifecycle field, not module domain state. Credentials, sockets, gates, native contexts and channels never cross the module boundary."
+        },
+        "leaveAck": {
+          "classification": "runtime-only",
+          "sourceType": "chan struct{}",
+          "sourceTag": "",
+          "decision": "Host-owned voice retirement acknowledgement channel; ordered null-channel Gateway observation confirms leave before releasing the reservation. Local lifecycle state never crosses the module boundary."
+        },
+        "leaveConfirmed": {
+          "classification": "runtime-only",
+          "sourceType": "bool",
+          "sourceTag": "",
+          "decision": "Host-owned voice retirement confirmation gate paired with leaveAck; prevents duplicate acknowledgement and premature reservation release. Not module domain state."
         }
       },
       "interfaceMethods": {},
-      "review": "Historical declaration retained; source parser now records complete Go syntax without ? placeholders or fixed-array flattening."
+      "review": "Runtime-owned voice lifecycle declaration; active policy includes the already-existing private leave acknowledgement/confirmation state without promoting channels or retirement gates to module DTOs."
     },
     "VoiceRegion": {
       "classification": "domain-source-struct",
@@ -80746,9 +80828,18 @@
       "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
       "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
     },
-    "sourcePackageSHA256": "443acf8109c18439d2a056fded068ee1d046d32cf7273e3267f52cc8d653c68d",
+    "canonicalModule": "github.com/chatanium/discordgo; version and checksum come from the consuming Go module, not the historical upstream sdkVersion field",
+    "canonicalImportReview": "voice_gateway.go and voice_transport.go import the canonical module's internal/dave package. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities are stable inventory labels, not local checkout paths.",
+    "publicationSourceReview": "Published v0.30.0 incorporates gofmt doc-comment layout changes in logging.go and oauth2.go; the five reviewed Application method documentation fingerprints follow those comments without changing signatures, bodies, defaults or classifications. voice.go's active fingerprint corrects an already stale pin to the byte-identical source in main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
+    "retirementSourceReview": "The published voice.go matches existing main source but active inventories lagged its retirement handshake. VoiceConnection.leaveAck and leaveConfirmed are private runtime-only state: ordered null-channel observation closes the acknowledgement; DisconnectContext waits within CloseTimeout, joins confirmation errors, and retains the reservation until cleanup and confirmation. Two extra anonymous empty struct channel types are implementation-local. Other nested identity changes and public declaration fingerprints are source-position shifts plus the separately reviewed OAuth documentation formatting; no module exposure changes.",
+    "sourcePackageSHA256": "9b8a66d3a4401004e59f29f4d23bc04f361eb5b9c9fe1317e64e3fe71902a9a9",
     "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
-    "extraction": "go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json",
+    "sdkModule": {
+      "Path": "github.com/chatanium/discordgo",
+      "Sum": "h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=",
+      "Version": "v0.30.0"
+    },
+    "extraction": "go run -mod=readonly tools/protocol/extract-source.go -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
     "sourceFiles": [
       {
@@ -80861,7 +80952,7 @@
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
+        "sha256": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -80879,7 +80970,7 @@
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
+        "sha256": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -80942,7 +81033,7 @@
       },
       {
         "path": "discordgo/voice.go",
-        "sha256": "1e39dad8077b6f7f5e41485249c1e5635140284b0444f1725c3e5ceecc5a9f32",
+        "sha256": "b3761bff6cd5a700053d7267bca3ee1fd35809cedaabb9bac3531c247a9d700f",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -80959,7 +81050,7 @@
       },
       {
         "path": "discordgo/voice_gateway.go",
-        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
+        "sha256": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -81000,7 +81091,7 @@
       },
       {
         "path": "discordgo/voice_transport.go",
-        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
+        "sha256": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -81033,7 +81124,7 @@
         ]
       }
     ],
-    "rawSHA256": "eff63962705df3a6a03d25653df7a8fdbaa5f2d8de70624e5f2b1ee210b52316",
+    "rawSHA256": "75f923466bb0b198ef3ecd22dc515412c5ad782d4127902f5be49578ec4ab6d1",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   }

@@ -7,7 +7,7 @@ export GO_BINARY
 safe_path .tools/images
 safe_file .tools/images/build.lock
 safe_path .tools/media
-for file in test-module/manifest.json chatanium-musicbot/manifest.json voice-player-module/manifest.json integration-tests/sandbox-module/manifest.json bin/test-module bin/chatanium-musicbot bin/voice-player-module bin/sandbox-module; do
+for file in examples/general-bot/manifest.json modules/music-bot/manifest.json modules/audio-player/manifest.json tests/integration/fixtures/sandbox/manifest.json bin/test-module bin/chatanium-musicbot bin/voice-player-module bin/sandbox-module; do
     safe_file "$file"
 done
 if [[ "${1:?Expected module or media}" == module ]]; then
@@ -16,11 +16,15 @@ if [[ "${1:?Expected module or media}" == module ]]; then
     run python3 -c '
 import json
 from pathlib import Path
+import sys
+sys.path.insert(0, "tools")
+from sdk import resolve
 
-base = json.loads(Path("tools/native/native-lock.json").read_text())["builder_base"]
+sdk = resolve(sys.argv[1])
+base = json.loads((Path(sdk["Dir"]) / "tools/native/native-lock.json").read_text())["builder_base"]
 source = Path("tools/build/Module.Dockerfile").read_text().splitlines()
 if f"FROM {base} AS trust" not in source:
     raise SystemExit("Module trust source must match native-lock.json builder_base")
-'
+' "$GO_BINARY"
 fi
 run python3 tools/build/images.py "${1:?Expected module or media}"

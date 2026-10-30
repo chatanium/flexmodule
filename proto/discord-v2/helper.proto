@@ -28,7 +28,7 @@ message DiscordErrorDetail {
   repeated flexmodule.core.v2.FieldViolation field_errors = 4;
 }
 
-// Source: discordgo/oauth2.go:45-54
+// Source: discordgo/oauth2.go:46-55
 message ApplicationRequest {
   string app_id = 1;
   RequestOptions options = 1000;

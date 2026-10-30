@@ -12,9 +12,12 @@ import copy
 import hashlib
 import json
 from collections import Counter
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))
+from sdk import provenance as sdk_provenance, resolve as resolve_sdk
 DEFAULT = ROOT / "tools/protocol/inventory"
 BUILTINS = set("bool byte complex64 complex128 error float32 float64 int int8 int16 int32 int64 rune string uint uint8 uint16 uint32 uint64 uintptr any comparable".split())
 SOURCE_KEYS = {"name", "signature", "source", "endLine", "documentation", "body", "arguments", "results", "endpointExpressions"}
@@ -77,10 +80,13 @@ def main():
     require(len(files) == len(raw["sourceFiles"]), "Duplicate SDK source file")
     require(sha(raw["sourceFiles"]) == policy["provenance"]["sourcePackageSHA256"], "Source package revision digest disagrees with reviewed provenance")
     require(files == policy["sourceFiles"], "Source files do not match reviewed source pin; re-extract and review source-policy.json")
+    sdk = resolve_sdk()
+    require(raw["sdkModule"] == sdk_provenance(sdk), "Extraction does not match the required canonical SDK module")
+    sdk_directory = Path(sdk["Dir"])
     for name, expected in files.items():
-        require(hashlib.sha256((ROOT / name).read_bytes()).hexdigest() == expected, f"Stale extraction: {name}")
-    sdk_directories = {str(Path(name).parent) for name in files}
-    current_files = {str(path.relative_to(ROOT)) for sdk in sdk_directories for path in (ROOT / sdk).glob("*.go") if not path.name.endswith("_test.go")}
+        require(Path(name).parent == Path("discordgo"), f"Unexpected logical SDK source identity: {name}")
+        require(hashlib.sha256((sdk_directory / Path(name).name).read_bytes()).hexdigest() == expected, f"Stale extraction: {name}")
+    current_files = {"discordgo/" + path.name for path in sdk_directory.glob("*.go") if not path.name.endswith("_test.go")}
     exact_keys(current_files, files, "SDK source file")
     require(raw["sourceFiles"] == policy["sourceFileBuildPolicies"], "Unreviewed SDK build constraints/profile membership")
     types = unique(raw["types"], "Name", "SDK type")
@@ -263,7 +269,7 @@ def main():
     source_ast["BuildProfiles"] = profiles
     source_ast["TypePolicies"] = copy.deepcopy(policy["types"])
     source_ast["RetiredTypeFields"] = copy.deepcopy(policy["retiredTypeFields"])
-    provenance = {**policy["provenance"], "extraction": "go run tools/protocol/extract-source.go -sdk discordgo -out tools/protocol/inventory/source-extracted.json", "refresh": "python3 tools/protocol/refresh-inventory.py", "sourceFiles": raw["sourceFiles"], "rawSHA256": hashlib.sha256((directory / "source-extracted.json").read_bytes()).hexdigest(), "historicalBaseline": "source-baseline-v0.29.0.json", "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"}
+    provenance = {**policy["provenance"], "sdkModule": raw["sdkModule"], "extraction": "go run -mod=readonly tools/protocol/extract-source.go -out tools/protocol/inventory/source-extracted.json", "refresh": "python3 tools/protocol/refresh-inventory.py", "sourceFiles": raw["sourceFiles"], "rawSHA256": hashlib.sha256((directory / "source-extracted.json").read_bytes()).hexdigest(), "historicalBaseline": "source-baseline-v0.29.0.json", "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"}
     outputs = {"source-ast.json": source_ast, "source-api.json": api, "source-methods.json": {"sourceFiles": [Path(f["path"]).name for f in raw["sourceFiles"]], "count": len(methods), "methods": raw["methods"]}, "source-type-closure.json": type_closure, "source-events.json": event_catalog}
     outputs["source-public-declarations.json"] = {"scope": "All exported SDK package functions and methods on exported receiver types; one logical declaration per receiver/name, build-tagged implementations retained separately. Session dispositions are the source-api catalog, other declarations are domain conveniences or host-only SDK integrations, never additional module RPCs.", "count": len(public_rows), "declarations": public_rows, "buildProfiles": profiles, "unsupportedBuilds": {"voice_without_cgo": "Intentionally unsupported SDK build; voice_nocgo.go is retained in source hashes with no supported build profile."}}
     for catalog in outputs.values():

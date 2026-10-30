@@ -18,7 +18,7 @@ IMPORTS = '''import (
     "strconv"
     "time"
 
-    "github.com/bwmarrin/discordgo"
+    "github.com/chatanium/discordgo"
     corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
     wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
     core "github.com/thirdscam/chatanium-flexmodule/shared/core-v2"
@@ -236,7 +236,7 @@ def generate():
     "context"
     "time"
 
-    "github.com/bwmarrin/discordgo"
+    "github.com/chatanium/discordgo"
     corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 )
 

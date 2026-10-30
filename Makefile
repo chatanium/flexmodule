@@ -11,16 +11,13 @@ export BUILD_JOBS MODULE_KIND MODULE_IMAGE MUSIC_IMAGE PLAYER_IMAGE
 export CONFIG SUPERVISOR_SOCKET SUPERVISOR_UID SUPERVISOR_MAX_BYTES CHECK_DEADLINE TEST_TIMEOUT OBSERVE RUNTIME
 export INTEGRATION POLICY_PLAN POLICY_RUNNER EVIDENCE
 
-# Six maintained modules. The two helper-service modules are removed at v2
-# cutover, never generated or silently substituted with production fallbacks.
-BUILD_TARGETS := .:.:bin/runtime .:./test-module:bin/test-module .:./cmd/flexmodule-supervisor:bin/flexmodule-supervisor
-MEDIA_TARGETS := chatanium-musicbot:.:bin/chatanium-musicbot voice-player-module:.:bin/voice-player-module
+# Runtime, general example, supervisor, and independent media modules.
+# The canonical DiscordGo module and its examples are checked in their own repo.
+BUILD_TARGETS := .:./cmd/flexmodule:bin/runtime .:./examples/general-bot:bin/test-module .:./cmd/flexmodule-supervisor:bin/flexmodule-supervisor
+MEDIA_TARGETS := modules/music-bot:.:bin/chatanium-musicbot modules/audio-player:.:bin/voice-player-module
 MODULE_CHECK_TARGETS := .:./...:-
-SDK_TARGETS := discordgo:./...:- \
-	discordgo/examples/linked_roles:.:bin/discordgo-linked-roles \
-	discordgo/examples/voice_receive:.:bin/discordgo-voice-receive
 BUILD_OUTPUTS := bin/runtime bin/test-module bin/flexmodule-supervisor bin/sandbox-module \
-	bin/chatanium-musicbot bin/voice-player-module bin/discordgo-linked-roles bin/discordgo-voice-receive \
+	bin/chatanium-musicbot bin/voice-player-module \
 	bin/flexmodule-integration bin/flexmodule-runtime-return-holder
 
 # Explicit ownership covers only current v2 generated outputs. The completed
@@ -48,15 +45,15 @@ build-media:
 	@bash tools/build.sh build $(MEDIA_TARGETS)
 
 build-all:
-	@bash tools/build.sh build $(MODULE_CHECK_TARGETS) $(BUILD_TARGETS) $(SDK_TARGETS) $(MEDIA_TARGETS)
+	@bash tools/build.sh build $(MODULE_CHECK_TARGETS) $(BUILD_TARGETS) $(MEDIA_TARGETS)
 
 build-sandbox:
-	@bash tools/build.sh build .:./integration-tests/sandbox-module:bin/sandbox-module
+	@bash tools/build.sh build .:./tests/integration/fixtures/sandbox:bin/sandbox-module
 
 # Permanent ordinary/no-voice harness and same-package runtime return holder.
 build-integration:
-	@CGO_ENABLED=0 bash tools/build.sh build .:./integration-tests/test-voice.go:bin/flexmodule-integration
-	@CGO_ENABLED=0 bash tools/build.sh test-binary .:.:bin/flexmodule-runtime-return-holder
+	@CGO_ENABLED=0 bash tools/build.sh build .:./tests/integration:bin/flexmodule-integration
+	@CGO_ENABLED=0 bash tools/build.sh test-binary .:./cmd/flexmodule:bin/flexmodule-runtime-return-holder
 
 # Native C++/ABI/loader/license gate only; independent of unfinished app Go.
 build-native:
@@ -69,9 +66,9 @@ build-voice:
 image-module:
 	@test -n "$(MODULE_IMAGE)" || { echo 'Set MODULE_IMAGE to an explicit writable OCI tag' >&2; exit 1; }
 ifeq ($(MODULE_KIND),sandbox)
-	@bash tools/build.sh build .:./integration-tests/sandbox-module:bin/sandbox-module
+	@bash tools/build.sh build .:./tests/integration/fixtures/sandbox:bin/sandbox-module
 else
-	@bash tools/build.sh build .:./test-module:bin/test-module
+	@bash tools/build.sh build .:./examples/general-bot:bin/test-module
 endif
 	@bash tools/build/images.sh module
 

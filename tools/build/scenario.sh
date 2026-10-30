@@ -56,7 +56,7 @@ fi
 # Never source .env, echo config or pass a secret into module container env.
 # The real harness records unavailable live observations as NOT_RUN.
 run timeout --signal=TERM --kill-after=15s "$CHECK_DEADLINE" \
-    "$GO_BINARY" run -mod=readonly ./integration-tests "$scenario" \
+    "$GO_BINARY" run -mod=readonly ./tests/integration "$scenario" \
     -config "$CONFIG" -runtime "$runtime" -deadline "$CHECK_DEADLINE" -observe "$OBSERVE" \
     -supervisor-socket "$SUPERVISOR_SOCKET" -supervisor-uid "$SUPERVISOR_UID" \
     -supervisor-max-bytes "$SUPERVISOR_MAX_BYTES"

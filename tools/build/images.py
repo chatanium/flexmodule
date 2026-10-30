@@ -51,7 +51,7 @@ def build_image(module_dir, binary, image, dockerfile, base=None):
                     'manifest_source': str(manifest.relative_to(root)), 'manifest_sha256': digest(manifest),
                     'executable_sha256': digest(root / binary), 'media_base_local_tag': base,
                     'build_context_sha256': inventory(context)}
-        return work / (Path(module_dir).name + '-image.json'), evidence
+        return work / (Path(binary).name + '-image.json'), evidence
 
 
 def publish_images(results):
@@ -85,8 +85,8 @@ def publish_images(results):
 
 if mode == 'module':
     kind = os.environ.get('MODULE_KIND', 'general')
-    choices = {'general': ('test-module', 'bin/test-module'),
-               'sandbox': ('integration-tests/sandbox-module', 'bin/sandbox-module')}
+    choices = {'general': ('examples/general-bot', 'bin/test-module'),
+               'sandbox': ('tests/integration/fixtures/sandbox', 'bin/sandbox-module')}
     if kind not in choices:
         raise RuntimeError('MODULE_KIND must be general or sandbox')
     directory, binary = choices[kind]
@@ -115,8 +115,8 @@ elif mode == 'media':
         (stage / 'rootfs/opt/flexmodule/provenance/builder-image-id.txt').write_text(builder + '\n')
         run('docker', 'build', '--platform', 'linux/amd64', '--network=none', '--iidfile', tools_id, '-t', base, stage)
         results = [
-            build_image('chatanium-musicbot', 'bin/chatanium-musicbot', os.environ['MUSIC_IMAGE'], 'tools/media/Module.Dockerfile', base),
-            build_image('voice-player-module', 'bin/voice-player-module', os.environ['PLAYER_IMAGE'], 'tools/media/Module.Dockerfile', base),
+            build_image('modules/music-bot', 'bin/chatanium-musicbot', os.environ['MUSIC_IMAGE'], 'tools/media/Module.Dockerfile', base),
+            build_image('modules/audio-player', 'bin/voice-player-module', os.environ['PLAYER_IMAGE'], 'tools/media/Module.Dockerfile', base),
         ]
         publish_images(results)
 else:

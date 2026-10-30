@@ -6,7 +6,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bwmarrin/discordgo"
+	"github.com/chatanium/discordgo"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
 	discordv2 "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
 )

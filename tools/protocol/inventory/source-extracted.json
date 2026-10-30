@@ -1,4 +1,9 @@
 {
+  "sdkModule": {
+    "Path": "github.com/chatanium/discordgo",
+    "Sum": "h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=",
+    "Version": "v0.30.0"
+  },
   "sourceFiles": [
     {
       "path": "discordgo/components.go",
@@ -110,7 +115,7 @@
     },
     {
       "path": "discordgo/logging.go",
-      "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
+      "sha256": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -128,7 +133,7 @@
     },
     {
       "path": "discordgo/oauth2.go",
-      "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
+      "sha256": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -191,7 +196,7 @@
     },
     {
       "path": "discordgo/voice.go",
-      "sha256": "1e39dad8077b6f7f5e41485249c1e5635140284b0444f1725c3e5ceecc5a9f32",
+      "sha256": "b3761bff6cd5a700053d7267bca3ee1fd35809cedaabb9bac3531c247a9d700f",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -208,7 +213,7 @@
     },
     {
       "path": "discordgo/voice_gateway.go",
-      "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
+      "sha256": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
       "buildConstraint": "voice \u0026\u0026 cgo",
       "buildProfiles": [
         "native_voice"
@@ -249,7 +254,7 @@
     },
     {
       "path": "discordgo/voice_transport.go",
-      "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
+      "sha256": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
       "buildConstraint": "voice \u0026\u0026 cgo",
       "buildProfiles": [
         "native_voice"
@@ -2316,16 +2321,16 @@
       "Name": "Asset",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 118,
+      "Line": 122,
       "Column": 6,
-      "End": 122,
+      "End": 126,
       "Fields": [
         {
           "Name": "Type",
           "Type": "int",
           "Tag": "`json:\"type\"`",
-          "Line": 119,
-          "End": 119,
+          "Line": 123,
+          "End": 123,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -2338,8 +2343,8 @@
           "Name": "ID",
           "Type": "string",
           "Tag": "`json:\"id\"`",
-          "Line": 120,
-          "End": 120,
+          "Line": 124,
+          "End": 124,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -2352,8 +2357,8 @@
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 121,
-          "End": 121,
+          "Line": 125,
+          "End": 125,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -23334,7 +23339,7 @@
       "File": "discordgo/voice.go",
       "Line": 98,
       "Column": 6,
-      "End": 114,
+      "End": 116,
       "Fields": [
         {
           "Name": "RWMutex",
@@ -23613,13 +23618,39 @@
             "bool"
           ],
           "ExternalReferences": []
+        },
+        {
+          "Name": "leaveAck",
+          "Type": "chan struct{}",
+          "Tag": "",
+          "Line": 114,
+          "End": 114,
+          "Exported": false,
+          "Embedded": false,
+          "Documentation": "",
+          "References": [],
+          "ExternalReferences": []
+        },
+        {
+          "Name": "leaveConfirmed",
+          "Type": "bool",
+          "Tag": "",
+          "Line": 115,
+          "End": 115,
+          "Exported": false,
+          "Embedded": false,
+          "Documentation": "",
+          "References": [
+            "bool"
+          ],
+          "ExternalReferences": []
         }
       ],
       "Exported": true,
       "Alias": false,
       "Scope": "package",
       "Documentation": "// VoiceConnection is host-owned and fixed to one guild/channel generation.\n// No public send/receive channels or channel-moving operation exist.",
-      "Declaration": "VoiceConnection struct {\n\tsync.RWMutex\n\tLogLevel                   int\n\tGuildID, ChannelID, UserID string\n\tsession                    *Session\n\tconfig                     VoiceConfig\n\tengine                     voiceEngine\n\tcredentials                chan struct{}\n\tsessionID, token, endpoint string\n\tmute, deaf                 bool\n\tstarted                    bool\n\tdisconnectGate             gatewayMutex\n\tdisconnected               bool\n\tdisconnectErr              error\n\tlocalClosed                bool\n\treleaseOnClose             bool\n}",
+      "Declaration": "VoiceConnection struct {\n\tsync.RWMutex\n\tLogLevel                   int\n\tGuildID, ChannelID, UserID string\n\tsession                    *Session\n\tconfig                     VoiceConfig\n\tengine                     voiceEngine\n\tcredentials                chan struct{}\n\tsessionID, token, endpoint string\n\tmute, deaf                 bool\n\tstarted                    bool\n\tdisconnectGate             gatewayMutex\n\tdisconnected               bool\n\tdisconnectErr              error\n\tlocalClosed                bool\n\treleaseOnClose             bool\n\tleaveAck                   chan struct{}\n\tleaveConfirmed             bool\n}",
       "References": [
         "Session",
         "VoiceConfig",
@@ -32343,12 +32374,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:46:51",
+      "Name": "anonymous@discordgo/logging.go:47:51",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 46,
+      "Line": 47,
       "Column": 51,
-      "End": 46,
+      "End": 47,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -32359,12 +32390,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:71:53",
+      "Name": "anonymous@discordgo/logging.go:72:53",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 71,
+      "Line": 72,
       "Column": 53,
-      "End": 71,
+      "End": 72,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -32375,12 +32406,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:84:61",
+      "Name": "anonymous@discordgo/logging.go:85:61",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 84,
+      "Line": 85,
       "Column": 61,
-      "End": 84,
+      "End": 85,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -32457,19 +32488,19 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/oauth2.go:73:10",
+      "Name": "anonymous@discordgo/oauth2.go:75:10",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 73,
+      "Line": 75,
       "Column": 10,
-      "End": 76,
+      "End": 78,
       "Fields": [
         {
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 74,
-          "End": 74,
+          "Line": 76,
+          "End": 76,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -32482,8 +32513,8 @@
           "Name": "Description",
           "Type": "string",
           "Tag": "`json:\"description\"`",
-          "Line": 75,
-          "End": 75,
+          "Line": 77,
+          "End": 77,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -32504,19 +32535,19 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/oauth2.go:91:10",
+      "Name": "anonymous@discordgo/oauth2.go:94:10",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 91,
+      "Line": 94,
       "Column": 10,
-      "End": 94,
+      "End": 97,
       "Fields": [
         {
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 92,
-          "End": 92,
+          "Line": 95,
+          "End": 95,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -32529,8 +32560,8 @@
           "Name": "Description",
           "Type": "string",
           "Tag": "`json:\"description\"`",
-          "Line": 93,
-          "End": 93,
+          "Line": 96,
+          "End": 96,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -34374,12 +34405,28 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/voice.go:147:155",
+      "Name": "anonymous@discordgo/voice.go:114:34",
       "Kind": "struct",
       "File": "discordgo/voice.go",
-      "Line": 147,
+      "Line": 114,
+      "Column": 34,
+      "End": 114,
+      "Fields": [],
+      "Exported": false,
+      "Alias": false,
+      "Scope": "anonymous",
+      "Documentation": "",
+      "Declaration": "struct{}",
+      "References": [],
+      "ExternalReferences": []
+    },
+    {
+      "Name": "anonymous@discordgo/voice.go:149:155",
+      "Kind": "struct",
+      "File": "discordgo/voice.go",
+      "Line": 149,
       "Column": 155,
-      "End": 147,
+      "End": 149,
       "Fields": [],
       "Exported": false,
       "Alias": false,
@@ -34390,27 +34437,11 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/voice.go:235:24",
-      "Kind": "struct",
-      "File": "discordgo/voice.go",
-      "Line": 235,
-      "Column": 24,
-      "End": 235,
-      "Fields": [],
-      "Exported": false,
-      "Alias": false,
-      "Scope": "anonymous",
-      "Documentation": "",
-      "Declaration": "struct{}",
-      "References": [],
-      "ExternalReferences": []
-    },
-    {
-      "Name": "anonymous@discordgo/voice.go:252:53",
+      "Name": "anonymous@discordgo/voice.go:252:24",
       "Kind": "struct",
       "File": "discordgo/voice.go",
       "Line": 252,
-      "Column": 53,
+      "Column": 24,
       "End": 252,
       "Fields": [],
       "Exported": false,
@@ -34422,12 +34453,44 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/voice.go:331:41",
+      "Name": "anonymous@discordgo/voice.go:269:53",
       "Kind": "struct",
       "File": "discordgo/voice.go",
-      "Line": 331,
+      "Line": 269,
+      "Column": 53,
+      "End": 269,
+      "Fields": [],
+      "Exported": false,
+      "Alias": false,
+      "Scope": "anonymous",
+      "Documentation": "",
+      "Declaration": "struct{}",
+      "References": [],
+      "ExternalReferences": []
+    },
+    {
+      "Name": "anonymous@discordgo/voice.go:323:19",
+      "Kind": "struct",
+      "File": "discordgo/voice.go",
+      "Line": 323,
+      "Column": 19,
+      "End": 323,
+      "Fields": [],
+      "Exported": false,
+      "Alias": false,
+      "Scope": "anonymous",
+      "Documentation": "",
+      "Declaration": "struct{}",
+      "References": [],
+      "ExternalReferences": []
+    },
+    {
+      "Name": "anonymous@discordgo/voice.go:373:41",
+      "Kind": "struct",
+      "File": "discordgo/voice.go",
+      "Line": 373,
       "Column": 41,
-      "End": 331,
+      "End": 373,
       "Fields": [],
       "Exported": false,
       "Alias": false,
@@ -35936,9 +35999,9 @@
     {
       "name": "Application",
       "signature": "func (s *Session) Application(appID string) (st *Application, err error)",
-      "source": "discordgo/oauth2.go:45",
-      "endLine": 54,
-      "documentation": "// Application returns an Application structure of a specific Application\n//   appID : The ID of an Application",
+      "source": "discordgo/oauth2.go:46",
+      "endLine": 55,
+      "documentation": "// Application returns an Application structure of a specific Application\n//\n//\tappID : The ID of an Application",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
       "arguments": [
         {
@@ -35979,8 +36042,8 @@
     {
       "name": "ApplicationAssets",
       "signature": "func (s *Session) ApplicationAssets(appID string) (ass []*Asset, err error)",
-      "source": "discordgo/oauth2.go:125",
-      "endLine": 134,
+      "source": "discordgo/oauth2.go:129",
+      "endLine": 138,
       "documentation": "// ApplicationAssets returns an application's assets",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2ApplicationAssets(appID), nil, EndpointOAuth2ApplicationAssets(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026ass)\n\treturn\n",
       "arguments": [
@@ -36022,9 +36085,9 @@
     {
       "name": "ApplicationBotCreate",
       "signature": "func (s *Session) ApplicationBotCreate(appID string) (st *User, err error)",
-      "source": "discordgo/oauth2.go:145",
-      "endLine": 154,
-      "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//   appID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
+      "source": "discordgo/oauth2.go:149",
+      "endLine": 158,
+      "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//\tappID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2ApplicationsBot(appID), nil, EndpointOAuth2ApplicationsBot(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
       "arguments": [
         {
@@ -36674,9 +36737,9 @@
     {
       "name": "ApplicationCreate",
       "signature": "func (s *Session) ApplicationCreate(ap *Application) (st *Application, err error)",
-      "source": "discordgo/oauth2.go:71",
-      "endLine": 85,
-      "documentation": "// ApplicationCreate creates a new Application\n//    name : Name of Application / Bot\n//    uris : Redirect URIs (Not required)",
+      "source": "discordgo/oauth2.go:73",
+      "endLine": 87,
+      "documentation": "// ApplicationCreate creates a new Application\n//\n//\tname : Name of Application / Bot\n//\turis : Redirect URIs (Not required)",
       "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2Applications, data, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
       "arguments": [
         {
@@ -36717,9 +36780,9 @@
     {
       "name": "ApplicationDelete",
       "signature": "func (s *Session) ApplicationDelete(appID string) (err error)",
-      "source": "discordgo/oauth2.go:107",
-      "endLine": 115,
-      "documentation": "// ApplicationDelete deletes an existing Application\n//   appID : The ID of an Application",
+      "source": "discordgo/oauth2.go:111",
+      "endLine": 119,
+      "documentation": "// ApplicationDelete deletes an existing Application\n//\n//\tappID : The ID of an Application",
       "body": "\n\n\t_, err = s.RequestWithBucketID(\"DELETE\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\treturn\n",
       "arguments": [
         {
@@ -37140,9 +37203,9 @@
     {
       "name": "ApplicationUpdate",
       "signature": "func (s *Session) ApplicationUpdate(appID string, ap *Application) (st *Application, err error)",
-      "source": "discordgo/oauth2.go:89",
-      "endLine": 103,
-      "documentation": "// ApplicationUpdate updates an existing Application\n//   var : desc",
+      "source": "discordgo/oauth2.go:92",
+      "endLine": 106,
+      "documentation": "// ApplicationUpdate updates an existing Application\n//\n//\tvar : desc",
       "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"PUT\", EndpointOAuth2Application(appID), data, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
       "arguments": [
         {
@@ -37192,8 +37255,8 @@
     {
       "name": "Applications",
       "signature": "func (s *Session) Applications() (st []*Application, err error)",
-      "source": "discordgo/oauth2.go:57",
-      "endLine": 66,
+      "source": "discordgo/oauth2.go:58",
+      "endLine": 67,
       "documentation": "// Applications returns all applications for the authenticated user",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Applications, nil, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
       "arguments": [],
@@ -39462,8 +39525,8 @@
     {
       "name": "ChannelVoiceJoinContext",
       "signature": "func (s *Session) ChannelVoiceJoinContext(ctx context.Context, guildID, channelID string, mute, deaf bool, config VoiceConfig) (*VoiceConnection, error)",
-      "source": "discordgo/voice.go:118",
-      "endLine": 174,
+      "source": "discordgo/voice.go:120",
+      "endLine": 176,
       "documentation": "// ChannelVoiceJoinContext reserves a fresh connection. It never reuses or moves\n// another channel's connection, resumes a lost transport, or retries a frame.",
       "body": "\n\tif !VoiceAvailable() {\n\t\treturn nil, ErrVoiceUnavailable\n\t}\n\tif err := config.Validate(); err != nil {\n\t\treturn nil, err\n\t}\n\tif guildID == \"\" || channelID == \"\" {\n\t\treturn nil, errors.New(\"guild and channel required\")\n\t}\n\tif err := ctx.Err(); err != nil {\n\t\treturn nil, err\n\t}\n\ts.RLock()\n\tstate := s.State\n\ts.RUnlock()\n\tif state == nil {\n\t\treturn nil, errors.New(\"voice requires main Gateway identity\")\n\t}\n\tstate.RLock()\n\tuser := state.User\n\tuserID := \"\"\n\tif user != nil {\n\t\tuserID = user.ID\n\t}\n\tstate.RUnlock()\n\tif userID == \"\" {\n\t\treturn nil, errors.New(\"voice requires authenticated bot identity\")\n\t}\n\tv := \u0026VoiceConnection{session: s, config: config, GuildID: guildID, ChannelID: channelID, UserID: userID, mute: mute, deaf: deaf, credentials: make(chan struct{}, 1)}\n\ts.Lock()\n\tif s.VoiceConnections == nil {\n\t\ts.VoiceConnections = make(map[string]*VoiceConnection)\n\t}\n\tif s.VoiceConnections[guildID] != nil {\n\t\ts.Unlock()\n\t\treturn nil, errors.New(\"voice guild already reserved\")\n\t}\n\tengine, err := newVoiceEngine(v)\n\tif err != nil {\n\t\ts.Unlock()\n\t\treturn nil, err\n\t}\n\tv.engine = engine\n\ts.VoiceConnections[guildID] = v\n\ts.Unlock()\n\tjoinCtx, cancel := context.WithTimeout(ctx, config.HandshakeTimeout)\n\tdefer cancel()\n\terr = engine.run(joinCtx)\n\tif err != nil {\n\t\tcleanup, c := context.WithTimeout(context.Background(), config.CloseTimeout)\n\t\tdefer c()\n\t\tcleanupErr := v.DisconnectContext(cleanup)\n\t\treturn nil, errors.Join(err, cleanupErr)\n\t}\n\treturn v, nil\n",
       "arguments": [
@@ -48966,8 +49029,8 @@
     {
       "name": "VoiceGatewayDispatch",
       "signature": "func (s *Session) VoiceGatewayDispatch(e *Event) error",
-      "source": "discordgo/voice.go:178",
-      "endLine": 189,
+      "source": "discordgo/voice.go:180",
+      "endLine": 191,
       "documentation": "// VoiceGatewayDispatch consumes host-private main Gateway voice events. Hosts\n// may call this from their ordered raw observer; it performs no network I/O.",
       "body": "\n\tif e == nil {\n\t\treturn nil\n\t}\n\tswitch x := e.Struct.(type) {\n\tcase *VoiceStateUpdate:\n\t\treturn s.acceptVoiceState(x)\n\tcase *VoiceServerUpdate:\n\t\treturn s.acceptVoiceServer(x)\n\t}\n\treturn nil\n",
       "arguments": [
@@ -55766,9 +55829,9 @@
         {
           "name": "Application",
           "signature": "func (s *Session) Application(appID string) (st *Application, err error)",
-          "source": "discordgo/oauth2.go:45",
-          "endLine": 54,
-          "documentation": "// Application returns an Application structure of a specific Application\n//   appID : The ID of an Application",
+          "source": "discordgo/oauth2.go:46",
+          "endLine": 55,
+          "documentation": "// Application returns an Application structure of a specific Application\n//\n//\tappID : The ID of an Application",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
           "arguments": [
             {
@@ -55815,8 +55878,8 @@
         {
           "name": "ApplicationAssets",
           "signature": "func (s *Session) ApplicationAssets(appID string) (ass []*Asset, err error)",
-          "source": "discordgo/oauth2.go:125",
-          "endLine": 134,
+          "source": "discordgo/oauth2.go:129",
+          "endLine": 138,
           "documentation": "// ApplicationAssets returns an application's assets",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2ApplicationAssets(appID), nil, EndpointOAuth2ApplicationAssets(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026ass)\n\treturn\n",
           "arguments": [
@@ -55864,9 +55927,9 @@
         {
           "name": "ApplicationBotCreate",
           "signature": "func (s *Session) ApplicationBotCreate(appID string) (st *User, err error)",
-          "source": "discordgo/oauth2.go:145",
-          "endLine": 154,
-          "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//   appID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
+          "source": "discordgo/oauth2.go:149",
+          "endLine": 158,
+          "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//\tappID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2ApplicationsBot(appID), nil, EndpointOAuth2ApplicationsBot(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
           "arguments": [
             {
@@ -56576,9 +56639,9 @@
         {
           "name": "ApplicationCreate",
           "signature": "func (s *Session) ApplicationCreate(ap *Application) (st *Application, err error)",
-          "source": "discordgo/oauth2.go:71",
-          "endLine": 85,
-          "documentation": "// ApplicationCreate creates a new Application\n//    name : Name of Application / Bot\n//    uris : Redirect URIs (Not required)",
+          "source": "discordgo/oauth2.go:73",
+          "endLine": 87,
+          "documentation": "// ApplicationCreate creates a new Application\n//\n//\tname : Name of Application / Bot\n//\turis : Redirect URIs (Not required)",
           "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2Applications, data, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
           "arguments": [
             {
@@ -56625,9 +56688,9 @@
         {
           "name": "ApplicationDelete",
           "signature": "func (s *Session) ApplicationDelete(appID string) (err error)",
-          "source": "discordgo/oauth2.go:107",
-          "endLine": 115,
-          "documentation": "// ApplicationDelete deletes an existing Application\n//   appID : The ID of an Application",
+          "source": "discordgo/oauth2.go:111",
+          "endLine": 119,
+          "documentation": "// ApplicationDelete deletes an existing Application\n//\n//\tappID : The ID of an Application",
           "body": "\n\n\t_, err = s.RequestWithBucketID(\"DELETE\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\treturn\n",
           "arguments": [
             {
@@ -57096,9 +57159,9 @@
         {
           "name": "ApplicationUpdate",
           "signature": "func (s *Session) ApplicationUpdate(appID string, ap *Application) (st *Application, err error)",
-          "source": "discordgo/oauth2.go:89",
-          "endLine": 103,
-          "documentation": "// ApplicationUpdate updates an existing Application\n//   var : desc",
+          "source": "discordgo/oauth2.go:92",
+          "endLine": 106,
+          "documentation": "// ApplicationUpdate updates an existing Application\n//\n//\tvar : desc",
           "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"PUT\", EndpointOAuth2Application(appID), data, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
           "arguments": [
             {
@@ -57154,8 +57217,8 @@
         {
           "name": "Applications",
           "signature": "func (s *Session) Applications() (st []*Application, err error)",
-          "source": "discordgo/oauth2.go:57",
-          "endLine": 66,
+          "source": "discordgo/oauth2.go:58",
+          "endLine": 67,
           "documentation": "// Applications returns all applications for the authenticated user",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Applications, nil, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, \u0026st)\n\treturn\n",
           "arguments": [],
@@ -59652,8 +59715,8 @@
         {
           "name": "ChannelVoiceJoinContext",
           "signature": "func (s *Session) ChannelVoiceJoinContext(ctx context.Context, guildID, channelID string, mute, deaf bool, config VoiceConfig) (*VoiceConnection, error)",
-          "source": "discordgo/voice.go:118",
-          "endLine": 174,
+          "source": "discordgo/voice.go:120",
+          "endLine": 176,
           "documentation": "// ChannelVoiceJoinContext reserves a fresh connection. It never reuses or moves\n// another channel's connection, resumes a lost transport, or retries a frame.",
           "body": "\n\tif !VoiceAvailable() {\n\t\treturn nil, ErrVoiceUnavailable\n\t}\n\tif err := config.Validate(); err != nil {\n\t\treturn nil, err\n\t}\n\tif guildID == \"\" || channelID == \"\" {\n\t\treturn nil, errors.New(\"guild and channel required\")\n\t}\n\tif err := ctx.Err(); err != nil {\n\t\treturn nil, err\n\t}\n\ts.RLock()\n\tstate := s.State\n\ts.RUnlock()\n\tif state == nil {\n\t\treturn nil, errors.New(\"voice requires main Gateway identity\")\n\t}\n\tstate.RLock()\n\tuser := state.User\n\tuserID := \"\"\n\tif user != nil {\n\t\tuserID = user.ID\n\t}\n\tstate.RUnlock()\n\tif userID == \"\" {\n\t\treturn nil, errors.New(\"voice requires authenticated bot identity\")\n\t}\n\tv := \u0026VoiceConnection{session: s, config: config, GuildID: guildID, ChannelID: channelID, UserID: userID, mute: mute, deaf: deaf, credentials: make(chan struct{}, 1)}\n\ts.Lock()\n\tif s.VoiceConnections == nil {\n\t\ts.VoiceConnections = make(map[string]*VoiceConnection)\n\t}\n\tif s.VoiceConnections[guildID] != nil {\n\t\ts.Unlock()\n\t\treturn nil, errors.New(\"voice guild already reserved\")\n\t}\n\tengine, err := newVoiceEngine(v)\n\tif err != nil {\n\t\ts.Unlock()\n\t\treturn nil, err\n\t}\n\tv.engine = engine\n\ts.VoiceConnections[guildID] = v\n\ts.Unlock()\n\tjoinCtx, cancel := context.WithTimeout(ctx, config.HandshakeTimeout)\n\tdefer cancel()\n\terr = engine.run(joinCtx)\n\tif err != nil {\n\t\tcleanup, c := context.WithTimeout(context.Background(), config.CloseTimeout)\n\t\tdefer c()\n\t\tcleanupErr := v.DisconnectContext(cleanup)\n\t\treturn nil, errors.Join(err, cleanupErr)\n\t}\n\treturn v, nil\n",
           "arguments": [
@@ -70140,8 +70203,8 @@
         {
           "name": "VoiceGatewayDispatch",
           "signature": "func (s *Session) VoiceGatewayDispatch(e *Event) error",
-          "source": "discordgo/voice.go:178",
-          "endLine": 189,
+          "source": "discordgo/voice.go:180",
+          "endLine": 191,
           "documentation": "// VoiceGatewayDispatch consumes host-private main Gateway voice events. Hosts\n// may call this from their ordered raw observer; it performs no network I/O.",
           "body": "\n\tif e == nil {\n\t\treturn nil\n\t}\n\tswitch x := e.Struct.(type) {\n\tcase *VoiceStateUpdate:\n\t\treturn s.acceptVoiceState(x)\n\tcase *VoiceServerUpdate:\n\t\treturn s.acceptVoiceServer(x)\n\t}\n\treturn nil\n",
           "arguments": [
@@ -72926,8 +72989,8 @@
         {
           "name": "Close",
           "signature": "func (v *VoiceConnection) Close()",
-          "source": "discordgo/voice.go:320",
-          "endLine": 324,
+          "source": "discordgo/voice.go:362",
+          "endLine": 366,
           "documentation": "",
           "body": "\n\tctx, c := context.WithTimeout(context.Background(), v.config.CloseTimeout)\n\tdefer c()\n\t_ = v.CloseContext(ctx)\n",
           "arguments": [],
@@ -72943,8 +73006,8 @@
         {
           "name": "CloseContext",
           "signature": "func (v *VoiceConnection) CloseContext(ctx context.Context) error",
-          "source": "discordgo/voice.go:284",
-          "endLine": 284,
+          "source": "discordgo/voice.go:301",
+          "endLine": 301,
           "documentation": "",
           "body": " return v.engine.shutdown(ctx) ",
           "arguments": [
@@ -72980,8 +73043,8 @@
         {
           "name": "Disconnect",
           "signature": "func (v *VoiceConnection) Disconnect() error",
-          "source": "discordgo/voice.go:315",
-          "endLine": 319,
+          "source": "discordgo/voice.go:357",
+          "endLine": 361,
           "documentation": "",
           "body": "\n\tctx, c := context.WithTimeout(context.Background(), v.config.CloseTimeout)\n\tdefer c()\n\treturn v.DisconnectContext(ctx)\n",
           "arguments": [],
@@ -73007,10 +73070,10 @@
         {
           "name": "DisconnectContext",
           "signature": "func (v *VoiceConnection) DisconnectContext(ctx context.Context) error",
-          "source": "discordgo/voice.go:285",
-          "endLine": 314,
+          "source": "discordgo/voice.go:302",
+          "endLine": 356,
           "documentation": "",
-          "body": "\n\tctx, cancel := context.WithTimeout(ctx, v.config.CloseTimeout)\n\tdefer cancel()\n\tif err := v.disconnectGate.lockContext(ctx); err != nil {\n\t\treturn err\n\t}\n\tdefer v.disconnectGate.Unlock()\n\tif v.disconnected {\n\t\treturn v.disconnectErr\n\t}\n\tcloseErr := v.engine.shutdown(ctx)\n\tv.session.RLock()\n\towned := v.session.VoiceConnections[v.GuildID] == v\n\tv.session.RUnlock()\n\tvar leave error\n\t// A stale handle may never disconnect a later generation. The map retains\n\t// this reservation throughout leave/cleanup, so fresh joins cannot replace it.\n\tif owned {\n\t\tleave = v.session.ChannelVoiceJoinManualContext(ctx, v.GuildID, \"\", true, true)\n\t}\n\tv.requestDisconnectRelease()\n\twait := v.engine.wait(ctx)\n\tresult := errors.Join(closeErr, leave, wait)\n\tif wait == nil {\n\t\tv.disconnected = true\n\t\tv.disconnectErr = result\n\t\tv.removeReservation()\n\t}\n\treturn result\n",
+          "body": "\n\tctx, cancel := context.WithTimeout(ctx, v.config.CloseTimeout)\n\tdefer cancel()\n\tif err := v.disconnectGate.lockContext(ctx); err != nil {\n\t\treturn err\n\t}\n\tdefer v.disconnectGate.Unlock()\n\tif v.disconnected {\n\t\treturn v.disconnectErr\n\t}\n\tcloseErr := v.engine.shutdown(ctx)\n\tv.session.RLock()\n\towned := v.session.VoiceConnections[v.GuildID] == v\n\tv.session.RUnlock()\n\tvar leave error\n\tv.Lock()\n\tack := v.leaveAck\n\tv.Unlock()\n\t// A stale handle may never disconnect a later generation. Retain this\n\t// reservation until both local cleanup and the ordered leave event finish.\n\tif owned \u0026\u0026 ack == nil {\n\t\tack = make(chan struct{})\n\t\tv.Lock()\n\t\tv.leaveAck = ack\n\t\tv.Unlock()\n\t\tleave = v.session.ChannelVoiceJoinManualContext(ctx, v.GuildID, \"\", true, true)\n\t\tif leave != nil {\n\t\t\tv.Lock()\n\t\t\tv.leaveAck = nil\n\t\t\tv.leaveConfirmed = false\n\t\t\tv.Unlock()\n\t\t}\n\t}\n\tv.requestDisconnectRelease()\n\twait := v.engine.wait(ctx)\n\tvar confirmation error\n\tif leave == nil \u0026\u0026 ack != nil {\n\t\tselect {\n\t\tcase \u003c-ack:\n\t\tdefault:\n\t\t\tselect {\n\t\t\tcase \u003c-ack:\n\t\t\tcase \u003c-ctx.Done():\n\t\t\t\tconfirmation = ctx.Err()\n\t\t\t}\n\t\t}\n\t}\n\tresult := errors.Join(closeErr, leave, wait, confirmation)\n\tif wait == nil \u0026\u0026 confirmation == nil {\n\t\tv.disconnected = true\n\t\tv.disconnectErr = result\n\t\tv.removeReservation()\n\t}\n\treturn result\n",
           "arguments": [
             {
               "name": "ctx",
@@ -73044,8 +73107,8 @@
         {
           "name": "Done",
           "signature": "func (v *VoiceConnection) Done() \u003c-chan struct{}",
-          "source": "discordgo/voice.go:331",
-          "endLine": 331,
+          "source": "discordgo/voice.go:373",
+          "endLine": 373,
           "documentation": "// Done closes only after media goroutines and native owners have been joined.\n// Err and ReadinessChanged report failure immediately, before cleanup completes.",
           "body": " return v.engine.done() ",
           "arguments": [],
@@ -73069,8 +73132,8 @@
         {
           "name": "Err",
           "signature": "func (v *VoiceConnection) Err() error",
-          "source": "discordgo/voice.go:332",
-          "endLine": 332,
+          "source": "discordgo/voice.go:374",
+          "endLine": 374,
           "documentation": "",
           "body": " return v.engine.err() ",
           "arguments": [],
@@ -73096,8 +73159,8 @@
         {
           "name": "ReadinessChanged",
           "signature": "func (v *VoiceConnection) ReadinessChanged() \u003c-chan struct{}",
-          "source": "discordgo/voice.go:252",
-          "endLine": 252,
+          "source": "discordgo/voice.go:269",
+          "endLine": 269,
           "documentation": "",
           "body": " return v.engine.changed() ",
           "arguments": [],
@@ -73121,8 +73184,8 @@
         {
           "name": "ReadyState",
           "signature": "func (v *VoiceConnection) ReadyState() bool",
-          "source": "discordgo/voice.go:251",
-          "endLine": 251,
+          "source": "discordgo/voice.go:268",
+          "endLine": 268,
           "documentation": "",
           "body": " return v != nil \u0026\u0026 v.engine != nil \u0026\u0026 v.engine.ready() ",
           "arguments": [],
@@ -73148,8 +73211,8 @@
         {
           "name": "ReceiveOpus",
           "signature": "func (v *VoiceConnection) ReceiveOpus(ctx context.Context) (*Packet, error)",
-          "source": "discordgo/voice.go:245",
-          "endLine": 250,
+          "source": "discordgo/voice.go:262",
+          "endLine": 267,
           "documentation": "",
           "body": "\n\tif v == nil || v.engine == nil {\n\t\treturn nil, ErrVoiceUnavailable\n\t}\n\treturn v.engine.receive(ctx)\n",
           "arguments": [
@@ -73194,8 +73257,8 @@
         {
           "name": "SetStateContext",
           "signature": "func (v *VoiceConnection) SetStateContext(ctx context.Context, mute, deaf bool) error",
-          "source": "discordgo/voice.go:271",
-          "endLine": 283,
+          "source": "discordgo/voice.go:288",
+          "endLine": 300,
           "documentation": "",
           "body": "\n\tif err := v.Err(); err != nil {\n\t\treturn err\n\t}\n\tif err := v.session.ChannelVoiceJoinManualContext(ctx, v.GuildID, v.ChannelID, mute, deaf); err != nil {\n\t\treturn err\n\t}\n\tv.Lock()\n\tv.mute = mute\n\tv.deaf = deaf\n\tv.Unlock()\n\treturn nil\n",
           "arguments": [
@@ -73249,8 +73312,8 @@
         {
           "name": "String",
           "signature": "func (v *VoiceConnection) String() string",
-          "source": "discordgo/voice.go:325",
-          "endLine": 327,
+          "source": "discordgo/voice.go:367",
+          "endLine": 369,
           "documentation": "",
           "body": "\n\treturn fmt.Sprintf(\"VoiceConnection(guild=%s,channel=%s)\", v.GuildID, v.ChannelID)\n",
           "arguments": [],
@@ -73276,8 +73339,8 @@
         {
           "name": "SubmitOpus",
           "signature": "func (v *VoiceConnection) SubmitOpus(ctx context.Context, p []byte) (*OpusSubmission, error)",
-          "source": "discordgo/voice.go:239",
-          "endLine": 244,
+          "source": "discordgo/voice.go:256",
+          "endLine": 261,
           "documentation": "",
           "body": "\n\tif v == nil || v.engine == nil {\n\t\treturn nil, ErrVoiceUnavailable\n\t}\n\treturn v.engine.submit(ctx, p)\n",
           "arguments": [
@@ -73331,8 +73394,8 @@
         {
           "name": "WaitReady",
           "signature": "func (v *VoiceConnection) WaitReady(ctx context.Context) error",
-          "source": "discordgo/voice.go:253",
-          "endLine": 270,
+          "source": "discordgo/voice.go:270",
+          "endLine": 287,
           "documentation": "",
           "body": "\n\tfor {\n\t\tch := v.ReadinessChanged()\n\t\tif err := v.Err(); err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif v.ReadyState() {\n\t\t\treturn nil\n\t\t}\n\t\tselect {\n\t\tcase \u003c-ch:\n\t\tcase \u003c-v.Done():\n\t\t\treturn v.Err()\n\t\tcase \u003c-ctx.Done():\n\t\t\treturn ctx.Err()\n\t\t}\n\t}\n",
           "arguments": [
