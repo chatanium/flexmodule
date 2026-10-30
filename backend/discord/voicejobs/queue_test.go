@@ -76,6 +76,68 @@ func TestQueueMutationInvalidatesOnlyAffectedGuild(t *testing.T) {
 		t.Fatal("published queue view was mutated in place")
 	}
 }
+func TestQueueFirstPageRetainsCapturedSnapshotAcrossPublication(t *testing.T) {
+	for _, tc := range []struct {
+		name  string
+		limit uint32
+	}{
+		{"complete_page", 2},
+		{"continued_page", 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			g, _, p := fixtureGuild(t)
+			fixtureJob(t, g, p, "a", 1)
+			b := fixtureJob(t, g, p, "b", 2)
+			captured := proto.Clone(b.snapshot).(*wire.PlaybackSnapshot)
+			entries, generation := g.service.queueSnapshot(p, g.id)
+
+			// Interleave an ordinary producer publication after capture, at
+			// the boundary where GetPlaybackQueue performs authorization.
+			// The fixture has no actor loop, so this handoff needs no sleeps.
+			published := make(chan error, 1)
+			go func() { published <- g.accept(b, opusInput(1)) }()
+			if err := <-published; err != nil {
+				t.Fatal(err)
+			}
+			latest, latestGeneration := g.service.queueSnapshot(p, g.id)
+			if latestGeneration == generation || b.snapshot.LastAcceptedSequence != 1 {
+				t.Fatal("producer publication did not advance the live queue")
+			}
+
+			request := &wire.PlaybackQueueRequest{GuildId: g.id, Limit: tc.limit}
+			page, err := g.service.queuePage(p, request, entries, generation)
+			if err != nil {
+				t.Fatalf("first page rejected its captured snapshot after publication: %v", err)
+			}
+			if len(page.Jobs) != int(tc.limit) || !proto.Equal(page.Jobs[0], captured) {
+				t.Fatal("first page did not retain the captured order, identity and playback cursors")
+			}
+			if tc.limit == 2 {
+				if page.NextContinuation != "" {
+					t.Fatal("complete captured page unexpectedly returned a continuation")
+				}
+				return
+			}
+			if page.NextContinuation == "" {
+				t.Fatal("bounded captured page lost its continuation")
+			}
+			request.Continuation = page.NextContinuation
+			if _, err := g.service.queuePage(p, request, latest, latestGeneration); status.Code(err) != codes.FailedPrecondition {
+				t.Fatal("publication failed to invalidate the captured page's continuation")
+			} else {
+				staleReason := false
+				for _, detail := range status.Convert(err).Details() {
+					if voice, ok := detail.(*wire.VoiceError); ok {
+						staleReason = voice.Reason == wire.VoiceErrorReason_VOICE_ERROR_REASON_STALE_CONTINUATION
+					}
+				}
+				if !staleReason {
+					t.Fatal("invalidated continuation lost its typed stale reason")
+				}
+			}
+		})
+	}
+}
 func TestQueuePaginationAlsoBoundsSerializedBytes(t *testing.T) {
 	g, _, p := fixtureGuild(t)
 	for _, id := range []string{strings.Repeat("a", 48), strings.Repeat("b", 48), strings.Repeat("c", 48)} {

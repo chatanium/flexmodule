@@ -105,11 +105,16 @@ func (s *Service) queuePage(owner rt.InstancePrincipal, r *wire.PlaybackQueueReq
 		}
 		offset++
 	}
-	s.mu.Lock()
-	same := generation == s.queries[r.GuildId]
-	s.mu.Unlock()
-	if !same {
-		return nil, stale()
+	// A first page is the immutable snapshot captured before target
+	// authorization. Later publications invalidate only continuation reads,
+	// not the already captured and authorized first-page view.
+	if r.Continuation != "" {
+		s.mu.Lock()
+		same := generation == s.queries[r.GuildId]
+		s.mu.Unlock()
+		if !same {
+			return nil, stale()
+		}
 	}
 	return out, nil
 }
