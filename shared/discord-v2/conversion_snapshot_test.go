@@ -1,6 +1,7 @@
 package discordv2_test
 
 import (
+	"context"
 	"errors"
 	"strings"
 	"testing"
@@ -167,4 +168,96 @@ func TestMessageRelationshipsSurviveAsIndependentWireFields(t *testing.T) {
 	if err != nil || decoded.MessageReference.MessageID != "wire-reference" || decoded.ReferencedMessage.Content != "wire quote" || decoded.Thread.Name != "wire thread" || decoded.Poll.Question.Text != "Wire question" {
 		t.Fatalf("decoded relationships: %#v, %v", decoded, err)
 	}
+}
+
+func TestProviderSnapshotValueObjectPresence(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		author  string
+		present bool
+		want    discordgo.UserPrimaryGuild
+	}{
+		{name: "absent", author: `{"id":"42"}`},
+		{name: "null", author: `{"id":"42","primary_guild":null}`},
+		{name: "empty", author: `{"id":"42","primary_guild":{}}`, present: true},
+		{name: "value", author: `{"id":"42","primary_guild":{"identity_guild_id":"84","identity_enabled":true,"tag":"TAG","badge":"badge"}}`, present: true, want: discordgo.UserPrimaryGuild{IdentityGuildID: "84", IdentityEnabled: true, Tag: "TAG", Badge: "badge"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			// The typed provider snapshot remains authoritative for presence.
+			// Only the SDK's nonpointer value field collapses absence to zero.
+			snapshot, err := discordv2.ProjectMessageJSON(context.Background(), []byte(`{"id":"21","author":`+tc.author+`,"member":null}`), nil, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if snapshot.Author == nil || (snapshot.Author.PrimaryGuild != nil) != tc.present || snapshot.Member != nil {
+				t.Fatal("provider snapshot presence changed")
+			}
+			decoded, err := discordv2.ProtoToMessage(snapshot)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if decoded.Author == nil || decoded.Author.ID != "42" || decoded.Author.PrimaryGuild != tc.want || decoded.Member != nil || decoded.EditedTimestamp != nil {
+				t.Fatal("SDK value adaptation changed fields or pointer presence")
+			}
+			if (snapshot.Author.PrimaryGuild != nil) != tc.present {
+				t.Fatal("SDK conversion mutated authoritative snapshot")
+			}
+		})
+	}
+}
+
+func TestAbsentSnapshotValueObjectsAcrossFamilies(t *testing.T) {
+	activity, err := discordv2.ProjectActivityJSON(context.Background(), []byte(`{"name":"partial","timestamps":null,"assets":null}`), nil, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if activity.Timestamps != nil || activity.Emoji != nil || activity.Party != nil || activity.Assets != nil || activity.Secrets != nil {
+		t.Fatal("projection fabricated missing activity objects")
+	}
+	decoded, err := discordv2.ProtoToActivity(activity)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if decoded.Name != "partial" || decoded.Timestamps != (discordgo.TimeStamps{}) || decoded.Emoji.ID != "" || decoded.Party.ID != "" || decoded.Party.Size != nil || decoded.Assets != (discordgo.Assets{}) || decoded.Secrets != (discordgo.Secrets{}) {
+		t.Fatal("missing activity value objects did not remain SDK zero values")
+	}
+	channel, err := discordv2.ProjectChannelJSON(context.Background(), []byte(`{"id":"42","default_reaction_emoji":null}`), nil, nil)
+	if err != nil || channel.DefaultReactionEmoji != nil {
+		t.Fatal("channel projection changed null value object")
+	}
+	decodedChannel, err := discordv2.ProtoToChannel(channel)
+	if err != nil || decodedChannel.ID != "42" || decodedChannel.DefaultReactionEmoji != (discordgo.ForumDefaultReaction{}) {
+		t.Fatal("channel value object adaptation failed")
+	}
+}
+
+func TestSnapshotValueObjectAdaptationKeepsInvalidInputsStrict(t *testing.T) {
+	for _, raw := range []string{
+		`{"author":{"primary_guild":[]}}`,
+		`{"author":{"primary_guild":false}}`,
+		`{"author":{"primary_guild":{"identity_enabled":"true"}}}`,
+	} {
+		snapshot, err := discordv2.ProjectMessageJSON(context.Background(), []byte(raw), nil, nil)
+		if snapshot != nil {
+			t.Fatal("invalid provider object returned partial output")
+		}
+		requireConversionError(t, err, "StructToProto", "Message", "Author.PrimaryGuild")
+	}
+	decoded, err := discordv2.ProtoToMessage(&wire.Message{
+		Author:   &wire.User{Id: new("42")},
+		Mentions: &wire.DomainUserList{Values: []*wire.User{nil}},
+	})
+	if decoded != nil {
+		t.Fatal("null collection element returned partial output")
+	}
+	requireConversionError(t, err, "ProtoToStruct", "Message", "Mentions[0]")
+	patch, err := discordv2.ProtoToChannelEdit(&wire.ChannelEdit{
+		DefaultReactionEmoji: &wire.DomainNullableForumDefaultReaction{
+			Kind: &wire.DomainNullableForumDefaultReaction_Value{},
+		},
+	})
+	if patch != nil {
+		t.Fatal("selected nullable value without an object returned partial output")
+	}
+	requireConversionError(t, err, "ProtoToStruct", "ChannelEdit", "DefaultReactionEmoji")
 }

@@ -83,11 +83,25 @@ SDK would lose presence. Absent, explicit zero/false/empty, list clear and JSON
 null are distinct. Interaction and webhook handles hold opaque credential refs,
 not raw tokens. Live host objects, voice session credentials and bot tokens do
 not cross the module boundary.
+
+Typed snapshots remain authoritative for field presence. When an ordinary
+absent/value object maps to a nonpointer SDK struct (for example
+`User.PrimaryGuild` or `Activity.Assets`), an absent snapshot field leaves the SDK
+field at its zero value; conversion does not invent a present wire object.
+Provider null and omission retain the existing ordinary snapshot normalization;
+partial/nullable DTOs retain their explicit null distinction. Optional SDK
+pointers stay nil, and null collection elements, malformed objects and invalid
+nullable/union variants are still rejected.
+
 Interaction credential scopes retain the authenticated invoking `user_id` from
 guild `Member.User` or DM `User`, alongside the source interaction/application
 and present guild/channel IDs. Missing or conflicting invoking users fail before
 credential issuance. Callback and followup authorization preserve that immutable
 user binding; caller-supplied reference metadata cannot replace it.
+A returned message's `Author` identifies that message's author, not the invoking
+user. Credential-backed postflight checks retain the authenticated invoker while
+validating returned author IDs and all other resource relationships; a bot-authored
+response does not require replacing or widening the approved invoking user.
 
 Command create, edit, get, list and bulk-overwrite use `ApplicationCommandView`,
 including `ApplicationCommandToProto` and `ProtoToApplicationCommand`. Its

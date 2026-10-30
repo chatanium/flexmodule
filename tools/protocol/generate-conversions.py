@@ -311,6 +311,11 @@ for n,t in D.items():
                     else:emit(f'if {x}!=nil{{v,err:=timestampFromProto({x},c,{p});if err!=nil{{return nil,err}};{y}=&v}}')
                 elif s.startswith('*') and not s.startswith('*[]') and s[1:] in T and T[s[1:]]['Kind']=='struct':
                     emit(f'v,err := c.{d}{s[1:]}({x},{p});if err!=nil{{return nil,err}};{y}=v')
+                elif d=='from' and s in T and T[s]['Kind']=='struct' and f.get('presence')=='absent/value':
+                    # SDK value objects cannot retain snapshot absence. Leave
+                    # their zero value without synthesizing a wire object; only
+                    # collections and explicit nullable values require objects.
+                    emit(f'if {x} != nil {{');baseassign(s,w,x,y,d,p,parent);emit('}')
                 elif (d=='to' and wt.startswith('*') and w in {'string','bool','sint64','sint32','uint32','uint64','double'}) or (d=='from' and wt.startswith('*') and w in {'string','bool','sint64','sint32','uint32','uint64','double'}):
                     b=s.lstrip('*')
                     if d=='to':
