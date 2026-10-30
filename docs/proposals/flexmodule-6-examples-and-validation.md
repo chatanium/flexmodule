@@ -11,11 +11,11 @@
 
 ## 1. Summary
 
-관리 및 moderation, 메시지와 interaction, 첨부파일을 실제 v2 호출로 사용하는 범용 봇 예제를 완성하고, 음악 및 음성 예제는 선택적으로 분리합니다. 기존 빌드 실패와 24개 격리 동작 검사, 전체 DTO와 공식 봇 API 및 이벤트 계약, 인증과 격리의 부정 시나리오를 재현 가능한 검증 대상으로 연결합니다. 미디어 도구는 버전과 digest를 고정한 별도 OCI 이미지에 포함하며, 현재 제안서 작성 단계에서는 코드 변경이나 검사를 실행하지 않습니다.
+관리 및 moderation, 메시지와 interaction, 첨부파일을 실제 v2 호출로 사용하는 범용 봇 예제를 완성하고, 음악 및 음성 예제는 선택적으로 분리합니다. 기존 빌드 실패와 24개 격리 동작 검사, 전체 DTO와 공식 봇 API 및 이벤트 계약, 인증과 격리의 부정 시나리오를 재현 가능한 검증 대상으로 연결합니다. 미디어 도구는 버전과 digest를 고정한 별도 OCI 이미지에 포함하며, 아래 수용 조건은 구현이나 실제 검증이 완료되었다는 뜻이 아닙니다.
 
 ## 2. Background & Motivation
 
-FlexModule은 음악 플랫폼이 아니라 범용 모듈 런타임입니다. 현재 `test-module`은 간단한 메시지 및 command 응답을 보여 주지만 관리 기능, 영속 설정, 다양한 interaction 형태와 큰 첨부파일의 완전한 왕복을 보여 주지는 않습니다. 현재 `Makefile`은 음악 봇 빌드를 기본 경로에 포함하고 voice-player 빌드는 주석 처리합니다. 이 상태를 범용 봇의 완성 기준으로 삼을 수 없습니다.
+FlexModule은 음악 플랫폼이 아니라 범용 모듈 런타임입니다. 기존 감사에서 `test-module`은 간단한 메시지 및 command 응답만 보여 주었고 당시 `Makefile`은 음악 봇을 기본 경로에 포함하면서 voice-player 빌드를 주석 처리했습니다. 아래 기존 실패 관찰을 현재 구현이나 최종 완료 상태로 오해하지 않으며, 범용 관리, 영속 설정, interaction과 첨부파일의 전체 왕복을 검수 대상으로 유지합니다.
 
 사전 조사에서 확인한 기준선은 다음과 같습니다. 아래 결과는 기존 조사 결과이며 이 문서를 작성하면서 다시 실행한 결과가 아닙니다.
 
@@ -28,9 +28,15 @@ FlexModule은 음악 플랫폼이 아니라 범용 모듈 런타임입니다. �
 | 격리 동작 검사 24개 | nil panic, 필드 누락, 문자열 및 bitmask 오해, 입력 presence 손실, 정수 option accessor 불일치와 실제 gRPC `Unimplemented`를 관찰했습니다. |
 | 실제 통합 | 실제 Discord 및 gVisor 실행은 수행되지 않았습니다. 아래 계획의 완료 여부와 기존 결과를 구분해야 합니다. |
 
-현재 음악 봇은 초기화가 끝나기 전에 ready를 설정하고 provider 오류를 반환하지 않습니다. 다운로드는 일정 chunk 수 이후에만 readiness 신호를 보내므로 짧은 파일이나 오류에서 대기가 끝나지 않을 수 있습니다. 전역 state map, 직접 반환하는 slice와 동시성 없는 일부 상태 접근, 오류를 반환하지 않는 재생 함수 및 pause/skip goroutine도 이관 대상입니다.
+기존 감사에서 음악 봇은 초기화 전에 ready를 설정하고 provider 오류를 반환하지 않았습니다. 다운로드 readiness는 일정 chunk 수에 의존하여 짧은 파일이나 오류에서 대기가 끝나지 않을 수 있었으며, 전역 state map, 내부 slice 반환, 동시성 없는 접근과 pause/skip goroutine도 이관 대상이었습니다.
 
-현재 voice-player는 길드와 채널 ID를 코드에 고정하고, 첨부파일 이름으로 로컬 경로를 만들며, 문맥 및 크기 제한 없는 `http.Get`/`io.Copy`를 사용합니다. 수동 speaking 해제는 중간 오류에서 건너뛸 수 있습니다. 실험용 `helper-service`의 별도 초기화 및 callback 방향, 가짜 helper와 문자열 SQL은 생산용 설정 또는 저장소 패턴으로 유지하지 않습니다.
+당시 voice-player는 길드와 채널 ID를 코드에 고정하고 첨부파일 이름으로 경로를 만들며 문맥과 크기 제한 없는 `http.Get`/`io.Copy`를 사용했습니다. 실험 helper의 별도 초기화 및 callback 방향, 가짜 helper와 문자열 SQL도 생산 패턴으로 유지하지 않습니다. 이는 역사적 감사 근거이며 수정의 실제 검수 결과와 구분합니다.
+
+### 현재 dependency/source delta
+
+현재 입력은 P0의 Go floor `1.27.0`, compiler `1.27.3`과 태그 없는 DiscordGo commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`입니다. [source summary](../../tools/protocol/inventory/source-refresh-summary.json)와 catalog에 따라 Session 메서드 232개(canonical 152개/alias 43개/backend helper 13개/제외 24개), SDK-derived Helper 작업 153개(REST 149개/Gateway 3개/state 1개), event row 74개/모듈 전달 67개를 검수에 연결합니다. API root 59개, API closure 204개, event closure 228개와 합집합 282개를 포함하며 역사적 메시지 154개/enum 23개 및 229개 메서드/73개 이벤트/199개 타입은 ceiling이 아닙니다.
+
+새 `GuildRole`, `GuildRoleMemberCounts`, `UserVoiceState`와 pagination된 `ChannelMessagesPinned`의 모든 인자 및 `MessagePin.PinnedAt`/`ChannelMessagePinsList.HasMore`, `UserPrimaryGuild`, resolved 타입 rename과 modal attachment, Required pointer presence, Label(18)/FileUpload(19), `MESSAGE_REACTION_REMOVE_EMOJI` 및 실제 before snapshot 타입을 P1~P3의 수용 조건에 포함합니다. READY의 `SessionID`, `Shard`, `ResumeGatewayURL`과 REST/event VoiceState의 `SessionID` 제거도 확인합니다. upstream AES transport 업그레이드를 DAVE, 필수 XChaCha 또는 voice 완성의 근거로 사용하지 않습니다.
 
 ## 3. Goals & Non-Goals
 
@@ -154,6 +160,7 @@ flowchart TB
 - 첨부파일은 core-neutral upload stream에 metadata와 순서 있는 chunk를 보내고 완료된 ref만 사용합니다. chunk는 256KiB, 저장 계층 파일 한도는 500MiB, 완료 ref TTL은 30분입니다. 동일 인스턴스에서 재사용하고 삭제 및 만료 뒤 신규 사용을 거절합니다.
 - 삭제가 완료된 자신의 ref를 원래 만료 시각 전까지 다시 삭제하면 성공합니다. 이 멱등성은 소유자별 tombstone으로 유지하며 인스턴스 종료나 원래 만료 시각까지의 유한한 계약입니다. 파일 바이트를 회수한 뒤에도 해당 기록은 entry 한도에 포함합니다.
 - 저장 계층의 500MiB와 Discord 전송 한도를 구분합니다. Discord endpoint 및 목적지 제한보다 큰 파일은 전송 성공을 약속하지 않으며 실제 오류를 반환합니다. retained/new attachments와 `attachment://filename`, `payload_json`, `files[n]` 대응을 검증합니다.
+- [공식 Message 문서](https://docs.discord.com/developers/resources/message#message-object-message-structure)에 따라 `Message.attachments`에는 embed나 component에서 참조하지 않는 파일만 포함됩니다. `/attachment-demo`의 첫 업로드는 embed/component에서 참조하지 않고 실제 응답의 attachment ID를 확보합니다. 이후 retained+new 수정에서 기존 ID와 새 index 0을 함께 전달하고 `attachment://second.png`를 사용할 수 있습니다. embed URL에서 ID를 합성하지 않습니다. 완료한 upload ref의 재사용, 명시적 빈 목록을 통한 전체 clear, 메시지 및 upload ref 정리까지 별도로 확인합니다.
 - 모듈의 `UploadedFileRef`는 바이트를 전달하는 수단이며 persistent data나 runtime host 경로가 아닙니다. 업로드된 파일을 재사용할 때도 active read lease와 소유자 및 만료 검사를 거칩니다.
 
 #### 음악 봇: 준비 완료, 오류 및 목록 상태
@@ -191,7 +198,13 @@ voice-player도 P5의 작업 API를 사용합니다. 공개 `Speaking(true/false
 
 #### 이미지와 배포 산출물
 
-일반 모듈 이미지에는 `ffmpeg`, `yt-dlp`, DCA 인코더 실행 환경이나 host installer를 넣지 않습니다. 음악 봇 및 voice-player의 별도 media 이미지에는 필요한 바이너리의 정확한 release version과 다운로드 checksum 또는 OCI digest를 저장소에 고정합니다. 이미지의 base digest와 tool lock이 일치해야 하며, `latest`, 런타임 `MustInstall`, 자체 업데이트 또는 호스트 설치에 의존하는 이미지는 수용하지 않습니다. 구체적인 버전은 구현에서 선정하여 lock에 커밋하며, 이 제안서가 사용자 승인 버전을 임의로 지어내지는 않습니다.
+일반 모듈 이미지에는 `ffmpeg`, `yt-dlp`나 host installer를 넣지 않습니다. media 이미지의 실행 도구 release 기준은 `yt-dlp 2026.10.26`, `FFmpeg 9.0.2`이며 Go wrapper는 `go-ytdlp v1.5.6`입니다. 실제 artifact checksum 또는 OCI digest와 base image digest를 tool lock에 고정해야 하며 release metadata 조사만으로 최종 이미지나 실행 검증이 완료된 것은 아닙니다. `latest`, 런타임 `MustInstall`/`InstallAll`, 자체 업데이트와 host path 탐색은 허용하지 않습니다.
+
+현재 YouTube 기능에는 `yt-dlp-ejs`와 지원되는 JavaScript runtime도 필요합니다. wrapper 업그레이드나 `MustInstall`만으로 이 closure가 준비된다고 가정하지 않습니다. 선택한 runtime/ejs의 정확한 버전 및 checksum을 같은 media lock에 포함하고 실행 경로를 이미지 안으로 제한합니다. Python 소스 실행형 yt-dlp는 Python 3.11 이상, 공식 standalone Linux x64 artifact는 glibc 2.17 이상을 요구하므로 선택한 artifact와 base loader를 함께 검수합니다. FFmpeg는 공식 source release와 외부 binary 공급자를 구분하며 codec 및 loader closure를 검증합니다.
+
+일반 및 sandbox fixture 이미지에도 고정한 CA bundle을 넣고, 파일을 읽기 전용으로 복사하더라도 상위 디렉터리는 비루트 사용자가 통과할 수 있게 유지합니다. 최종 이미지 환경에 예약 변수 `TMPDIR`를 선언하지 않으며 호스트가 `/var/lib/flexmodule/scratch`를 제공합니다. media의 `HOME`과 `DENO_DIR`는 이 quota mount를 사용하고, 빌드 전용 `TMPDIR`는 최종 실행 환경과 구분합니다. 별도 호환 mount나 인증서 검증 해제로 문제를 우회하지 않습니다.
+
+최신 DCA revision도 `DiscordGo.OpusSend`에 직접 의존하므로 P5 채널 제거 뒤에는 유지하지 않습니다. 음악 및 voice-player의 호출자와 module 의존성에서 제거하고 모듈 측 `shared/media/opus`로 실제 ffmpeg encoding과 bounded Opus packet 처리를 이관합니다. 빈 decoder, fake frame, host ffmpeg 또는 공개 채널 shim으로 대체하지 않습니다.
 
 DAVE는 media 모듈의 인코딩 도구가 아니라 호스트 voice transport의 의존성입니다. 일반 runtime은 DAVE를 import/link하지 않고, 선택적 `make build-voice`만 P5의 `voice && cgo` bridge와 고정한 공식 libdave를 포함합니다. 출력은 `bin/voice-runtime/runtime` 및 `bin/voice-runtime/lib/`의 검증된 native runtime closure와 license입니다. 일반 모듈 이미지와 음악/voice-player-module 이미지에도 MLS 키나 DAVE backend를 넣지 않습니다. 모듈은 계속 Opus만 생산하고 runtime이 DAVE 및 UDP transport 암호화를 처리합니다. 음성 backend가 없으면 실제 grant에서 unavailable을 알려야 하며 가짜 정상 voice helper를 제공하지 않습니다.
 
@@ -236,11 +249,11 @@ read-only rootfs와 승인된 scratch 및 persistent mount만 사용합니다. m
 
 - DTO 기준선의 154 messages와 23 enums를 모두 P2의 처리 inventory에 연결합니다. 72개 활성 pair, File/WebhookParams의 단방향, 두 inline object, 39개 disabled-only, 28개 미구현 및 11개 scalar wrapper의 각각에 대해 완전 변환, inline, wrapper 또는 의도적인 runtime/credential 대체 결정이 있어야 합니다. transport 객체를 억지로 round-trip하여 완료로 세지 않습니다.
 - 기존 154개 message가 새 범위의 상한은 아닙니다. P3의 전체 retained API signature에서 도달하는 request, response와 nested type closure도 P2 inventory와 검증에 포함합니다. 현재 proto에 없는 SDK 객체 및 streaming/credential 전환으로 생기는 DTO도 누락 없이 처리하고, 전체 선언 수만 맞춘 빈 converter로 완료하지 않습니다.
-- field matrix의 모든 안전한 domain field에 양방향 값 및 presence 검사를 둡니다. 11개 component variant, command contexts/integration types/permissions, 모든 option kind, interaction resolved maps, modal/autocomplete/poll/files, channel edits, gateway session-start limit, voice-region flags, activity, audit 및 monetization 계열을 포함합니다. unknown representable 값, invalid union, nil nested 구조도 확인합니다.
+- field matrix의 모든 안전한 domain field에 양방향 값 및 presence 검사를 둡니다. Label/FileUpload를 포함한 component 13개, Required의 nil/false/true, command contexts/integration types/permissions, 모든 option kind, component/modal resolved attachment map, UserPrimaryGuild, pin pagination, modal/autocomplete/poll/files, channel edits, gateway session-start limit, voice-region flags, activity, audit 및 monetization 계열을 포함합니다. unknown representable 값, invalid union, nil nested 구조도 확인합니다.
 - audit-log의 OldValue/NewValue 및 dynamic JSON은 큰 정수, null, 배열, 객체와 원래 수치 정확도를 유지해야 합니다. protobuf double 기반 blanket conversion으로 손실을 허용하지 않습니다.
 - 모든 공식 봇 operation은 typed gRPC request에서 실제 HTTP method, route, query, payload, audit reason, 응답 및 오류까지 확인합니다. Discord HTTP와 main Gateway의 version 10, Voice Gateway의 version 8, FlexModule protocol major 2를 혼동하지 않습니다. `VoiceRegions`는 정확한 `/api/v10/voice/regions` 경로를 사용하며 중복 slash를 허용한 기대값으로 검사하지 않습니다. alias는 canonical operation과 같은 의미로 전달되는지 확인하고, 제외 operation은 제외 근거와 함께 공개 service에 생기지 않았는지 확인합니다. 서버가 `Unimplemented`를 상속하거나 all-nil helper로 성공하는 경우는 실패입니다.
 - 사용자 승인 credential이 추가로 필요한 봇 operation도 catalog에 포함합니다. 예를 들어 GuildMemberAdd는 host의 bot 인증과 승인된 user `CredentialRef`를 구분합니다. credential 없이 해당 라이브 시험을 실행했다고 주장하지 않습니다. OAuth-owner-only operation과 폐지된 route는 봇 지원으로 오인하지 않습니다.
-- 현재 로컬 event handler의 73개 등록 이름 전부에 disposition을 붙입니다. 그중 synthetic은 `__CONNECT__`, `__DISCONNECT__`, `__EVENT__`, `__RATE_LIMIT__` 네 개이며 나머지 69개와 중복 집계하지 않습니다. 모듈에 전달하기로 한 typed bot-domain event는 정상, partial, routing 및 ordering 검사를 갖습니다. raw event, session/resume 식별자와 voice credential handoff 등 host-only 항목은 외부로 나가지 않음을 검사합니다.
+- 현재 event catalog의 74개 등록 이름 전부에 disposition을 붙입니다. synthetic은 `__CONNECT__`, `__DISCONNECT__`, `__EVENT__`, `__RATE_LIMIT__` 네 개이며 중복 집계하지 않습니다. 모듈 projection 67개에는 새 `MESSAGE_REACTION_REMOVE_EMOJI`의 guild/DM intent와 source가 실제 제공한 정확한 before snapshot 타입도 검증합니다. raw event, READY의 `SessionID`/`Shard`/`ResumeGatewayURL`, voice credential handoff 등 host-only 값은 내보내지 않습니다. 기존 73개 표만 검사하여 완료하지 않습니다.
 - 안전한 `VoiceStateUpdate` 관찰은 일반 gateway domain event로 검증하며 `discord.voice.play`나 `discord.voice.receive`를 요구하지 않습니다. voice server token과 transport session ID는 이 이벤트를 통해 누출하지 않습니다.
 - 한 모듈의 이벤트 FIFO는 256 events 또는 32MiB 중 먼저 찬 한도로 동작하고 한 processing lane에서 admitted order를 지킵니다. overflow는 그 모듈의 실패와 정지로 이어져야 하며 다른 모듈은 계속 처리합니다. 종료 후 replay나 조용한 healthy drop은 허용하지 않습니다.
 
@@ -416,7 +429,7 @@ play track:
 
 #### 빌드 및 검증 실행 인터페이스
 
-아래 target은 향후 구현의 계약입니다. 현재 제안서 작성 중 실행한 명령 목록이 아닙니다.
+아래 표는 현재 빌드 진입점과 검증 경계를 설명합니다. 실행 경로가 있다는 사실은 제안서 전체의 수용 조건을 통과했다는 뜻이 아닙니다. 앞의 역사적 조사 결과 및 이후 단계의 인수 계획과 구분합니다.
 
 | Target | 입력과 산출물 및 실행 경계 |
 |---|---|
@@ -424,18 +437,119 @@ play track:
 | `make build-voice` | `voice && cgo`로 pinned libdave를 연결한 선택적 host runtime과 native library/license bundle을 `bin/voice-runtime/`에 만듭니다. 실제 digest, ABI 및 loader closure 검증이 필요하며 기본 build와 별개입니다. |
 | `make build-media` | 같은 로컬 DiscordGo 및 v2 계약으로 음악 봇과 voice-player의 Go 산출물을 빌드합니다. 별도 nested module의 실패도 전체 실패로 반환합니다. |
 | `make build-all` | P0에서 정의한 유지 대상 root, 로컬 SDK 및 독립 예제 module을 각각 빌드합니다. 제거 대상 helper-service 두 module은 명시적으로 폐기하며 실패를 숨기기 위한 임의 제외는 허용하지 않습니다. |
+| `make build-integration` | `bin/flexmodule-integration`과 `bin/flexmodule-runtime-return-holder`를 만듭니다. 기존 pinned Go wrapper를 사용하며 두 산출물 모두 `CGO_ENABLED=0`, 빈 build tags, `-mod=readonly -trimpath`를 적용합니다. 전자는 `./integration-tests/test-voice.go`의 Go runner이고 후자는 루트 package의 `go test -c` 실행 파일입니다. 테스트 실행이나 native voice 빌드가 아닙니다. |
+| `make build-sandbox` | canonical `integration-tests/sandbox-module`을 `bin/sandbox-module`로 빌드합니다. `make image-module MODULE_KIND=sandbox MODULE_IMAGE=<명시적 tag>`로 fixture 이미지를 만들고, 설치 설정에는 검토한 immutable `repository@sha256:...`를 사용합니다. |
 | `make image-module` | 미디어 도구가 없는 일반 모듈 OCI 이미지를 만듭니다. |
 | `make image-media` | pinned tool lock을 사용하는 두 media 예제 OCI 이미지를 만듭니다. host installer 또는 runtime update 경로가 있으면 완료가 아닙니다. |
 | `make check-offline` | Buf, 영향을 받은 root/nested/vendored Go 대상, DTO, 인증된 gRPC 및 로컬 HTTP/voice transport의 유한 시험을 수행합니다. 라이브 Discord나 secret 없이 재현합니다. |
-| `make check-sandbox` | 준비된 Linux 호스트에서 실제 Docker/runsc, 인증 broker IPC, cgroups/project quota와 IPv4/IPv6 격리를 확인합니다. Discord credential은 필요하지 않습니다. |
+| `make check-sandbox` | 기존 baseline 경로입니다. 준비된 supervisor와 canonical OCI fixture를 사용해 시작, INIT 경계 검사, 유한 RUNNING 관찰 및 종료를 확인합니다. 성공해도 `sandbox.full_policy`는 `NOT_RUN`이며 전체 quota, crash, network 정책의 PASS가 아닙니다. |
+| `make check-sandbox-policy` | 명시적으로 설치한 `INTEGRATION` binary의 `sandbox --policy-plan ...`을 실행합니다. root observer가 선택한 case의 실제 host 증거와 소유 자원 정리를 검사하며, 성공 범위는 plan의 `cases`뿐입니다. repo의 `go run`이나 자동 권한 상승을 사용하지 않습니다. |
 | `make smoke-discord` | 운영자가 승인한 test guild, bot credentials 및 시험 대상만 사용합니다. destructive moderation에는 명시적 대상 승인이 필요합니다. |
 | `make smoke-voice` | voice-enabled artifact와 별도 승인된 음성 채널 및 참여자를 사용하여 실제 DAVE+AEAD playback/receive, participant 전이 및 P5 job 동작을 확인합니다. 일반 smoke의 필수조건이 아닙니다. |
 
 검사에는 case별 timeout과 전체 실행 deadline을 둡니다. local gRPC listener, HTTP server, worker, subprocess와 파일을 반드시 정리합니다. 오프라인 suite에서 로컬 fixture를 명시적으로 주입할 수 있지만 생산 API에 임의 endpoint/header/URL 전달 기능을 열지 않습니다. root, 음악 봇, voice-player, 영향을 받은 vendored DiscordGo 및 integration package를 빠짐없이 포함하며, build 실패 package를 단순 제외해서 통과시키지 않습니다.
 
-현재 독립 `go.mod` 여덟 개의 처분은 P0와 일치시킵니다. root, `discordgo`, `discordgo/examples/linked_roles`, `discordgo/examples/voice_receive`, `chatanium-musicbot`, `voice-player-module`은 유지 대상별 빌드를 확인하고, `helper-service`와 `helper-service/plugin-go-grpc`는 생산 protocol 제거 대상입니다. 일반 `test-module` 및 integration package는 해당 상위 module의 대상에 포함합니다. linked-roles 같은 별도 예제의 OAuth 요구를 범용 모듈의 런타임 capability나 일반 smoke 전제조건으로 옮기지 않습니다.
+기존 감사의 독립 `go.mod` 여덟 개에 대한 처분은 P0와 일치시킵니다. root, `discordgo`, `discordgo/examples/linked_roles`, `discordgo/examples/voice_receive`, `chatanium-musicbot`, `voice-player-module` 여섯 개는 최신 고정 의존성 및 로컬 대체 경로로 유지하고, `helper-service` 두 모듈은 생산 protocol 제거 대상입니다. Pion 예제는 `webrtc/v4 v4.2.26` 및 `rtp v1.10.6`, linked-roles는 `oauth2 v0.37.0`을 사용합니다. 일반 `test-module`과 integration은 상위 모듈의 대상이며 linked-roles OAuth 요구를 범용 모듈 로그인 요구로 확대하지 않습니다.
 
 실제 smoke의 자격증명은 호스트 백엔드만 읽습니다. 모듈 이미지, config, env 또는 검사 로그에 bot token을 전달하지 않습니다. 승인된 guild 및 channel이 없거나 credential이 없으면 해당 검사를 `NOT_RUN`으로 표시하고 라이브 검수 미완료를 보고합니다. 실제 요청이 변경을 일으킨 뒤 응답을 놓쳤을 수 있으므로, 단순 timeout을 근거로 동일 moderation 요청을 재전송하지 않습니다.
+
+현재 라이브 시험은 개발자 계정의 일반 사용자 권한을 유지하는 것을 전제로 합니다. 사용자가 관리 및 관리자 권한이 필요한 라이브 성공 경로를 보류했으므로 해당 항목은 `DEFERRED_BY_USER`로 구분하고, 이를 위해 역할, gateway intents 또는 grants를 넓히지 않습니다. 해당 기능의 구현과 오프라인 검수는 유지합니다. 아래 실제 성공은 명시한 일반 사용자 경로에 한정하며 전체 P6 완료를 뜻하지 않습니다.
+
+- `/form` autocomplete의 `run→runtime` 왕복, 초기 button/select 렌더링, button→modal→submit 및 Settings select→modal→submit의 `Feedback received` 응답이 실제 일반 모듈에서 성공했습니다. 같은 `ModuleID`로 재시작한 뒤 이전 인스턴스의 버튼에서도 새 modal과 `Trashbin restarted form feedback` 응답을 확인했습니다. 이전의 SKU 생략 및 중첩 bot `message.author`에 대한 event actor 문제는 수정 후 실제 경로에서 확인했습니다.
+- `/attachment-demo`는 최초 비참조 업로드의 실제 attachment ID, retained+new 수정, ref 재사용, 명시적 clear 및 최종 `Owned attachment upload/reuse/edit-clear sequence completed`를 확인했습니다. 이전 `WebhookThreadExecute`의 source 생략 조건 문제도 수정 후 follow-up이 성공했고, 예제가 소유한 follow-up 및 일반 메시지가 정리되었습니다.
+- 일반 메시지의 `ping→pong`, 원본 수정에 따른 paired reply 수정, 원본 삭제에 따른 paired reply 삭제를 실제로 확인했습니다. 일반 모듈 runtime은 정상 종료 코드 0으로 정지했습니다.
+
+#### 영구 sandbox harness의 빌드 및 설치
+
+일반 사용자 빌드 순서는 `make build build-sandbox build-integration`입니다. pinned compiler는 `tools/versions.mk`의 `go1.27.3`이며 기존 `GOOS`/`GOARCH` 계약을 따릅니다. 실행 호스트와 같은 target으로 빌드해야 합니다. `make clean`이 새로 소유하는 출력은 정확히 `bin/flexmodule-integration`과 `bin/flexmodule-runtime-return-holder` 두 파일뿐입니다. observer의 원본은 [integration-tests/sandbox-policy.py](../../integration-tests/sandbox-policy.py)이며 실험용 `.tools` 파일을 설치하거나 import하지 않습니다. 기존 wrapper의 `.tools` lock/tool cache는 빌드 내부 용도이며, 설치된 policy 실행에는 Go나 이 cache가 필요하지 않습니다.
+
+return-holder는 생산 runtime의 별도 API가 아니라 같은 package의 실제 `runCLI` 반환 이후를 관찰하는 테스트 실행 파일입니다. 인터페이스는 `flexmodule-runtime-return-holder --integration-runtime-return-hold <1..60초 정수> -- run <일반 runtime 인자>`입니다. 동일한 PID로 실제 runtime 종료 결과를 기록하고 유한 시간 동안 유지합니다. `cleanup-crash`를 선택하면 plan의 `runtime_return_holder`에 이 실행 파일의 설치된 절대 경로가 필요합니다.
+
+관리자는 빌드 결과와 source를 검토하고 별도 승인한 artifact staging에서 명시적으로 설치합니다. 아래는 이미 권한을 가진 관리자 shell에서 실행하는 설치 형태입니다. `APPROVED_ARTIFACTS`에는 검토한 세 binary 및 `sandbox-policy.py`를 두고, `RUNTIME_GID`에는 승인한 비-root host runtime group의 숫자 GID를 지정합니다. `APPROVED_BASE_CONFIG`와 `APPROVED_POLICY_PLAN`은 검토한 config 및 plan 파일의 경로입니다. 이 단계는 이미지, supervisor, quota, 방화벽 또는 network fixture를 준비하지 않습니다.
+
+```sh
+install -d -o root -g root -m 0755 /opt/flexmodule-p6 /opt/flexmodule-p6/bin /opt/flexmodule-p6/lib
+install -o root -g root -m 0755 "$APPROVED_ARTIFACTS/runtime" /opt/flexmodule-p6/bin/runtime
+install -o root -g root -m 0755 "$APPROVED_ARTIFACTS/flexmodule-integration" /opt/flexmodule-p6/bin/flexmodule-integration
+install -o root -g root -m 0755 "$APPROVED_ARTIFACTS/flexmodule-runtime-return-holder" /opt/flexmodule-p6/bin/flexmodule-runtime-return-holder
+install -o root -g root -m 0644 "$APPROVED_ARTIFACTS/sandbox-policy.py" /opt/flexmodule-p6/lib/sandbox-policy.py
+install -d -o root -g root -m 0755 /etc/flexmodule-p6
+install -d -o root -g "$RUNTIME_GID" -m 0750 /etc/flexmodule-p6/configs
+install -d -o root -g root -m 0700 /var/lib/flexmodule-p6-evidence
+install -o root -g "$RUNTIME_GID" -m 0640 "$APPROVED_BASE_CONFIG" /etc/flexmodule-p6/base.json
+install -o root -g root -m 0600 "$APPROVED_POLICY_PLAN" /etc/flexmodule-p6/plan.json
+```
+
+runner, runtime, return-holder, observer, Docker CLI, 승인 config/plan 및 모든 조상 디렉터리는 root 소유이고 group/world 쓰기를 허용하지 않아야 합니다. 경로는 symlink 없는 canonical 절대 경로여야 합니다. 기존 상위 디렉터리의 소유권과 권한도 관리자가 확인해야 하며 `/tmp`나 사용자 홈 아래의 파일을 root로 실행하지 않습니다. base config는 예를 들어 `/etc/flexmodule-p6/base.json`에, 검토한 plan은 `/etc/flexmodule-p6/plan.json`에 root 소유로 설치합니다. base config는 runtime UID/GID가 읽을 수 있어야 합니다. 임시 config용 `config_directory`는 정확히 root:`runtime_gid` 0750, 그 내부 실행별 config는 root:`runtime_gid` 0640입니다. evidence root는 root:root 0700이며 observer가 고유한 private 하위 디렉터리에 결과를 씁니다.
+
+호스트에는 `/usr/bin/python3` Python 3.9 이상과 `os.pidfd_open`/`signal.pidfd_send_signal` 지원이 필요합니다. 설치한 Docker CLI 및 실제 supervisor, quota/network 관찰 도구도 준비해야 합니다. 정책 실행이 끝나면 관찰자는 자신이 만든 config와 소유 자원만 정리하며, 공유 Docker 저장소를 prune하거나 unrelated 컨테이너를 종료하지 않습니다.
+
+#### 승인 plan과 호스트 전제조건
+
+schema v1은 [observer의 main 및 validation](../../integration-tests/sandbox-policy.py)을 기준으로 하며 알 수 없는 필드를 거절합니다. 아래는 운영자가 값을 채워야 하는 plan 형태이며 그대로 실행할 JSON이 아닙니다. 이 예시는 네 case를 선택한 범위만 보여 주며 전체 정책 수용 결과가 아닙니다.
+
+```text
+{
+  "schema_version": 1,
+  "base_sha256": "<설치한 승인 base config 원본 바이트의 SHA256, 64자리 hex>",
+  "runtime_uid": <비-root host runtime UID>,
+  "runtime_gid": <비-root host runtime GID>,
+  "docker": "/usr/bin/docker",
+  "config_directory": "/etc/flexmodule-p6/configs",
+  "cases": ["normal-exit", "ipc-race", "cleanup-crash", "ipc-held-unlinked"],
+  "controls": ["<실행 중인 unrelated control container의 정확한 64자리 ID>"],
+  "case_seconds": 240,
+  "runtime_return_holder": "/opt/flexmodule-p6/bin/flexmodule-runtime-return-holder"
+}
+```
+
+- `runtime_uid`/`runtime_gid`는 모두 0보다 커야 하며 host runtime UID와 fixture의 guest UID도 달라야 합니다. observer 자체는 root로 실행하되 실제 runtime과 canonical image 검사 child는 지정한 비-root UID/GID로 실행합니다.
+- base config는 schema 2, backend 없는 단일 canonical fixture, non-root guest UID/GID, credential binding 없는 구성과 `EGRESS_POLICY_NONE` 승인을 사용합니다. `scenario`/`lifecycle` override를 base에 넣지 않습니다. OCI digest만 고정하는 것으로 충분하지 않으며, 설치된 Go runner가 supervisor를 통해 embedded canonical `integration-tests/sandbox-module/manifest.json`과 실제 image manifest를 비교합니다.
+- 실제 Linux Docker/runsc, local Unix Docker endpoint, XFS project quota, 설정한 management/storage/IPC 디렉터리와 supervisor의 승인 runtime peer가 준비되어야 합니다. 다른 실행이 활성화된 설치를 공유하지 않습니다. `controls`에는 1~16개의 실제 unrelated 실행 컨테이너 ID를 넣으며 이름, prefix 또는 임의의 Docker 전체 목록으로 대체하지 않습니다. 관찰자는 해당 control의 identity와 실행 상태가 보존되는지도 확인합니다.
+- `case_seconds`는 180~300초 정수이며 생략 시 240초입니다. overall `--deadline`은 180~7200초 범위여야 하고 각 남은 case를 실행할 시간 및 종료 관찰 시간을 확보해야 합니다. `--observe`는 양수이며 overall deadline보다 짧아야 합니다. wrapper의 시간 값은 양의 정수와 `s`/`m`/`h` 단위입니다. 이 schema 범위는 처리 시간이나 통과를 보장하는 성능 수치가 아닙니다.
+- PUBLIC case를 선택할 때만 별도로 승인하여 설치한 `public_config` 절대 경로를 plan에 추가합니다. base와 module/image/host/limits가 같아야 하며 승인 및 approval revision만 달라질 수 있습니다. `EGRESS_POLICY_PUBLIC_INTERNET`과 `core.network.public_egress` 승인이 필요하며 observer가 승인을 만들거나 정책을 완화하지 않습니다.
+- network case 이름은 `network-none`, `network-public`, `network-dns`, `network-redirect`, `ipv6-public`, `dns-rebinding`입니다. 선택한 이름별로 `network_cases`와 `network_controls`를 명시합니다. `network_cases[case]`는 fixture `networkConfig` 하나 또는 1~32개 목록이며, 각각 `expected_egress`, 유한 `operation_timeout_ms`(1~10000), `tcp_targets`/`dns_queries`/`http_requests`/`fresh_resolutions` 중 정확히 한 operation을 담습니다. 각 operation은 전용 instance에서 실행합니다.
+- `network_controls[case]`는 승인한 numeric TCP `host:port` 1~16개입니다. 실제 public positive endpoint, redirect의 정확한 denied second hop, resolver와 독립 host DNS query가 필요한 case를 구분합니다. `ipv6-public`은 실제 public IPv6 route와 연결 가능한 global IPv6 endpoint가 필요하며 현재 public routing 전제조건은 확보되지 않았습니다. observer는 endpoint, route, DNS 또는 서비스를 설치하지 않습니다. 전제조건이 없으면 해당 case는 `NOT_RUN`이며 전체 selected 실행도 성공이 아닙니다.
+- `dns-rebinding`은 통제한 authoritative DNS와 실제 control을 사용하며 두 번 이상의 fresh resolution이 필요합니다. 각 DNS 응답과 해당 dial의 실제 IP를 대조하여 public TCP 연결 성공 뒤 controlled-private 목적지로 바뀐 전이와 그 연결 차단을 입증해야 `PASS`입니다. private 목적지 TCP 연결 성공은 round 0에서도 `FAIL`입니다. public→public 결과는 우회 증거나 유효한 rebinding `PASS`가 아니며 `INCONCLUSIVE`입니다. 과거 두 public 응답 관찰도 이 범주에 해당합니다.
+- PUBLIC 관찰은 활성 정책으로 둘러싼 topology 확인과 IPv6 DAD 완료 후 시작합니다. TCP와 DNS 차단 증거 모두 모든 소유 chain의 generation 및 규칙이 유지되어야 counter를 비교할 수 있습니다. 정책 교체, counter 초기화나 조회 실패는 차단 성공이 아니라 `INCONCLUSIVE`입니다. timeout만으로 `PASS`를 만들지 않습니다.
+- 목적지 없는 DNS port-53 `DROP` counter는 단일 미승인 numeric DNS 질의, 같은 질의의 독립 host 성공, 완료된 fixture 동작, 변하지 않은 전체 정책과 정확히 하나의 증가한 소유 규칙이 함께 확인된 경우에만 사용합니다. timeout이나 일반 `DROP` counter 증가만으로 목적지 차단을 주장하지 않습니다.
+- `network-redirect`에는 정확한 numeric 두 번째 목적지의 `expected_redirect_url`이 필요합니다. 실제 첫 응답의 3xx와 정확한 second-hop 연결 시도를 URL hash 및 순서로 연결하고, 실제 control과 차단 증거를 확인합니다. DNS나 TLS에서 끝난 요청 또는 첫 hop의 HTTP 403은 `INCONCLUSIVE`입니다. 실제 guest 기본 DNS가 주소 두 개를 해석하고 public 443 TCP/TLS에 성공했더라도 HTTP 403만으로 redirect 차단을 입증하지 못합니다.
+- CPU 검수는 관측한 populated cgroup의 각 `cpu.max` quota/period를 승인 millicore와 정수 비율로 대조합니다. 상한 완화는 `FAIL`, 읽기 실패나 필요한 표본 부재는 `INCONCLUSIVE`입니다. P4의 정확한 identity, 모든 고정 control FD의 `ENODEV`, 대체 객체 없는 경로 소멸 및 초기 프로세스 pidfd 종료 조건을 모두 만족한 retired 표본만 비측정으로 분리합니다. 이전 관측 공백, drift 또는 이후 읽을 수 있는 대체 표본을 감추지 않으며 유한한 표본을 연속적인 커널 추적으로 표현하지 않습니다.
+
+현재 실제 sandbox 근거에서 normal-exit은 populated 표본 172개, quota drift 0개, 적법한 retired 비측정 표본 5개 및 unavailable 0개로 `PASS`였고, 미승인 UDP 53도 `PASS`였습니다. 미승인 TCP 53은 policy generation 변경으로 `INCONCLUSIVE`입니다. redirect의 첫 hop HTTP 403과 rebinding의 public→public 두 응답도 각각 `INCONCLUSIVE`이며, public IPv6 routing 부재는 `NOT_RUN`으로 유지합니다.
+
+#### baseline과 selected full-policy 실행
+
+기존 baseline은 `make check-sandbox CONFIG="$CONFIG" RUNTIME="$RUNTIME" SUPERVISOR_SOCKET="$SUPERVISOR_SOCKET" SUPERVISOR_UID="$SUPERVISOR_UID" SUPERVISOR_MAX_BYTES="$SUPERVISOR_MAX_BYTES" CHECK_DEADLINE="$CHECK_DEADLINE" OBSERVE="$OBSERVE"`로 실행합니다. 기존 Discord/voice 진입점과 같이 자동 설치, 자동 `sudo`, 환경 파일 sourcing은 하지 않습니다.
+
+full-policy target의 추가 필수 변수는 `INTEGRATION`, `POLICY_PLAN`, `POLICY_RUNNER`, `EVIDENCE`입니다. `RUNTIME`에도 설치된 절대 경로를 명시해야 합니다. 이미 신뢰한 root 소유의 tooling checkout에서만 관리자 shell로 다음 target을 실행합니다. Makefile이나 shell wrapper까지 사용자 쓰기가 가능한 checkout에서 root `make`를 실행하지 않습니다.
+
+```sh
+make check-sandbox-policy \
+  INTEGRATION=/opt/flexmodule-p6/bin/flexmodule-integration \
+  RUNTIME=/opt/flexmodule-p6/bin/runtime CONFIG=/etc/flexmodule-p6/base.json \
+  SUPERVISOR_SOCKET="$SUPERVISOR_SOCKET" SUPERVISOR_UID="$SUPERVISOR_UID" \
+  SUPERVISOR_MAX_BYTES="$SUPERVISOR_MAX_BYTES" CHECK_DEADLINE="$CHECK_DEADLINE" OBSERVE="$OBSERVE" \
+  POLICY_PLAN=/etc/flexmodule-p6/plan.json POLICY_RUNNER=/opt/flexmodule-p6/lib/sandbox-policy.py \
+  EVIDENCE=/var/lib/flexmodule-p6-evidence
+```
+
+빌드 checkout을 신뢰 경로로 옮길 필요 없이, 관리자 shell에서 설치한 binary를 직접 실행해도 같은 영구 경로를 사용합니다.
+
+```sh
+/opt/flexmodule-p6/bin/flexmodule-integration sandbox \
+  --config /etc/flexmodule-p6/base.json --runtime /opt/flexmodule-p6/bin/runtime \
+  --supervisor-socket "$SUPERVISOR_SOCKET" --supervisor-uid "$SUPERVISOR_UID" \
+  --supervisor-max-bytes "$SUPERVISOR_MAX_BYTES" --deadline "$CHECK_DEADLINE" --observe "$OBSERVE" \
+  --policy-plan /etc/flexmodule-p6/plan.json --policy-runner /opt/flexmodule-p6/lib/sandbox-policy.py \
+  --evidence /var/lib/flexmodule-p6-evidence
+```
+
+policy target은 설치 binary와 모든 조상의 root 소유권 및 쓰기 권한을 실행 전에 검사합니다. runner와 observer도 나머지 입력의 신뢰 경계를 검사합니다. 결과의 `explicit_selected_cases_only`는 plan에 선택한 case만의 집계이며 `PASS`를 P6 전체 phase, 미선택 case, Discord 또는 voice의 수용으로 확대하지 않습니다. baseline 성공이나 일부 실제 case 성공만으로 전체 네트워크 정책을 통과했다고 기록하지 않습니다. `FAIL`, `INCONCLUSIVE`, `NOT_RUN`은 모두 selected 실행의 비성공입니다.
+
+선택적인 many-command 일반 봇 예제는 INIT에서 command를 순차 등록합니다. 실제 HTTP admission과 Discord bucket 대기 및 요청 처리 시간은 각 HTTP request deadline과 바깥 hook RPC deadline, 전체 startup deadline을 함께 소비합니다. command/guild 수가 늘면 전체 등록과 나머지 초기화가 남은 hook/startup 예산 안에 들어오는지 실제 실행으로 확인하고 승인 config의 유한 예산을 맞춰야 합니다. HTTP deadline 하나만 늘려 바깥 deadline을 넘길 수는 없으며 이 문서가 기본값을 변경하거나 특정 실험실 수치를 보편적인 성공 조건으로 정하지 않습니다.
+
+실제 music INIT에서는 도구 네 개의 확인과 명령 일곱 개의 순차 등록을 수행하며, 명령 등록에서 17~20초 대기를 관찰했습니다. hook 5초/startup 30초 설정에서는 `HOOK_DEADLINE_EXCEEDED`였고, 같은 grants와 intents를 유지한 채 승인한 유한 hook 30초/startup 60초 설정에서 활성화했습니다. INIT의 유효 제한은 남은 startup 예산과 hook 제한 중 짧은 값이며 `command_timeout_ms`는 이를 연장하지 않습니다. 이 관찰값을 새 기본 정책으로 삼지 않습니다.
 
 ### 5-2. Error Handling
 
@@ -488,7 +602,16 @@ P0부터 P5까지의 실제 계약 및 구현을 입력으로 사용합니다. �
 | 실제 선택적 음성 | voice-enabled artifact, 승인된 같은 guild/channel, 봇과 다른 참여자, 수신 전용 및 재생 모듈 | 현행 AEAD와 DAVE를 협상한 실제 송수신, participant join/leave rekey와 초기/sole-member 전이, 선점 뒤 남은 음성 및 두 참조 클래스의 분리입니다. 암호화 해제된 receive stream과 실제 소리를 따로 확인하며 단순 UDP write로 완료를 주장하지 않습니다. |
 | 재시작/이미지 변경 | 동일 ModuleID의 새 InstanceID, 보존한 persistent 디렉터리 | 일반 설정은 유지하고 옛 file/credential/job ref는 사용할 수 없으며 이벤트를 replay하지 않습니다. |
 
-현행 Discord가 요구하는 DAVE가 준비되지 않은 상태에서 job을 RUNNING으로 만들거나, legacy XSalsa/평문으로 보내어 smoke를 통과시키면 실패입니다. native/protocol 통합은 Resume wire와 text/binary `seq_ack`의 fixture 검증, 연결이 유지되는 동안의 invalid-commit 복구, 지원하지 않는 version과 빠진 backend의 명시적 거절도 포함합니다. 실제 연결 손실에서는 기존 작업과 구독을 실패시키고 자동 Resume/rejoin, module stream 재결합 및 media replay를 시작하지 않는지 확인합니다. 실제 두 참여자 송수신 및 key 전이를 실행하지 않았다면 음성 동작은 `NOT_RUN` 또는 미완료이며 오프라인 queue 결과로 대체하지 않습니다.
+현행 Discord가 요구하는 DAVE가 준비되지 않은 상태에서 job을 RUNNING으로 만들거나, legacy XSalsa/평문으로 보내어 smoke를 통과시키면 실패입니다. native/protocol 통합은 Resume wire와 text/binary `seq_ack`의 fixture 검증, 연결이 유지되는 동안의 invalid-commit 복구, 지원하지 않는 version과 빠진 backend의 명시적 거절도 포함합니다. 실제 연결 손실에서는 기존 작업과 구독을 실패시키고 자동 Resume/rejoin, module stream 재결합 및 media replay를 시작하지 않는지 확인합니다. 실제 실행하지 않은 participant join/leave rekey와 초기/sole-member 전이는 여전히 `NOT_RUN` 또는 미완료이며, 아래 송수신 성공이나 오프라인 queue 결과로 대체하지 않습니다.
+
+실제 user→bot receive에서는 Opus packet 166개, 21,826bytes를 수신했고 159,360frames/3.32초로 decode하여 예상한 880/1320/1760Hz tone을 확인했습니다. 이 결과만으로 DAVE handshake/rekey 또는 SSRC의 사용자 신원을 입증하지는 않습니다.
+
+실제 playback-control v8에서는 A/B/C가 각각 최종 written 501/51/201로 `COMPLETED`였고 written과 final이 일치했습니다. 우선순위 1의 B가 A를 선점한 뒤 A가 replay 없이 이어졌으며, C는 owner pause 동안 written 51이 1.004초간 유지된 뒤 resume하여 완료했습니다. D는 written 42, `inputEnded=false`에서 owner cancel되었고 terminal 및 producer가 모두 `OwnerCancelled`를 보고했습니다. 독립 Firefox 수신 녹음의 16-tone 순서가 정확히 일치했고 pause gap 0.8초(RMS 16.327), cancel 전 2200Hz prefix 약 0.8초 및 취소한 2640Hz suffix의 부재를 확인했습니다. runtime은 `RUNNING→STOPPED`, 종료 코드 0이었습니다. 이전 v4의 typed-nil reporter panic과 v5의 첫 page `STALE_CONTINUATION`은 각각 fixture 및 production 수정 전 관찰이며 현재의 미해결 실패로 표시하지 않습니다.
+
+- 일반 voice-player 이미지에서는 같은 grants, intents 및 일반 사용자 권한으로 실제 576,044bytes/6초 WAV 첨부파일을 올려 accepted 1개와 terminal `COMPLETED`를 확인했습니다. 독립 Firefox 수신 녹음에서도 880→1320→1760Hz가 각각 약 1.1초간 순서대로 일치했고 runtime은 정상 종료 코드 0으로 정지했습니다. 제한된 로그 수집의 90초 deadline은 계속 실행 중인 3분 runtime의 실패와 구분합니다.
+- 일반 music 이미지에서는 실제 공개 7초 fixture `x41yOUIvK2k`에 대한 `/play` ticket 1 접수, 독립 수신 음성 및 이후 `/list`의 `Loop=false`, current 없음, waiting 빈 목록, `LastError` 없음과 정상 종료 코드 0을 확인했습니다. 이 non-loop 성공 경로는 SDK `COMPLETED` 후 항목을 제거하며 resolve/preparation/playback 및 알림 실패는 상태에 남깁니다. 이전 callback의 typed command Data 누락은 RPC 전 validation 문제로 수정되었으며, 이 실제 결과를 YouTube 차단으로 분류하지 않습니다.
+- 같은 music 이미지와 grants 및 사용자로 진행한 별도 control 세션에서는 `/loop true`, `/play`, `/pause`의 `PAUSED`, 두 번째 `/play`를 확인했습니다. `/list`의 current `[2] IMG3456 PAUSED`와 waiting `[4] IMG3456 READY` 상태에서 `/remove 2`는 거절되어 current가 유지되었고 `/remove 4`는 waiting 항목을 제거했습니다. `/resume`은 `QUEUED`, `/skip`은 current terminal 및 artifact reader 해제를 보고했으며, 이후 `Loop=true`인데 current와 waiting이 비어 있어 cancel이 reloop하지 않았습니다. `/loop false`도 확인했습니다. 약 5분 17초 실행 후 graceful SIGINT로 `RUNNING→STOPPED`, 종료 코드 0이었고 이후 supervisor의 소유 자원 cleanup 대기 journal은 비어 있었습니다.
+- 이 music control 세션의 독립 Firefox 240초 수신 녹음에서는 12.9~34.7초에 음악 및 control 관련 음성이 있었고, RMS 100 기준으로 34.7~103.7초에 69.0초의 조용한 구간을 관찰했습니다. 103.7~104.2초와 106.4~106.8초의 짧은 UI 유사 음성 뒤 116.1~141.6초에 음성이 재개되었고, 이후 녹음 끝인 240초까지 기준을 넘는 음성은 없었습니다. 이는 실제 `PAUSED→resume QUEUED→skip terminal` 및 빈 current 목록과 상관되는 관찰이며, 정확히 69초간 API pause를 유지했다거나 원본 PCM의 신원을 입증한 결과로 해석하지 않습니다. 정확한 cursor 정지와 tone 순서에 대한 근거는 별도의 playback-control v8 결과로 구분합니다.
 
 실제 moderation smoke는 사전 승인한 시험 계정과 역할에만 적용합니다. 도구가 접근 가능한 사용자 계정을 임의로 선택하지 않습니다. cleanup이 가능한 시험 자원 ID를 기록하고, timeout 뒤 결과가 불명확한 변경은 상태 조회로 확인합니다. 삭제할 권한이 없는 자원이나 unrelated command를 성공 보고를 위해 정리하지 않습니다.
 
@@ -504,9 +627,9 @@ P0부터 P5까지의 실제 계약 및 구현을 입력으로 사용합니다. �
 ### 6-2. Dependencies
 
 - [빌드 및 의존성 기준선](flexmodule-0-build-and-dependency-baseline.md), [프로토콜 계약](flexmodule-1-protocol-contracts.md), [도메인 변환](flexmodule-2-domain-conversions.md), [Discord 백엔드](flexmodule-3-discord-backend.md), [런타임 격리](flexmodule-4-runtime-and-isolation.md), [음성 작업](flexmodule-5-voice-jobs.md)의 계약과 실제 구현이 필요합니다.
-- Go 1.24 계열 계약, 고정한 Buf 생성 도구, 로컬 DiscordGo, go-plugin, Docker Engine 및 고정 runsc가 필요합니다. 실제 host prerequisites와 broker UDS 동작은 P4 검증 없이는 충족한 것으로 취급하지 않습니다.
-- media 이미지에만 `ffmpeg`, `yt-dlp` 및 해당 Go wrapper/Opus 처리 의존성을 고정합니다. 바이너리 checksum, 버전, base image digest는 빌드 입력으로 관리합니다.
-- 선택적 voice-enabled host artifact만 P5의 pinned official libdave C ABI/CGO, native runtime closure와 현행 UDP AEAD를 요구합니다. 일반 runtime 및 모듈에는 이를 요구하지 않습니다. Go 1.24 유지, source/release pin, native symbol/loader 검사와 실제 encrypted send/receive가 별도의 수용 조건입니다.
+- Go floor `1.27.0`, compiler `1.27.3`, Buf `1.75.0`, `protoc-gen-go`/protobuf `v1.36.12`, `protoc-gen-go-grpc v1.6.2`, gRPC `v1.85.0`, go-plugin `v1.8.0` 및 P0의 고정 SDK가 필요합니다. Docker Engine/runsc와 broker UDS의 실제 준비 및 호환성은 P4 검증 전까지 충족한 것으로 취급하지 않습니다.
+- media 이미지에만 `FFmpeg 9.0.2`, `yt-dlp 2026.10.26` 및 필요한 JavaScript runtime/ejs closure를 고정하고 Go wrapper `go-ytdlp v1.5.6` 및 DCA 제거를 반영합니다. artifact checksum, 정확한 runtime/ejs 버전과 base digest는 실제 lock 입력으로 관리하며 이 문서 수정으로 최종 이미지 제작이나 live check가 완료되었다고 주장하지 않습니다.
+- 선택적 voice-enabled host artifact만 P5의 official libdave `v1.2.2/cpp`, 고정 C ABI/CGO와 native runtime closure 및 현행 UDP AEAD를 요구합니다. 일반 runtime 및 모듈에는 이를 요구하지 않습니다. Go floor는 P0를 따르며 native symbol/loader 검사와 실제 encrypted send/receive는 별도의 수용 gate입니다.
 - 오프라인 fixture에는 실제 자격증명이 필요하지 않습니다. 실제 sandbox 검사는 신뢰할 수 있는 Linux 호스트와 quota/네트워크 시험 환경이 필요합니다. 실제 Discord 검사는 별도로 승인된 bot credential, guild, channel, 테스트 계정 및 권한이 필요합니다.
 - GuildMemberAdd 등 추가 user-authorized credential이 필요한 operation의 실제 검증에는 해당 용도로 provision된 host credential이 필요합니다. 일반 OAuth 구현이나 모듈로의 secret export는 의존성에 포함하지 않습니다.
 
@@ -540,3 +663,4 @@ P0부터 P5까지의 실제 계약 및 구현을 입력으로 사용합니다. �
 - [현행 Discord voice 및 DAVE 요구사항](https://docs.discord.com/developers/topics/voice-connections.md)
 - [DAVE protocol과 frame/전이 계약](https://daveprotocol.com/)
 - [선택적 native voice artifact의 고정 libdave release](https://github.com/discord/libdave/releases/tag/v1.2.2/cpp)
+- [go-ytdlp v1.5.6 최소 Go 버전](https://proxy.golang.org/github.com/lrstanley/go-ytdlp/@v/v1.5.6.mod), [yt-dlp 2026.10.26 및 실행 요구사항](https://github.com/yt-dlp/yt-dlp/tree/2026.10.26#dependencies), [FFmpeg 공식 릴리스](https://ffmpeg.org/download.html)
