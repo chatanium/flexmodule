@@ -262,6 +262,7 @@ func TestOneJoinPerGenerationAndCreationContextDetached(t *testing.T) {
 	_, err = g.ask(create, func(g *guild) (any, error) {
 		return g.createJob(p, "a", &wire.CreatePlaybackJobRequest{Lifetime: durationpb.New(time.Hour)})
 	})
+	g.releaseAdmission()
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -88,6 +88,7 @@ func (h *server) SubscribeVoice(r *wire.SubscribeVoiceRequest, stream grpc.Serve
 		}
 		return v, nil
 	})
+	g.releaseAdmission()
 	if err != nil {
 		return err
 	}

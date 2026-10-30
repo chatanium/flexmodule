@@ -80,6 +80,7 @@ func TestUnpreparedCleanupDoesNotTouchForeignAdmission(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	foreign.releaseAdmission()
 	if err = s.Cleanup(context.Background(), p); err != nil {
 		t.Fatal(err)
 	}

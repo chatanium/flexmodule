@@ -111,6 +111,8 @@ type VoiceConnection struct {
 	disconnectErr              error
 	localClosed                bool
 	releaseOnClose             bool
+	leaveAck                   chan struct{}
+	leaveConfirmed             bool
 }
 
 // ChannelVoiceJoinContext reserves a fresh connection. It never reuses or moves
@@ -198,6 +200,21 @@ func (s *Session) acceptVoiceState(x *VoiceStateUpdate) error {
 		return nil
 	}
 	v.Lock()
+	// Only an explicitly requested retirement may consume a null-channel
+	// update. Keep that generation indexed through ordered host observation.
+	if x.ChannelID == "" && v.leaveAck != nil {
+		first := !v.leaveConfirmed
+		if first {
+			v.leaveConfirmed = true
+			close(v.leaveAck)
+		}
+		release := first && v.localClosed && v.releaseOnClose
+		v.Unlock()
+		if release {
+			go v.removeReservation()
+		}
+		return nil
+	}
 	if x.ChannelID != v.ChannelID || (v.sessionID != "" && v.sessionID != x.SessionID) {
 		v.Unlock()
 		v.engine.stop(ErrVoiceChannelChanged)
@@ -297,15 +314,40 @@ func (v *VoiceConnection) DisconnectContext(ctx context.Context) error {
 	owned := v.session.VoiceConnections[v.GuildID] == v
 	v.session.RUnlock()
 	var leave error
-	// A stale handle may never disconnect a later generation. The map retains
-	// this reservation throughout leave/cleanup, so fresh joins cannot replace it.
-	if owned {
+	v.Lock()
+	ack := v.leaveAck
+	v.Unlock()
+	// A stale handle may never disconnect a later generation. Retain this
+	// reservation until both local cleanup and the ordered leave event finish.
+	if owned && ack == nil {
+		ack = make(chan struct{})
+		v.Lock()
+		v.leaveAck = ack
+		v.Unlock()
 		leave = v.session.ChannelVoiceJoinManualContext(ctx, v.GuildID, "", true, true)
+		if leave != nil {
+			v.Lock()
+			v.leaveAck = nil
+			v.leaveConfirmed = false
+			v.Unlock()
+		}
 	}
 	v.requestDisconnectRelease()
 	wait := v.engine.wait(ctx)
-	result := errors.Join(closeErr, leave, wait)
-	if wait == nil {
+	var confirmation error
+	if leave == nil && ack != nil {
+		select {
+		case <-ack:
+		default:
+			select {
+			case <-ack:
+			case <-ctx.Done():
+				confirmation = ctx.Err()
+			}
+		}
+	}
+	result := errors.Join(closeErr, leave, wait, confirmation)
+	if wait == nil && confirmation == nil {
 		v.disconnected = true
 		v.disconnectErr = result
 		v.removeReservation()
@@ -331,6 +373,16 @@ func (v *VoiceConnection) String() string {
 func (v *VoiceConnection) Done() <-chan struct{} { return v.engine.done() }
 func (v *VoiceConnection) Err() error            { return v.engine.err() }
 func (v *VoiceConnection) removeReservation() {
+	// onInterface and the host observer consume the same Gateway event. Do not
+	// expose a replacement between those two deliveries of the old leave.
+	v.session.dispatchSerial.Lock()
+	defer v.session.dispatchSerial.Unlock()
+	v.RLock()
+	release := v.localClosed && v.releaseOnClose && (v.leaveAck == nil || v.leaveConfirmed)
+	v.RUnlock()
+	if !release {
+		return
+	}
 	v.session.Lock()
 	if v.session.VoiceConnections[v.GuildID] == v {
 		delete(v.session.VoiceConnections, v.GuildID)

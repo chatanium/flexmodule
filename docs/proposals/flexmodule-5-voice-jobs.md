@@ -15,13 +15,13 @@ Discord 음성을 선택적 백엔드 기능으로 제공하고, 모듈이 인�
 
 ## 2. Background & Motivation
 
-**확인된 현재 상태**는 다음과 같습니다.
+**기존 감사 기준선과 현재 upstream source의 차이**는 다음과 같습니다. v1 동작 관찰은 역사적 감사이며 P5의 최종 구현 또는 실제 음성 통신 검증 결과가 아닙니다.
 
-- 현재 `VoiceJoin`은 `module-id` 메타데이터를 신뢰하고, 같은 길드의 다른 채널을 요청하면 기존 세션을 취소한 뒤 이동합니다. 연결의 권한과 생명주기를 인증된 실행 인스턴스에 연결하지 않습니다.
-- 현재 스케줄러는 `OpusSend`에 넣은 개별 프레임을 작업으로 취급합니다. 전송 채널이 일정 시간 내 비워지지 않으면 프레임을 잃을 수 있으며, 차단되는 `Dequeue()`가 취소를 직접 받지 않습니다.
-- 현재 로컬 DiscordGo는 `OpusSend` 버퍼 두 칸과 sender 내부 프레임을 사용합니다. `48000` Hz, `960` samples로 sender가 20ms 간격을 유지하지만, 스케줄러와 예제에도 별도의 20ms 대기가 있습니다. 채널에 넣었다는 사실만으로 UDP 쓰기 완료나 실제 청취를 알 수 없습니다.
-- 현재 로컬 voice transport는 `xsalsa20_poly1305`와 기존 NaCl secret key 경로를 사용합니다. Discord의 현행 문서는 rtpsize AEAD를 요구하고 2026-03-01부터 DAVE 종단간 암호화를 필수로 명시하며, 봇 예외를 제공하지 않습니다. 따라서 큐만 고쳐서는 현재 Discord에서 동작하는 음성 기능이 되지 않습니다. 이 제안은 voice transport 전체의 갱신을 재생 및 수신의 선행조건으로 포함합니다.
-- 현재 수신 브로드캐스터는 같은 protobuf 패킷 포인터를 여러 구독자에게 전달하고, 각 스트림이 `ConnectionId`를 수정합니다. 구독 정리 경로는 송수신 중인 채널을 직접 닫으며, 마지막 구독자 수만으로 연결 종료를 판단합니다.
+- 기존 `VoiceJoin`은 `module-id` 메타데이터를 신뢰하고 같은 길드의 다른 채널 요청에 기존 세션을 취소한 뒤 이동했습니다. 연결의 권한과 생명주기를 인증된 실행 인스턴스에 연결하지 않았습니다.
+- 기존 스케줄러는 개별 `OpusSend` 프레임을 작업으로 취급했고 시간 안에 채널이 비워지지 않으면 프레임을 잃을 수 있었습니다. 차단되는 `Dequeue()`는 취소를 직접 받지 않았습니다.
+- P0의 태그 없는 upstream commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`의 [voice.go](../../discordgo/voice.go)는 여전히 `OpusSend` 버퍼 두 칸 및 sender 내부 프레임을 사용하며 `48000` Hz, `960` samples와 ticker로 pacing합니다. upstream은 context-aware 제출 및 UDP receipt 계약을 제공하지 않으므로 P5에서 공개 채널과 모든 직접 호출자를 이관해야 합니다. 기존 스케줄러와 예제의 별도 20ms sleep도 제거합니다.
+- 기존 SDK 감사의 transport는 `xsalsa20_poly1305`/NaCl이었지만 새 upstream source는 표준 `crypto/aes`와 `cipher.NewGCM`의 `aead_aes256_gcm_rtpsize`로 바뀌었습니다. 이 변경은 **DAVE나 필수 XChaCha20-Poly1305 지원의 완료가 아닙니다.** 현행 Discord는 rtpsize AEAD와 2026-03-01 이후 DAVE를 요구하므로 upstream 교체나 큐 수정만으로 voice를 구현 또는 검증했다고 주장하지 않습니다. 아래 v8, seq_ack, DAVE 전이, XChaCha, receipt 및 수신 요구를 모두 유지합니다.
+- 기존 수신 브로드캐스터는 동일 protobuf 패킷 포인터를 여러 구독자에게 전달하고 각 스트림이 `ConnectionId`를 수정했습니다. 구독 정리는 송수신 중 채널을 직접 닫고 마지막 구독자 수만으로 연결 종료를 판단했습니다.
 - 기존 음성 클라이언트의 join 전 leave는 격리된 동작 검사에서 panic을 일으켰습니다. 이 문서는 당시 결과를 근거로 사용하며, 작성 중 검사를 다시 실행하지 않았습니다.
 
 **확정된 요구사항**은 모듈의 Opus 인코딩, 높은 우선순위의 선점, 미전송 부분의 재개, 길드당 고정 채널, 별도 수신 소유권입니다. 아래의 작업 상태, 전송 영수증, 크레딧 모델은 이를 구현하기 위한 기술 계약이며, 현재 코드가 이미 제공하는 기능이라는 뜻이 아닙니다. 음성은 범용 런타임의 필수 기능이나 모듈 종류가 아닙니다.
@@ -137,6 +137,10 @@ flowchart LR
 5. 사용자 pause, 입력 EOF, 마지막 수신자 이탈만으로 연결을 끊지 않습니다. **작업 예약 수와 수신 예약 수가 모두 0**이고 송신 중 프레임과 정리가 끝났을 때 disconnect합니다. disconnect 완료 전에는 길드의 closing 예약을 남깁니다.
 6. 외부에서 봇의 채널이 바뀌거나 연결이 끊기면 기존 예약을 다른 채널로 바꾸지 않습니다. 해당 세션 작업과 구독을 명시적으로 실패시키고 정리하며, 자동 이동이나 자동 복구를 하지 않습니다.
 
+마지막 소유 자원의 disconnect에서는 로컬 송수신 작업과 native handle을 정리한 것만으로 SDK의 길드 예약을 해제하지 않습니다. main Gateway에 leave를 보낸 뒤 해당 봇의 채널이 비어 있는 `VOICE_STATE_UPDATE`를 받고, SDK 처리와 호스트의 순서 보장 observer 호출까지 마쳐야 다음 연결 generation에 예약을 넘깁니다. 이 leave 확인은 명시적으로 종료 중인 기존 generation에서만 소비합니다. 종료 요청 없이 받은 채널 이탈, 다른 채널로의 이동과 session 변경은 계속 실패로 처리합니다. 호출자의 취소나 종료 deadline이 먼저 오면 유한하게 오류를 반환하되, 전송한 leave가 아직 확인되지 않은 예약은 유지하며 늦게 도착한 확인과 로컬 정리가 모두 끝난 뒤 해제합니다. 반복 disconnect나 오래된 handle은 leave를 다시 보내 새 연결을 끊지 않습니다.
+
+정상적인 마지막 참조 해제 뒤 연결이 종료 중이어도, 기존 소유 인스턴스가 같은 길드와 채널에 새 재생 작업을 생성하면 `QUEUED/WAITING_CONNECTION`으로 접수합니다. 이때 종료 중인 인스턴스의 세션 예약을 새 작업에 넘기므로 세션 quota를 중복 차감하거나 상한을 넓히지 않습니다. 기존 disconnect가 성공하기 전에는 새 transport를 획득하거나 새 프레임을 제출하지 않습니다. 종료 중인 예약에 다른 소유자나 다른 채널이 끼어들 수 없으며, 기존 disconnect의 오류나 소유자 종료가 발생하면 대기 중인 새 작업도 실패 또는 취소로 정리합니다. 대기 작업이 취소되더라도 기존 disconnect와 마지막 세션 예약은 실제 정리가 끝날 때까지 유지합니다. actor 조회와 소유자 lane의 접수 사이에도 짧은 admission 참조를 유지하여, 정상적인 연결 종료가 진행 중인 접수 요청의 actor를 먼저 제거하지 못하게 합니다. 이 참조는 접수 성공이나 실패, 호출 취소 직후 반환하며 스트림 수명까지 유지하지 않습니다.
+
 명시적 공개 `Join/Leave`는 없습니다. 작업 또는 구독의 획득과 해제가 연결을 관리합니다. `CreatePlaybackJob`의 별도 호출은 별도 작업이며 재호출 중복 제거를 약속하지 않습니다. 반면 같은 소유 자원의 연결 확보와 해제, 반복 cancel/unsubscribe 및 내부 join 실패 정리는 멱등적입니다. 생성 응답을 놓친 경우 자동 생성 재시도를 하지 않고 소유 작업 조회 또는 수명 만료로 수습합니다.
 
 #### 작업 상태와 우선순위
@@ -191,7 +195,7 @@ Voice Gateway v8의 buffered Resume framing과 text/binary `seq_ack`는 protocol
 
 공식 `discord/libdave` C ABI에 대한 얇은 CGO bridge를 사용합니다. 구현 pin은 `v1.2.2/cpp`, commit `6396c90aedbb9a6ee117ea9ce1ce9832af6a3375`입니다. MLS, ratchet 파생, DAVE frame 형식 또는 암호를 자체 구현하지 않습니다. libdave는 전체 voice Gateway client, RTP receiver, 권한 계층 또는 Opus decoder를 제공하지 않으므로 위 adapter 흐름을 실제로 구현해야 합니다.
 
-session마다 MLS session 하나, outgoing encryptor와 sender별 incoming decryptor를 소유합니다. MLS control 및 frame context 전이는 직렬화하며 임의의 동시 C API 호출 안전성을 가정하지 않습니다. library 최대 출력 크기 함수로 bounded 재사용 buffer를 준비하고, 각 opaque handle은 대응 Destroy 함수로, library 할당 바이트는 `daveFree`로 해제합니다. C가 Go slice/string pointer를 호출 이후 보관하지 못하게 하고, callback은 Go 1.24의 `runtime/cgo.Handle` 또는 C 소유 context 규칙을 사용합니다.
+session마다 MLS session 하나, outgoing encryptor와 sender별 incoming decryptor를 소유합니다. MLS control 및 frame context 전이는 직렬화하며 임의의 동시 C API 호출 안전성을 가정하지 않습니다. library 최대 출력 크기 함수로 bounded 재사용 buffer를 준비하고, 각 opaque handle은 대응 Destroy 함수로, library 할당 바이트는 `daveFree`로 해제합니다. C가 Go slice/string pointer를 호출 이후 보관하지 못하게 하고, callback은 고정 Go 1.27.3의 `runtime/cgo.Handle` 또는 C 소유 context 규칙을 사용합니다.
 
 bot/voice credential, transport key, MLS private/signature key와 media ratchet은 호스트에만 둡니다. 패킷, 오류, 로그 또는 protobuf에 private state나 key handle을 넣지 않습니다. 세션 종료에서는 native 작업과 callback의 종료를 먼저 동기화한 뒤 handle과 key-bearing buffer를 한 번만 해제하고 재사용 상태를 지웁니다. 다른 모듈의 receive/job 참조가 남아 있으면 세션 키를 먼저 파괴하지 않습니다.
 
@@ -362,6 +366,8 @@ type VoiceReceiveStream interface {
 ```
 
 `SubscriptionState=JOINING` header는 예약과 ID만 확인합니다. 연결 준비가 끝나면 `ACTIVE`를 알리고 패킷을 시작합니다. 구독 stream context 취소 또는 EOF는 unsubscribe와 같은 해제 경로를 사용합니다. `SSRCs` 항목 수에도 필수 유한 설정을 적용하며, 필터를 권한 대체 수단으로 쓰지 않습니다. queue continuation은 소유 인스턴스, 길드, 조회 generation에 결합하여 다른 인스턴스의 cursor로 재사용할 수 없게 합니다. 변경으로 일관된 조회를 이어갈 수 없으면 명시적으로 재조회를 요구합니다.
+
+`GetPlaybackQueue`에서 continuation이 비어 있는 첫 요청은 해당 인스턴스가 소유한 작업과 조회 generation을 함께 캡처한 뒤, 캡처한 대상에 대한 권한을 확인합니다. 첫 페이지는 이 시점의 변경 불가능한 snapshot으로 구성하므로, 권한 확인이나 응답 구성 중 일반적인 재생 상태 갱신이 발생해도 `STALE_CONTINUATION`으로 실패하지 않습니다. 반환한 continuation은 캡처한 generation에 결합됩니다. continuation을 포함한 후속 요청은 조회 중에도 같은 generation을 유지해야 하며, generation이 바뀌면 기존과 같이 `STALE_CONTINUATION`으로 거부합니다. 첫 페이지를 반환하기 전에 갱신이 발생했다면 반환한 continuation도 이미 만료되었을 수 있습니다. 대상별 권한 확인, 소유자 및 길드 결합, 응답 개수와 직렬화 바이트 제한은 첫 요청과 후속 요청에 동일하게 적용합니다.
 
 아래 로컬 DiscordGo API는 런타임 내부 transport를 위한 변경이며 모듈 gRPC에 노출하지 않습니다.
 
@@ -550,8 +556,8 @@ REST가 아닌 gRPC 계약입니다. 아래 code는 HTTP status가 아닙니다.
 - [빌드 기준선](flexmodule-0-build-and-dependency-baseline.md), [프로토콜 계약](flexmodule-1-protocol-contracts.md), [도메인 변환](flexmodule-2-domain-conversions.md), [Discord 백엔드](flexmodule-3-discord-backend.md), [런타임 격리](flexmodule-4-runtime-and-isolation.md)의 통합이 필요합니다.
 - 로컬 DiscordGo의 context-aware sender 및 오류 영수증 변경이 필요합니다. 업스트림 패키지와 로컬 수정본이 섞이지 않도록 모든 대상이 같은 로컬 의존성을 사용해야 합니다.
 - 공식 libdave `v1.2.2/cpp` 및 위 commit의 C ABI와 고정한 native 의존성 closure가 필요합니다. 공개 Linux x64 BoringSSL asset의 release metadata SHA256은 `e9688ba3a1b0908e5e7aa037f400a2f59c69c98677a83a857ed0f2849c338312`이지만 실제 다운로드 바이트를 계산해 검증한 결과는 아닙니다. 구현은 실제 digest, symbol/header ABI와 target distro/glibc loader 호환성을 검증해야 하며 맞지 않으면 같은 pinned source 및 submodule로 target-compatible builder에서 빌드합니다.
-- native builder에는 고정 CMake 3.20 이상, C++17 toolchain, MLSPP, nlohmann_json 및 선택한 OpenSSL-compatible crypto가 필요합니다. libdave CMake는 BoringSSL 또는 OpenSSL 1.1.1 이상을 허용하지만 공개 release의 BoringSSL closure와 다른 조합을 검증 없이 섞지 않습니다. builder 도구를 일반 runtime이나 모듈 이미지에 설치하지 않습니다.
-- `make build-voice`는 `CGO_ENABLED=1` 및 `-tags voice`로 `voice && cgo` host runtime과 필요한 native library/license bundle을 만들고, 일반 `make build/build-all`에는 native DAVE를 강제하지 않습니다. Go 1.24 minimum을 유지하며 compiler의 지원 patch release는 P0에 고정합니다. UDP XChaCha20-Poly1305는 기존 `golang.org/x/crypto`가 기준 Go와 호환되면 그 검증된 AEAD 구현을 재사용하고, AES-GCM은 표준 AEAD를 사용합니다. 필요한 의존성 버전은 고정하되 암호를 자체 구현하거나 libdave가 UDP AEAD를 대신한다고 가정하지 않습니다.
+- native builder에는 libdave의 최소 요구 CMake 3.20 이상과 C++17 toolchain, MLSPP, nlohmann_json 및 선택한 crypto가 필요합니다. 최신 builder 후보는 CMake `4.4.5`이지만 해당 release와의 실제 빌드 성공은 별도 검증 대상입니다. libdave `v1.2.2/cpp`의 vcpkg gitlink `16c71a39e5a0fc0bdb3fad03beef8f38ee00ee3b`, BoringSSL builtin baseline `7adc2e4d49e8d0efc07a369079faa6bc3dbb90f3` 및 MLSPP commit `1cc50a124a3bc4e143a787ec934280dc70c1034d`의 고정 closure를 보존합니다. OpenSSL 1.1.1 이상도 upstream이 허용하지만 검증 없이 공개 BoringSSL closure와 섞지 않으며 builder를 일반 runtime이나 모듈 이미지에 설치하지 않습니다.
+- `make build-voice`는 `CGO_ENABLED=1` 및 `-tags voice`로 `voice && cgo` host runtime과 native library/license bundle을 만들고 일반 `make build/build-all`에는 DAVE를 강제하지 않습니다. Go floor `1.27.0` 및 compiler `1.27.3`은 P0를 따릅니다. UDP XChaCha20-Poly1305는 고정 `golang.org/x/crypto v0.58.0`의 AEAD를, AES-GCM은 표준 AEAD를 사용합니다. 새 upstream이 SDK의 x/crypto 의존성을 없앴더라도 P5의 필수 XChaCha 구현 의존성은 별도이며 libdave가 UDP AEAD를 대신하지 않습니다.
 - Opus 패킷의 실제 duration과 길이를 검증할 구현이 필요합니다. 전체 음성 디코딩이나 runtime-side `ffmpeg` 실행으로 이를 대신하지 않습니다.
 - 실제 smoke에는 운영자가 승인한 봇 자격증명, 길드, 채널, 해당 Discord 권한과 테스트 참여자가 필요합니다. credential은 호스트 백엔드만 소유합니다.
 - 음성을 사용하는 모듈의 인코더 및 media OCI image는 P6에서 관리합니다. 수신 전용 기능과 일반 봇에는 이 이미지가 선행 조건이 아닙니다.
@@ -579,4 +585,4 @@ REST가 아닌 gRPC 계약입니다. 아래 code는 HTTP status가 아닙니다.
 - [고정한 공식 libdave release](https://github.com/discord/libdave/releases/tag/v1.2.2/cpp)
 - [고정 commit의 libdave C ABI](https://github.com/discord/libdave/blob/6396c90aedbb9a6ee117ea9ce1ce9832af6a3375/cpp/includes/dave/dave.h)
 - [libdave native 빌드 요구사항](https://github.com/discord/libdave/blob/6396c90aedbb9a6ee117ea9ce1ce9832af6a3375/cpp/CMakeLists.txt)
-- [Go 1.24 CGO 포인터 및 callback 규칙](https://github.com/golang/go/blob/go1.24.0/src/cmd/cgo/doc.go)
+- [고정 Go 1.27.3의 CGO 포인터 및 callback 규칙](https://github.com/golang/go/blob/go1.27.3/src/cmd/cgo/doc.go)

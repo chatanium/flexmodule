@@ -121,6 +121,7 @@ func (h *server) CreatePlaybackJob(ctx context.Context, r *wire.CreatePlaybackJo
 		return nil, err
 	}
 	value, err := g.ask(ctx, func(g *guild) (any, error) { return g.createJob(p, id, r) })
+	g.releaseAdmission()
 	if err != nil {
 		return nil, err
 	}

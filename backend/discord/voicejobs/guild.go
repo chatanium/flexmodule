@@ -86,6 +86,7 @@ type guild struct {
 	subs                                      map[string]*subscription
 	owners                                    map[rt.InstanceID]int
 	initialized, joining, closing, shutting   bool
+	retiring                                  bool
 	joinCancel                                context.CancelFunc
 	transport                                 Transport
 	joined                                    chan joinResult
@@ -108,8 +109,11 @@ type guild struct {
 	receiveSequence                           uint64
 	// Protected by service.mu, including reads during instance cleanup.
 	closingOwner rt.InstanceID
+	admissions   int
 }
 
+// actor pins its result until the caller releases the admission after ask.
+// This prevents retirement between lookup and owner-lane admission.
 func (s *Service) actor(guildID, channelID string) (*guild, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -120,6 +124,7 @@ func (s *Service) actor(guildID, channelID string) (*guild, error) {
 		if g.channel != channelID {
 			return nil, failure(codes.FailedPrecondition, wire.VoiceErrorReason_VOICE_ERROR_REASON_CHANNEL_CONFLICT, wire.VoiceFailureStage_VOICE_FAILURE_STAGE_ADMISSION)
 		}
+		g.admissions++
 		return g, nil
 	}
 	if len(s.guilds) >= s.config.HostSessions || s.generation == math.MaxUint64 {
@@ -128,15 +133,21 @@ func (s *Service) actor(guildID, channelID string) (*guild, error) {
 	ctx, cancel := context.WithCancel(context.WithoutCancel(s.ctx))
 	s.generation++
 	g := &guild{
-		service: s, id: guildID, channel: channelID, generation: s.generation, ctx: ctx, cancel: cancel,
+		service: s, id: guildID, channel: channelID, generation: s.generation, ctx: ctx, cancel: cancel, admissions: 1,
 		commands: make(chan command, s.config.ControlMailbox), done: make(chan struct{}),
 		jobs: map[string]*job{}, subs: map[string]*subscription{}, owners: map[rt.InstanceID]int{},
-		joined: make(chan joinResult, 1), sent: make(chan sendResult, 1), received: make(chan *discordgo.Packet),
-		receiveError: make(chan error, 1), stateResult: make(chan error, 1), closed: make(chan error, 1), aborted: make(chan error, 1),
+		joined: make(chan joinResult, 1), sent: make(chan sendResult, 1),
+		stateResult: make(chan error, 1), closed: make(chan error, 1), aborted: make(chan error, 1),
 	}
 	s.guilds[guildID] = g
 	go g.run()
 	return g, nil
+}
+func (g *guild) releaseAdmission() {
+	g.service.mu.Lock()
+	g.admissions--
+	g.service.signalLocked()
+	g.service.mu.Unlock()
 }
 func (g *guild) ask(ctx context.Context, f func(*guild) (any, error)) (any, error) {
 	return g.execute(ctx, command{ctx: ctx, run: f, reply: make(chan answer, 1)})
@@ -196,8 +207,9 @@ func (g *guild) run() {
 		g.expire(time.Now())
 		g.schedule()
 		if g.closeStarted && g.transport == nil && !g.joining && len(g.jobs) == 0 && len(g.subs) == 0 && g.inflight == nil {
-			g.remove()
-			return
+			if g.remove() {
+				return
+			}
 		}
 		deadline := g.deadline()
 		if !g.initialized {
@@ -251,7 +263,9 @@ func (g *guild) run() {
 				if g.closing {
 					g.startClose()
 				} else {
-					go g.receive(r.transport)
+					g.received = make(chan *discordgo.Packet)
+					g.receiveError = make(chan error, 1)
+					go g.receive(r.transport, g.received, g.receiveError)
 					g.activateReceivers()
 				}
 			}
@@ -300,6 +314,9 @@ func (g *guild) run() {
 // until the join and bounded disconnect workers have returned.
 func (g *guild) schedule() {
 	if g.initialized && len(g.jobs) == 0 && len(g.subs) == 0 && g.inflight == nil {
+		if !g.closing {
+			g.retiring = true
+		}
 		g.closing = true
 		if g.joining && g.joinCancel != nil {
 			g.joinCancel()
@@ -497,9 +514,13 @@ func (g *guild) startClose() {
 		g.closed <- v.DisconnectContext(ctx)
 	}()
 }
-func (g *guild) remove() {
+func (g *guild) remove() bool {
 	s := g.service
 	s.mu.Lock()
+	if g.admissions != 0 {
+		s.mu.Unlock()
+		return false
+	}
 	if s.guilds[g.id] == g {
 		delete(s.guilds, g.id)
 		if g.closingOwner != "" {
@@ -512,13 +533,14 @@ func (g *guild) remove() {
 	s.pruneLocked(time.Now())
 	s.signalLocked()
 	s.mu.Unlock()
+	return true
 }
-func (g *guild) receive(v Transport) {
+func (g *guild) receive(v Transport, packets chan<- *discordgo.Packet, failures chan<- error) {
 	for {
 		p, err := v.ReceiveOpus(g.ctx)
 		if err != nil {
 			select {
-			case g.receiveError <- err:
+			case failures <- err:
 			case <-g.done:
 			}
 			return
@@ -527,8 +549,12 @@ func (g *guild) receive(v Transport) {
 			continue
 		}
 		select {
-		case g.received <- p:
+		case packets <- p:
+		case <-v.Done():
+			clear(p.Opus)
+			return
 		case <-g.done:
+			clear(p.Opus)
 			return
 		}
 	}
@@ -703,6 +729,7 @@ func (g *guild) releaseOwner(p rt.InstancePrincipal, job bool) {
 	s.signalLocked()
 }
 func (g *guild) failAll(e *voiceFailure) {
+	g.retiring = false
 	g.closing = true
 	for _, j := range g.jobs {
 		g.stopJob(j, e, false)
@@ -866,13 +893,28 @@ func (g *guild) cleanupJoined() {
 func (g *guild) onDisconnect(err error) {
 	if err == nil {
 		g.transport = nil
+		g.received = nil
+		g.receiveError = nil
+		g.finishRetirement()
 		return
 	}
-	g.recordCleanupError(transportFailure(err, wire.VoiceFailureStage_VOICE_FAILURE_STAGE_CLEANUP))
+	e := transportFailure(err, wire.VoiceFailureStage_VOICE_FAILURE_STAGE_CLEANUP)
+	g.recordCleanupError(e)
+	g.failAll(e)
 	select {
 	case <-g.transport.Done():
 		g.transport = nil
 	default:
 		g.disconnectWaiting = true
+	}
+}
+
+func (g *guild) finishRetirement() {
+	if g.retiring && !g.shutting && g.cleanupErr == nil && g.transport == nil && !g.joining && len(g.jobs) != 0 {
+		// The old generation has joined local owners and consumed its ordered
+		// leave. Admissions pinned across actor removal may now acquire afresh.
+		g.retiring = false
+		g.closing = false
+		g.closeStarted = false
 	}
 }

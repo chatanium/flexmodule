@@ -397,6 +397,13 @@ func TestVoiceJoinRequiresBothMainGatewayEvents(t *testing.T) {
 			case <-time.After(20 * time.Millisecond):
 			}
 			cancel()
+			leave := nextVoiceWire(t, wires)
+			if !bytes.Contains(leave.data, []byte(`"channel_id":null`)) {
+				t.Fatalf("failed join did not leave: %s", leave.data)
+			}
+			if err := s.VoiceGatewayDispatch(&Event{Struct: &VoiceStateUpdate{VoiceState: &VoiceState{GuildID: "1", UserID: "2", SessionID: "fixture"}}}); err != nil {
+				t.Fatal("failed join did not consume its own leave acknowledgement")
+			}
 			select {
 			case err := <-result:
 				if !errors.Is(err, context.Canceled) {
@@ -404,10 +411,6 @@ func TestVoiceJoinRequiresBothMainGatewayEvents(t *testing.T) {
 				}
 			case <-time.After(2 * time.Second):
 				t.Fatal("join cancellation did not close real transport/native owners")
-			}
-			leave := nextVoiceWire(t, wires)
-			if !bytes.Contains(leave.data, []byte(`"channel_id":null`)) {
-				t.Fatalf("failed join did not leave: %s", leave.data)
 			}
 			s.RLock()
 			retained := len(s.VoiceConnections)

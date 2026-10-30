@@ -14,9 +14,6 @@ import (
 // WaitingJobs reserves a potential queued/paused position for every admitted
 // job: a future preemption cannot overcommit the bounded waiting registry.
 func (g *guild) createJob(owner rt.InstancePrincipal, id string, r *wire.CreatePlaybackJobRequest) (*wire.PlaybackSnapshot, error) {
-	if g.closing {
-		return nil, failure(codes.FailedPrecondition, wire.VoiceErrorReason_VOICE_ERROR_REASON_CHANNEL_CONFLICT, wire.VoiceFailureStage_VOICE_FAILURE_STAGE_ADMISSION)
-	}
 	s := g.service
 	s.mu.Lock()
 	i := s.instances[owner.InstanceID]
@@ -24,7 +21,9 @@ func (g *guild) createJob(owner rt.InstancePrincipal, id string, r *wire.CreateP
 		s.mu.Unlock()
 		return nil, failure(codes.FailedPrecondition, wire.VoiceErrorReason_VOICE_ERROR_REASON_DRAINING, wire.VoiceFailureStage_VOICE_FAILURE_STAGE_ADMISSION)
 	}
-	if g.closingOwner != "" {
+	retained := g.closingOwner == owner.InstanceID
+	ownRetirement := g.retiring && g.closeStarted && !g.shutting && g.cleanupErr == nil && (retained || g.owners[owner.InstanceID] != 0)
+	if g.closing && !ownRetirement || g.closingOwner != "" && !retained {
 		s.mu.Unlock()
 		return nil, failure(codes.FailedPrecondition, wire.VoiceErrorReason_VOICE_ERROR_REASON_CHANNEL_CONFLICT, wire.VoiceFailureStage_VOICE_FAILURE_STAGE_ADMISSION)
 	}
@@ -32,7 +31,7 @@ func (g *guild) createJob(owner rt.InstancePrincipal, id string, r *wire.CreateP
 		s.mu.Unlock()
 		return nil, failure(codes.Internal, wire.VoiceErrorReason_VOICE_ERROR_REASON_INTERNAL, wire.VoiceFailureStage_VOICE_FAILURE_STAGE_ADMISSION)
 	}
-	if i.usage.jobs >= s.config.InstanceJobs || s.usage.jobs >= s.config.HostJobs || s.usage.jobs >= s.config.WaitingJobs || len(g.jobs) >= s.config.GuildJobs || s.statusBytes > s.config.HostStatusBytes-s.config.StatusMailboxBytes || g.owners[owner.InstanceID] == 0 && i.usage.sessions >= s.config.InstanceSessions || s.ordinal == math.MaxUint64 {
+	if i.usage.jobs >= s.config.InstanceJobs || s.usage.jobs >= s.config.HostJobs || s.usage.jobs >= s.config.WaitingJobs || len(g.jobs) >= s.config.GuildJobs || s.statusBytes > s.config.HostStatusBytes-s.config.StatusMailboxBytes || g.owners[owner.InstanceID] == 0 && !retained && i.usage.sessions >= s.config.InstanceSessions || s.ordinal == math.MaxUint64 {
 		s.mu.Unlock()
 		return nil, quota()
 	}
@@ -42,7 +41,13 @@ func (g *guild) createJob(owner rt.InstancePrincipal, id string, r *wire.CreateP
 	i.usage.jobs++
 	s.statusBytes += s.config.StatusMailboxBytes
 	if g.owners[owner.InstanceID] == 0 {
-		i.usage.sessions++
+		if retained {
+			// Transfer the retiring owner's existing reservation without
+			// overlapping sessions or bypassing another owner's quota.
+			g.closingOwner = ""
+		} else {
+			i.usage.sessions++
+		}
 	}
 	g.owners[owner.InstanceID]++
 	s.jobs[id] = &jobRef{owner: owner, guild: g.id, channel: g.channel, actor: g, ordinal: ordinal}
@@ -50,6 +55,7 @@ func (g *guild) createJob(owner rt.InstancePrincipal, id string, r *wire.CreateP
 	j := &job{id: id, owner: owner, ordinal: ordinal, snapshot: newSnapshot(id, g.id, g.channel, r.Priority, r.Lifetime.AsDuration()), status: make(chan *wire.PlaybackSnapshot, s.config.StatusMailbox), terminalDone: make(chan struct{}), firstBind: time.Now().Add(s.config.FirstBindTimeout), frames: frameQueue{slots: make([]frame, s.config.InitialCreditFrames)}}
 	g.jobs[id] = j
 	g.initialized = true
+	g.finishRetirement()
 	g.renew(j)
 	g.publish(j)
 	return snapshot(j), nil
