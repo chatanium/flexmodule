@@ -184,29 +184,48 @@ func (p *networkPolicy) prepare(ctx context.Context, o Ownership) (*ownedNetwork
 	if err := p.creates.ObserveCreated(ctx, o, CreateNetwork, n.name, n.id); err != nil {
 		return n, err
 	}
-	iface, err := net.InterfaceByName(n.bridge)
-	if err != nil {
+	if err := n.refreshBridgeIPv6Identity(); err != nil {
 		return n, err
-	}
-	addresses, err := iface.Addrs()
-	if err != nil {
-		return n, err
-	}
-	for _, address := range addresses {
-		prefix, e := netip.ParsePrefix(address.String())
-		if e == nil && prefix.Addr().Is6() && prefix.Addr().IsLinkLocalUnicast() {
-			n.hostLinkLocal6 = prefix.Addr()
-			break
-		}
-	}
-	if !n.hostLinkLocal6.IsValid() {
-		return n, errors.New("dedicated bridge IPv6 neighbor identity unavailable")
 	}
 	n.policyInstalled = true
 	if err := p.installHooks(ctx, n); err != nil {
 		return n, err
 	}
 	return n, nil
+}
+func (n *ownedNetwork) refreshBridgeIPv6Identity() error {
+	iface, err := net.InterfaceByName(n.bridge)
+	if err != nil {
+		return err
+	}
+	addresses, err := iface.Addrs()
+	if err != nil {
+		return err
+	}
+	return n.setBridgeIPv6Identity(addresses)
+}
+func (n *ownedNetwork) setBridgeIPv6Identity(addresses []net.Addr) error {
+	gatewayFound := false
+	var linkLocal netip.Addr
+	for _, address := range addresses {
+		prefix, err := netip.ParsePrefix(address.String())
+		if err != nil {
+			continue
+		}
+		a := prefix.Addr()
+		gatewayFound = gatewayFound || a == n.gateway6
+		if a.Is6() && a.IsLinkLocalUnicast() && !linkLocal.IsValid() {
+			linkLocal = a
+		}
+	}
+	// An empty Docker bridge has no carrier and may not yet have a kernel
+	// link-local address. Its explicitly assigned gateway is the required ND
+	// identity; any link-local identity is refreshed once an endpoint joins.
+	if !gatewayFound {
+		return errors.New("dedicated bridge IPv6 gateway unavailable")
+	}
+	n.hostLinkLocal6 = linkLocal
+	return nil
 }
 func (p *networkPolicy) bindContainer(n *ownedNetwork, o Ownership) {
 	p.mu.Lock()
@@ -305,6 +324,9 @@ func (p *networkPolicy) enable(ctx context.Context, n *ownedNetwork) error {
 	if err := p.disableLocked(ctx, n); err != nil {
 		return err
 	}
+	if err := n.refreshBridgeIPv6Identity(); err != nil {
+		return err
+	}
 	blocked, err := p.blockedDestinations()
 	if err != nil {
 		return err
@@ -378,6 +400,9 @@ func (p *networkPolicy) installRules(ctx context.Context, n *ownedNetwork, famil
 			}
 			for _, source := range []netip.Addr{n.ipv6, n.linkLocal6} {
 				for _, gateway := range []netip.Addr{n.gateway6, n.hostLinkLocal6} {
+					if !gateway.IsValid() {
+						continue
+					}
 					b := gateway.As16()
 					solicited := [16]byte{0xff, 0x02, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0xff, b[13], b[14], b[15]}
 					add("-i " + n.bridge + " -s " + source.String() + " -d " + netip.AddrFrom16(solicited).String() + " -p ipv6-icmp --icmpv6-type 135 -m hl --hl-eq 255 -j " + target)
@@ -506,15 +531,20 @@ func (p *networkPolicy) reconcile(ctx context.Context, o Ownership) error {
 	return p.remove(ctx, n)
 }
 func (p *networkPolicy) chainExists(ctx context.Context, bin, table, chain string) (bool, error) {
-	out, err := boundedCommand(ctx, bin, []string{"-w", "-t", table, "-S", chain}, nil, 1<<20)
-	if err == nil {
-		return true, nil
+	// Only a successful table inventory proves absence. A failed named-chain
+	// lookup, including "Incompatible with this kernel", is not absence proof.
+	// Propagate inventory failures rather than interpreting error text.
+	out, err := boundedCommand(ctx, bin, []string{"-w", "-t", table, "-S"}, nil, 1<<20)
+	if err != nil {
+		return false, err
 	}
-	var exit *exec.ExitError
-	if errors.As(err, &exit) && exit.ExitCode() == 1 && (bytes.Contains(out, []byte("No chain/target/match")) || bytes.Contains(out, []byte("does not exist"))) {
-		return false, nil
+	declaration := "-N " + chain
+	for line := range strings.SplitSeq(string(out), "\n") {
+		if line == declaration {
+			return true, nil
+		}
 	}
-	return false, err
+	return false, nil
 }
 func (p *networkPolicy) remove(ctx context.Context, n *ownedNetwork) error {
 	p.mu.Lock()
@@ -678,6 +708,9 @@ func (p *networkPolicy) watchHostAddresses(fd *os.File) {
 			wasEnabled := n.enabled
 			ctx, cancel := context.WithTimeout(context.Background(), p.timeout)
 			e := p.disableLocked(ctx, n)
+			if err == nil && e == nil && wasEnabled {
+				e = n.refreshBridgeIPv6Identity()
+			}
 			if err == nil && e == nil && wasEnabled {
 				blocked, bErr := p.blockedDestinations()
 				if bErr != nil {
