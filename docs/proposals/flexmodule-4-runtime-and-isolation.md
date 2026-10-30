@@ -294,7 +294,7 @@ stateDiagram-v2
 
 #### 이벤트 순서와 실패 격리
 
-backend ingress는 하나의 제한된 동기 admission 경로로 연결합니다. Discord 어댑터는 현재 로컬 `discordgo`의 `SyncEvents` 실행 정책을 명시적으로 설정하고, 서로 독립된 goroutine으로 먼저 fan-out한 뒤 순서를 복구하는 방식을 사용하지 않습니다. SDK의 내부 State 처리가 끝난 typed event를 분류하며, raw `__EVENT__`를 별도 이벤트처럼 다시 전달하지 않습니다.
+backend ingress는 하나의 제한된 동기 admission 경로로 연결합니다. Discord 어댑터는 P0에 고정한 공개 `discordgo`의 `SyncEvents` 실행 정책을 명시적으로 설정하고, 서로 독립된 goroutine으로 먼저 fan-out한 뒤 순서를 복구하는 방식을 사용하지 않습니다. SDK의 내부 State 처리가 끝난 typed event를 분류하며, raw `__EVENT__`를 별도 이벤트처럼 다시 전달하지 않습니다.
 
 런타임의 단일 직렬 admission 지점에서 backend dispatch마다 전역 `ingress_sequence`를 한 번 증가시킵니다. 현재 runtime lifetime에서 1부터 시작하며, overflow 전에 backend admission을 실패시킵니다. 모듈에는 scope와 이벤트 권한으로 필터링된 증가 부분수열이 전달되므로 번호의 간격은 정상입니다. 이 값은 Discord gateway sequence 또는 재시작 재생 cursor가 아닙니다.
 
@@ -791,7 +791,9 @@ Stop(instance):
 
 ## 7. References
 
-### 현재 저장소 근거
+### 기존 감사의 저장소 근거
+
+2026-10-31 전환 뒤 현재 CLI는 [cmd/flexmodule](../../cmd/flexmodule/), host lifecycle은 [internal/runtime](../../internal/runtime/), Discord adapter는 [internal/backend/discord](../../internal/backend/discord/)에 있습니다. 모듈 작성자는 공개 `shared`/`proto` API를 사용합니다. 아래 단일 `PLUGIN_PATH`, v1 및 로컬 SDK 경로는 2026-10-29 감사의 역사적 근거이며 현재 실행 지침이 아닙니다.
 
 - [현재 런타임과 Discord 초기화](../../main.go): 단일 `PLUGIN_PATH`, `Cmd` 실행, lifecycle 호출, 명령 permission 덮어쓰기, 이벤트 전달과 종료 경로입니다.
 - [현재 core interface](../../shared/core-v1/interface.go), [module server](../../shared/core-v1/module/server.go), [runtime client](../../shared/core-v1/runtime/client.go): context 없는 wrapper, void stage와 오류 전달 한계의 근거입니다.

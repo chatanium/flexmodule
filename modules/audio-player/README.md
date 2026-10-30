@@ -4,6 +4,11 @@ This optional media module accepts audio attachments only from explicitly config
 
 ## Artifacts and trust boundaries
 
+Source is in `modules/audio-player`, an independent Go module that directly
+requires `github.com/chatanium/discordgo v0.30.0` without a DiscordGo replacement.
+The preserved executable name is `bin/voice-player-module`; the source move does
+not change the manifest, ModuleID or image/grant contract.
+
 From the repository root, `make build-media` builds the nested media modules; `make image-media` packages the pinned tools. Use the image through the v2 runtime's operator configuration and approved immutable image digest, not a host subprocess or a token-bearing module environment. Host Discord credentials remain exclusively in the host backend. Native DAVE is a dependency of the separately built voice-enabled host, never of this module.
 
 `manifest.json` is the sole canonical embedded protobuf-JSON manifest. Image tooling copies its exact bytes into `org.chatanium.flexmodule.manifest.v2`; the manifest is an untrusted request, never an approval. Strict parsing rejects unknown manifest fields. The descriptive executable name does not authenticate a ModuleID.

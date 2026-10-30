@@ -58,16 +58,21 @@ rebuild helper clients/backend planners.
 
 ## Maintain source-derived contracts
 
-The local SDK is pinned to upstream `f43dd94` plus explicit local Gateway/native
-voice patches. Reviewed inventories and policy are under
-`tools/protocol/inventory/`; historical v0.29.0/v1 audits remain provenance, not
-the current API ceiling. After an intentional SDK/source-policy change, update
-the reviewed policy and source provenance rather than weakening inventory
-checks. The dependent generation order is:
+The SDK is the direct published dependency
+[`github.com/chatanium/discordgo v0.30.0`](https://github.com/chatanium/discordgo/tree/v0.30.0),
+upstream `f43dd94` plus the approved Gateway/context/ingress/observer and native
+DAVE patches. [`tools/sdk.py`](../tools/sdk.py) resolves its exact canonical
+module source and checksum; there is no local SDK directory fallback.
+Reviewed inventories and policy are under `tools/protocol/inventory/`;
+historical v0.29.0/v1 audits remain provenance, not the current API ceiling.
+Inventory labels such as `discordgo/restapi.go` are stable logical source
+identities, not checkout paths. After an intentional SDK/source-policy change,
+update reviewed policy and provenance rather than weakening inventory checks.
+The dependent generation order is:
 
 ```sh
-.tools/go/bin/go run -mod=readonly ./tools/protocol/extract-source.go \
-  -sdk discordgo -out tools/protocol/inventory/source-extracted.json
+env -u GOROOT .tools/go/bin/go run -mod=readonly ./tools/protocol/extract-source.go \
+  -sdk github.com/chatanium/discordgo -out tools/protocol/inventory/source-extracted.json
 python3 tools/protocol/refresh-inventory.py
 python3 tools/protocol/emit-domain.py
 python3 tools/protocol/generate_events.py
@@ -76,6 +81,7 @@ make buf
 python3 tools/protocol/generate-conversions.py
 python3 tools/protocol/generate-client.py
 python3 tools/protocol/generate-backend-api.py
+python3 tools/protocol/generate-backend-events.py
 ```
 
 The first command assumes the pinned distribution is installed at
@@ -83,6 +89,21 @@ The first command assumes the pinned distribution is installed at
 installation. Run these commands from the repository root. Review all generated
 source/mapping changes together; this sequence is not a replacement for the
 parent's formatting, build, test and live acceptance work.
+
+The `-sdk` flag may be omitted for the same canonical default; a local
+`discordgo` directory is not an accepted argument. Backend generation publishes
+`api_generated.go`, `json_codec_generated.go`, `api_projection_generated.go`
+and `rest_plans_generated.go` under `internal/backend/discord`, and coverage to
+`tools/protocol/backend-api-coverage.json` by default. To stage all five outputs
+without publishing them into the checkout:
+
+```sh
+python3 tools/protocol/generate-backend-api.py --output-dir /absolute/staging/directory
+```
+
+The staging directory receives the four Go files and `backend-api-coverage.json`;
+review them together before intentional publication. This staging option does
+not run Buf, formatters, builds or tests.
 
 | Generator | Owned inputs/outputs |
 |---|---|
@@ -93,6 +114,7 @@ parent's formatting, build, test and live acceptance work.
 | `generate-conversions.py` | Safe views, conversions, ingress/projection support and conversion coverage from mappings and generated message shapes |
 | `generate-client.py` | Typed SDK calls, explicit aliases and client coverage using the canonical API mapping and safe converter types |
 | `generate-backend-api.py` | Host helper handlers, fixed REST plans/codecs/projections and source-derived planning fixtures/coverage |
+| `generate-backend-events.py` | Host typed Gateway event projection under `internal/backend/discord/events_generated.go`, from the reviewed event mapping |
 
 `core.proto`, `ownership.proto` and `voice.proto` remain explicit contracts;
 source inventory generation does not infer grants or redefine those services.

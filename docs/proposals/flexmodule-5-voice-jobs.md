@@ -19,7 +19,7 @@ Discord 음성을 선택적 백엔드 기능으로 제공하고, 모듈이 인�
 
 - 기존 `VoiceJoin`은 `module-id` 메타데이터를 신뢰하고 같은 길드의 다른 채널 요청에 기존 세션을 취소한 뒤 이동했습니다. 연결의 권한과 생명주기를 인증된 실행 인스턴스에 연결하지 않았습니다.
 - 기존 스케줄러는 개별 `OpusSend` 프레임을 작업으로 취급했고 시간 안에 채널이 비워지지 않으면 프레임을 잃을 수 있었습니다. 차단되는 `Dequeue()`는 취소를 직접 받지 않았습니다.
-- P0의 태그 없는 upstream commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`의 [voice.go](../../discordgo/voice.go)는 여전히 `OpusSend` 버퍼 두 칸 및 sender 내부 프레임을 사용하며 `48000` Hz, `960` samples와 ticker로 pacing합니다. upstream은 context-aware 제출 및 UDP receipt 계약을 제공하지 않으므로 P5에서 공개 채널과 모든 직접 호출자를 이관해야 합니다. 기존 스케줄러와 예제의 별도 20ms sleep도 제거합니다.
+- P0의 upstream base commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`의 [voice.go](https://github.com/bwmarrin/discordgo/blob/f43dd94faaacd5b163e9e783f14b5bd8be639fc9/voice.go)는 `OpusSend` 버퍼 두 칸 및 sender 내부 프레임을 사용하며 `48000` Hz, `960` samples와 ticker로 pacing합니다. 이는 P5 변경 전 upstream 근거이며 공개 fork v0.30.0의 현재 구현 설명이 아닙니다. upstream은 context-aware 제출 및 UDP receipt 계약을 제공하지 않으므로 P5에서 공개 채널과 모든 직접 호출자를 이관해야 합니다. 기존 스케줄러와 예제의 별도 20ms sleep도 제거합니다.
 - 기존 SDK 감사의 transport는 `xsalsa20_poly1305`/NaCl이었지만 새 upstream source는 표준 `crypto/aes`와 `cipher.NewGCM`의 `aead_aes256_gcm_rtpsize`로 바뀌었습니다. 이 변경은 **DAVE나 필수 XChaCha20-Poly1305 지원의 완료가 아닙니다.** 현행 Discord는 rtpsize AEAD와 2026-03-01 이후 DAVE를 요구하므로 upstream 교체나 큐 수정만으로 voice를 구현 또는 검증했다고 주장하지 않습니다. 아래 v8, seq_ack, DAVE 전이, XChaCha, receipt 및 수신 요구를 모두 유지합니다.
 - 기존 수신 브로드캐스터는 동일 protobuf 패킷 포인터를 여러 구독자에게 전달하고 각 스트림이 `ConnectionId`를 수정했습니다. 구독 정리는 송수신 중 채널을 직접 닫고 마지막 구독자 수만으로 연결 종료를 판단했습니다.
 - 기존 음성 클라이언트의 join 전 leave는 격리된 동작 검사에서 panic을 일으켰습니다. 이 문서는 당시 결과를 근거로 사용하며, 작성 중 검사를 다시 실행하지 않았습니다.
@@ -88,7 +88,7 @@ flowchart LR
 
 안전한 `VoiceStateUpdate` 관찰은 별도의 `discord.event.VOICE_STATE_UPDATE` domain event와 `GuildVoiceStates` intent를 따릅니다. 해당 이벤트를 받는 관리 모듈에 playback이나 receive capability를 요구하지 않습니다. voice server token, endpoint handoff와 `VoiceState.SessionID`는 host transport 경계에 남기며 일반 event payload로 내보내지 않습니다.
 
-기존 v1 `VoiceJoin/VoiceStream/VoiceLeave/VoiceSpeaking/GetQueueStatus` 및 공개 송수신 채널 기반 클라이언트를 v2 작업 및 구독 계약으로 교체합니다. 호환 별칭을 남기지 않습니다. 로컬 DiscordGo의 공개 `OpusSend` 경로도 전송 영수증을 제공하는 문맥 인식 경로로 교체하고, 런타임 스케줄러뿐 아니라 현재 직접 참조하는 `discordgo/examples/airhorn/main.go`까지 이관합니다. 기존 버퍼 경로를 우회 송신 통로나 호환 shim으로 유지하지 않습니다.
+기존 v1 `VoiceJoin/VoiceStream/VoiceLeave/VoiceSpeaking/GetQueueStatus` 및 공개 송수신 채널 기반 클라이언트를 v2 작업 및 구독 계약으로 교체합니다. 호환 별칭을 남기지 않습니다. DiscordGo의 공개 `OpusSend` 경로도 전송 영수증을 제공하는 문맥 인식 경로로 교체하며 SDK의 직접 호출자와 [airhorn 예제](https://github.com/chatanium/discordgo/blob/v0.30.0/examples/airhorn/main.go)는 별도 공개 SDK 저장소가 관리합니다. 기존 버퍼 경로를 우회 송신 통로나 호환 shim으로 유지하지 않습니다.
 
 기본 runtime은 DAVE CGO package를 import하거나 link하지 않습니다. 선택적 `voice && cgo` build만 공식 libdave의 고정 버전을 연결하며, 미연결 상태에서는 voice capability를 제공하지 않습니다. `voice`를 요청하면서 CGO가 비활성화된 경우에는 build/configuration 오류로 처리하고 가짜 정상 backend를 만들지 않습니다. ordinary runtime과 일반 모듈 이미지는 native DAVE, `ffmpeg`, `yt-dlp`를 요구하지 않습니다. voice-enabled host 산출물은 `bin/voice-runtime/runtime`과 `bin/voice-runtime/lib/`의 실제 native runtime 의존성 및 해당 license로 구성하며, media 모듈 이미지와 별개입니다.
 
@@ -173,7 +173,7 @@ terminal 상태는 `COMPLETED/CANCELLED/FAILED`입니다. terminal 작업을 pau
 
 #### 현행 Voice Gateway, AEAD 및 DAVE
 
-로컬 DiscordGo의 봇 REST와 main Gateway 계약은 유지하되 voice 경로는 현행 프로토콜로 교체합니다. 레거시 XSalsa 및 non-rtpsize AES 경로를 성공 fallback으로 남기지 않습니다. UDP transport는 `aead_xchacha20_poly1305_rtpsize`를 필수로 지원하고, 서버가 광고하며 구현에서 지원하는 경우 `aead_aes256_gcm_rtpsize`를 우선 선택합니다. 이 transport 암호화는 DAVE frame 암호화와 별개의 계층입니다.
+P0에 고정한 공개 DiscordGo의 봇 REST와 main Gateway 계약은 유지하되 voice 경로는 현행 프로토콜로 교체합니다. 레거시 XSalsa 및 non-rtpsize AES 경로를 성공 fallback으로 남기지 않습니다. UDP transport는 `aead_xchacha20_poly1305_rtpsize`를 필수로 지원하고, 서버가 광고하며 구현에서 지원하는 경우 `aead_aes256_gcm_rtpsize`를 우선 선택합니다. 이 transport 암호화는 DAVE frame 암호화와 별개의 계층입니다.
 
 1. 호스트는 main Gateway의 `VOICE_STATE_UPDATE`와 `VOICE_SERVER_UPDATE`를 모두 받아 session ID, endpoint 및 token을 확보합니다. 명시적인 Voice Gateway `v=8` 연결에서 Hello, heartbeat 및 ACK를 처리하고, text뿐 아니라 binary message의 sequence도 최신 `seq_ack`에 반영합니다. heartbeat와 Resume wire 형식은 이 값을 사용하지만, 아래 운영 정책에 따라 연결 손실 후 자동 Resume를 시작하지 않습니다.
 2. Identify opcode 0의 `max_dave_protocol_version`은 고정한 libdave의 `daveMaxSupportedProtocolVersion()`과 실제 adapter 구현 범위 중 지원 가능한 값으로 제한합니다. Ready opcode 2 뒤 UDP discovery와 Select Protocol opcode 1로 현행 AEAD mode를 선택합니다. Session Description opcode 4에서 transport mode/key뿐 아니라 `dave_protocol_version`도 읽습니다.
@@ -554,15 +554,18 @@ REST가 아닌 gRPC 계약입니다. 아래 code는 HTTP status가 아닙니다.
 ### 6-2. Dependencies
 
 - [빌드 기준선](flexmodule-0-build-and-dependency-baseline.md), [프로토콜 계약](flexmodule-1-protocol-contracts.md), [도메인 변환](flexmodule-2-domain-conversions.md), [Discord 백엔드](flexmodule-3-discord-backend.md), [런타임 격리](flexmodule-4-runtime-and-isolation.md)의 통합이 필요합니다.
-- 로컬 DiscordGo의 context-aware sender 및 오류 영수증 변경이 필요합니다. 업스트림 패키지와 로컬 수정본이 섞이지 않도록 모든 대상이 같은 로컬 의존성을 사용해야 합니다.
+- context-aware sender 및 오류 영수증 변경은 공개 `github.com/chatanium/discordgo v0.30.0`에 포함됩니다. 모든 소비 모듈이 이 canonical 모듈을 직접 요구하며 DiscordGo `replace`나 로컬 fallback은 사용하지 않습니다.
 - 공식 libdave `v1.2.2/cpp` 및 위 commit의 C ABI와 고정한 native 의존성 closure가 필요합니다. 공개 Linux x64 BoringSSL asset의 release metadata SHA256은 `e9688ba3a1b0908e5e7aa037f400a2f59c69c98677a83a857ed0f2849c338312`이지만 실제 다운로드 바이트를 계산해 검증한 결과는 아닙니다. 구현은 실제 digest, symbol/header ABI와 target distro/glibc loader 호환성을 검증해야 하며 맞지 않으면 같은 pinned source 및 submodule로 target-compatible builder에서 빌드합니다.
 - native builder에는 libdave의 최소 요구 CMake 3.20 이상과 C++17 toolchain, MLSPP, nlohmann_json 및 선택한 crypto가 필요합니다. 최신 builder 후보는 CMake `4.4.5`이지만 해당 release와의 실제 빌드 성공은 별도 검증 대상입니다. libdave `v1.2.2/cpp`의 vcpkg gitlink `16c71a39e5a0fc0bdb3fad03beef8f38ee00ee3b`, BoringSSL builtin baseline `7adc2e4d49e8d0efc07a369079faa6bc3dbb90f3` 및 MLSPP commit `1cc50a124a3bc4e143a787ec934280dc70c1034d`의 고정 closure를 보존합니다. OpenSSL 1.1.1 이상도 upstream이 허용하지만 검증 없이 공개 BoringSSL closure와 섞지 않으며 builder를 일반 runtime이나 모듈 이미지에 설치하지 않습니다.
 - `make build-voice`는 `CGO_ENABLED=1` 및 `-tags voice`로 `voice && cgo` host runtime과 native library/license bundle을 만들고 일반 `make build/build-all`에는 DAVE를 강제하지 않습니다. Go floor `1.27.0` 및 compiler `1.27.3`은 P0를 따릅니다. UDP XChaCha20-Poly1305는 고정 `golang.org/x/crypto v0.58.0`의 AEAD를, AES-GCM은 표준 AEAD를 사용합니다. 새 upstream이 SDK의 x/crypto 의존성을 없앴더라도 P5의 필수 XChaCha 구현 의존성은 별도이며 libdave가 UDP AEAD를 대신하지 않습니다.
+- Native lock과 승인된 libdave patch는 SDK 태그의 [native-lock.json](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/native-lock.json) 및 [libdave.patch](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/libdave.patch)에 있습니다. 이 저장소의 EL9 builder/packaging은 [tools/sdk.py](../../tools/sdk.py)로 해석한 source를 `/sdk`에 mount하며 `make build-native`는 application Go를 컴파일하지 않습니다.
 - Opus 패킷의 실제 duration과 길이를 검증할 구현이 필요합니다. 전체 음성 디코딩이나 runtime-side `ffmpeg` 실행으로 이를 대신하지 않습니다.
 - 실제 smoke에는 운영자가 승인한 봇 자격증명, 길드, 채널, 해당 Discord 권한과 테스트 참여자가 필요합니다. credential은 호스트 백엔드만 소유합니다.
 - 음성을 사용하는 모듈의 인코더 및 media OCI image는 P6에서 관리합니다. 수신 전용 기능과 일반 봇에는 이 이미지가 선행 조건이 아닙니다.
 
 ## 7. References
+
+현재 voice jobs는 [internal/backend/discord/voicejobs](../../internal/backend/discord/voicejobs/), 모듈 client는 [shared/discord-v2/voice_client.go](../../shared/discord-v2/voice_client.go), transport/DAVE bridge는 [공개 SDK v0.30.0](https://github.com/chatanium/discordgo/tree/v0.30.0)에 있습니다. 아래 v1 helper, 기존 예제 및 local SDK 경로는 2026-10-29 감사의 역사적 근거이며 현재 구현 위치가 아닙니다.
 
 - [현재 음성 helper와 연결 수명](../../shared/discord-v1/runtime/voice_helper.go)
 - [현재 프레임 스케줄러](../../shared/discord-v1/runtime/voice_scheduler.go)

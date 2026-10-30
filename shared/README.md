@@ -2,7 +2,7 @@
 
 This directory contains the Go module/runtime SDK for FlexModule v2. Generated
 wire messages live in [`../proto`](../proto/README.md); host authorization and
-execution live in `../runtime` and `../backend`, not in a module-side SDK.
+execution live in `../internal/runtime` and `../internal/backend`, not in a module-side SDK.
 
 ## Packages
 
@@ -15,6 +15,13 @@ execution live in `../runtime` and `../backend`, not in a module-side SDK.
 The removed `core-v1`/`discord-v1`, old conversion utilities and helper-service
 experiment are not compatibility paths. Rebuild runtime and modules together;
 there is no mixed-version fallback.
+
+The public Go module remains `github.com/thirdscam/chatanium-flexmodule`;
+`shared/` and `proto/` imports are unchanged. Host-only packages under
+`internal/` are not module-author APIs. Discord types come directly from the
+published [`github.com/chatanium/discordgo v0.30.0`](https://github.com/chatanium/discordgo/tree/v0.30.0),
+not a replaced local SDK tree. These source boundaries do not change OCI
+manifests, ModuleIDs or actual grant checks.
 
 ## Transport and lifecycle
 
@@ -164,12 +171,12 @@ download tools belong only inside approved media module images.
 
 ## Examples and maintenance
 
-- [`test-module`](../test-module/README.md): ordinary management, settings,
-  interactions, messages and uploads, without voice/media prerequisites.
-- [`chatanium-musicbot`](../chatanium-musicbot/README.md): optional queue/provider
-  module with bounded media preparation.
-- [`voice-player-module`](../voice-player-module/README.md): optional bounded
-  attachment download/encoding and voice jobs.
+- [`general-bot`](../examples/general-bot/README.md): ordinary management, settings,
+  interactions, messages and uploads; builds `bin/test-module` without voice/media prerequisites.
+- [`music-bot`](../modules/music-bot/README.md): optional queue/provider
+  module with bounded media preparation; builds `bin/chatanium-musicbot`.
+- [`audio-player`](../modules/audio-player/README.md): optional bounded
+  attachment download/encoding and voice jobs; builds `bin/voice-player-module`.
 - [`../proto/README.md`](../proto/README.md): schema/generator inputs and ordering.
 - [`../README.md`](../README.md): pinned artifacts, privileged host preparation,
   private secret bindings, runtime configuration and evidence boundaries.

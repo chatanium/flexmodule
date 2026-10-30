@@ -4,6 +4,11 @@ This optional media module resolves YouTube queries, prepares complete module-ow
 
 ## Build and installation
 
+Source is in `modules/music-bot`, an independent Go module that directly requires
+`github.com/chatanium/discordgo v0.30.0` without a DiscordGo replacement. The
+preserved executable name is `bin/chatanium-musicbot`; the source move does not
+change the manifest, ModuleID or image/grant contract.
+
 Use the repository's `make build-media` and `make image-media` interfaces. Run the music OCI image through the v2 runtime with its media resource profile, approved public Internet egress, and an actual voice-enabled Discord backend. `manifest.json` is the **only** manifest source: the executable embeds those bytes and the image builder uses the same file for `org.chatanium.flexmodule.manifest.v2`. The image label requests capabilities; it does not grant them.
 
 The backend is required. Discord operations are optional manifest requests so installation can narrow their all-resource requests to the operator's exact scopes. INIT then requires every configured operation, scope, and voice priority constraint; missing grants fail readiness rather than silently disabling music. Required core capabilities are `core.config.read` and `core.network.public_egress`, with actual `PUBLIC_INTERNET` policy. Required configured Discord capabilities are:

@@ -100,7 +100,7 @@ flowchart TB
     end
 ```
 
-`test-module`을 일반 봇의 실행 가능한 기준 예제로 사용합니다. 관리 및 메시지 예제를 별도 프레임워크나 프로토콜로 만들지 않고, 동일한 core-v2 lifecycle/config와 discord-v2 helper 및 typed event 계약을 사용합니다. 기능별 request/response는 P1과 P3의 규범 DTO를 재사용하며 새로운 ad-hoc JSON RPC를 만들지 않습니다.
+`examples/general-bot`(출력 `bin/test-module`)을 일반 봇의 실행 가능한 기준 예제로 사용합니다. 관리 및 메시지 예제를 별도 프레임워크나 프로토콜로 만들지 않고, 동일한 core-v2 lifecycle/config와 discord-v2 helper 및 typed event 계약을 사용합니다. 기능별 request/response는 P1과 P3의 규범 DTO를 재사용하며 새로운 ad-hoc JSON RPC를 만들지 않습니다.
 
 모든 예제는 `INIT`에서 설정과 실제 grants를 확인하고 필요한 저장소 및 리소스를 준비한 뒤에만 ready를 반환합니다. `START`와 `RUNNING` 이전에 Discord 이벤트를 처리하지 않습니다. required capability 거절은 활성화 실패, optional capability 거절은 해당 기능의 명시적 비활성화로 처리합니다. module ID는 설치 설정에 고정되며, 예제 코드가 `module-id` 메타데이터로 인증을 대신하지 않습니다.
 
@@ -433,27 +433,29 @@ play track:
 
 | Target | 입력과 산출물 및 실행 경계 |
 |---|---|
-| `make build` | native DAVE를 import/link하지 않는 Linux runtime과 일반 `test-module`을 빌드합니다. 미디어 executable을 설치하거나 실행하지 않습니다. |
+| `make build` | native DAVE를 import/link하지 않는 Linux runtime, supervisor와 일반 `examples/general-bot`(출력 `bin/test-module`)을 빌드합니다. 미디어 executable을 설치하거나 실행하지 않습니다. |
 | `make build-voice` | `voice && cgo`로 pinned libdave를 연결한 선택적 host runtime과 native library/license bundle을 `bin/voice-runtime/`에 만듭니다. 실제 digest, ABI 및 loader closure 검증이 필요하며 기본 build와 별개입니다. |
-| `make build-media` | 같은 로컬 DiscordGo 및 v2 계약으로 음악 봇과 voice-player의 Go 산출물을 빌드합니다. 별도 nested module의 실패도 전체 실패로 반환합니다. |
-| `make build-all` | P0에서 정의한 유지 대상 root, 로컬 SDK 및 독립 예제 module을 각각 빌드합니다. 제거 대상 helper-service 두 module은 명시적으로 폐기하며 실패를 숨기기 위한 임의 제외는 허용하지 않습니다. |
-| `make build-integration` | `bin/flexmodule-integration`과 `bin/flexmodule-runtime-return-holder`를 만듭니다. 기존 pinned Go wrapper를 사용하며 두 산출물 모두 `CGO_ENABLED=0`, 빈 build tags, `-mod=readonly -trimpath`를 적용합니다. 전자는 `./integration-tests/test-voice.go`의 Go runner이고 후자는 루트 package의 `go test -c` 실행 파일입니다. 테스트 실행이나 native voice 빌드가 아닙니다. |
-| `make build-sandbox` | canonical `integration-tests/sandbox-module`을 `bin/sandbox-module`로 빌드합니다. `make image-module MODULE_KIND=sandbox MODULE_IMAGE=<명시적 tag>`로 fixture 이미지를 만들고, 설치 설정에는 검토한 immutable `repository@sha256:...`를 사용합니다. |
+| `make build-media` | 공개 `github.com/chatanium/discordgo v0.30.0` 및 v2 계약으로 `modules/music-bot`과 `modules/audio-player`를 빌드합니다. 출력 이름은 `bin/chatanium-musicbot`, `bin/voice-player-module`로 유지하며 nested module 실패도 전체 실패로 반환합니다. |
+| `make build-all` | 로컬 Go 모듈 `.`, `modules/music-bot`, `modules/audio-player`를 빌드합니다. SDK root와 중첩 SDK 예제 및 CI는 별도 SDK 저장소가 관리합니다. native voice target은 포함하지 않습니다. |
+| `make build-integration` | `bin/flexmodule-integration`과 `bin/flexmodule-runtime-return-holder`를 만듭니다. 기존 pinned Go wrapper를 사용하며 두 산출물 모두 `CGO_ENABLED=0`, 빈 build tags, `-mod=readonly -trimpath`를 적용합니다. 전자는 `./tests/integration`의 Go runner(`main.go`)이고 후자는 `./cmd/flexmodule` package의 `go test -c` 실행 파일입니다. 테스트 실행이나 native voice 빌드가 아닙니다. |
+| `make build-sandbox` | canonical `tests/integration/fixtures/sandbox`를 `bin/sandbox-module`로 빌드합니다. `make image-module MODULE_KIND=sandbox MODULE_IMAGE=<명시적 tag>`로 fixture 이미지를 만들고, 설치 설정에는 검토한 immutable `repository@sha256:...`를 사용합니다. |
 | `make image-module` | 미디어 도구가 없는 일반 모듈 OCI 이미지를 만듭니다. |
 | `make image-media` | pinned tool lock을 사용하는 두 media 예제 OCI 이미지를 만듭니다. host installer 또는 runtime update 경로가 있으면 완료가 아닙니다. |
-| `make check-offline` | Buf, 영향을 받은 root/nested/vendored Go 대상, DTO, 인증된 gRPC 및 로컬 HTTP/voice transport의 유한 시험을 수행합니다. 라이브 Discord나 secret 없이 재현합니다. |
+| `make check-offline` | Buf schema와 생성 비교 및 로컬 Go 모듈 세 개의 유한 ordinary 시험을 수행합니다. 일반 예제와 integration fixture는 root에 포함되며 SDK 저장소 시험, native 빌드, 라이브 Discord나 secret은 포함하지 않습니다. |
 | `make check-sandbox` | 기존 baseline 경로입니다. 준비된 supervisor와 canonical OCI fixture를 사용해 시작, INIT 경계 검사, 유한 RUNNING 관찰 및 종료를 확인합니다. 성공해도 `sandbox.full_policy`는 `NOT_RUN`이며 전체 quota, crash, network 정책의 PASS가 아닙니다. |
 | `make check-sandbox-policy` | 명시적으로 설치한 `INTEGRATION` binary의 `sandbox --policy-plan ...`을 실행합니다. root observer가 선택한 case의 실제 host 증거와 소유 자원 정리를 검사하며, 성공 범위는 plan의 `cases`뿐입니다. repo의 `go run`이나 자동 권한 상승을 사용하지 않습니다. |
 | `make smoke-discord` | 운영자가 승인한 test guild, bot credentials 및 시험 대상만 사용합니다. destructive moderation에는 명시적 대상 승인이 필요합니다. |
 | `make smoke-voice` | voice-enabled artifact와 별도 승인된 음성 채널 및 참여자를 사용하여 실제 DAVE+AEAD playback/receive, participant 전이 및 P5 job 동작을 확인합니다. 일반 smoke의 필수조건이 아닙니다. |
 
-검사에는 case별 timeout과 전체 실행 deadline을 둡니다. local gRPC listener, HTTP server, worker, subprocess와 파일을 반드시 정리합니다. 오프라인 suite에서 로컬 fixture를 명시적으로 주입할 수 있지만 생산 API에 임의 endpoint/header/URL 전달 기능을 열지 않습니다. root, 음악 봇, voice-player, 영향을 받은 vendored DiscordGo 및 integration package를 빠짐없이 포함하며, build 실패 package를 단순 제외해서 통과시키지 않습니다.
+검사에는 case별 timeout과 전체 실행 deadline을 둡니다. local gRPC listener, HTTP server, worker, subprocess와 파일을 반드시 정리합니다. 오프라인 suite에서 로컬 fixture를 명시적으로 주입할 수 있지만 생산 API에 임의 endpoint/header/URL 전달 기능을 열지 않습니다. root, 음악 봇, audio-player 및 integration package를 빠짐없이 포함하며 build 실패 package를 단순 제외해서 통과시키지 않습니다.
 
-기존 감사의 독립 `go.mod` 여덟 개에 대한 처분은 P0와 일치시킵니다. root, `discordgo`, `discordgo/examples/linked_roles`, `discordgo/examples/voice_receive`, `chatanium-musicbot`, `voice-player-module` 여섯 개는 최신 고정 의존성 및 로컬 대체 경로로 유지하고, `helper-service` 두 모듈은 생산 protocol 제거 대상입니다. Pion 예제는 `webrtc/v4 v4.2.26` 및 `rtp v1.10.6`, linked-roles는 `oauth2 v0.37.0`을 사용합니다. 일반 `test-module`과 integration은 상위 모듈의 대상이며 linked-roles OAuth 요구를 범용 모듈 로그인 요구로 확대하지 않습니다.
+2026-10-31 전환 뒤 로컬 Go 모듈은 세 개이며 모두 공개 SDK를 직접 요구하고 DiscordGo `replace`를 사용하지 않습니다. 기존 감사의 SDK root 및 linked-roles/voice-receive 중첩 모듈은 별도 SDK 저장소로 이관했고 helper-service 두 모듈은 제거했습니다. 일반 예제와 integration은 계속 루트 모듈의 대상입니다. SDK 예제의 OAuth 요구를 범용 모듈 로그인 요구로 확대하지 않습니다.
 
 실제 smoke의 자격증명은 호스트 백엔드만 읽습니다. 모듈 이미지, config, env 또는 검사 로그에 bot token을 전달하지 않습니다. 승인된 guild 및 channel이 없거나 credential이 없으면 해당 검사를 `NOT_RUN`으로 표시하고 라이브 검수 미완료를 보고합니다. 실제 요청이 변경을 일으킨 뒤 응답을 놓쳤을 수 있으므로, 단순 timeout을 근거로 동일 moderation 요청을 재전송하지 않습니다.
 
 현재 라이브 시험은 개발자 계정의 일반 사용자 권한을 유지하는 것을 전제로 합니다. 사용자가 관리 및 관리자 권한이 필요한 라이브 성공 경로를 보류했으므로 해당 항목은 `DEFERRED_BY_USER`로 구분하고, 이를 위해 역할, gateway intents 또는 grants를 넓히지 않습니다. 해당 기능의 구현과 오프라인 검수는 유지합니다. 아래 실제 성공은 명시한 일반 사용자 경로에 한정하며 전체 P6 완료를 뜻하지 않습니다.
+
+아래 라이브 관찰은 2026-10-31 폴더/SDK 전환 이전의 기록입니다. 이번 문서 수정에서 해당 시험을 다시 실행한 결과가 아닙니다.
 
 - `/form` autocomplete의 `run→runtime` 왕복, 초기 button/select 렌더링, button→modal→submit 및 Settings select→modal→submit의 `Feedback received` 응답이 실제 일반 모듈에서 성공했습니다. 같은 `ModuleID`로 재시작한 뒤 이전 인스턴스의 버튼에서도 새 modal과 `Trashbin restarted form feedback` 응답을 확인했습니다. 이전의 SKU 생략 및 중첩 bot `message.author`에 대한 event actor 문제는 수정 후 실제 경로에서 확인했습니다.
 - `/attachment-demo`는 최초 비참조 업로드의 실제 attachment ID, retained+new 수정, ref 재사용, 명시적 clear 및 최종 `Owned attachment upload/reuse/edit-clear sequence completed`를 확인했습니다. 이전 `WebhookThreadExecute`의 source 생략 조건 문제도 수정 후 follow-up이 성공했고, 예제가 소유한 follow-up 및 일반 메시지가 정리되었습니다.
@@ -461,7 +463,7 @@ play track:
 
 #### 영구 sandbox harness의 빌드 및 설치
 
-일반 사용자 빌드 순서는 `make build build-sandbox build-integration`입니다. pinned compiler는 `tools/versions.mk`의 `go1.27.3`이며 기존 `GOOS`/`GOARCH` 계약을 따릅니다. 실행 호스트와 같은 target으로 빌드해야 합니다. `make clean`이 새로 소유하는 출력은 정확히 `bin/flexmodule-integration`과 `bin/flexmodule-runtime-return-holder` 두 파일뿐입니다. observer의 원본은 [integration-tests/sandbox-policy.py](../../integration-tests/sandbox-policy.py)이며 실험용 `.tools` 파일을 설치하거나 import하지 않습니다. 기존 wrapper의 `.tools` lock/tool cache는 빌드 내부 용도이며, 설치된 policy 실행에는 Go나 이 cache가 필요하지 않습니다.
+일반 사용자 빌드 순서는 `make build build-sandbox build-integration`입니다. pinned compiler는 `tools/versions.mk`의 `go1.27.3`이며 기존 `GOOS`/`GOARCH` 계약을 따릅니다. 실행 호스트와 같은 target으로 빌드해야 합니다. `make clean`이 새로 소유하는 출력은 정확히 `bin/flexmodule-integration`과 `bin/flexmodule-runtime-return-holder` 두 파일뿐입니다. observer의 원본은 [tests/integration/sandbox-policy.py](../../tests/integration/sandbox-policy.py)이며 실험용 `.tools` 파일을 설치하거나 import하지 않습니다. 기존 wrapper의 `.tools` lock/tool cache는 빌드 내부 용도이며, 설치된 policy 실행에는 Go나 이 cache가 필요하지 않습니다.
 
 return-holder는 생산 runtime의 별도 API가 아니라 같은 package의 실제 `runCLI` 반환 이후를 관찰하는 테스트 실행 파일입니다. 인터페이스는 `flexmodule-runtime-return-holder --integration-runtime-return-hold <1..60초 정수> -- run <일반 runtime 인자>`입니다. 동일한 PID로 실제 runtime 종료 결과를 기록하고 유한 시간 동안 유지합니다. `cleanup-crash`를 선택하면 plan의 `runtime_return_holder`에 이 실행 파일의 설치된 절대 경로가 필요합니다.
 
@@ -486,7 +488,7 @@ runner, runtime, return-holder, observer, Docker CLI, 승인 config/plan 및 모
 
 #### 승인 plan과 호스트 전제조건
 
-schema v1은 [observer의 main 및 validation](../../integration-tests/sandbox-policy.py)을 기준으로 하며 알 수 없는 필드를 거절합니다. 아래는 운영자가 값을 채워야 하는 plan 형태이며 그대로 실행할 JSON이 아닙니다. 이 예시는 네 case를 선택한 범위만 보여 주며 전체 정책 수용 결과가 아닙니다.
+schema v1은 [observer의 main 및 validation](../../tests/integration/sandbox-policy.py)을 기준으로 하며 알 수 없는 필드를 거절합니다. 아래는 운영자가 값을 채워야 하는 plan 형태이며 그대로 실행할 JSON이 아닙니다. 이 예시는 네 case를 선택한 범위만 보여 주며 전체 정책 수용 결과가 아닙니다.
 
 ```text
 {
@@ -504,7 +506,7 @@ schema v1은 [observer의 main 및 validation](../../integration-tests/sandbox-p
 ```
 
 - `runtime_uid`/`runtime_gid`는 모두 0보다 커야 하며 host runtime UID와 fixture의 guest UID도 달라야 합니다. observer 자체는 root로 실행하되 실제 runtime과 canonical image 검사 child는 지정한 비-root UID/GID로 실행합니다.
-- base config는 schema 2, backend 없는 단일 canonical fixture, non-root guest UID/GID, credential binding 없는 구성과 `EGRESS_POLICY_NONE` 승인을 사용합니다. `scenario`/`lifecycle` override를 base에 넣지 않습니다. OCI digest만 고정하는 것으로 충분하지 않으며, 설치된 Go runner가 supervisor를 통해 embedded canonical `integration-tests/sandbox-module/manifest.json`과 실제 image manifest를 비교합니다.
+- base config는 schema 2, backend 없는 단일 canonical fixture, non-root guest UID/GID, credential binding 없는 구성과 `EGRESS_POLICY_NONE` 승인을 사용합니다. `scenario`/`lifecycle` override를 base에 넣지 않습니다. OCI digest만 고정하는 것으로 충분하지 않으며, 설치된 Go runner가 supervisor를 통해 embedded canonical `tests/integration/fixtures/sandbox/manifest.json`과 실제 image manifest를 비교합니다.
 - 실제 Linux Docker/runsc, local Unix Docker endpoint, XFS project quota, 설정한 management/storage/IPC 디렉터리와 supervisor의 승인 runtime peer가 준비되어야 합니다. 다른 실행이 활성화된 설치를 공유하지 않습니다. `controls`에는 1~16개의 실제 unrelated 실행 컨테이너 ID를 넣으며 이름, prefix 또는 임의의 Docker 전체 목록으로 대체하지 않습니다. 관찰자는 해당 control의 identity와 실행 상태가 보존되는지도 확인합니다.
 - `case_seconds`는 180~300초 정수이며 생략 시 240초입니다. overall `--deadline`은 180~7200초 범위여야 하고 각 남은 case를 실행할 시간 및 종료 관찰 시간을 확보해야 합니다. `--observe`는 양수이며 overall deadline보다 짧아야 합니다. wrapper의 시간 값은 양의 정수와 `s`/`m`/`h` 단위입니다. 이 schema 범위는 처리 시간이나 통과를 보장하는 성능 수치가 아닙니다.
 - PUBLIC case를 선택할 때만 별도로 승인하여 설치한 `public_config` 절대 경로를 plan에 추가합니다. base와 module/image/host/limits가 같아야 하며 승인 및 approval revision만 달라질 수 있습니다. `EGRESS_POLICY_PUBLIC_INTERNET`과 `core.network.public_egress` 승인이 필요하며 observer가 승인을 만들거나 정책을 완화하지 않습니다.
@@ -635,24 +637,24 @@ P0부터 P5까지의 실제 계약 및 구현을 입력으로 사용합니다. �
 
 ## 7. References
 
-- [현재 일반 모듈](../../test-module/main.go)
-- [현재 일반 모듈의 음성 시험 파일](../../test-module/voice_test.go)
-- [현재 음악 봇 lifecycle 및 command 흐름](../../chatanium-musicbot/main.go)
-- [현재 음악 준비 및 재생](../../chatanium-musicbot/audio.go)
-- [현재 음악 목록 상태](../../chatanium-musicbot/state.go)
-- [현재 provider 계약](../../chatanium-musicbot/provider/provider.go)
-- [현재 yt-dlp 설치 및 업데이트 경로](../../chatanium-musicbot/provider/youtube.go)
-- [현재 voice-player 설정 및 HTTP 처리](../../voice-player-module/main.go)
-- [현재 voice-player 변환 및 Opus 전송](../../voice-player-module/audio.go)
-- [현재 integration 실행 경로](../../integration-tests/test-voice.go)
-- [현재 실험 helper-service](../../helper-service/README.md)
+- [현재 일반 모듈](../../examples/general-bot/main.go)
+- 일반 모듈의 과거 `test-module/voice_test.go`는 v1 감사 근거이며 현재 예제에는 포함하지 않습니다.
+- [현재 음악 봇 lifecycle 및 command 흐름](../../modules/music-bot/main.go)
+- [현재 음악 준비 및 재생](../../modules/music-bot/audio.go)
+- [현재 음악 목록 상태](../../modules/music-bot/state.go)
+- [현재 provider 계약](../../modules/music-bot/provider/provider.go)
+- [현재 yt-dlp provider](../../modules/music-bot/provider/youtube.go)
+- [현재 audio-player 설정 및 HTTP 처리](../../modules/audio-player/main.go)
+- [현재 audio-player 변환 및 Opus 전송](../../modules/audio-player/audio.go)
+- [현재 integration 실행 경로](../../tests/integration/main.go)
+- 과거 `helper-service/README.md`는 제거된 실험의 역사적 근거입니다.
 - [현재 Makefile](../../Makefile)
 - [현재 root README](../../README.md)
 - [현재 README 아키텍처 그림](https://github.com/user-attachments/assets/1cf77e2c-ea04-47be-b2c5-1d4bb7bd9fc6)
 - [Chatanium 모듈 설계 이슈](https://github.com/thirdscam/chatanium/issues/10)
-- [현재 변환 계층](../../shared/discord-v1/convert/)
-- [현재 Discord helper 구현](../../shared/discord-v1/runtime/helper.go)
-- [현재 로컬 DiscordGo event 등록](../../discordgo/eventhandlers.go)
+- [현재 변환 계층](../../shared/discord-v2/)
+- [현재 Discord backend](../../internal/backend/discord/)
+- [공개 DiscordGo event 등록](https://github.com/chatanium/discordgo/blob/v0.30.0/eventhandlers.go)
 - [Discord 파일 업로드](https://docs.discord.com/developers/reference#uploading-files)
 - [Discord 메시지 생성](https://docs.discord.com/developers/resources/message#create-message)
 - [Discord 메시지 수정](https://docs.discord.com/developers/resources/message#edit-message)

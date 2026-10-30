@@ -37,7 +37,7 @@
 
 ### 현재 source delta와 처리 범위
 
-현재 입력은 P0에 고정한 태그 없는 DiscordGo commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`입니다. [source summary](../../tools/protocol/inventory/source-refresh-summary.json), [API catalog](../../tools/protocol/inventory/source-api.json), [event catalog](../../tools/protocol/inventory/source-events.json) 및 [type closure](../../tools/protocol/inventory/source-type-closure.json)에 따라 API root 59개, API named-type closure 204개, event closure 228개, 두 closure의 합집합 282개를 처리합니다. source 메서드 232개에서 SDK-derived Helper 작업 153개를 노출하고 event row 74개 중 67개를 모듈에 전달합니다. 과거의 229개 메서드, 73개 이벤트, root 57개/type 199개와 메시지 154개/enum 23개는 최종 ceiling이 아닙니다.
+현재 입력은 P0에 고정한 공개 `github.com/chatanium/discordgo v0.30.0`입니다. upstream base는 `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`이며 승인된 Gateway 및 native DAVE 변경을 포함합니다. [source summary](../../tools/protocol/inventory/source-refresh-summary.json), [API catalog](../../tools/protocol/inventory/source-api.json), [event catalog](../../tools/protocol/inventory/source-events.json) 및 [type closure](../../tools/protocol/inventory/source-type-closure.json)에 따라 API root 59개, API named-type closure 204개, event closure 228개, 두 closure의 합집합 282개를 처리합니다. source 메서드 232개에서 SDK-derived Helper 작업 153개를 노출하고 event row 74개 중 67개를 모듈에 전달합니다. 과거의 229개 메서드, 73개 이벤트, root 57개/type 199개와 메시지 154개/enum 23개는 최종 ceiling이 아닙니다.
 
 새 필드와 타입의 변환 계약은 다음과 같습니다.
 
@@ -644,6 +644,8 @@ fixture는 각 SDK 선언, canonical wire 값 및 실제 요청 JSON의 별도 �
 - 외부 타입 기준은 현재 저장소의 로컬 DiscordGo입니다. 새로운 upstream API를 가져오기 위한 광범위한 SDK 업그레이드는 포함하지 않습니다.
 
 ## 7. References
+
+현재 변환 구현은 [shared/discord-v2](../../shared/discord-v2/), wire 계약은 [proto/discord-v2](../../proto/discord-v2/)에 있습니다. 아래 v1 경로와 부록의 source/line 참조는 2026-10-29 감사의 역사적 근거이며 현재 파일 위치가 아닙니다. 현행 inventory의 `discordgo/*.go`는 논리적 source label이며 SDK source는 [tools/sdk.py](../../tools/sdk.py)로 해석합니다.
 
 - [현재 Discord 도메인 스키마](../../proto/discord-v1/discordgo.proto), [별도 ChannelEdit 및 helper 스키마](../../proto/discord-v1/helper.proto), [현재 hook 스키마](../../proto/discord-v1/hook.proto)
 - [현재 정방향 message 변환](../../shared/discord-v1/convert/struct2buf/message.go), [현재 역방향 message 변환](../../shared/discord-v1/convert/buf2struct/message.go)

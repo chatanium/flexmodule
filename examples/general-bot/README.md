@@ -1,13 +1,13 @@
 # Ordinary Discord v2 module
 
-`test-module` is the generic bot example. It uses the real `core-v2` bootstrap,
+`examples/general-bot` is the generic bot example (output `bin/test-module`). It uses the real `core-v2` bootstrap,
 module-owned JSON storage, typed `discord-v2` events/helpers, and explicit upload
 streams. It does not import the old broker, Discord v1, voice, native DAVE, or any
 media provider. No internet grant, privileged Gateway intent, FFmpeg, yt-dlp,
 Deno, host installation, or module-side bot token is needed for the basic command
 path. Credentials stay on the host; interaction handles contain opaque refs.
 
-Build the ordinary runtime and module with the repository's `make build`, then
+From the repository root, build the ordinary runtime and module with `make build`, then
 build its ordinary OCI image with `make image-module`. The host runtime launches
 the pinned image through the authenticated sandbox broker; this executable is
 not a host-side token/configuration loader. `manifest.json` is the **single

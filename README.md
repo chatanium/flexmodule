@@ -64,16 +64,25 @@ Current entry points:
 
 | Path | Responsibility |
 |---|---|
-| `main.go`, `config_generate.go`, `discord.go` | Runtime CLI and optional backend composition |
+| `cmd/flexmodule/` | Runtime CLI, configuration generation and optional backend composition |
 | `cmd/flexmodule-supervisor/`, `internal/host/` | Privileged host control and Docker/runsc execution |
-| `runtime/`, `runtime/upload/` | Backend-neutral instance lifecycle, grants, admission and file ownership |
+| `internal/runtime/`, `internal/runtime/upload/` | Backend-neutral instance lifecycle, grants, admission and file ownership |
 | `proto/core-v2/`, `shared/core-v2/` | Lifecycle, configuration, file transfer and authenticated transport |
-| `proto/discord-v2/`, `shared/discord-v2/`, `backend/discord/` | Typed Discord domain/events/helpers and host adapter |
-| `backend/discord/voicejobs/`, `discordgo/internal/dave/` | Optional bounded voice jobs and native DAVE bridge |
+| `proto/discord-v2/`, `shared/discord-v2/`, `internal/backend/discord/` | Typed Discord domain/events/helpers and host adapter |
+| `internal/backend/discord/http/` | Host-only HTTP transport (package `http`, imported as `discordhttp`) |
+| `internal/backend/discord/voicejobs/` | Optional bounded voice jobs; native DAVE bridge belongs to the [published SDK](https://github.com/chatanium/discordgo/tree/v0.30.0/internal/dave) |
 | `shared/media/opus/` | Module-side bounded FFmpeg/Opus processing, not a core service |
+| `examples/general-bot/`, `modules/music-bot/`, `modules/audio-player/` | Ordinary bot example and independent optional media modules |
+| `tests/integration/` | Integration runner (`main.go`), `sandbox-policy.py` observer and `fixtures/sandbox/` |
+| `docs/archive/` | Historical voice design and implementation records |
 
 The old v1 wrappers/schema, legacy utility conversion path and experimental
 helper-service implementation are removed from the v2 execution path.
+
+Host implementation packages intentionally live under `internal/`; module authors
+use public `shared/` and `proto/` packages from the unchanged
+`github.com/thirdscam/chatanium-flexmodule` module. Folder names do not change
+manifest identity, operator-assigned ModuleIDs, OCI labels or module grants.
 
 ## Pinned builds and independent artifacts
 
@@ -81,7 +90,7 @@ The language floor is Go 1.27.0; the compiler is pinned to **Go 1.27.3** in
 `.go-version` and `tools/versions.mk`. Supply an actual Go executable through
 `BOOTSTRAP_GO`, or install the pinned distribution at `.tools/go/bin/go`.
 Version-manager shims are not accepted as compiler executables. The scripts
-select the pinned toolchain and use read-only module files.
+select the pinned toolchain, neutralize inherited `GOROOT`, and use read-only module files.
 
 `make tools` installs Buf 1.75.0, protoc-gen-go v1.36.12 and
 protoc-gen-go-grpc v1.6.2 under `.tools/bin`. From the repository root:
@@ -98,33 +107,47 @@ make buf-check
 |---|---|
 | `make build` | `bin/runtime`, `bin/flexmodule-supervisor`, `bin/test-module`; Linux/amd64 and CGO=0 by default, no native DAVE or media tools |
 | `make build-media` | `bin/chatanium-musicbot`, `bin/voice-player-module`; Go compilation only, no media tool installation |
-| `make build-all CGO_ENABLED=1` | Full maintained Go inventory and nested SDK examples; not the native voice bundle |
+| `make build-all` | All three local Go modules, including root packages and ordinary/media binaries; SDK checks belong to its own repository, not the native voice bundle |
 | `make build-native BUILD_JOBS=2` | Independent native C++/ABI/loader/license gate; `.tools/native/prefix` and `.tools/native/bundle`, no application Go compilation or `bin/voice-runtime` publication |
 | `make build-voice BUILD_JOBS=2` | `bin/voice-runtime/runtime` plus `lib/`, `licenses/` and `provenance/`; explicit voice/CGO build |
 | `make buf` / `make buf-check` | Transactional owned protobuf publication / non-mutating generation comparison; see [protocol maintenance](proto/README.md) |
+| `make build-integration` | `bin/flexmodule-integration` from `tests/integration` and the CLI-package `bin/flexmodule-runtime-return-holder`; CGO=0, no test execution |
+| `make build-sandbox` | `bin/sandbox-module` from `tests/integration/fixtures/sandbox` |
+| `make check-offline` | Buf schema/generation comparison and bounded ordinary tests in all three local Go modules; no SDK-repository, live Discord or native build |
 | `make clean` | Enumerated ordinary binaries only; no Docker prune or deletion of retained native work |
 
-The six maintained Go modules are `.`, `discordgo`, `chatanium-musicbot`,
-`voice-player-module`, `discordgo/examples/linked_roles`, and
-`discordgo/examples/voice_receive`. All DiscordGo consumers resolve to the same
-local tree. The SDK base is the untagged upstream revision
-`f43dd94faaacd5b163e9e783f14b5bd8be639fc9`
-(`v0.29.1-0.20260214123928-f43dd94faaac`), with explicit local Gateway and
-native-voice changes. It is neither a stable release tag nor unmodified upstream.
-The legacy SDK voice-receive example in the full inventory requires a C compiler,
-pkg-config, Opus and opusfile development libraries. Ordinary builds do not.
+The three local Go modules are `.`, `modules/music-bot`, and
+`modules/audio-player`. All directly require the public
+[`github.com/chatanium/discordgo v0.30.0`](https://github.com/chatanium/discordgo/tree/v0.30.0)
+without a DiscordGo `replace` or local-source fallback. The immutable tag is commit
+`f2d1806d4599ff674163be703c0d62a23d4bb524`, with canonical Go checksum
+`h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=`.
+This fork includes upstream `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`
+plus the Gateway/context/ingress/observer and native DAVE patch set; it is not
+unmodified upstream. [`tools/sdk.py`](tools/sdk.py) resolves and verifies the
+consuming module's exact published source/checksum. SDK root and nested
+`examples/linked_roles` / `examples/voice_receive` modules and their CI are owned
+by the separate SDK repository.
+
+Source moves preserve output names: `examples/general-bot` builds
+`bin/test-module`, `modules/music-bot` builds `bin/chatanium-musicbot`, and
+`modules/audio-player` builds `bin/voice-player-module`.
 
 Native/media artifact builds require Linux/amd64, Docker Engine with BuildKit
 supporting `ADD --checksum` and `COPY --chmod`, Python 3.8+, GNU
 `readelf`, `ldd`, `timeout`, `flock`, `setsid`, and the target
 `/lib64/ld-linux-x86-64.so.2`. Keep the checkout and workspaces below `/home`.
 Large source/dependency/compiler/cache trees stay in `.tools/native` or
-`.tools/media`, not host `/tmp` or Docker compiler layers. The lock files in
-`tools/native/` and `tools/media/` pin compiler bases, package inputs and sources.
-Builds do not install host packages or prune/restart Docker.
+`.tools/media`, not host `/tmp` or Docker compiler layers. The SDK's
+[`tools/native/native-lock.json`](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/native-lock.json)
+and this repository's `tools/media/tool-lock.json` pin compiler bases, package
+inputs and sources. Builds do not install host packages or prune/restart Docker.
 
 The optional native bundle uses an EL9 builder and pinned libdave commit
-`6396c90aedbb9a6ee117ea9ce1ce9832af6a3375` with the approved local native patch.
+`6396c90aedbb9a6ee117ea9ce1ce9832af6a3375` with the approved SDK
+[`libdave.patch`](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/libdave.patch).
+This repository retains the EL9 builder and bundle packaging; it resolves the
+published SDK via `tools/sdk.py` and mounts that source at `/sdk`.
 It is a **source-patched fork**, not an upstream libdave release binary.
 Publication requires its actual ELF providers, eager relocation and target loader
 checks; a distro glibc version alone is not an ABI compatibility guarantee.
@@ -279,9 +302,9 @@ Prepare three separate files before `generate-config`:
 
 1. A valid runtime base JSON with `schema_version: 2`, `modules: []`, and the
    host/backend policy below. It is not the supervisor JSON.
-2. Module-scoped JSON matching the chosen [ordinary](test-module/README.md),
-   [music](chatanium-musicbot/README.md), or
-   [player](voice-player-module/README.md) contract, containing approved real IDs.
+2. Module-scoped JSON matching the chosen [ordinary](examples/general-bot/README.md),
+   [music](modules/music-bot/README.md), or
+   [player](modules/audio-player/README.md) contract, containing approved real IDs.
 3. A strict protobuf-JSON `core-v2.Grants` approval with exact capabilities,
    resource scopes, resource profile and finite limits. Do not copy an image's
    requested `allResources` ceiling into approval to make initialization pass.
@@ -293,7 +316,7 @@ runtime user can read it; the lab's root-only supervisor-config directory does
 not automatically grant runtime access.
 
 The authoritative JSON field names and validation rules are in
-[`runtime/config.go`](runtime/config.go) and [`discord.go`](discord.go):
+[`internal/runtime/config.go`](internal/runtime/config.go) and [`cmd/flexmodule/discord.go`](cmd/flexmodule/discord.go):
 
 | Runtime base object | Required policy |
 |---|---|
@@ -332,7 +355,7 @@ explicit policy, not inferred module rights.
 
 Omit `voice` for ordinary bots. The ordinary runtime rejects voice configuration.
 For the separate voice artifact, use the exact mandatory voice/transport JSON
-fields in [`backend/discord/voicejobs/config.go`](backend/discord/voicejobs/config.go)
+fields in [`internal/backend/discord/voicejobs/config.go`](internal/backend/discord/voicejobs/config.go)
 and the SDK transport config; those duration fields use numeric nanoseconds, not
 the runtime's duration-string encoding. Voice control and packet limits must
 match the runtime/transport bounds. No media tool or native dependency belongs in
@@ -390,11 +413,11 @@ same runtime flags through `CONFIG`, `SUPERVISOR_SOCKET`, `SUPERVISOR_UID` and
 
 ## Generic modules, scopes and validation boundaries
 
-[`test-module`](test-module/README.md) demonstrates ordinary slash commands,
+[`general-bot`](examples/general-bot/README.md) demonstrates ordinary slash commands,
 forms, settings, guild/DM message events, streaming attachments, and explicitly
 approved member/role/channel moderation and audit operations.
-[`chatanium-musicbot`](chatanium-musicbot/README.md) and
-[`voice-player-module`](voice-player-module/README.md) are separate optional
+[`music-bot`](modules/music-bot/README.md) and
+[`audio-player`](modules/audio-player/README.md) are separate optional
 media examples, not the definition of a FlexModule module.
 
 Capabilities, actual resource scopes, Discord bot permissions, user command
@@ -441,7 +464,7 @@ make smoke-voice CONFIG="${RUNTIME_CONFIG:?}" \
 
 Scenario configs must match the selected ordinary/sandbox/media image and actual
 approvals. `smoke-voice` needs the separately built voice artifact.
-`integration-tests` launches the real runtime through the real supervisor, never
+`tests/integration` launches the real runtime through the real supervisor, never
 an unsandboxed module fallback. Its per-case JSON distinguishes observations from
 `NOT_RUN`; activation alone does not prove moderation, attachment delivery,
 network isolation or encrypted audio. Missing full sandbox-policy or interactive

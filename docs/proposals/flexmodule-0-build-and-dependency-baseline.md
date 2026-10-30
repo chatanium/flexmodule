@@ -11,7 +11,7 @@
 
 ## 1. Summary
 
-FlexModule의 모든 Go 모듈이 같은 로컬 DiscordGo 소스를 사용하도록 정리하고, 현재 확인된 네 가지 변환기 컴파일 오류를 수정합니다. 빌드 도구와 Protobuf 생성기를 고정하고 기존 파일을 먼저 지우지 않는 생성 절차를 마련하여, 후속 프로토콜 및 런타임 변경의 재현 가능한 기준선을 만듭니다. 이 제안의 완료는 빌드 기반의 복구를 뜻하며, 변환 정확성, Discord API 동작 또는 OCI 격리의 완료를 뜻하지 않습니다.
+FlexModule의 모든 Go 모듈이 같은 공개 DiscordGo 릴리스를 사용하도록 정리하고, 기존 감사에서 확인한 네 가지 변환기 컴파일 오류를 수정합니다. 빌드 도구와 Protobuf 생성기를 고정하고 기존 파일을 먼저 지우지 않는 생성 절차를 마련하여, 후속 프로토콜 및 런타임 변경의 재현 가능한 기준선을 만듭니다. 이 제안의 완료는 빌드 기반의 복구를 뜻하며, 변환 정확성, Discord API 동작 또는 OCI 격리의 완료를 뜻하지 않습니다.
 
 ## 2. Background & Motivation
 
@@ -19,7 +19,7 @@ FlexModule의 모든 Go 모듈이 같은 로컬 DiscordGo 소스를 사용하도
 
 아래 오류와 구형 버전은 업그레이드 전 감사의 기록입니다. 당시 루트 모듈은 Go `1.24.0`, protobuf `v1.36.5`, gRPC `v1.71.0`, go-plugin `v1.6.3`을 선언했습니다. 소비 모듈의 DiscordGo `require v0.28.1`과 달리 실제 로컬 SDK 기준선은 `v0.29.0`, commit `6e8fa27c7917ea54d8b9ec26f126becae59058d2`였습니다. 이 기록을 현재 버전이나 최종 API 범위로 해석하지 않습니다.
 
-현재 계약은 유지 대상 여섯 모듈의 의존성을 검증된 릴리스로 올리고, DiscordGo 소스를 commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`, pseudo-version `v0.29.1-0.20260214123928-f43dd94faaac`에 고정하는 것입니다. 이 소스는 **태그 없는 upstream revision**이며 최신 안정 태그 `v0.29.0`과 구분합니다. 로컬 `replace`, SDK의 중첩 Git 이력과 필요한 로컬 변경은 보존하고 변경된 API의 모든 호출자를 이관합니다. API 및 이벤트 범위의 근거는 [새 source inventory](../../tools/protocol/inventory/source-refresh-summary.json)와 P1/P3의 현행 분류입니다. 의존성 메타데이터 확인은 빌드나 실제 호환성 검증의 성공을 뜻하지 않습니다.
+2026-10-31 폴더 및 SDK 전환 뒤 현재 계약은 로컬 Go 모듈 세 개가 `github.com/chatanium/discordgo v0.30.0`을 직접 요구하며 DiscordGo `replace`를 사용하지 않는 것입니다. 공개 태그 commit은 `f2d1806d4599ff674163be703c0d62a23d4bb524`입니다. 이 fork는 upstream `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`에 Gateway/context/ingress/observer 및 native DAVE 변경을 포함합니다. [SDK 해석기](../../tools/sdk.py)가 실제 버전, source와 checksum을 확인합니다. API 및 이벤트 범위의 근거는 [source inventory](../../tools/protocol/inventory/source-refresh-summary.json)와 P1/P3의 현행 분류이며, 의존성 메타데이터 확인은 빌드나 실제 호환성 검증의 성공을 뜻하지 않습니다.
 
 기존 감사에서 루트와 `chatanium-musicbot` 빌드는 다음 네 오류로 실패했습니다. 이 문서를 작성하면서 빌드를 다시 실행하지 않았습니다.
 
@@ -45,7 +45,7 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 ### 3.1 Goals
 
 - [ ] 저장소에 있는 모든 Go 모듈의 목적, 빌드 입력 및 로컬 의존성 경로를 기록하고 누락 없이 관리합니다.
-- [ ] DiscordGo 소비 모듈이 모두 같은 `discordgo/` 소스를 사용하도록 수정합니다.
+- [ ] DiscordGo 소비 모듈이 모두 같은 공개 `github.com/chatanium/discordgo v0.30.0`을 직접 사용하도록 수정합니다.
 - [ ] 확인된 네 컴파일 오류를 기존 변환 함수 재사용으로 수정하고, 오류를 감추기 위한 파일 제외나 stub을 도입하지 않습니다.
 - [ ] Go의 최소 언어 버전과 실제 컴파일러 버전을 구분하고, 지원되는 Go 릴리스 및 Buf와 두 Protobuf 생성기의 정확한 실행 버전을 고정합니다.
 - [ ] 빌드와 코드 생성 실패가 기존 정상 산출물 또는 관계없는 파일을 삭제하지 않도록 변경합니다.
@@ -65,20 +65,15 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 
 빌드 경로는 도구 고정, 모듈 의존성 해석, 임시 출력 생성, 성공한 대상의 게시로 나눕니다. 프로토콜 생성은 바이너리 빌드와 분리하며, 평상시 빌드는 저장소에 포함된 생성 파일을 사용합니다. 빌드 과정에서 조용히 스키마를 다시 생성하거나 `go mod tidy`로 의존성 파일을 변경하지 않습니다.
 
-기존 감사에서 발견한 Go 모듈은 다음 여덟 개입니다. 이 중 유지 대상은 여섯 개이며 ignored helper 두 개는 폐기 대상입니다. 루트의 `go build ./...`는 중첩 모듈을 모두 빌드하는 명령이 아니므로, 모듈별 실행 결과를 구분해야 합니다.
+기존 감사의 Go 모듈 여덟 개 목록은 역사적 기준선입니다. 현재 이 저장소의 Go 모듈은 다음 세 개입니다. 루트의 `go build ./...`는 중첩 모듈을 모두 빌드하는 명령이 아니므로 모듈별 실행 결과를 구분합니다.
 
-| 모듈 경로 | 현재 상태와 변경 계약 |
+| 모듈 경로 | 현재 빌드 입력과 산출물 |
 |---|---|
-| `.` | 로컬 `./discordgo` 대체를 유지합니다. 런타임과 `test-module`의 공통 빌드 입력입니다. |
-| `discordgo` | 로컬 SDK 자체입니다. 자기 자신에 대한 `replace`를 추가하지 않으며 SDK 패키지 빌드를 별도 기록합니다. |
-| `chatanium-musicbot` | 루트 및 `../discordgo` 대체를 유지합니다. 선택적 미디어 예제의 독립 빌드 대상입니다. |
-| `voice-player-module` | 루트 대체에 더해 `github.com/bwmarrin/discordgo => ../discordgo`를 추가합니다. 주석 처리된 빌드 대상을 명시적인 선택 대상에 포함합니다. |
-| `discordgo/examples/linked_roles` | 현재 `v0.26.1`에 한정된 `../../` 대체를 버전 비한정 로컬 대체로 통일합니다. 이 SDK 예제의 존재가 OAuth 전용 기능을 FlexModule에 제공한다는 뜻은 아닙니다. |
-| `discordgo/examples/voice_receive` | `github.com/bwmarrin/discordgo => ../../`를 추가하여 SDK 예제도 로컬 타입으로 빌드합니다. |
-| `helper-service` | ignored 실험 디렉터리의 모듈이며 DiscordGo를 소비하지 않습니다. 현황 목록에는 포함하되 생산 빌드와 이미지 입력에서는 제외합니다. |
-| `helper-service/plugin-go-grpc` | ignored 실험 디렉터리의 하위 모듈이며 `helper-service => ../`를 사용합니다. 생산 의존성으로 편입하지 않고 P6에서 구식 helper 경로와 함께 폐기합니다. |
+| `.` | `cmd/flexmodule`, `cmd/flexmodule-supervisor`, `examples/general-bot`, `tests/integration`을 포함합니다. |
+| `modules/music-bot` | 선택적 미디어 모듈이며 출력 이름은 `bin/chatanium-musicbot`입니다. 루트 모듈의 `../..` 대체만 유지합니다. |
+| `modules/audio-player` | 선택적 미디어 모듈이며 출력 이름은 `bin/voice-player-module`입니다. 루트 모듈의 `../..` 대체만 유지합니다. |
 
-워크스페이스 설정만으로 누락된 `replace`를 감추지 않습니다. 각 중첩 모듈을 단독 작업 디렉터리로 빌드해도 같은 소스를 해석하도록 모듈 파일 자체를 수정합니다. 유지 대상 여섯 모듈의 직접 및 간접 의존성 그래프와 필요한 `go.sum`을 함께 갱신하고 기존 로컬 대체 경로를 보존합니다. 현재 major로 바뀐 Pion은 `/webrtc/v4 v4.2.26`과 `rtp v1.10.6`에 맞게 예제 호출자를 이관하며, 버전 문자열만 바꾸는 호환 shim을 추가하지 않습니다.
+세 모듈은 같은 공개 SDK를 직접 요구합니다. SDK 자체와 `examples/linked_roles`, `examples/voice_receive` 중첩 모듈 및 해당 CI는 [별도 SDK 저장소](https://github.com/chatanium/discordgo/tree/v0.30.0)가 관리합니다. 로컬 `discordgo` 소스와 실험 helper 두 모듈은 제거되었습니다. 기존 SDK 중첩 Git 이력은 ignored `.tools/retired-discordgo-git-3158838`에 보존하며 빌드 입력으로 사용하지 않습니다.
 
 ### 4.2 Data Model Changes
 
@@ -140,13 +135,15 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 
 각 대상을 임시 파일로 빌드한 뒤 성공한 출력만 최종 이름으로 교체합니다. 대상 실패 시 그 대상의 기존 바이너리를 유지하지만, 명령 결과는 실패로 기록하여 오래된 바이너리를 새 빌드 성공으로 표시하지 않습니다. `bin/*` 전체 삭제는 없애고 명시적인 정리 작업만 이 빌드가 소유한 출력에 적용합니다.
 
-일반 `make build`는 `bin/runtime`과 비미디어 `bin/test-module`을 대상으로 하며 DAVE, CGO bridge 또는 native crypto 라이브러리를 요구하지 않습니다. 일반 런타임은 voice backend 기능을 협상 결과에 제공하지 않습니다. required voice capability가 있는 모듈은 활성화를 거절하고 optional voice capability는 미허용으로 전달하며, 실제로 동작하지 않는 voice handler를 등록하지 않습니다.
+일반 `make build`는 `bin/runtime`, `bin/flexmodule-supervisor`와 비미디어 `bin/test-module`을 대상으로 하며 DAVE, CGO bridge 또는 native crypto 라이브러리를 요구하지 않습니다. 일반 런타임은 voice backend 기능을 협상 결과에 제공하지 않습니다. required voice capability가 있는 모듈은 활성화를 거절하고 optional voice capability는 미허용으로 전달하며, 실제로 동작하지 않는 voice handler를 등록하지 않습니다.
 
 선택적 `make build-voice`는 P5의 현재 Discord voice protocol 및 공식 libdave CGO bridge를 포함한 완전한 voice-enabled runtime bundle을 만듭니다. P5에서 고정한 native toolchain과 runtime library 집합을 명시적으로 준비해야 하며 일반 빌드 또는 공통 offline 검증에서 C++ 도구나 라이브러리를 암묵적으로 내려받지 않습니다. `make build-media`는 모듈 측 음악 및 음성 예제의 Go 바이너리만 만들며 호스트 voice runtime을 대신하지 않습니다.
 
 `build-voice`의 출력은 `bin/voice-runtime/runtime`과 `bin/voice-runtime/lib/`입니다. `CGO_ENABLED=1` 및 `-tags voice`로 선택한 구현에만 DAVE bridge를 포함하며, 필요한 native runtime library와 라이선스의 정확한 집합은 P5의 고정 의존성 계약을 따릅니다. 호스트 설치 프로그램이나 C++ toolchain 자체를 runtime bundle에 넣지 않습니다. 전체 bundle을 staging에서 완성한 뒤 게시하고 실패 시 기존 bundle을 보존합니다. native archive 무결성, ABI/header export 및 대상 Linux 배포판의 loader 호환성 검증 전에는 동작하는 voice 산출물이라고 표시하지 않습니다.
 
-`make build-all`은 일반 Go 유지 대상과 vendored SDK 예제를 포함하되 native voice target은 포함하지 않습니다. voice-enabled 산출물과 실제 backend 기능 협상은 P5/P6의 명시적 `build-voice` 통합 검증을 거쳐야 합니다. ignored 실험 helper 두 모듈은 현재 감사 목록에만 남기고 P6에서 폐기하며, fake SQL/helper 프로토콜을 생산 빌드에 넣거나 다시 구현하지 않습니다. `private.env`나 Discord 토큰을 빌드 입력으로 읽지 않으며 `make run`만 별도로 실행 동작을 가집니다. OCI 이미지와 모듈별 ffmpeg 또는 다운로드 도구 의존성은 P4/P6에서 정의하고, voice native 의존성의 정확한 source/toolchain 계약은 P5에서 정의합니다.
+`make build-all`은 로컬 Go 모듈 세 개와 일반/미디어 산출물을 포함하되 SDK 저장소의 예제 및 native voice target은 포함하지 않습니다. `make check-offline`은 같은 세 모듈의 유한 ordinary 시험과 Buf 생성 비교를 수행합니다. voice-enabled 산출물과 실제 backend 기능 협상은 P5/P6의 명시적 검증을 거쳐야 합니다. `private.env`나 Discord 토큰을 빌드 입력으로 읽지 않으며 `make run`만 별도로 실행 동작을 가집니다. OCI 이미지와 모듈별 ffmpeg 또는 다운로드 도구 의존성은 P4/P6에서 정의합니다.
+
+Native lock과 libdave patch는 공개 SDK의 [native-lock.json](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/native-lock.json) 및 [libdave.patch](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/libdave.patch)에 있습니다. 이 저장소는 EL9 builder와 packaging을 유지하며 `tools/sdk.py`로 해석한 source를 `/sdk`에 mount합니다. `make build-native`는 native 검사만 수행하며 application Go를 컴파일하지 않습니다.
 
 일반 모듈 및 sandbox fixture 이미지에는 digest로 고정한 distro 이미지의 CA bundle을 포함합니다. 읽기 전용 파일을 복사할 때 상위 디렉터리까지 `0444`로 만들지 않으며, 비루트 프로세스가 모든 상위 디렉터리를 통과할 수 있는 실행 권한을 보존합니다. 공개 모듈 이미지의 환경 설정에는 예약된 `TMPDIR`를 선언하지 않습니다. 호스트가 실제 quota mount인 `/var/lib/flexmodule/scratch`를 `TMPDIR`로 제공하며, media 이미지의 `HOME`과 `DENO_DIR`도 이 mount를 사용합니다. 이미지 빌드 단계에서만 쓰는 `TMPDIR`는 실행 시 scratch와 구분하고 최종 이미지 환경에 남기지 않습니다. 별도 호환 mount는 추가하지 않습니다.
 
@@ -159,10 +156,10 @@ REST API 변경은 없습니다. 외부 인터페이스는 Make 대상 및 현�
 | 명령 | 입력 및 산출물 | 실패 및 부작용 계약 |
 |---|---|---|
 | `make tools` | 기존 빌드 설정에 고정한 Buf와 두 생성기를 전용 디렉터리에 준비합니다. | 지정 버전 불일치 또는 설치 실패 시 실패하며 전역 PATH의 도구를 교체하지 않습니다. |
-| `make build` | voice 기능이 없는 `bin/runtime`과 `bin/test-module`을 만듭니다. | DAVE/native crypto/CGO bridge, 생성, 라이브 접속 및 미디어 도구 설치를 요구하거나 실행하지 않습니다. |
+| `make build` | voice 기능이 없는 `bin/runtime`, `bin/flexmodule-supervisor`와 `bin/test-module`을 만듭니다. | DAVE/native crypto/CGO bridge, 생성, 라이브 접속 및 미디어 도구 설치를 요구하거나 실행하지 않습니다. |
 | `make build-voice` | `bin/voice-runtime/runtime`과 `bin/voice-runtime/lib/`에 P5의 voice-enabled runtime 및 필요한 고정 native runtime libraries를 만듭니다. | 명시된 native toolchain, `CGO_ENABLED=1`, `-tags voice`가 필요합니다. 일반 runtime이나 fake handler로 대체하지 않으며 별도의 native 연결, voice 기능 협상 및 실제 암호화 통신 검증이 필요합니다. |
 | `make build-media` | `chatanium-musicbot`과 `voice-player-module`의 Go 바이너리를 명시적으로 빌드합니다. | ffmpeg/yt-dlp 실행, 다운로드, Discord 접속 또는 미디어 이미지 생성을 자동 수행하지 않습니다. |
-| `make build-all` | 일반 Go 유지 대상 모듈을 각각 빌드합니다. native voice target과 폐기 예정인 ignored helper 두 모듈은 제외합니다. | 포함된 유지 대상 중 하나라도 실패하면 전체 결과는 실패입니다. native voice 성공을 함께 주장하지 않으며 C++ 다운로드를 암묵적으로 실행하지 않습니다. |
+| `make build-all` | 로컬 Go 모듈 세 개를 각각 빌드합니다. SDK 저장소의 모듈 및 native voice target은 포함하지 않습니다. | 포함된 유지 대상 중 하나라도 실패하면 전체 결과는 실패입니다. native voice 성공을 함께 주장하지 않으며 C++ 다운로드를 암묵적으로 실행하지 않습니다. |
 | `make buf` | 고정된 도구로 Protobuf 파일을 임시 생성 후 게시합니다. | 생성 실패 전후에 기존 관리 파일을 잃지 않습니다. |
 | `make buf-check` | 같은 생성 결과와 저장된 파일을 비교합니다. | 차이가 있으면 실패하며 생성 파일을 수정하지 않습니다. |
 | `make clean` | 소유 목록에 기록된 빌드 출력만 제거합니다. | 소스, 미등록 파일, 모듈의 영속 데이터 및 비밀 파일은 삭제하지 않습니다. |
@@ -229,6 +226,8 @@ P1 전환 시 런타임, SDK 및 모든 예제의 import를 함께 옮기며 v1 
 
 ### 6-1. Milestones
 
+아래 단계 표는 2026-10-29 제안 당시의 계획을 보존합니다. 로컬 SDK 대체 및 여덟 모듈 표기는 당시 입력이며, 2026-10-31 전환 뒤 실제 모듈 목록과 공개 SDK 계약은 4.1절을 따릅니다.
+
 각 단계는 입력, 산출물 및 완료 조건을 자체적으로 설명하지만 모두 독립 배포 단계는 아닙니다. 마지막 단계는 앞선 빌드 및 생성 변경의 결과에 의존합니다.
 
 | Phase | Task | Estimated Duration | Owner |
@@ -242,7 +241,7 @@ P1 전환 시 런타임, SDK 및 모든 예제의 import를 함께 옮기며 v1 
 
 ### 6-2. Dependencies
 
-- 현재 저장소의 로컬 DiscordGo, Go 모듈 파일 및 Protobuf 소스가 기준 입력입니다. Go 최소 언어 버전 및 protobuf/gRPC 라이브러리를 이유 없이 함께 올리지 않습니다. 실제 컴파일러는 기준선 설정 시 지원되는 Go 릴리스로 선택하고 정확한 실행 버전을 별도로 고정합니다.
+- 현재 기준 입력은 공개 `github.com/chatanium/discordgo v0.30.0`, 소비 Go 모듈 파일 및 Protobuf 소스입니다. Go 최소 언어 버전 `1.27.0`과 실제 compiler `1.27.3`을 구분하며 정확한 도구 버전은 `tools/versions.mk`를 따릅니다.
 - 고정 도구의 배포 파일 또는 Go 모듈을 확보할 수 있는 개발 환경이 필요합니다. 이후 반복 빌드는 검증된 도구 캐시를 사용할 수 있습니다.
 - CGO를 실제 사용하는 모듈은 해당 C 빌드 도구를 명시적인 빌드 입력으로 가집니다. 바이너리 및 이미지에 필요한 실행 라이브러리는 P4/P6에서 별도로 기록합니다.
 - [P1](flexmodule-1-protocol-contracts.md)은 이 기준선 위에서 새 wire 계약을 고정합니다. [P2](flexmodule-2-domain-conversions.md)는 컴파일 수정 뒤의 전체 필드 및 값 보존을 담당합니다.
@@ -252,9 +251,9 @@ P1 전환 시 런타임, SDK 및 모든 예제의 import를 함께 옮기며 v1 
 ## 7. References
 
 - [현재 루트 모듈](../../go.mod), [현재 Makefile](../../Makefile), [현재 생성기 설정](../../proto/buf.gen.yaml), [현재 Buf 설정](../../proto/buf.yaml)
-- [로컬 DiscordGo 모듈](../../discordgo/go.mod), [음악 예제 모듈](../../chatanium-musicbot/go.mod), [음성 예제 모듈](../../voice-player-module/go.mod)
-- [linked_roles SDK 예제](../../discordgo/examples/linked_roles/go.mod), [voice_receive SDK 예제](../../discordgo/examples/voice_receive/go.mod)
-- [실험 helper 모듈](../../helper-service/go.mod), [실험 helper plugin 모듈](../../helper-service/plugin-go-grpc/go.mod)
+- [공개 DiscordGo 모듈](https://github.com/chatanium/discordgo/blob/v0.30.0/go.mod), [음악 예제 모듈](../../modules/music-bot/go.mod), [음성 예제 모듈](../../modules/audio-player/go.mod)
+- [linked_roles SDK 예제](https://github.com/chatanium/discordgo/blob/v0.30.0/examples/linked_roles/go.mod), [voice_receive SDK 예제](https://github.com/chatanium/discordgo/blob/v0.30.0/examples/voice_receive/go.mod)
+- 기존 helper 및 아래 v1 변환 경로는 2026-10-29 감사의 역사적 소스 근거이며 현재 빌드 입력이 아닙니다.
 - [현재 정방향 interaction 변환](../../shared/discord-v1/convert/struct2buf/interactions.go), [현재 역방향 interaction 변환](../../shared/discord-v1/convert/buf2struct/interactions.go)
 - [현재 component 변환](../../shared/discord-v1/convert/struct2buf/components.go), [현재 embed 변환](../../shared/discord-v1/convert/struct2buf/message.go), [현재 Discord schema](../../proto/discord-v1/discordgo.proto)
 - [protobuf 및 Go 생성기 v1.36.12 공식 모듈 정보](https://proxy.golang.org/google.golang.org/protobuf/@v/v1.36.12.info), [gRPC v1.85.0](https://proxy.golang.org/google.golang.org/grpc/@v/v1.85.0.info)

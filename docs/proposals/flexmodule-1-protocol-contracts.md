@@ -11,7 +11,7 @@
 
 ## 1. Summary
 
-FlexModule 런타임과 모듈을 함께 재빌드하는 v2 전환을 통해 수명주기, 실제 승인 권한, 이벤트, 자격증명 참조, 파일 전송의 공통 계약을 정의합니다. 기존 선언형 도메인 전체와 현재 로컬 DiscordGo가 제공하는 공식 봇 API 및 이벤트에서 도달하는 타입을 모두 다루되, 런타임 객체와 원문 자격증명은 명시적인 경계 타입으로 대체합니다. 코어는 Discord나 음악 기능을 알지 않으며, Discord 백엔드와 선택적 음성 기능은 동일한 인스턴스 소유권 및 취소 규칙을 따릅니다.
+FlexModule 런타임과 모듈을 함께 재빌드하는 v2 전환을 통해 수명주기, 실제 승인 권한, 이벤트, 자격증명 참조, 파일 전송의 공통 계약을 정의합니다. 기존 선언형 도메인 전체와 P0에 고정한 공개 DiscordGo가 제공하는 공식 봇 API 및 이벤트에서 도달하는 타입을 모두 다루되, 런타임 객체와 원문 자격증명은 명시적인 경계 타입으로 대체합니다. 코어는 Discord나 음악 기능을 알지 않으며, Discord 백엔드와 선택적 음성 기능은 동일한 인스턴스 소유권 및 취소 규칙을 따릅니다.
 
 ## 2. Background & Motivation
 
@@ -1033,18 +1033,20 @@ startup 30초, drain 10초, 이벤트 256개/32 MiB, 업로드의 확인된 기�
 
 ### 6-2. Dependencies
 
-- [P0 빌드 및 의존성 기준선](flexmodule-0-build-and-dependency-baseline.md): 최소 Go 언어 버전, 실제 컴파일러, protobuf 도구와 모든 모듈의 로컬 DiscordGo 선택을 일치시킵니다. 사용자가 요청한 전체 의존성 갱신을 반영한 버전과 SDK 소스를 최종 계약의 기준으로 삼습니다.
+- [P0 빌드 및 의존성 기준선](flexmodule-0-build-and-dependency-baseline.md): 최소 Go 언어 버전, 실제 컴파일러, protobuf 도구와 모든 모듈의 공개 `github.com/chatanium/discordgo v0.30.0` 선택을 일치시킵니다. 사용자가 요청한 전체 의존성 갱신을 반영한 버전과 SDK 소스를 최종 계약의 기준으로 삼습니다.
 - [P2 전체 도메인 변환](flexmodule-2-domain-conversions.md): 이 문서에서 고정한 DTO 및 경계 결과의 실제 양방향 변환을 구현합니다.
 - [P3 Discord 백엔드](flexmodule-3-discord-backend.md): 전체 typed 작업, 소유 command, 안전한 Gateway ingress, 자격증명 projection과 core upload/streaming multipart 구현을 담당합니다.
 - [P4 런타임과 격리](flexmodule-4-runtime-and-isolation.md): 인증된 broker principal, backend registry, 실제 grants, lifecycle, sandbox와 자원 회수를 제공합니다. P3 helper가 이 작업 전에 인증을 완료했다고 주장할 수 없습니다.
 - [P5 음성 job](flexmodule-5-voice-jobs.md): 선택적 playback/receive capability와 owned resource, 우선순위 constraints, 취소를 같은 core 계약에 맞춥니다.
 - [P6 예제와 검증](flexmodule-6-examples-and-validation.md): 일반 봇과 optional voice의 실제 호출 및 실패 경로를 통합하여 확인합니다.
-- hashicorp/go-plugin, grpc-go, protobuf well-known type, 현재 체크인된 DiscordGo source가 기술 의존성입니다. API 범위는 upstream 최신 SDK라는 이름으로 임의 확장하지 않습니다.
+- hashicorp/go-plugin, grpc-go, protobuf well-known type, P0의 공개 DiscordGo 모듈이 기술 의존성입니다. API 범위는 upstream 최신 SDK라는 이름으로 임의 확장하지 않습니다.
 - 현재 공식 Discord API 및 Gateway 문서는 인증, 폐지 경로, event 이름, intent와 숫자 제약 확인의 근거입니다. source 선언만으로 현재 원격 API의 성공 가능성을 보장하지 않습니다.
 
 ## 7. References
 
-### 현재 저장소 근거
+### 기존 감사의 저장소 근거
+
+아래 v1 및 로컬 SDK 경로는 2026-10-29 제안의 역사적 근거입니다. 2026-10-31 전환 뒤 현재 계약은 [proto/core-v2](../../proto/core-v2/), [shared/core-v2](../../shared/core-v2/), [shared/discord-v2](../../shared/discord-v2/)와 [공개 SDK v0.30.0](https://github.com/chatanium/discordgo/tree/v0.30.0)을 따릅니다.
 
 - [기존 core manifest, status, stage schema](../../proto/core-v1/hook.proto)
 - [기존 core config schema](../../proto/core-v1/helper.proto)

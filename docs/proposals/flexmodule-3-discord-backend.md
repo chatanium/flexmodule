@@ -11,7 +11,7 @@
 
 ## 1. Summary
 
-FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추가하고, 현재 로컬 DiscordGo가 제공하는 공식 봇 기능 전체를 형식이 지정된 Discord 어댑터로 제공합니다. 모든 요청은 인증된 모듈 인스턴스, 실제 부여된 capability, 리소스 범위와 수명 주기를 검사하며, 파일과 자격증명은 인스턴스에 귀속된 참조로만 전달합니다. 명령과 인터랙션의 소유권, 취소 가능한 외부 요청, 메모리 사용량이 파일 크기에 비례하지 않는 multipart 전송을 함께 정의합니다.
+FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추가하고, P0에 고정한 공개 DiscordGo가 제공하는 공식 봇 기능 전체를 형식이 지정된 Discord 어댑터로 제공합니다. 모든 요청은 인증된 모듈 인스턴스, 실제 부여된 capability, 리소스 범위와 수명 주기를 검사하며, 파일과 자격증명은 인스턴스에 귀속된 참조로만 전달합니다. 명령과 인터랙션의 소유권, 취소 가능한 외부 요청, 메모리 사용량이 파일 크기에 비례하지 않는 multipart 전송을 함께 정의합니다.
 
 ## 2. Background & Motivation
 
@@ -19,7 +19,7 @@ FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추
 
 기존 v1 감사에서 [Helper 스키마](../../proto/discord-v1/helper.proto)는 RPC 40개를 선언했고 [런타임 서버](../../shared/discord-v1/runtime/helper.go)는 18개를 구현하지 않았으며 일부 client에는 nil 성공 경로가 있었습니다. 당시 SDK 메서드 229개와 event row 73개는 감사 provenance로 보존하며 현재 API의 ceiling으로 사용하지 않습니다.
 
-현재 입력은 P0의 태그 없는 upstream commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`입니다. [API catalog](../../tools/protocol/inventory/source-api.json)의 source 메서드 232개는 canonical 152개, alias 43개, backend 내부 또는 상태 helper 13개, 제외 24개입니다. canonical은 REST 149개와 Gateway 3개이며 상태 계산 `UserChannelPermissions` 하나를 합쳐 SDK-derived Helper 작업 153개를 노출합니다. route 등록/해제와 운영자 credential binding 조회 3개 및 코어 파일 전송 RPC 2개는 이 SDK 집계와 구분합니다.
+현재 입력은 P0의 공개 `github.com/chatanium/discordgo v0.30.0`이며 upstream base `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`와 승인된 Gateway 및 native DAVE 변경을 포함합니다. [API catalog](../../tools/protocol/inventory/source-api.json)의 source 메서드 232개는 canonical 152개, alias 43개, backend 내부 또는 상태 helper 13개, 제외 24개입니다. canonical은 REST 149개와 Gateway 3개이며 상태 계산 `UserChannelPermissions` 하나를 합쳐 SDK-derived Helper 작업 153개를 노출합니다. route 등록/해제와 운영자 credential binding 조회 3개 및 코어 파일 전송 RPC 2개는 이 SDK 집계와 구분합니다.
 
 API root 59개, API named-type closure 204개, event closure 228개와 두 closure의 합집합 282개를 P2에 연결합니다. [event catalog](../../tools/protocol/inventory/source-events.json)는 74개 row 중 67개를 모듈에 전달합니다. 부록 A와 C의 229개/73개 표는 기존 `v0.29.0` source signature 및 줄 위치를 보존한 역사적 감사이며 현재 서명이나 최종 범위로 인용하지 않습니다.
 
@@ -31,7 +31,7 @@ API root 59개, API named-type closure 204개, event closure 228개와 두 closu
 - `ChannelMessagesPinned(channelID, before *time.Time, limit int, options...) -> *ChannelMessagePinsList`는 `GET /channels/{channel.id}/messages/pins`입니다. nil before는 query 생략, non-nil은 RFC3339이며 limit이 0 이하이면 생략합니다. 지정 limit은 공식 1~50 범위를 검증하고 서버 기본 50을 보존합니다. `Items []*MessagePin`, `HasMore`, 각 pin의 `PinnedAt` 및 `Message`를 보존하며 자동 전체 조회나 과거 `[]*Message` 반환으로 축소하지 않습니다. VIEW_CHANNEL 및 READ_MESSAGE_HISTORY에 따른 원격 결과를 grant와 구분합니다.
 - `GuildMembers`의 실제 `GuildID` 채움과 upstream REST 500/502/503/504 재시도 경로를 반영합니다. P3의 외부 부작용 재시도 비활성화 계약은 그대로 유지하며 새 upstream retry 동작을 암묵적으로 허용하지 않습니다.
 
-현재 [MultipartBodyWithJSON](../../discordgo/util.go)은 파일 `Reader`를 `bytes.Buffer`로 모두 복사하고 완성된 본문을 `[]byte`로 반환합니다. 따라서 파일을 디스크에 저장한 다음 기존 함수에 `Reader`만 전달해도 대용량 요청의 메모리 문제는 해결되지 않습니다. [REST 요청 경로](../../discordgo/restapi.go)는 전체 본문 바이트 배열을 받으며, 기본 [Session 설정](../../discordgo/discord.go)은 rate limit 재시도와 REST 재시도를 활성화합니다. 일부 메서드는 요청 context를 전달할 옵션도 받지 않습니다.
+2026-10-29 감사 당시 [MultipartBodyWithJSON](../../discordgo/util.go)은 파일 `Reader`를 `bytes.Buffer`로 모두 복사하고 완성된 본문을 `[]byte`로 반환했습니다. 따라서 파일을 디스크에 저장한 다음 기존 함수에 `Reader`만 전달해도 대용량 요청의 메모리 문제는 해결되지 않습니다. 당시 [REST 요청 경로](../../discordgo/restapi.go)는 전체 본문 바이트 배열을 받으며, 기본 [Session 설정](../../discordgo/discord.go)은 rate limit 재시도와 REST 재시도를 활성화했습니다. 일부 메서드는 요청 context를 전달할 옵션도 받지 않았습니다. 이 경로들은 전환 전 근거이며 현재 host HTTP 구현 위치는 `internal/backend/discord/http`입니다.
 
 기존 검토에서는 명령의 `DefaultMemberPermissions` 제거, 초기화와 콜백 오류 누락, 파일 및 patch 변환 손실을 확인했습니다. 실서비스 Discord 또는 격리 환경에서 이 제안의 구현을 검증한 상태는 아닙니다. 아래 수용 조건은 구현 이후 충족해야 하는 조건입니다.
 
@@ -98,7 +98,7 @@ HTTP와 Gateway는 백엔드 내부에서만 접근합니다. 런타임과 모�
 
 #### Discord wire 버전과 endpoint 초기화
 
-현재 로컬 [endpoint 선언](../../discordgo/endpoints.go)의 `APIVersion`은 `"9"`이고, `EndpointAPI`는 package 초기화 때 그 값으로 만들어집니다. 공식 [API versioning 문서](https://docs.discord.com/developers/reference.md#api-versioning)는 v9와 v10을 모두 available로 표시하므로 v9가 고장 났거나 사용할 수 없다고 설명하지 않습니다. 이 제안에서는 현재 attachment 수정 계약과 HTTP 경로를 하나의 기준으로 구현하기 위해 Discord HTTP API와 main Gateway 버전을 모두 `10`으로 선택합니다. 이는 기술적 전환 선택이며 사용자가 명시적으로 요청한 버전이라고 기록하지 않습니다. FlexModule 프로토콜 major `2` 및 P5의 Discord Voice Gateway `8`과는 서로 다른 번호입니다.
+2026-10-29 감사 당시 로컬 [endpoint 선언](../../discordgo/endpoints.go)의 `APIVersion`은 `"9"`였고, `EndpointAPI`는 package 초기화 때 그 값으로 만들어졌습니다. 공식 [API versioning 문서](https://docs.discord.com/developers/reference.md#api-versioning)는 v9와 v10을 모두 available로 표시하므로 v9가 고장 났거나 사용할 수 없다고 설명하지 않습니다. 이 제안에서는 현재 attachment 수정 계약과 HTTP 경로를 하나의 기준으로 구현하기 위해 Discord HTTP API와 main Gateway 버전을 모두 `10`으로 선택합니다. 이는 기술적 전환 선택이며 사용자가 명시적으로 요청한 버전이라고 기록하지 않습니다. FlexModule 프로토콜 major `2` 및 P5의 Discord Voice Gateway `8`과는 서로 다른 번호입니다.
 
 SDK의 API 버전 선언을 endpoint 변수 초기화 전에 `"10"`으로 변경하고, main Gateway 연결 URL도 명시적으로 `v=10`을 사용합니다. 초기화가 끝난 뒤 전역 `APIVersion`만 대입하여 이미 만들어진 endpoint와 버전이 갈라지게 하지 않습니다. 현재 `EndpointVoice`는 끝에 `/`가 있는 API base에 `/voice/`를 더하므로 중복 slash가 생깁니다. base 및 voice segment의 결합을 수정하여 `VoiceRegions`의 실제 요청 경로를 정확히 `/api/v10/voice/regions`로 만들고 redirect나 서버의 경로 정규화에 의존하지 않습니다.
 
@@ -864,11 +864,13 @@ Discord wire 버전 전환에는 별도 경로 fixture가 필요합니다. packa
 - [P5 음성 작업](flexmodule-5-voice-jobs.md): 선택 voice 기능과 동일 guild/channel 자원 정리의 연동입니다. 일반 봇 API의 필수 미디어 도구 의존성은 아닙니다.
 - [P6 예제 및 검증](flexmodule-6-examples-and-validation.md): 관리/명령/메시지와 선택 오디오 예제, 실제 환경 검증 및 운영 문서입니다.
 - Discord의 실제 봇 설치, application/guild 권한, privileged intent 설정 및 필요한 경우 운영자가 사전 설정한 사용자 credential이 필요합니다. 문서화한 grant만으로 Discord의 외부 승인이 생기지 않습니다.
-- gRPC/Protobuf, 로컬 DiscordGo 및 Go 표준 `context`, `io`, `net/http`, `mime/multipart`를 사용합니다. 임시 파일 저장소의 가용 공간, 필수 유한 운영자 한도와 영속 소유권 메타데이터 보관 위치가 준비되어야 합니다.
+- gRPC/Protobuf, 공개 DiscordGo 및 Go 표준 `context`, `io`, `net/http`, `mime/multipart`를 사용합니다. 임시 파일 저장소의 가용 공간, 필수 유한 운영자 한도와 영속 소유권 메타데이터 보관 위치가 준비되어야 합니다.
 
 ## 7. References
 
-### 관련 제안과 현재 소스
+### 관련 제안과 역사적 소스 근거
+
+현재 host 구현은 [internal/backend/discord](../../internal/backend/discord/), HTTP transport는 [internal/backend/discord/http](../../internal/backend/discord/http/)(package `http`, alias `discordhttp`)에 있습니다. 공개 모듈 API는 [shared/discord-v2](../../shared/discord-v2/)이며 SDK는 [공개 v0.30.0](https://github.com/chatanium/discordgo/tree/v0.30.0)입니다. 아래 v1 및 로컬 SDK 경로와 부록의 줄 위치는 2026-10-29 감사 근거로 보존하며 현재 checkout 위치로 사용하지 않습니다.
 
 - [P1 프로토콜 계약](flexmodule-1-protocol-contracts.md), [P2 도메인 변환](flexmodule-2-domain-conversions.md), [P4 런타임 및 격리](flexmodule-4-runtime-and-isolation.md), [P5 음성 작업](flexmodule-5-voice-jobs.md), [P6 예제 및 검증](flexmodule-6-examples-and-validation.md)
 - [현재 Helper proto](../../proto/discord-v1/helper.proto), [현재 Helper 서버와 stub client](../../shared/discord-v1/runtime/helper.go), [현재 Discord helper](../../shared/discord-v1/runtime/discord_helper.go)
