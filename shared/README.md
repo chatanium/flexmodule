@@ -93,6 +93,12 @@ partial/nullable DTOs retain their explicit null distinction. Optional SDK
 pointers stay nil, and null collection elements, malformed objects and invalid
 nullable/union variants are still rejected.
 
+SDK button conversion follows `Button.SKUID`'s reviewed `json:"sku_id,omitempty"`
+contract: an empty source SKU identifier is omitted, rather than sent as an
+invalid present empty identifier on ordinary buttons. Nonempty premium-button
+SKU identifiers are retained. Direct typed wire presence is not rewritten:
+explicitly empty values are not silently removed by the HTTP encoder.
+
 Interaction credential scopes retain the authenticated invoking `user_id` from
 guild `Member.User` or DM `User`, alongside the source interaction/application
 and present guild/channel IDs. Missing or conflicting invoking users fail before

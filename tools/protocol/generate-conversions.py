@@ -319,11 +319,15 @@ for n,t in D.items():
                 elif (d=='to' and wt.startswith('*') and w in {'string','bool','sint64','sint32','uint32','uint64','double'}) or (d=='from' and wt.startswith('*') and w in {'string','bool','sint64','sint32','uint32','uint64','double'}):
                     b=s.lstrip('*')
                     if d=='to':
+                        omit_empty=f.get('source_json_omit_empty',False)
+                        if omit_empty:
+                            if s!='string' or ',omitempty' not in f.get('source_json_tag',''):raise ValueError(('source omission contract',n,fn))
+                            emit(f'if {x} != "" {{')
                         if s.startswith('*'):emit(f'if {x} != nil {{');xx='(*'+x+')'
                         else:xx=x
                         value=fresh('optionalValue')
                         emit(f'var {value} {wiretype(w)}');baseassign(b,w,xx,value,d,p,parent);emit(f'{y}=&{value}')
-                        if s.startswith('*'):emit('}')
+                        if s.startswith('*') or omit_empty:emit('}')
                     else:
                         emit(f'if {x} != nil {{')
                         if s.startswith('*'):
@@ -353,6 +357,8 @@ artifact['custom_json_review']={
 def field_receipt(n,f):
     result={'source_field':f['source_field'],'wire_field':f['wire_field'],'classification':f['classification'],'decision':f['decision'],'safe_go_field':viewfield(n,f),'safe_go_type':fieldtype(n,f) if n in views else gtype(f['source_type']),'wire_type':f['wire_type'],'partial_wire_type':f.get('partial_wire_type'),'numeric_contract':f.get('numeric_contract'),'implementation':'static checked to/from field conversion; recursive typed ingress'}
     name=f['source_field']
+    if f.get('source_json_omit_empty'):
+        result['source_json_omit_empty']=True
     if (n,name) in CUSTOM_JSON_KEYS:
         result['trusted_ingress_json_key']=CUSTOM_JSON_KEYS[n,name]
         result['source_codec']='discordgo.'+n+'.UnmarshalJSON'

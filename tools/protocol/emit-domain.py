@@ -66,6 +66,9 @@ SPECIAL = {
     ("WebhookEdit", "Content"): (CORE + "NullableString", "safe-wrapper", "Absent/value/null; endpoint validates null support."),
     ("InteractionResponseData", "Content"): (CORE + "NullableString", "safe-wrapper", "Authoritative presence-aware view for message-update responses."),
 }
+# Reviewed SDK value-only JSON omissions, not a blanket omitempty policy:
+# explicit wire values and other empty/zero/false domain fields stay authoritative.
+SOURCE_JSON_OMIT_EMPTY = {("Button", "SKUID")}
 for owner in ["MessageEdit", "WebhookEdit", "InteractionResponseData"]:
     SPECIAL[owner, "Attachments"] = ("AttachmentEditList", "safe-wrapper", "Complete post-edit set; existing ID or zero-based new-file index; each new file exactly once; no hidden fetch/append.")
 for field in ["OldValue", "NewValue"]:
@@ -241,6 +244,11 @@ def field_mapping(owner, field, index):
         reason = "Exhaustive typed polymorphic oneof; unknown/empty/typed-nil variant is an error, no JSON fallback."
     presence = "not transported" if not wire else "absent/value/null" if wire.startswith((CORE + "Nullable", "DomainNullable")) else "absent/value"
     record = {"source_field": fname, "source_type": source, "source_location": f"{TYPES[owner]['File']}:{field['Line']}", "source_json_tag": field.get("Tag", ""), "classification": classification, "wire_field": wire_name if wire else None, "wire_type": wire, "field_number": index if wire else None, "presence": presence, "decision": reason}
+    if (owner, fname) in SOURCE_JSON_OMIT_EMPTY:
+        if source != "string" or ",omitempty" not in field.get("Tag", ""):
+            raise ValueError("Reviewed source omission contract changed: " + owner + "." + fname)
+        record["source_json_omit_empty"] = True
+        record["decision"] += " SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative."
     numeric = numeric_contract(source, owner, fname)
     if numeric:
         record["numeric_contract"] = numeric

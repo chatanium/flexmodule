@@ -7628,7 +7628,7 @@
           "classification": "direct",
           "wire_field": "skuid",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative."
         },
         {
           "legacy_field": "Style",
@@ -14460,13 +14460,14 @@
           "source_field": "SKUID",
           "wire_field": "skuid",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative.",
           "safe_go_field": "SKUID",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "ID",

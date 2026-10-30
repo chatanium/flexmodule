@@ -7,8 +7,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
+	discordv2 "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -228,5 +230,61 @@ func TestRequestMetadataSyntax(t *testing.T) {
 	options.ProtoReflect().SetUnknown([]byte{0x1a, 0})
 	if err := validateRequestOptions(options); err == nil {
 		t.Fatal("unknown request option accepted")
+	}
+}
+
+func TestInteractionButtonSKUJSONPresence(t *testing.T) {
+	for _, sku := range []string{"", "123456789012345678"} {
+		t.Run(sku, func(t *testing.T) {
+			button := discordgo.Button{Label: "Ordinary", Style: discordgo.PrimaryButton, CustomID: "ordinary"}
+			if sku != "" {
+				button = discordgo.Button{Style: discordgo.PremiumButton, SKUID: sku}
+			}
+			response, err := discordv2.InteractionResponseToProto(&discordv2.InteractionResponseView{
+				Type: discordgo.InteractionResponseChannelMessageWithSource,
+				Data: &discordv2.InteractionResponseDataView{
+					Components: []discordgo.MessageComponent{discordgo.ActionsRow{Components: []discordgo.MessageComponent{button}}},
+				},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			plan, err := buildRESTPlan("InteractionRespond", &wire.InteractionRespondRequest{
+				Interaction: &wire.Interaction{Id: apiFixturePointer("123"), AppId: apiFixturePointer("123"), CredentialRef: apiFixtureCredential("discord.interaction")},
+				Resp:        response,
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			var body struct {
+				Data struct {
+					Components []struct {
+						Components []struct {
+							SKU *string `json:"sku_id"`
+						} `json:"components"`
+					} `json:"components"`
+				} `json:"data"`
+			}
+			if err = json.Unmarshal(plan.Request.JSON, &body); err != nil {
+				t.Fatal(err)
+			}
+			if len(body.Data.Components) != 1 || len(body.Data.Components[0].Components) != 1 {
+				t.Fatal("component union shape changed")
+			}
+			got := body.Data.Components[0].Components[0].SKU
+			if (got != nil) != (sku != "") || got != nil && *got != sku {
+				t.Fatal("HTTP SKU omission or nonempty identifier changed")
+			}
+		})
+	}
+	// Direct typed input remains authoritative. Do not hide an explicitly empty
+	// identifier in the HTTP encoder as a workaround for SDK source omission.
+	value, err := discordJSON(&wire.Button{Skuid: apiFixturePointer("")})
+	if err != nil {
+		t.Fatal(err)
+	}
+	object, ok := value.(map[string]any)
+	if !ok || object["sku_id"] != "" {
+		t.Fatal("explicit typed empty SKU was silently omitted")
 	}
 }

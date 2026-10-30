@@ -8009,7 +8009,7 @@
           "classification": "direct",
           "wire_field": "skuid",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative."
         },
         {
           "legacy_field": "Style",
@@ -12281,7 +12281,8 @@
           "wire_type": "string",
           "field_number": 7,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative.",
+          "source_json_omit_empty": true,
           "owner": "Button",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"

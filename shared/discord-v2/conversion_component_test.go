@@ -44,6 +44,36 @@ func TestComponentInvalidVariantsAndTypedNilFailAtomically(t *testing.T) {
 	}
 }
 
+func TestButtonSKUOmissionMatchesSDKJSON(t *testing.T) {
+	for _, sku := range []string{"", "123456789012345678"} {
+		t.Run(sku, func(t *testing.T) {
+			source := discordgo.Button{Label: "Button", Style: discordgo.PrimaryButton, CustomID: "ordinary"}
+			if sku != "" {
+				source.Style = discordgo.PremiumButton
+				source.CustomID = ""
+				source.SKUID = sku
+			}
+			raw, err := json.Marshal(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var sdkJSON map[string]json.RawMessage
+			if err = json.Unmarshal(raw, &sdkJSON); err != nil {
+				t.Fatal(err)
+			}
+			component, err := discordv2.MessageComponentToProto(source)
+			if err != nil {
+				t.Fatal(err)
+			}
+			button := component.GetButton()
+			_, sourcePresent := sdkJSON["sku_id"]
+			if button == nil || (button.Skuid != nil) != sourcePresent || button.GetSkuid() != sku {
+				t.Fatal("SDK SKU omission or nonempty identifier was changed")
+			}
+		})
+	}
+}
+
 func TestModalLabelFileUploadAndResolvedAttachments(t *testing.T) {
 	src := &discordgo.ModalSubmitInteractionData{
 		CustomID:   "evidence",

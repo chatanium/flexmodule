@@ -3923,12 +3923,14 @@ func (c *conversion) toButton(src *discordgo.Button, path string) (*wire.Button,
 		dst.CustomId = &optionalValue406
 	}
 	{
-		var optionalValue407 string
-		if credentialURL(string(src.SKUID)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "SKUID"), "credential-bearing URL requires runtime policy")
+		if src.SKUID != "" {
+			var optionalValue407 string
+			if credentialURL(string(src.SKUID)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "SKUID"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue407 = string(src.SKUID)
+			dst.Skuid = &optionalValue407
 		}
-		optionalValue407 = string(src.SKUID)
-		dst.Skuid = &optionalValue407
 	}
 	{
 		var optionalValue408 int64
