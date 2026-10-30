@@ -63,6 +63,18 @@ var childResources = map[string]string{"guild": "guild_id", "guilds": "guild_id"
 // resourceGraph checks reviewed Discord resource relationships without parsing
 // arbitrary audit OldValue/NewValue or application JSON as authority selectors.
 func resourceGraph(raw json.RawMessage, kind string, parent map[string]string, grant *corewire.CapabilityGrant, depth int) error {
+	return (resourceGraphContext{grant: grant}).check(raw, kind, parent, depth, false)
+}
+
+// An interaction credential's invoking user describes authenticated context.
+// A returned message's author is data about that message, not a replacement
+// caller. Other returned relationships and user targets still require the grant.
+type resourceGraphContext struct {
+	grant        *corewire.CapabilityGrant
+	invokingUser string
+}
+
+func (g resourceGraphContext) check(raw json.RawMessage, kind string, parent map[string]string, depth int, messageAuthor bool) error {
 	if depth > 64 {
 		return unavailable("DISCORD_RESPONSE_INVALID")
 	}
@@ -75,7 +87,7 @@ func resourceGraph(raw json.RawMessage, kind string, parent map[string]string, g
 			return unavailable("DISCORD_RESPONSE_INVALID")
 		}
 		for _, item := range items {
-			if e := resourceGraph(item, kind, parent, grant, depth+1); e != nil {
+			if e := g.check(item, kind, parent, depth+1, messageAuthor); e != nil {
 				return e
 			}
 		}
@@ -107,10 +119,12 @@ func resourceGraph(raw json.RawMessage, kind string, parent map[string]string, g
 			if !snowflake(id) {
 				return unavailable("DISCORD_RESPONSE_INVALID")
 			}
-			ids[kind] = id
+			if !messageAuthor {
+				ids[kind] = id
+			}
 		}
 	}
-	if kind != "" && fields["id"] == nil && len(fields) > 0 {
+	if kind != "" && !messageAuthor && fields["id"] == nil && len(fields) > 0 {
 		keyed := true
 		for key := range fields {
 			if !snowflake(key) {
@@ -125,22 +139,22 @@ func resourceGraph(raw json.RawMessage, kind string, parent map[string]string, g
 					context[k] = v
 				}
 				context[kind] = key
-				if !grantAllows(grant, []*corewire.ResourceScope{scope(context)}) {
+				if !grantAllows(g.grant, []*corewire.ResourceScope{scope(context)}) {
 					return denied("RESOURCE_SCOPE_DENIED")
 				}
-				if e := resourceGraph(value, kind, context, grant, depth+1); e != nil {
+				if e := g.check(value, kind, context, depth+1, false); e != nil {
 					return e
 				}
 			}
 			return nil
 		}
 	}
-	if len(ids) != 0 && !grantAllows(grant, []*corewire.ResourceScope{scope(ids)}) {
+	if len(ids) != 0 && !grantAllows(g.grant, []*corewire.ResourceScope{scope(ids)}) {
 		return denied("RESOURCE_SCOPE_DENIED")
 	}
 	for name, childKind := range childResources {
 		if value, ok := fields[name]; ok {
-			if e := resourceGraph(value, childKind, ids, grant, depth+1); e != nil {
+			if e := g.check(value, childKind, ids, depth+1, g.invokingUser != "" && name == "author"); e != nil {
 				return e
 			}
 		}

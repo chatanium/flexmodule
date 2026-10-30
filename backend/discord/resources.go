@@ -394,6 +394,10 @@ func (h *Helper) authorize(ctx context.Context, operation string, plan *RESTPlan
 	if e != nil {
 		return nil, e
 	}
+	invokingUser := ""
+	if len(plan.Credentials) == 1 && plan.Credentials[0].Purpose == "discord.interaction" && len(targets) == 1 {
+		invokingUser = targets[0].GetSelector().ResourceIds["user_id"]
+	}
 	guild, channel, app := "", "", ""
 	for _, t := range plan.Targets {
 		switch t.Kind {
@@ -552,7 +556,7 @@ func (h *Helper) authorize(ctx context.Context, operation string, plan *RESTPlan
 			return nil, denied("RESOURCE_SCOPE_DENIED")
 		}
 	}
-	return &OperationContext{Context: context.WithValue(admission.Context(), relationshipCacheKey{}, cache), Principal: p, Admission: admission, Scopes: targets, credentialDestinations: plan.credentialDestinations}, nil
+	return &OperationContext{Context: context.WithValue(admission.Context(), relationshipCacheKey{}, cache), Principal: p, Admission: admission, Scopes: targets, credentialDestinations: plan.credentialDestinations, invokingUser: invokingUser}, nil
 }
 func (h *Helper) requireReadGrant(ctx context.Context, op string, targets []*corewire.ResourceScope) error {
 	if _, e := h.services.Authorizer.AwaitOperation(ctx, BackendID, op); e != nil {

@@ -91,6 +91,9 @@ type OperationContext struct {
 	Admission              *runtime.Admission
 	Scopes                 []*corewire.ResourceScope
 	credentialDestinations map[string]credentialDestination
+	// invokingUser is authenticated interaction context, not a returned message
+	// author's identity or a user supplied in helper request metadata.
+	invokingUser string
 }
 type Helper struct {
 	backend  *Backend

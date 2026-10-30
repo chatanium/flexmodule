@@ -224,7 +224,12 @@ func (h *Helper) validateResultScopes(operation string, raw []byte, op *Operatio
 	if resourceFreeOperation(operation) && operation != "UserGuilds" {
 		return nil
 	}
-	return resourceGraph(raw, resultKind(operation), commonResources(op.Scopes), grant, 0)
+	parent := commonResources(op.Scopes)
+	if op.invokingUser != "" {
+		parent["user_id"] = op.invokingUser
+	}
+	graph := resourceGraphContext{grant: grant, invokingUser: op.invokingUser}
+	return graph.check(raw, resultKind(operation), parent, 0, false)
 }
 
 // Credential records include the ingress-observed limit; absent data never
