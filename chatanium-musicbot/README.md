@@ -95,6 +95,8 @@ DRAIN rejects new work, passes its remaining deadline into cleanup, cancels prov
 
 `producer_cleanup_test.go` ensures failure before the first producer snapshot still cancels the already-created job, releases its artifact, preserves the original error, and does not loop the cleanup cancellation.
 
+Initial command callbacks retain the delivered typed application-command identity alongside the unchanged owner credential before either a defer or an early rejection response. Missing command data is rejected rather than filled with invented data. `interaction_response_test.go` exercises the actual SDK conversion boundary for defer-before-voice ordering, reporting a command-operation failure through the original response, and the draining rejection path.
+
 `config_test.go` checks that INIT accepts a development-user-constrained interaction event grant unchanged, rejects mismatched application/guild/channel destinations, and does not apply partial event matching to helper mutations.
 
 `scratch_test.go` checks nonliteral authenticated mounts, generated-file placement, sibling/persistent preservation during cleanup, and rejection of relative/aliased/symlink mount paths. `provider/scratch_test.go` uses an explicit child process that creates and closes real temporary, HOME, cache, and relative-output files; the parent verifies their bytes, containment in the nonstandard owned subtree, complete cleanup, and preservation of sibling storage. It does not assert environment/argument forwarding or require media tools.

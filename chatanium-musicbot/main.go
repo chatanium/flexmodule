@@ -234,7 +234,22 @@ func (m *musicBot) OnEvent(ctx context.Context, envelope *corewire.EventEnvelope
 	if partial.GetType().GetValue() != uint32(discordgo.InteractionApplicationCommand) {
 		return nil
 	}
-	interaction := &discord.InteractionHandle{Value: &discordgo.Interaction{ID: partial.GetId().GetValue(), AppID: partial.GetAppId().GetValue(), GuildID: partial.GetGuildId().GetValue(), ChannelID: partial.GetChannelId().GetValue(), Type: discordgo.InteractionApplicationCommand}, Credential: partial.GetCredentialRef().GetValue()}
+	command := partial.GetData().GetValue().GetApplicationCommand()
+	if command == nil {
+		return errors.New("application command data missing")
+	}
+	interaction := &discord.InteractionHandle{
+		Value: &discordgo.Interaction{
+			ID: partial.GetId().GetValue(), AppID: partial.GetAppId().GetValue(),
+			GuildID: partial.GetGuildId().GetValue(), ChannelID: partial.GetChannelId().GetValue(),
+			Type: discordgo.InteractionApplicationCommand,
+			Data: discordgo.ApplicationCommandInteractionData{
+				ID: command.GetId().GetValue(), Name: command.GetName().GetValue(),
+				CommandType: discordgo.ApplicationCommandType(command.GetCommandType().GetValue()),
+			},
+		},
+		Credential: partial.GetCredentialRef().GetValue(),
+	}
 	if interaction.Value.ID == "" || interaction.Credential == nil {
 		return errors.New("interaction identity or owner credential absent")
 	}
@@ -249,10 +264,6 @@ func (m *musicBot) OnEvent(ctx context.Context, envelope *corewire.EventEnvelope
 	m.mu.Unlock()
 	if !running {
 		return m.respond(ctx, interaction, "Music module is draining; no new work accepted.")
-	}
-	command := partial.GetData().GetValue().GetApplicationCommand()
-	if command == nil {
-		return m.respond(ctx, interaction, "Unsupported interaction payload.")
 	}
 	name, owned := m.commandIDs[interaction.Value.GuildID][command.GetId().GetValue()]
 	if !owned || name != command.GetName().GetValue() {
