@@ -151,6 +151,31 @@ native DAVE. Media images share a pinned tools layer with fixed executables:
 `/opt/flexmodule/yt-dlp/yt-dlp` onedir distribution. No host PATH lookup or runtime
 updater is used. DCA is not the v2 playback path.
 
+The host owns module temporary storage: it mounts scratch at
+`/var/lib/flexmodule/scratch` and injects `TMPDIR` at bootstrap. Module images
+must not declare `TMPDIR`, `FLEXMODULE_PLUGIN`, or any `PLUGIN_*` variable;
+the host rejects even matching image defaults before container creation.
+The media tools image defaults `HOME` to that scratch mount and `DENO_DIR` to
+its `deno` child, never `/scratch`. After authenticated INIT, media subprocesses
+explicitly use generated instance-owned scratch/cache children for HOME,
+TMPDIR, Deno cache and working directories rather than relying on image defaults.
+Builder-only `TMPDIR=/work/tmp` stays in the bind-mounted build workspace;
+it is not a permitted module-image runtime environment declaration.
+
+`make image-media` runs the complete build via `tools/build/images.sh media`
+and `tools/build/images.py`, including the pinned tool producer. Its completed
+tools-image context is `.tools/media/stage`, with payload in `stage/rootfs`;
+the tools layer is packaged with `tools/media/Tools.Dockerfile` before both
+module images inherit it through `tools/media/Module.Dockerfile`. For an
+image-environment-only correction, an operator can reuse a previously completed,
+verified staged payload and package it with the current Tools Dockerfile without
+recompiling unchanged tools. Do not reuse the stale staged `Dockerfile`;
+refresh changed source hashes in `opt/flexmodule/provenance/builder-source-sha256.json`
+and the payload inventory `files-sha256.json` under `stage/rootfs` before
+publication, retaining the actual tool-build provenance. Rebuild inheriting
+module images and record their new image IDs/registry digests; existing images
+do not acquire corrected environment declarations retroactively.
+
 Each executable embeds its own canonical `manifest.json`; the builder strictly
 parses it and copies the exact bytes into
 `org.chatanium.flexmodule.manifest.v2`. The runtime compares the authenticated

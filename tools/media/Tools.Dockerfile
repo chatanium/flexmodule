@@ -3,8 +3,7 @@ COPY rootfs/ /
 ENV LD_LIBRARY_PATH=/opt/flexmodule/lib \
     DENO_NO_UPDATE_CHECK=1 \
     DENO_NO_PROMPT=1 \
-    DENO_DIR=/scratch/deno \
-    HOME=/scratch \
-    TMPDIR=/scratch
+    DENO_DIR=/var/lib/flexmodule/scratch/deno \
+    HOME=/var/lib/flexmodule/scratch
 USER 65532:65532
 WORKDIR /opt/flexmodule
