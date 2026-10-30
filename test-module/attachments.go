@@ -37,7 +37,9 @@ func (b *GeneralBot) attachmentDemo(ctx context.Context, h *discord.InteractionH
 	second := []discord.FileAttachment{{Ref: ref, Filename: "second.png", Description: new("Same owner-bound completed ref, explicitly reused")}}
 	initial := []discord.AttachmentEditEntry{{Source: discord.NewFileIndex(0)}}
 	// The previously deferred original response gets a file via an explicit edit.
-	original, err := b.api.InteractionResponseEdit(ctx, h, &discord.WebhookEditPatch{Content: new("Uploaded original response"), Files: first, Attachments: &initial, Embeds: new(attachmentEmbed("sample.png")), AllowedMentions: noMentions()})
+	// Discord omits files referenced by embeds/components from Message.Attachments.
+	// Keep this first upload unreferenced so the retention edit uses a returned ID.
+	original, err := b.api.InteractionResponseEdit(ctx, h, &discord.WebhookEditPatch{Content: new("Uploaded original response"), Files: first, Attachments: &initial, AllowedMentions: noMentions()})
 	if err != nil {
 		return err
 	}
@@ -72,7 +74,7 @@ func (b *GeneralBot) attachmentDemo(ctx context.Context, h *discord.InteractionH
 	if _, err = b.api.FollowupMessageEdit(ctx, h, followup.ID, &discord.WebhookEditPatch{Content: new("Follow-up edited with explicit clear"), Embeds: &emptyEmbeds, Components: &emptyComponents, Attachments: &emptyAttachments, AllowedMentions: noMentions()}); err != nil {
 		return err
 	}
-	message, err := b.api.ChannelMessageSendComplex(ctx, h.Value.ChannelID, &discord.MessageSendView{Content: "Ordinary message with explicit upload ref", Embeds: attachmentEmbed("sample.png"), Files: first, Components: func() []discordgo.MessageComponent {
+	message, err := b.api.ChannelMessageSendComplex(ctx, h.Value.ChannelID, &discord.MessageSendView{Content: "Ordinary message with explicit upload ref", Files: first, Components: func() []discordgo.MessageComponent {
 		if b.forms {
 			return formComponents()
 		}

@@ -192,8 +192,15 @@ instance admission, credential purpose/expiry, and Discord permissions.
   original response, a follow-up, and an ordinary channel message, then deletes
   only its demonstration messages. Both response and ordinary message edits use
   a complete retained-ID/new-file-index-**0** attachment set and matching
-  `attachment://filename` embeds. Empty content is demonstrated while a real
-  embed/file remains; subsequent edits clear embeds/components/attachments with
+  `attachment://filename` embeds.
+  The initial original/ordinary uploads are not referenced by embeds: Discord
+  returns only files **not referenced in embeds or components** in
+  [`Message.attachments`](https://docs.discord.com/developers/resources/message#message-object-message-structure).
+  This makes their actual returned attachment IDs available for retention;
+  the following retain-and-add edits embed the newly added `second.png`.
+  Embedded attachment IDs are never inferred from CDN URLs or fabricated.
+  Empty content is demonstrated while a real embed/file remains; subsequent edits
+  clear embeds/components/attachments with
   explicit empty lists while retaining nonempty text, because Discord rejects
   an entirely empty message. Follow-up edit/delete are separate real operations.
   The upload is deleted explicitly and again during cleanup, exercising finite

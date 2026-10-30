@@ -84,6 +84,14 @@ func TestAttachmentEditIncludesRetainedIDAndExplicitNewZero(t *testing.T) {
 	if _, err = retainedAndNew(&discordgo.Message{}); err == nil {
 		t.Fatal("missing remote attachment ID invented")
 	}
+	// An embedded upload can legitimately have an empty attachment list. Its
+	// image URL is not authority to invent an attachment ID for a later edit.
+	if _, err = retainedAndNew(&discordgo.Message{
+		Attachments: []*discordgo.MessageAttachment{},
+		Embeds:      []*discordgo.MessageEmbed{{Image: &discordgo.MessageEmbedImage{URL: "https://cdn.discordapp.com/attachments/100/200/sample.png"}}},
+	}); err == nil {
+		t.Fatal("embedded image URL became a synthetic attachment ID")
+	}
 }
 func TestScopedGrantDoesNotBecomeWildcard(t *testing.T) {
 	grants := []*corewire.CapabilityGrant{{Name: "test", ResourceScopes: []*corewire.ResourceScope{{SelectorKind: &corewire.ResourceScope_Selector{Selector: &corewire.ResourceSelector{ResourceIds: map[string]string{"guild_id": "100", "channel_id": "200"}}}}}}}
