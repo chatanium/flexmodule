@@ -15,11 +15,21 @@ FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추
 
 ## 2. Background & Motivation
 
-### 확인된 현재 상태
+### 기존 감사와 현재 source 범위
 
-현재 [Helper 스키마](../../proto/discord-v1/helper.proto)는 40개 RPC를 선언하지만, [런타임 서버](../../shared/discord-v1/runtime/helper.go)는 그중 18개를 구현하지 않아 상속된 `Unimplemented` 응답을 반환합니다. 같은 파일의 `HelperClientImpl`에는 실제 호출 없이 `nil` 또는 `nil, nil`을 반환하는 구현도 있습니다. 이 제안은 이 18개만 채우는 작업이 아닙니다. 전체 로컬 `Session` 공개 메서드 229개를 분류하여 공식 봇 작업, 편의 함수, 백엔드 내부 기능, 제외 기능을 모두 배정합니다.
+기존 v1 감사에서 [Helper 스키마](../../proto/discord-v1/helper.proto)는 RPC 40개를 선언했고 [런타임 서버](../../shared/discord-v1/runtime/helper.go)는 18개를 구현하지 않았으며 일부 client에는 nil 성공 경로가 있었습니다. 당시 SDK 메서드 229개와 event row 73개는 감사 provenance로 보존하며 현재 API의 ceiling으로 사용하지 않습니다.
 
-분류 결과는 정규 봇 RPC 149개(REST 146개와 Gateway 3개), 편의 alias 43개, 백엔드 내부 또는 상태 도우미 13개, 제외 24개입니다. 내부 또는 상태 도우미 가운데 `UserChannelPermissions` 하나는 형식이 지정된 상태 계산 RPC로 유지하므로 SDK에서 도출한 서로 다른 공개 작업은 150개입니다. 여기에 이 제안에서 정의하는 인터랙션 경로 등록 및 해제와 사전 설정 자격증명 참조 조회를 추가합니다. 코어 파일 전송 RPC 두 개는 Discord 서비스에 포함하지 않습니다.
+현재 입력은 P0의 태그 없는 upstream commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`입니다. [API catalog](../../tools/protocol/inventory/source-api.json)의 source 메서드 232개는 canonical 152개, alias 43개, backend 내부 또는 상태 helper 13개, 제외 24개입니다. canonical은 REST 149개와 Gateway 3개이며 상태 계산 `UserChannelPermissions` 하나를 합쳐 SDK-derived Helper 작업 153개를 노출합니다. route 등록/해제와 운영자 credential binding 조회 3개 및 코어 파일 전송 RPC 2개는 이 SDK 집계와 구분합니다.
+
+API root 59개, API named-type closure 204개, event closure 228개와 두 closure의 합집합 282개를 P2에 연결합니다. [event catalog](../../tools/protocol/inventory/source-events.json)는 74개 row 중 67개를 모듈에 전달합니다. 부록 A와 C의 229개/73개 표는 기존 `v0.29.0` source signature 및 줄 위치를 보존한 역사적 감사이며 현재 서명이나 최종 범위로 인용하지 않습니다.
+
+### 현재 source API delta
+
+- `GuildRole(guildID, roleID, options...) -> *Role`은 `GET /guilds/{guild.id}/roles/{role.id}`이며 guild와 role scope를 함께 검사합니다.
+- `GuildRoleMemberCounts(guildID, options...) -> map[string]uint64`는 `GET /guilds/{guild.id}/roles/member-counts`입니다. role ID key와 uint64 count를 보존하며 원격 응답에 없는 `@everyone`을 추가하지 않습니다.
+- `UserVoiceState(guildID, userID, options...) -> *VoiceState`는 `GET /guilds/{guild.id}/voice-states/{user.id}`입니다. `@me`는 호스트 봇이며 임의 인증 주체가 아닙니다. guild/user와 실제 channel 관계를 확인하고 연결된 대상에 대한 봇의 channel connect 권한 조건을 적용합니다. 반환 `SessionID`는 제거하며 playback/receive나 transport 접근 권한을 주지 않습니다.
+- `ChannelMessagesPinned(channelID, before *time.Time, limit int, options...) -> *ChannelMessagePinsList`는 `GET /channels/{channel.id}/messages/pins`입니다. nil before는 query 생략, non-nil은 RFC3339이며 limit이 0 이하이면 생략합니다. 지정 limit은 공식 1~50 범위를 검증하고 서버 기본 50을 보존합니다. `Items []*MessagePin`, `HasMore`, 각 pin의 `PinnedAt` 및 `Message`를 보존하며 자동 전체 조회나 과거 `[]*Message` 반환으로 축소하지 않습니다. VIEW_CHANNEL 및 READ_MESSAGE_HISTORY에 따른 원격 결과를 grant와 구분합니다.
+- `GuildMembers`의 실제 `GuildID` 채움과 upstream REST 500/502/503/504 재시도 경로를 반영합니다. P3의 외부 부작용 재시도 비활성화 계약은 그대로 유지하며 새 upstream retry 동작을 암묵적으로 허용하지 않습니다.
 
 현재 [MultipartBodyWithJSON](../../discordgo/util.go)은 파일 `Reader`를 `bytes.Buffer`로 모두 복사하고 완성된 본문을 `[]byte`로 반환합니다. 따라서 파일을 디스크에 저장한 다음 기존 함수에 `Reader`만 전달해도 대용량 요청의 메모리 문제는 해결되지 않습니다. [REST 요청 경로](../../discordgo/restapi.go)는 전체 본문 바이트 배열을 받으며, 기본 [Session 설정](../../discordgo/discord.go)은 rate limit 재시도와 REST 재시도를 활성화합니다. 일부 메서드는 요청 context를 전달할 옵션도 받지 않습니다.
 
@@ -35,7 +45,7 @@ FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추
 
 ### 3.1 Goals
 
-- [ ] 229개 로컬 메서드 모두에 정규 작업, 정확한 alias 매핑, 내부 전용 또는 제외 사유를 지정하고, 허용한 작업 전체에 동작하는 서버와 SDK를 제공합니다.
+- [ ] 현재 source 메서드 232개 모두에 정규 작업, 정확한 alias 매핑, 내부 전용 또는 제외 사유를 지정하고, 허용한 작업 전체에 동작하는 서버와 SDK를 제공합니다.
 - [ ] 멤버, 역할, 채널, 메시지, 감사 로그, 모더레이션, 스레드, 예약 이벤트, 온보딩, webhook, 명령, 투표, 수익화 및 봇용 Gateway 작업을 빠짐없이 연결합니다.
 - [ ] 모든 RPC에서 인증된 인스턴스와 actual grants, 대상 리소스, 인스턴스 상태를 확인하고 Discord 자체 권한과 구분합니다.
 - [ ] 토큰 매개변수와 토큰을 포함한 응답을 목적이 제한된 `CredentialRef` 및 명시적 SDK handle로 대체합니다.
@@ -129,6 +139,8 @@ SDK의 API 버전 선언을 endpoint 변수 초기화 전에 `"10"`으로 변경
 
 필수 capability 미승인은 활성화를 막고 선택 capability 미승인은 actual grants에 반영합니다. Discord guild 내 사용자 역할이나 `DefaultMemberPermissions`는 이 grant를 대체하지 않습니다. 반대로 FlexModule grant가 있어도 Discord의 봇 권한 부족, 역할 계층, endpoint 제약에 따른 거부는 그대로 발생할 수 있습니다.
 
+`INTERACTION_CREATE`의 사용자 범위는 최상위 `member.user.id` 또는 DM의 `user.id`로 확인한 호출 사용자를 유지합니다. component나 modal 이벤트에 포함된 원본 메시지의 `author.id`는 메시지 작성자 정보이며 호출 사용자를 대체하지 않습니다. 이 구분은 interaction credential로 수행한 작업의 메시지 반환값에도 동일하게 적용합니다. 작성자 ID의 형식, guild/channel/application/message 대상과 그 밖의 사용자 관계는 기존 grant 검사를 그대로 거칩니다. 일반 메시지 등 다른 이벤트에는 이 구분을 적용하지 않으며 작성자의 사용자 범위를 계속 검사합니다. 같은 인스턴스에서 클릭하든 재시작 전 메시지를 클릭하든 새 interaction의 호출 사용자와 현재 경로 소유권 및 실제 grant로 전달 여부를 판단하며, 이전 메시지를 만든 인스턴스의 로컬 세션을 요구하지 않습니다.
+
 `UserChannelPermissions`는 REST endpoint가 아니라 Discord 상태 계산 도우미입니다. 승인된 channel의 guild, 역할, member와 permission overwrite snapshot을 사용하며 누락 자료의 `Channel`, `Guild`, `GuildMember` 조회에는 필요한 grant, 범위와 context를 다시 적용합니다. 자료가 불완전하거나 추가 조회를 허용받지 못하면 실패합니다. 결과는 10진수 permission mask이며 캐시 시점의 계산값이지 현재의 원격 작업 허가증이나 FlexModule capability가 아닙니다.
 
 #### 4.3.2 스트리밍 업로드와 quota
@@ -186,7 +198,7 @@ stateDiagram-v2
 
 1. 모든 파일 참조의 owner, 상태, 크기를 검증하고 각 읽기 lease를 얻습니다. 하나라도 실패하면 얻은 lease를 모두 해제하고 외부 요청을 보내지 않습니다.
 2. 해당 endpoint 및 destination의 실제 업로드 한도를 적용합니다. 일반 문서의 기본 파일당 한도는 20 MiB이며, Create Message의 전체 요청 한도 25 MiB는 multipart 경계와 JSON을 포함합니다. 첨부 개수는 해당 메시지 API의 최대 10개 제약을 적용합니다. interaction은 받은 `attachment_size_limit`을 보존하여 해당 interaction에 적용합니다. 알려진 destination의 한도를 사용하되 없는 범용 capability 조회 API를 만들어 가정하지 않습니다. 알려지지 않은 상향 한도를 500 MiB로 추정하지 않으며 Discord의 최종 거부도 구조화된 오류로 전달합니다.
-3. 유한한 크기의 `payload_json`, part 헤더 및 고정 boundary를 정합니다. 파일 이름의 CR/LF/NUL과 잘못된 MIME을 거부하고 헤더 매개변수를 올바르게 인코딩합니다. 파일명을 호스트 경로나 원시 헤더로 붙이지 않습니다. Go 1.24에서 제공되는 API만 사용하며 Go 1.25의 `multipart.FileContentDisposition`에 의존하지 않습니다.
+3. 유한한 크기의 `payload_json`, part 헤더 및 고정 boundary를 정합니다. 파일 이름의 CR/LF/NUL과 잘못된 MIME을 거부하고 헤더 매개변수를 올바르게 인코딩합니다. 파일명을 호스트 경로나 원시 헤더로 붙이지 않습니다. P0의 Go 1.27.0 floor 및 고정 compiler 1.27.3에 맞는 API를 사용하며 이전 1.24 floor를 현재 제약으로 남기지 않습니다.
 4. 같은 boundary와 동일한 헤더 직렬화 규칙으로 multipart 구조 바이트 수를 계산하고 파일 크기를 더하여 정확한 `Content-Length`를 얻습니다. 계산 단계에서는 파일 본문을 읽지 않으며 정수 overflow를 검사합니다. bounded JSON과 헤더를 제외한 파일 전체를 `[]byte`로 생성하지 않습니다.
 5. `io.Pipe`와 `multipart.Writer` 또는 동일한 특성의 reader 조합으로 본문을 만듭니다. 각 spool reader를 처음부터 열어 제한된 copy buffer로 전송합니다. 파일 크기가 증가해도 본문 조립의 메모리 상한은 증가하지 않아야 합니다.
 6. RPC context 취소는 rate-limit 대기, file reader, pipe 양 끝, writer와 HTTP 요청에 모두 전파합니다. HTTP가 먼저 실패하면 writer를 해제하고, writer가 먼저 실패하면 HTTP 본문을 종료합니다. 모든 producer가 끝난 뒤 lease를 해제합니다.
@@ -263,7 +275,7 @@ Gateway 요청 성공은 write 성공이며 모든 chunk의 도착을 의미하�
 
 이벤트는 [P1](flexmodule-1-protocol-contracts.md)의 allowlisted typed `EventEnvelope`로만 인코딩합니다. 부분 update의 존재성을 SDK zero value로 잃기 전에 호스트에서 보존하고, 실제로 있을 때만 `BeforeUpdate`/`BeforeDelete` snapshot을 제공합니다. 공식 `STAGE_INSTANCE_CREATE`, `STAGE_INSTANCE_DELETE`, `STAGE_INSTANCE_UPDATE`가 실제 등록 이름이 되도록 현재 로컬 `STAGE_INSTANCE_EVENT_*` 이름과 생성 경로를 함께 수정합니다. 기존 오타를 alias로 유지하지 않습니다.
 
-READY는 안전한 snapshot만 전달합니다. raw event, 세션 재개 정보, voice server credential 및 SDK 내부 synthetic control 이벤트를 모듈에 전달하지 않습니다. 일반 `VoiceStateUpdate` 관측은 재생 권한과 별도 기능이며 원시 voice join이나 channel 이동 권한을 부여하지 않습니다. 이벤트 수용, 순서, 메모리 상한과 drain은 P4를 따르고, 하나의 느린 모듈이 다른 모듈의 수신을 막지 않도록 합니다.
+READY는 안전한 snapshot만 전달하며 `SessionID`, `Shard`, `ResumeGatewayURL`을 제거합니다. raw event, voice server credential 및 synthetic control 이벤트를 전달하지 않습니다. 새 `MESSAGE_REACTION_REMOVE_EMOJI`를 포함한 67개 projection은 P1의 정확한 before snapshot 타입과 intent를 따릅니다. 일반 `VoiceStateUpdate` 및 REST `UserVoiceState`의 안전한 상태 관측은 playback/receive와 별도 기능이며 원시 join이나 channel 이동 권한을 주지 않습니다. 이벤트 수용, 순서, 메모리 상한과 drain은 P4를 따릅니다.
 
 ## 5. API Design
 
@@ -398,6 +410,7 @@ type DiscordHelper interface {
     UserUpdate(ctx context.Context, req *UserUpdateRequest) (*UserUpdateResponse, error)
     UserChannelCreate(ctx context.Context, req *UserChannelCreateRequest) (*UserChannelCreateResponse, error)
     UserGuilds(ctx context.Context, req *UserGuildsRequest) (*UserGuildsResponse, error)
+    UserVoiceState(ctx context.Context, req *UserVoiceStateRequest) (*UserVoiceStateResponse, error)
     UserChannelPermissions(ctx context.Context, req *UserChannelPermissionsRequest) (*UserChannelPermissionsResponse, error)
     Guild(ctx context.Context, req *GuildRequest) (*GuildResponse, error)
     GuildPreview(ctx context.Context, req *GuildPreviewRequest) (*GuildPreviewResponse, error)
@@ -421,6 +434,8 @@ type DiscordHelper interface {
     GuildChannelsReorder(ctx context.Context, req *GuildChannelsReorderRequest) (*emptypb.Empty, error)
     GuildInvites(ctx context.Context, req *GuildInvitesRequest) (*GuildInvitesResponse, error)
     GuildRoles(ctx context.Context, req *GuildRolesRequest) (*GuildRolesResponse, error)
+    GuildRole(ctx context.Context, req *GuildRoleRequest) (*GuildRoleResponse, error)
+    GuildRoleMemberCounts(ctx context.Context, req *GuildRoleMemberCountsRequest) (*GuildRoleMemberCountsResponse, error)
     GuildRoleCreate(ctx context.Context, req *GuildRoleCreateRequest) (*GuildRoleCreateResponse, error)
     GuildRoleEdit(ctx context.Context, req *GuildRoleEditRequest) (*GuildRoleEditResponse, error)
     GuildRoleReorder(ctx context.Context, req *GuildRoleReorderRequest) (*GuildRoleReorderResponse, error)
@@ -572,7 +587,7 @@ type DiscordHelper interface {
 - `WebhookThreadExecuteResponse.value`는 `wait=false`의 정상적인 무본문 응답에서 미지정일 수 있습니다. `wait=true`의 응답을 임의의 `nil, nil`로 바꾸지 않습니다.
 - `GuildMemberNickname`은 `user_id=@me`의 별도 경로와 빈 닉네임 의미를 보존하므로 일반 member edit alias로 합치지 않습니다.
 - `ChannelMessageEditComplexRequest`는 수정할 channel/message ID와 patch를 보존하며, 중복된 ID 필드가 있다면 서로 불일치하는 요청을 거부합니다.
-- `UserChannelPermissionsResponse.permissions`는 10진수 문자열이고 RPC 경로의 성격은 상태 계산입니다. Discord REST endpoint를 만든 것으로 설명하지 않습니다.
+- `UserChannelPermissionsResponse.value`는 P1의 공통 응답 규칙을 따르는 10진수 문자열입니다. RPC 경로의 성격은 상태 계산이며 Discord REST endpoint를 만든 것으로 설명하지 않습니다.
 
 민감한 매개변수의 규범 Go 계약은 다음과 같습니다. 타입의 필드는 P1/P2의 wire DTO와 동일한 의미를 가집니다. 파일 입력은 P2가 정의한 단일 공용 `FileAttachment{Ref, Filename, Description}`를 그대로 사용하며, `Ref`를 wire `uploaded_file_ref`로 매핑합니다. 이 문서에서 다른 필드명의 동명 타입을 다시 정의하지 않습니다.
 
@@ -728,6 +743,8 @@ GetProvisionedCredentialRef(binding_name):
 | Gateway: `UpdateStatusComplex`, `RequestGuildMembers`, `RequestGuildMembersList` | presence 소유권, active intent, per-guild scope와 nonce 상관관계, context가 적용된 write를 확인합니다. write 성공과 청크/상태의 원격 완료를 구분합니다. |
 | 상태 helper: `UserChannelPermissions` | 완전 캐시, 일부 누락, nil 상태, 조회 실패를 구분합니다. Discord permission 계산을 runtime grant나 최신 원격 허가로 사용하지 않습니다. |
 
+새 조회 작업 `GuildRole`, `GuildRoleMemberCounts`, `UserVoiceState` 및 변경된 `ChannelMessagesPinned`에는 위 current-source delta의 route, 모든 인자, 응답 shape와 보안 조건을 추가 수용 조건으로 적용합니다. 나머지 모든 작업과 동일하게 실제 typed handler까지 검증하며 signature만 추가한 상태를 완료로 보지 않습니다.
+
 각 정규 작업의 공통 수용 조건은 다음과 같습니다.
 
 1. 해당 메서드의 정확한 route, HTTP/Gateway 동작, path/query/payload 필드를 기록하는 제어된 transport에서 요청과 결과를 확인합니다. 단순히 `Unimplemented`가 없다는 검사로 대체하지 않습니다.
@@ -825,9 +842,9 @@ error string에 원본 HTTP 요청, 전체 Discord 오류 body나 URL을 연결�
 
 | Phase | Task | Estimated Duration | Owner |
 |---|---|---|---|
-| Phase 1 | P0 빌드 기준과 P1 계약을 입력으로 229개 소스 메서드, 150개 SDK 기반 정규 작업, alias와 제외를 고정합니다. 모든 tuple/payload/결과 타입 및 credential/file 예외가 request/response와 연결되고 새 관리 API까지 생성된 서비스 목록에 들어가야 완료입니다. | 미정 | 미정 |
+| Phase 1 | P0 빌드 기준과 P1 계약을 입력으로 현재 source 메서드 232개, SDK-derived typed 작업 153개, alias와 제외를 고정합니다. 모든 tuple/payload/결과 타입 및 credential/file 예외가 request/response와 연결되고 새 관리 API까지 생성된 서비스 목록에 들어가야 완료입니다. | 미정 | 미정 |
 | Phase 2 | P4의 인증 principal과 quota/cleanup 인터페이스를 입력으로 core FileTransfer, private spool, 예약 계수와 lease/tombstone 상태를 구현합니다. 정확한 기본 상한, EOF/취소, delete/expire/stop 경쟁, 회수 직후 반복 삭제 성공과 원래 만료 뒤 실패, host/instance 레코드 상한 및 zero-byte 누적 거부, 유효 tombstone 조기 퇴거 금지, 실제 회수 전 계수 유지와 이전 인스턴스 참조 거부가 모두 충족되어야 완료입니다. | 미정 | 미정 |
-| Phase 3 | P2의 전체 DTO 변환과 P4의 Authorize를 입력으로 146개 REST, 3개 Gateway 및 상태 helper를 실제 어댑터에 연결합니다. 각 작업의 정상 요청/응답, 모든 인자, 실패, scope 거부와 context 취소가 확인되고 stub/상속 Unimplemented가 없어야 완료입니다. | 미정 | 미정 |
+| Phase 3 | P2의 전체 DTO 변환과 P4의 Authorize를 입력으로 REST 149개, Gateway 3개 및 상태 helper 1개를 실제 어댑터에 연결합니다. 각 작업의 정상 요청/응답, 모든 인자, 실패, scope 거부와 context 취소가 확인되고 stub/상속 Unimplemented가 없어야 완료입니다. | 미정 | 미정 |
 | Phase 4 | 파일 lease와 typed payload를 입력으로 bounded multipart transport, endpoint별 한도, complete attachment edit list, 오류 projection과 재시도 비활성화를 구현합니다. 모든 파일 지원 작업에서 메모리 상한과 reader 재개방, producer 취소, 새 index 0과 기존 ID 혼합, absent/clear 구분, 누락/중복 index 및 metadata 충돌 거부가 충족되어야 완료입니다. | 미정 | 미정 |
 | Phase 5 | 인증과 실제 API 어댑터를 입력으로 credential projection/사전 설정 binding, command ownership, route 등록/해제와 nonce 상관관계를 통합합니다. 다른 owner 충돌, 재시작 후 소유권, callback 중복, scope 재검사와 원격 결과 불명 상태가 명세대로 처리되어야 완료입니다. | 미정 | 미정 |
 | Phase 6 | 전체 구현을 P4 수명 주기와 P5 선택 음성 기능에 통합하고 모든 기존 호출자를 v2로 전환합니다. 구버전 경로/가짜 client를 제거하고 API별 수용 결과, live Discord 조건과 운영자 설정을 P6 예제 및 회귀 문서에 반영해야 완료입니다. | 미정 | 미정 |
@@ -838,7 +855,7 @@ Discord wire 버전 전환에는 별도 경로 fixture가 필요합니다. packa
 
 ### 6-2. Dependencies
 
-- [P0 빌드 및 의존성 기준](flexmodule-0-build-and-dependency-baseline.md): Go 1.24 기준, 고정된 로컬 DiscordGo와 protobuf 도구 체인입니다.
+- [P0 빌드 및 의존성 기준](flexmodule-0-build-and-dependency-baseline.md): Go floor 1.27.0, compiler 1.27.3, 고정 DiscordGo source와 최신 protobuf/gRPC 도구 체인입니다.
 - [P1 프로토콜 계약](flexmodule-1-protocol-contracts.md): `core-v2`/`discord-v2`, typed DTO, 참조, ErrorDetail, context와 event envelope 계약입니다.
 - [P2 도메인 변환](flexmodule-2-domain-conversions.md): 기존 선언 전체와 새 API에서 도달하는 도메인 타입의 양방향 변환, patch 존재성 및 live handle 경계입니다.
 - [P4 런타임 및 격리](flexmodule-4-runtime-and-isolation.md): broker principal, actual grants, resource scope, 실행 상태, drain work-ref, 호스트 secret 설정, 격리된 spool 접근 및 정리입니다. P3 어댑터가 먼저 완성되어도 이 검증 없이 안전하게 실행 가능하다고 선언하지 않습니다.
@@ -873,12 +890,12 @@ Discord wire 버전 전환에는 별도 경로 fixture가 필요합니다. packa
 
 ### 전체 소스 분류 표의 적용 기준
 
-전체 소스 분류 표는 229개 메서드 각각의 정확한 소스 시그니처, 현재 파일과 줄 범위, 정규 작업 이름 또는 제외 사유, alias 기본값과 credential 조건을 기록합니다. 본문의 typed 시그니처와 행위 계약을 함께 적용하며, source body가 가진 오류 누락이나 전체 multipart buffering까지 신규 계약으로 받아들이지는 않습니다. 기존 40개 Helper RPC의 이관 결과와 새 요청/응답에서 도달하는 타입의 범위도 같은 기준으로 연결합니다.
+현행 전체 분류는 [source API catalog](../../tools/protocol/inventory/source-api.json)의 232개 메서드별 정확한 signature, source range, 분류, alias 기본값 및 credential 조건을 따릅니다. 아래 부록은 업그레이드 전 감사의 원본 선언과 줄 위치를 보존합니다. 현재 서명은 catalog와 본문 delta를 적용하며 source body의 오류 누락이나 전체 multipart buffering까지 신규 계약으로 받아들이지 않습니다. 기존 40개 Helper의 이관 결과와 새 요청/응답의 전체 closure도 연결합니다.
 
 
-### 부록 A. 공개 Session 메서드 229개의 전체 분류
+### 부록 A. 기존 감사의 공개 Session 메서드 229개 분류
 
-아래 시그니처는 현재 로컬 SDK의 원본 선언이며 v2 RPC 시그니처가 아닙니다. v2 request/response는 5절과 P1의 필드 번호·presence·credential·파일 규칙을 적용합니다. 149개 정규 작업은 REST 146개와 형식 지정 Gateway 3개이며, 별도 상태 계산 `UserChannelPermissions`를 포함하여 SDK 유래 typed 작업은 150개입니다. 편의 메서드 43개는 새 독립 RPC를 만들지 않습니다. 나머지는 내부 12개와 제외 24개이며 모든 229개 선언이 정확히 한 행에 있습니다.
+아래는 기존 `v0.29.0`, commit `6e8fa27c7917ea54d8b9ec26f126becae59058d2` 감사 입력의 signature와 줄 위치입니다. 당시 정규 149개(REST 146개/Gateway 3개), 상태 helper 포함 typed 작업 150개, alias 43개, 비노출 내부 12개 및 제외 24개의 근거를 보존합니다. **현재 API ceiling이나 현재 source 선언이 아닙니다.** 새 3개 조회와 pin pagination을 포함한 현재 232개 분류 및 SDK-derived Helper 153개는 본문과 source catalog를 따릅니다. v2 request/response에는 5절 및 P1의 presence, credential, 파일 규칙을 적용합니다.
 
 표의 기본 인자는 원본 편의 메서드의 효과를 기록합니다. `reason` 인자가 없는 별칭은 v2의 optional canonical `reason`을 미지정으로 두어 `options.audit_log_reason`을 사용할 수 있게 합니다. 둘 다 없을 때만 유효 기본값이 빈 문자열입니다. explicit canonical reason과 audit option을 함께 지정하면 같아야 합니다. `GuildMemberMove` 및 `GuildMemberTimeout`의 nil은 각각 명시적인 channel/timeout null이며 일반 omitted patch가 아닙니다. `RequestOption` 함수 자체는 전송하지 않고 audit reason 및 locale만 허용합니다. `GatewayBot`은 기존 도메인 `GatewayBotResponse`를 직접 반환하는 예외이며 자기 자신을 `value`로 감싼 동명 메시지를 다시 정의하지 않습니다.
 
@@ -1161,9 +1178,9 @@ Discord wire 버전 전환에는 별도 경로 fixture가 필요합니다. packa
 | `Gateway` | `Gateway` | 공식 읽기 전용 Gateway REST metadata 작업입니다. 공유 세션 수명 주기와 별개로 안전한 공개 base Gateway URL 및 해당 응답의 봇 shard/session-start-limit snapshot을 형식 지정 RPC로 제공합니다. |
 | `GatewayBot` | `GatewayBot` | 공식 읽기 전용 Gateway REST metadata 작업입니다. 공유 세션 수명 주기와 별개로 안전한 공개 base Gateway URL 및 해당 응답의 봇 shard/session-start-limit snapshot을 형식 지정 RPC로 제공합니다. |
 
-### 부록 C. Gateway 등록 이름 73개의 전체 전환
+### 부록 C. 기존 감사의 Gateway 등록 이름 73개 전환
 
-전체 73개 중 SDK synthetic 4개를 제외한 원본 이름은 69개입니다. 모듈용 typed projection은 66개이며 호스트 전용 또는 현행 봇 이벤트가 아닌 7개와 중복 집계하지 않습니다. 아래 intent는 공식 Gateway 표의 연결 관계이며, 빈 intent 목록이 곧 event 미지원이라는 뜻은 아닙니다. `MESSAGE_CONTENT`는 관련 메시지 필드의 가시성 제약으로 별도 적용합니다. 코어 event envelope에는 안전한 projection만 넣고 SDK raw event를 우회로로 제공하지 않습니다.
+아래는 `v0.29.0` 감사의 event row 73개(synthetic 4개/나머지 69개), 모듈 projection 66개와 host-only/legacy 7개의 역사적 표입니다. 현재는 `MESSAGE_REACTION_REMOVE_EMOJI`를 추가하여 74개/모듈 projection 67개이며 [현행 event catalog](../../tools/protocol/inventory/source-events.json)의 source field, 정확한 before snapshot 타입 및 intent를 따릅니다. 아래 과거 source 링크와 필드 목록이 최신 구현에 대한 검증 결과는 아닙니다. `MESSAGE_CONTENT`의 필드 가시성 제약과 안전한 projection 원칙은 그대로 적용합니다.
 
 로컬 `STAGE_INSTANCE_EVENT_CREATE/UPDATE/DELETE` 등록 문자열은 공식 `STAGE_INSTANCE_CREATE/UPDATE/DELETE`로 수정하고 handler 생성 및 dispatch도 함께 변경합니다. 잘못된 기존 이름을 호환 별칭으로 남기지 않습니다. READY snapshot은 실제 발생분만 필터링하여 전달하며 이전 READY를 새 모듈에 재생하지 않습니다. `VOICE_STATE_UPDATE`의 안전한 관찰은 playback/receive grant와 별개이고, session ID 및 voice server credential은 제외합니다.
 
@@ -1243,4 +1260,4 @@ Discord wire 버전 전환에는 별도 경로 fixture가 필요합니다. packa
 | `VOICE_STATE_UPDATE` | `VoiceStateUpdate` → `VoiceStateUpdateEvent` | `GUILD_VOICE_STATES` | 도메인 음성 상태만 전달하며 SessionID와 연결 자격 증명은 제거합니다. 재생 및 수신 권한과 별개입니다. | [discordgo/eventhandlers.go:81](../../discordgo/eventhandlers.go#L81)<br>[discordgo/events.go:351-357](../../discordgo/events.go#L351-L357) |
 | `WEBHOOKS_UPDATE` | `WebhooksUpdate` → `WebhooksUpdateEvent` | `GUILD_WEBHOOKS` | 명시적 typed payload와 허용된 리소스 범위로 전달합니다. | [discordgo/eventhandlers.go:82](../../discordgo/eventhandlers.go#L82)<br>[discordgo/events.go:366-370](../../discordgo/events.go#L366-L370) |
 
-Gateway event 및 intent 근거: [공식 Gateway](https://docs.discord.com/developers/events/gateway.md), [receive events](https://docs.discord.com/developers/events/gateway-events.md). 199개 API 도달 타입의 전체 목록과 경계별 변환은 [P2 부록 B](flexmodule-2-domain-conversions.md#부록-b-유지-api에서-도달하는-199개-named-type)에 있습니다.
+Gateway event 및 intent 근거: [공식 Gateway](https://docs.discord.com/developers/events/gateway.md), [receive events](https://docs.discord.com/developers/events/gateway-events.md). 과거 API 도달 타입 199개의 감사 목록은 P2 부록 B에 보존하며 현재 API closure 204개, event closure 228개와 합집합 282개는 [현행 type closure](../../tools/protocol/inventory/source-type-closure.json)를 따릅니다.

@@ -179,7 +179,7 @@ func (b *Backend) observe(session *discordgo.Session, event *discordgo.Event, sd
 				return false
 			}
 		}
-		if e := resourceGraph(raw, "", target.GetSelector().ResourceIds, grant, 0); e != nil && status.Code(e) == codes.PermissionDenied {
+		if e := eventResourceGraph(event.Type, raw, target, grant); e != nil && status.Code(e) == codes.PermissionDenied {
 			return false
 		}
 		return true
@@ -260,6 +260,18 @@ func (b *Backend) interactionOwner(ctx context.Context, i *discordgo.Interaction
 	}
 	return "", nil, invalid("INTERACTION_TYPE_INVALID")
 }
+
+func eventResourceGraph(name string, raw []byte, target *corewire.ResourceScope, grant *corewire.CapabilityGrant) error {
+	parent := target.GetSelector().ResourceIds
+	graph := resourceGraphContext{grant: grant}
+	if name == "INTERACTION_CREATE" {
+		// The event scope authenticates the top-level actor; a component's
+		// originating message author is not the user invoking this interaction.
+		graph.invokingUser = parent["user_id"]
+	}
+	return graph.check(raw, "", parent, 0, false)
+}
+
 func (b *Backend) eventScope(name string, raw []byte) (*corewire.ResourceScope, error) {
 	if eventResourceFree(name) {
 		return scope(map[string]string{}), nil

@@ -66,9 +66,9 @@ func resourceGraph(raw json.RawMessage, kind string, parent map[string]string, g
 	return (resourceGraphContext{grant: grant}).check(raw, kind, parent, depth, false)
 }
 
-// An interaction credential's invoking user describes authenticated context.
-// A returned message's author is data about that message, not a replacement
-// caller. Other returned relationships and user targets still require the grant.
+// An interaction event or credential's invoking user describes authenticated
+// context. A nested or returned message's author is data about that message, not
+// a replacement caller. Other relationships and user targets still need the grant.
 type resourceGraphContext struct {
 	grant        *corewire.CapabilityGrant
 	invokingUser string
