@@ -564,3 +564,49 @@ func TestEveryPolicyReplacementChangesGenerationWithoutChangingActions(t *testin
 		})
 	}
 }
+
+func TestResolverFileGuestPermissionsIgnoreSupervisorUmask(t *testing.T) {
+	const childMask = "FLEXMODULE_RESOLVER_TEST_UMASK"
+	if mask := os.Getenv(childMask); mask != "" {
+		// Umask is process-global: change it only in this isolated test child,
+		// after creating the traversable private parent directory.
+		directory := t.TempDir()
+		switch mask {
+		case "0077":
+			unix.Umask(0077)
+		case "0777":
+			unix.Umask(0777)
+		default:
+			t.Fatalf("unexpected child umask %q", mask)
+		}
+		p := &networkPolicy{cfg: NetworkConfig{Resolvers: []string{"1.1.1.1", "1.0.0.1"}}}
+		path, err := p.resolverFile(directory)
+		if err != nil {
+			t.Fatal(err)
+		}
+		info, err := os.Stat(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !info.Mode().IsRegular() || info.Mode().Perm() != 0444 {
+			t.Fatalf("guest resolver permissions depend on supervisor umask: %v", info.Mode())
+		}
+		contents, err := os.ReadFile(path)
+		if err != nil || string(contents) != "nameserver 1.1.1.1\nnameserver 1.0.0.1\n" {
+			t.Fatalf("resolver configuration changed or is unreadable: %q %v", contents, err)
+		}
+		if _, err := p.resolverFile(directory); !errors.Is(err, os.ErrExist) {
+			t.Fatalf("existing resolver file was not protected by exclusive creation: %v", err)
+		}
+		return
+	}
+	for _, mask := range []string{"0077", "0777"} {
+		t.Run(mask, func(t *testing.T) {
+			cmd := exec.Command(os.Args[0], "-test.run=^TestResolverFileGuestPermissionsIgnoreSupervisorUmask$")
+			cmd.Env = append(os.Environ(), childMask+"="+mask)
+			if output, err := cmd.CombinedOutput(); err != nil {
+				t.Fatalf("resolver permissions under umask %s: %v\n%s", mask, err, output)
+			}
+		})
+	}
+}

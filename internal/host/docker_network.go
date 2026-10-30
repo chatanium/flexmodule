@@ -145,6 +145,12 @@ func (p *networkPolicy) resolverFile(dir string) (string, error) {
 			return "", err
 		}
 	}
+	// Creation permissions are filtered by the supervisor's umask. The
+	// root-owned file is mounted for a different, unprivileged guest UID.
+	if err := f.Chmod(0444); err != nil {
+		f.Close()
+		return "", err
+	}
 	if err := f.Sync(); err != nil {
 		f.Close()
 		return "", err
