@@ -9,6 +9,7 @@ MODULE_KIND ?= general
 export GOOS GOARCH CGO_ENABLED GO_TOOLCHAIN BUF_VERSION PROTOC_GEN_GO_VERSION PROTOC_GEN_GO_GRPC_VERSION
 export BUILD_JOBS MODULE_KIND MODULE_IMAGE MUSIC_IMAGE PLAYER_IMAGE
 export CONFIG SUPERVISOR_SOCKET SUPERVISOR_UID SUPERVISOR_MAX_BYTES CHECK_DEADLINE TEST_TIMEOUT OBSERVE RUNTIME
+export INTEGRATION POLICY_PLAN POLICY_RUNNER EVIDENCE
 
 # Six maintained modules. The two helper-service modules are removed at v2
 # cutover, never generated or silently substituted with production fallbacks.
@@ -19,7 +20,8 @@ SDK_TARGETS := discordgo:./...:- \
 	discordgo/examples/linked_roles:.:bin/discordgo-linked-roles \
 	discordgo/examples/voice_receive:.:bin/discordgo-voice-receive
 BUILD_OUTPUTS := bin/runtime bin/test-module bin/flexmodule-supervisor bin/sandbox-module \
-	bin/chatanium-musicbot bin/voice-player-module bin/discordgo-linked-roles bin/discordgo-voice-receive
+	bin/chatanium-musicbot bin/voice-player-module bin/discordgo-linked-roles bin/discordgo-voice-receive \
+	bin/flexmodule-integration bin/flexmodule-runtime-return-holder
 
 # Explicit ownership covers only current v2 generated outputs. The completed
 # cutover removed legacy schemas, generated files and wrappers.
@@ -31,8 +33,8 @@ GENERATED_EXPECTED_FILES := core-v2/core.pb.go core-v2/core_grpc.pb.go \
 GENERATED_FILES := $(GENERATED_EXPECTED_FILES)
 export GENERATED_FILES GENERATED_EXPECTED_FILES BUILD_OUTPUTS
 
-.PHONY: tools build build-native build-voice build-media build-all build-sandbox buf buf-check clean run \
-	image-module image-media check-offline check-sandbox smoke-discord smoke-voice
+.PHONY: tools build build-native build-voice build-media build-all build-sandbox build-integration buf buf-check clean run \
+	image-module image-media check-offline check-sandbox check-sandbox-policy smoke-discord smoke-voice
 
 tools:
 	@bash tools/install-tools.sh
@@ -50,6 +52,11 @@ build-all:
 
 build-sandbox:
 	@bash tools/build.sh build .:./integration-tests/sandbox-module:bin/sandbox-module
+
+# Permanent ordinary/no-voice harness and same-package runtime return holder.
+build-integration:
+	@CGO_ENABLED=0 bash tools/build.sh build .:./integration-tests/test-voice.go:bin/flexmodule-integration
+	@CGO_ENABLED=0 bash tools/build.sh test-binary .:.:bin/flexmodule-runtime-return-holder
 
 # Native C++/ABI/loader/license gate only; independent of unfinished app Go.
 build-native:
@@ -78,6 +85,10 @@ check-offline:
 
 check-sandbox:
 	@bash tools/build/scenario.sh sandbox
+
+# Explicit installed root-side observer path; never privileged go-run.
+check-sandbox-policy:
+	@bash tools/build/scenario.sh sandbox-policy
 
 smoke-discord:
 	@bash tools/build/scenario.sh discord

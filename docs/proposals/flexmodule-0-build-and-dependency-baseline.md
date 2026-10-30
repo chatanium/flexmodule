@@ -148,6 +148,8 @@ FlexModule은 일반 메시지, 명령, 관리, 모더레이션 및 선택적 �
 
 `make build-all`은 일반 Go 유지 대상과 vendored SDK 예제를 포함하되 native voice target은 포함하지 않습니다. voice-enabled 산출물과 실제 backend 기능 협상은 P5/P6의 명시적 `build-voice` 통합 검증을 거쳐야 합니다. ignored 실험 helper 두 모듈은 현재 감사 목록에만 남기고 P6에서 폐기하며, fake SQL/helper 프로토콜을 생산 빌드에 넣거나 다시 구현하지 않습니다. `private.env`나 Discord 토큰을 빌드 입력으로 읽지 않으며 `make run`만 별도로 실행 동작을 가집니다. OCI 이미지와 모듈별 ffmpeg 또는 다운로드 도구 의존성은 P4/P6에서 정의하고, voice native 의존성의 정확한 source/toolchain 계약은 P5에서 정의합니다.
 
+일반 모듈 및 sandbox fixture 이미지에는 digest로 고정한 distro 이미지의 CA bundle을 포함합니다. 읽기 전용 파일을 복사할 때 상위 디렉터리까지 `0444`로 만들지 않으며, 비루트 프로세스가 모든 상위 디렉터리를 통과할 수 있는 실행 권한을 보존합니다. 공개 모듈 이미지의 환경 설정에는 예약된 `TMPDIR`를 선언하지 않습니다. 호스트가 실제 quota mount인 `/var/lib/flexmodule/scratch`를 `TMPDIR`로 제공하며, media 이미지의 `HOME`과 `DENO_DIR`도 이 mount를 사용합니다. 이미지 빌드 단계에서만 쓰는 `TMPDIR`는 실행 시 scratch와 구분하고 최종 이미지 환경에 남기지 않습니다. 별도 호환 mount는 추가하지 않습니다.
+
 ## 5. API Design
 
 ### 5-1. New / Modified

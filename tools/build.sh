@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 source "$(dirname -- "${BASH_SOURCE[0]}")/common.sh"
-mode=${1:?Expected build or clean}
+mode=${1:?Expected build, test-binary or clean}
 shift
 : "${BUILD_OUTPUTS:?Run through make}"
 safe_file .tools/build.lock
@@ -17,7 +17,7 @@ if [[ "$mode" == clean ]]; then
     for output in $BUILD_OUTPUTS; do rm -f -- "$output"; done
     exit 0
 fi
-[[ "$mode" == build && $# -gt 0 ]] || fail 'Expected build targets'
+[[ ( "$mode" == build || "$mode" == test-binary ) && $# -gt 0 ]] || fail 'Expected build or test-binary targets'
 use_go
 export GOOS=${GOOS:-linux} GOARCH=${GOARCH:-amd64} CGO_ENABLED=${CGO_ENABLED:-0}
 if [[ "$CGO_ENABLED" == 1 ]]; then
@@ -39,6 +39,7 @@ for target in "$@"; do
     [[ -f "$module/go.mod" ]] || fail "Module missing: $module"
     printf 'Building %s (%s) -> %s [%s/%s, CGO=%s]\n' "$module" "$package" "$output" "$GOOS" "$GOARCH" "$CGO_ENABLED"
     if [[ "$output" == - ]]; then
+        [[ "$mode" == build ]] || fail 'Test binaries require an owned output'
         run "$GO_BINARY" -C "$ROOT/$module" build -mod=readonly -trimpath -tags= "$package"
         continue
     fi
@@ -54,7 +55,11 @@ for target in "$@"; do
     safe_file "$output"
     mkdir -p -- "$(dirname -- "$output")"
     temporary=$(mktemp "$ROOT/$output.tmp.XXXXXXXX")
-    run "$GO_BINARY" -C "$ROOT/$module" build -mod=readonly -trimpath -tags= -o "$temporary" "$package"
+    if [[ "$mode" == test-binary ]]; then
+        run "$GO_BINARY" -C "$ROOT/$module" test -c -mod=readonly -trimpath -tags= -o "$temporary" "$package"
+    else
+        run "$GO_BINARY" -C "$ROOT/$module" build -mod=readonly -trimpath -tags= -o "$temporary" "$package"
+    fi
     safe_file "$output"
     mv -fT -- "$temporary" "$output"
     temporary=

@@ -98,7 +98,7 @@ flowchart TB
 
 #### go-plugin과 Docker 실행기의 결합
 
-go-plugin v1.6.3의 `ClientConfig`는 `Cmd`, `Reattach`, `RunnerFunc` 중 **정확히 하나**만 허용합니다. 이 제안은 `RunnerFunc`만 설정합니다. `Cmd`와 `Reattach`는 `nil`이며, `exec.Command("docker", ...)`를 `Cmd`에도 넣는 구성은 잘못된 구성으로 거절합니다.
+go-plugin `v1.8.0`의 `ClientConfig`는 `Cmd`, `Reattach`, `RunnerFunc` 중 **정확히 하나**만 허용합니다. 이 제안은 `RunnerFunc`만 설정합니다. `Cmd`와 `Reattach`는 `nil`이며, `exec.Command("docker", ...)`를 `Cmd`에도 넣는 구성은 잘못된 구성으로 거절합니다. 기존 감사의 `v1.6.3` pin 대신 P0의 현재 pin을 사용하며 AutoMTLS, SkipHostEnv와 multiplex를 1.8에서 새로 도입한 기능으로 설명하지 않습니다.
 
 `RunnerFunc`를 사용하는 경우 go-plugin은 비어 있는 실행 경로의 `exec.Cmd`를 만들고 bootstrap 환경을 채워 factory에 전달합니다. Docker 실행기는 이 `cmd.Path`를 실행 파일로 사용하지 않습니다. 승인된 `ModuleSpec`에서 이미지와 컨테이너 내부 entrypoint를 가져오고, `cmd.Env`의 bootstrap 값을 실제 Docker container `Env`에 전달합니다. launcher 프로세스의 환경만 바꾸는 구현은 이 계약을 충족하지 않습니다.
 
@@ -107,12 +107,18 @@ go-plugin v1.6.3의 `ClientConfig`는 `Cmd`, `Reattach`, `RunnerFunc` 중 **정�
 | 프로토콜 | 애플리케이션 handshake version 2와 gRPC만 허용합니다. 이전 버전이나 net/rpc로 낮추지 않습니다. |
 | 인증 | `AutoMTLS=true`로 실행마다 새 인증 채널을 구성합니다. 보호된 bootstrap stdout과 해당 컨테이너의 연결을 묶습니다. magic cookie는 호환 실행 여부를 확인하는 값이며 인증 수단이 아닙니다. |
 | 환경 | `SkipHostEnv=true`를 사용합니다. 호스트 `DISCORD_TOKEN`, 임의 호스트 환경과 secret source를 상속하지 않습니다. 승인된 이미지 환경과 bootstrap 환경의 예약 이름 충돌도 거절합니다. |
-| 브로커 | `GRPCBrokerMultiplex=true`를 사용하고, core와 backend broker 연결을 하나씩 순차적으로 개설합니다. Reattach는 제공하지 않습니다. 모든 reverse helper server에도 해당 실행의 TLS 및 principal 바인딩을 유지합니다. |
+| 브로커 | `GRPCBrokerMultiplex=true`와 단일 `core-v2` plugin을 사용합니다. reverse helper 연결의 broker ID는 `1`로 고정하며, 이 연결에 core와 백엔드 서비스를 함께 등록합니다. Reattach는 제공하지 않습니다. helper server에도 해당 실행의 TLS 및 principal 바인딩을 유지합니다. |
 | stdout 및 stderr | Docker attach는 `Tty=false`로 열고 프레임을 demultiplex합니다. `Stdout()`에는 모듈 stdout만, `Stderr()`에는 모듈 stderr만 전달합니다. attach와 bounded collector를 container 시작 전에 준비하여 프로세스 시작 시점부터 수집합니다. 최초 stdout 줄은 handshake여야 하며 launcher 진단을 앞에 넣지 않습니다. 유효한 handshake는 원형을 보존하여 go-plugin에 전달하고 일반 로그로 복제하지 않습니다. |
 | 프로세스 소유권 | `ID()`는 실제 Docker container ID를 반환합니다. `Wait()`는 attach 프로세스가 아니라 실제 컨테이너 종료를 관찰합니다. `Kill()`은 컨테이너 중지, 종료 확인과 삭제를 책임집니다. |
 | 초기 소켓 | go-plugin이 만든 인스턴스 전용 호스트 디렉터리 `H`를 컨테이너의 전용 경로 `C`에 연결합니다. `H`는 scratch와 같은 XFS filesystem에 있어야 하며, container 시작 전에 해당 인스턴스 scratch의 project ID와 inheritance를 적용합니다. `PLUGIN_UNIX_SOCKET_DIR`는 `C`로 바꿉니다. |
 | 주소 변환 | `PluginToHost`는 `C → H`, `HostToPlugin`은 `H → C`만 허용합니다. Unix 이외 주소, 절대 경로 바꿔치기, `..`, symlink, 다른 인스턴스 디렉터리와 범위 밖 소켓은 거절합니다. 단순 문자열 prefix 비교나 경로 검사 후 원래 pathname으로 dial하는 check-then-dial은 허용하지 않습니다. 실제 connect 시점까지 소유 디렉터리와 허용 소켓의 경계를 유지하여, 검사와 연결 사이의 경로 교체로 다른 소켓에 연결할 수 없어야 합니다. |
 | 소켓 접근 | 디렉터리와 socket mode, `UnixSocketConfig.Group`, 컨테이너 UID/GID 및 호스트 보안 정책을 함께 맞춥니다. 다른 모듈의 소켓 디렉터리를 열 수 없어야 합니다. |
+
+호스트의 plugin client callback은 helper acceptor를 시작하고 서버 factory가 준비되면 반환합니다. 장기간 실행되는 `AcceptAndServe`의 종료나 모듈의 `Dial`을 기다리지 않습니다. 모듈 SDK는 사용자 `INIT` callback 전에 이 연결을 열고 helper client를 결합합니다. 시작 실패와 취소는 연결 소유자가 처리하며 준비 여부를 추정하지 않습니다.
+
+helper 서비스는 manifest 협상 전에 운영자가 구성한 백엔드 목록으로 등록할 수 있습니다. 이때 authorizer는 실제 grants가 확정되기 전까지 모든 모듈 작업을 거부합니다. 협상이 끝난 뒤 같은 인스턴스에 불변 config와 actual grants를 한 번 결합하며, 서비스가 등록되어 있다는 사실만으로 호출 권한을 주지 않습니다. 실행 중인 gRPC server에 서비스를 뒤늦게 등록하거나, helper 준비를 기다리는 동안 아직 반환하지 않은 hook client로 manifest를 조회하는 교착을 만들지 않습니다.
+
+다중화된 reverse stream은 이미 연결된 primary Unix socket 위의 yamux stream입니다. 주소 변환은 primary handshake 주소에 적용되며 각 stream이 별도 pathname socket을 열지는 않습니다. 따라서 경로 격리와 race-safe connect의 검증 대상은 이 primary 연결입니다. 다중화 stream마다 주소 변환을 다시 호출하지 않는 동작을 경로 검사 우회로 취급하지 않습니다.
 
 Docker container 생성 시 `HostConfig.LogConfig.Type="none"`을 지정하고, 이 설정을 확인하기 전에는 시작하지 않습니다. 모듈 stdout 및 stderr의 유일한 보관 경로는 bounded attach collector입니다. go-plugin 진단이나 host logger로 전달하는 경우도 이 한도 안에서 처리하며, Docker logging driver, daemon journal 또는 다른 host sink에 모듈 출력을 별도로 복제하지 않습니다.
 
@@ -120,7 +126,7 @@ Docker container 생성 시 `HostConfig.LogConfig.Type="none"`을 지정하고, 
 
 runsc의 후보 설정은 `--host-uds=create`와 외부에서 소켓이 보이는 비 overlay 공용 IPC mount입니다. 다중화 브로커를 사용하므로 별도 호스트 helper socket으로 접속하기 위한 더 넓은 `--host-uds=all`을 기본값으로 채택하지 않습니다. `--file-access-mounts=shared`를 포함한 실제 mount 구성은 고정한 runsc 배포 버전에서 확인합니다.
 
-이 결합은 go-plugin과 runsc 소스로 뒷받침되는 **제안된 통합 방식이며, 아직 실행 검증한 조합이 아닙니다**. 선택한 Docker Engine 및 runsc 버전, 비루트 UID/GID, 보안 label, 다중화 reverse RPC와 정리 경로를 함께 검증하기 전에는 배포 승인을 내리지 않습니다. AddrTranslator의 경로 검사 결과가 실제 broker connect 대상까지 유지되는 race-safe 결합도 이 gate에 포함합니다. pathname을 검사하거나 정규화했다는 사실만으로 안전한 연결을 입증한 것으로 보지 않으며, 특정 라이브러리가 이를 이미 제공한다고 주장하지 않습니다. 실패하면 새 우회 transport, host network, privileged 실행, 임의 호스트 mount 또는 넓은 UDS 권한으로 우회하지 않습니다.
+이 결합은 go-plugin과 runsc 소스를 바탕으로 하며 배포 조합별 통합 검증이 필요합니다. 선택한 Docker Engine 및 runsc 버전, 비루트 UID/GID, 보안 label, 다중화 reverse RPC와 정리 경로를 함께 검증하기 전에는 배포 승인을 내리지 않습니다. AddrTranslator의 경로 검사 결과가 실제 broker connect 대상까지 유지되는 race-safe 결합도 이 gate에 포함합니다. pathname을 검사하거나 정규화했다는 사실만으로 안전한 연결을 입증한 것으로 보지 않으며, 특정 라이브러리가 이를 이미 제공한다고 주장하지 않습니다. 실패하면 새 우회 transport, host network, privileged 실행, 임의 호스트 mount 또는 넓은 UDS 권한으로 우회하지 않습니다.
 
 #### 컨테이너의 고정 보안 속성
 
@@ -129,6 +135,7 @@ runsc의 후보 설정은 `--host-uds=create`와 외부에서 소켓이 보이�
 - runsc는 격리된 network stack을 사용합니다. 기본 platform은 추가 KVM device 전달을 요구하지 않는 `systrap`입니다. Docker의 자동 restart policy는 사용하지 않습니다.
 - 모듈에 허용하는 호스트 데이터 mount는 런타임이 생성하고 소유권을 확인한 해당 모듈의 persistent, 해당 인스턴스의 scratch 및 전용 IPC 디렉터리뿐입니다. writable IPC에도 scratch와 같은 인스턴스 project의 byte 및 inode quota를 적용하고 사용량을 합산합니다. 이 제한된 데이터 및 IPC 연결을 제외한 임의 호스트 mount는 금지합니다. `/`, 호스트 홈, `/proc`의 호스트 view, Docker socket, containerd socket, runsc 상태 디렉터리와 감독 서비스 socket을 노출하지 않습니다.
 - 이미지가 선언한 임의 volume, host device, 추가 mount, published port 또는 특권 설정을 그대로 받아들이지 않습니다. 허용 목록 밖의 image volume과 실행 설정은 거절합니다. 모듈이 쓰는 임시 파일 경로는 quota가 적용되는 scratch에 연결하며, IPC에 일반 파일을 쓰더라도 같은 한도에 포함합니다. `/tmp` 등에 별도 무제한 writable layer를 만들지 않습니다.
+- `TMPDIR`는 호스트가 `/var/lib/flexmodule/scratch`로 제공하는 예약 환경 변수입니다. 공개 모듈 이미지는 이를 선언하지 않으며 media의 `HOME`과 `DENO_DIR`도 같은 quota mount를 사용합니다. 빌드 전용 임시 경로를 실행 경로로 남기거나 이를 위한 호환 mount를 추가하지 않습니다.
 - 모듈에서 보이는 proc 및 device는 sandbox가 제공하는 제한된 view입니다. 호스트의 seccomp, SELinux 또는 AppArmor 정책을 무효화해서 실행을 통과시키지 않습니다.
 
 ### 4.2 Data Model Changes
@@ -194,6 +201,10 @@ runsc의 후보 설정은 `--host-uds=create`와 외부에서 소켓이 보이�
 | scratch 및 writable IPC 합산 quota | 256MiB, 268,435,456 bytes | 2GiB, 2,147,483,648 bytes | 두 경로가 공유하는 인스턴스별 단일 XFS project hard quota |
 
 운영자 override도 같은 강제 수단을 사용합니다. CPU share만 설정한 것은 CPU 상한이 아닙니다. 메모리는 swap으로 우회하지 않도록 Docker의 `MemorySwap=Memory`와 호스트의 실제 swap 제한을 확인합니다. cgroup v2에서는 `cpu.max`, `memory.max`, `memory.swap.max`, `pids.max`의 적용 결과를 대조합니다.
+
+Docker에 등록한 runsc에는 `--sandbox-creation-cpu-policy=1x`와 `--sandbox-lifecycle-cpu-policy=1x`를 모두 명시합니다. 생성이나 종료 중에도 승인된 CPU quota를 완화하지 않으며, 감독 서비스는 두 설정이 빠지거나 다른 배율로 등록된 실행기를 거절합니다. 실행 중 한 번 읽은 `cpu.max` 값만으로 전체 수명주기의 상한을 입증하지 않습니다.
+
+CPU 검수는 고정한 cgroup identity와 열린 control FD의 유한 표본에 근거합니다. 종료 후 표본은 저장한 identity가 정확히 일치하고, 모든 고정 control FD가 `ENODEV`를 반환하며, 원래 경로가 대체 객체 없이 사라졌고, 처음 고정한 프로세스의 pidfd가 종료를 나타낼 때만 retired 비측정 표본으로 분류합니다. 이전의 관측 공백이나 quota drift를 이 분류로 무효화하지 않으며, retirement 이후 읽을 수 있는 표본이나 대체 객체도 유효한 증거로 받아들이지 않습니다. 이를 연속적인 커널 추적으로 설명하지 않습니다.
 
 PID 및 스레드 한도는 **guest의 프로세스 및 스레드 총수에도 적용**합니다. Docker `HostConfig.Ulimits`에 `Name=nproc`, `Soft=Hard=64` 또는 `128`을 지정하여 OCI `process.rlimits`의 `RLIMIT_NPROC`로 전달합니다. 모듈은 고정된 non-zero UID로 실행하고 capability 전체 제거 및 no-new-privileges를 유지합니다. soft limit을 hard limit보다 높이거나 UID 변경, setuid 실행 또는 namespace 생성으로 계수를 우회할 수 없어야 합니다. 이 값은 Go goroutine 수가 아니라 Linux task 수입니다.
 
@@ -310,11 +321,17 @@ backend는 credential을 포함한 원본 객체를 모듈별 안전한 typed pa
 7. drain을 마치거나 시간이 끝나면 남은 context를 취소하고, owned stream, voice 작업, upload lease와 credential reference를 종료합니다. 인스턴스 종료 시 upload ref와 삭제 tombstone의 유효성도 끝내며, 실제 lease 및 파일 회수가 끝나지 않은 내부 정리 레코드와 byte 및 레코드 자리 계산은 회수 완료까지 유지합니다. 이전 hook이 끝났음을 확인했고 연결이 유효한 경우 `OnStage(STOP)`을 유한한 종료 시간 안에서 호출합니다. 멈추지 않은 handler와 STOP을 겹쳐 실행하지 않습니다.
 8. backend cleanup, broker 종료, go-plugin 종료, 실제 container의 kill 및 wait, container 삭제와 scratch 및 IPC 정리를 수행합니다. 두 임시 경로와 열린 handle의 회수가 끝나야 공유 project claim을 해제합니다. persistent 디렉터리는 유지합니다. 한 정리 단계의 오류 때문에 나머지 단계의 시도를 생략하지 않습니다.
 
-go-plugin v1.6.3의 `Client.Kill()`은 애플리케이션 10초 drain을 구현하지 않습니다. 이 라이브러리의 자체 종료 대기와 `Runner.Kill()`은 drain 다음 단계입니다. 필수 설정의 `termination_deadline` 안에서 끝나야 하며, attach 연결만 끊고 container를 남겨서는 안 됩니다.
+go-plugin `v1.8.0`의 `Client.Kill()`은 애플리케이션 10초 drain을 구현하지 않습니다. 이 라이브러리의 자체 종료 대기와 `Runner.Kill()`은 drain 다음 단계입니다. 필수 설정의 `termination_deadline` 안에서 끝나야 하며, attach 연결만 끊고 container를 남겨서는 안 됩니다.
 
 `SIGTERM`, `SIGINT`, 모듈 crash, RPC 실패, startup timeout, queue overflow와 부분 생성 실패는 같은 resource-claim 정리 경로를 사용합니다. 이 호스트 자원 회수에서 이미 삭제된 자원의 재삭제는 성공으로 처리하며, 모듈의 `DeleteUpload` 응답에는 별도로 P1의 소유권 및 원래 만료 규칙을 적용합니다. 아직 소유한 자원이 남으면 cleanup 상태와 원래 실패를 기록하고 동일 모듈의 재실행을 막습니다. 재시도 대상은 호스트 자원 회수이며 모듈 자동 재시작이 아닙니다.
 
 호스트 런타임 crash 이후에는 감독 서비스와 다음 startup reconciliation이 관리 journal 및 trusted Docker labels를 대조합니다. 죽은 runtime epoch의 컨테이너는 adopt 또는 reattach하지 않고 중지 및 삭제합니다. crash 중간에 container 생성만 끝났거나 journal에 claim만 남은 경우도 회수합니다. Docker 자원이 다른 host workload의 것인지 모호하면 이름 패턴만으로 삭제하지 않고, 소유 증거가 확인된 자원만 정리하며 해당 설치의 실행을 막습니다.
+
+Docker create 요청은 전송 전에 `SUBMITTED`로 기록합니다. 응답을 잃었거나 deadline, 연결 오류, 불완전한 응답을 받은 경우에는 컨테이너가 지금 없더라도 제출 기록과 모든 claim을 유지합니다. 이후 정확한 ownership label이 일치하는 객체를 관측하면 `OBSERVED`로 기록한 뒤 같은 정리 경로로 회수합니다. 이름 조회 결과나 경과 시간만으로 제출 기록을 지우거나 다시 요청하지 않습니다.
+
+고정한 로컬 Docker daemon에서 동기 create handler의 완료를 입증하는 표준 JSON 오류 응답을 끝까지 받은 경우에는 별도 `REJECTED` 상태와 응답 receipt를 보존합니다. 지원하는 negative status는 400, 404, 409, 500이며, gateway 및 timeout 응답이나 잘못된 오류 body는 완료 증거로 인정하지 않습니다. 이 구분은 Docker 29.5.3의 revision `285b471`에 있는 [create 구현](https://github.com/moby/moby/blob/285b471/daemon/create.go)과 [HTTP handler](https://github.com/moby/moby/blob/285b471/daemon/server/server.go)의 동기 반환 및 deferred rollback 경계를 기준으로 합니다. `REJECTED`도 rollback 중 남은 객체의 소유권 확인과 삭제, 최종 부재 확인을 생략하지 않습니다. 기존 journal을 변경할 때는 이전 `SUBMITTED`와 `OBSERVED` 기록 및 claim을 그대로 보존하며, 과거 실패의 결과를 추정해 바꾸지 않습니다.
+
+reconciliation에 미확정 create만 남으면 감독 서비스는 `HOST_RECONCILIATION_PENDING`을 반환하고 런타임은 같은 이름의 관측 이벤트를 출력한 뒤 다른 설치의 시작을 계속할 수 있습니다. 해당 설치의 exclusive claim은 정리가 끝날 때까지 유지합니다. enforcement나 journal 오류 등이 함께 있으면 이 pending 결과로 분류하지 않고 시작을 거절합니다. 과거 `SUBMITTED` 기록을 복구하려면 정확한 요청 이름과 제출 시각, daemon 신원에 연결된 권위 있는 handler 완료 증거가 필요합니다. 정제된 failure reason과 현재의 객체 부재만으로는 이를 입증할 수 없으며, claim을 강제로 해제하는 API는 제공하지 않습니다.
 
 #### credential-reference 경계
 
@@ -338,6 +355,14 @@ generic registry는 소유자, backend ID, 목적 식별자, 정확한 resource 
 
 `PUBLIC_INTERNET` 인스턴스는 전용 Docker bridge endpoint와 source anti-spoof 정책을 사용합니다. 모듈 간 직접 통신과 외부에서 새로 들어오는 연결은 허용하지 않으며, published port를 만들지 않습니다. 호스트 감독 서비스는 endpoint 및 interface에 따라 정책을 적용하여 caller가 packet source 주소를 바꾸는 것으로 다른 인스턴스 정책을 얻지 못하게 합니다.
 
+endpoint가 아직 없는 bridge에는 link-local IPv6 주소가 없을 수 있습니다. 이 단계에서는 설정된 IPv6 gateway가 실제 interface에 있는지 확인하고, endpoint 연결 후 정책을 활성화하기 전에 gateway와 사용 가능한 link-local 주소를 다시 읽습니다. link-local 주소가 없다는 이유로 gateway 검증을 생략하거나 임의의 neighbor 경로를 허용하지 않습니다.
+
+주소 및 route 알림이 연속해서 도착하면 연결된 정책을 먼저 닫고, 대기 중인 알림을 유한한 범위에서 비운 뒤 현재 inventory를 한 번 읽어 재구성합니다. 이미 닫힌 정책이나 부분 설치 상태도 제외하지 않습니다. 알림 손실, 잘린 메시지, 잘못된 framing 또는 처리 상한 초과는 감시 실패이며, 이후 활성화 요청으로 통신을 다시 열지 않습니다.
+
+소유 chain을 교체할 때마다 마지막 `RETURN` 또는 `DROP` 규칙에 새 `fm-generation:` 식별자를 넣습니다. 규칙 모양이 같아도 교체 후 counter는 이전 counter와 이어지지 않습니다. 검증 관찰자는 시작과 종료의 모든 chain 식별자가 같을 때만 counter 차이를 증거로 사용합니다.
+
+정리 단계에서 방화벽 chain의 부재는 해당 table 전체를 성공적으로 조회한 뒤 정확한 chain 선언이 없음을 확인해야 합니다. 이름을 지정한 조회의 오류 문자열을 부재 증거로 사용하지 않으며, 전체 조회도 실패하면 정리 claim을 유지합니다.
+
 | 경로 | 필수 처리 |
 |---|---|
 | Host `INPUT` | 모듈에서 호스트 자신으로 향하는 통신을 차단합니다. 모든 host local address, bridge gateway와 호스트 public IP도 포함합니다. |
@@ -351,6 +376,8 @@ generic registry는 소유자, backend ID, 목적 식별자, 정확한 resource 
 호스트 public 주소는 interface에 직접 붙은 주소만으로 끝내지 않습니다. 외부 NAT에 매핑된 host public 주소와 cloud 제공 주소도 운영자 inventory로 포함합니다. `169.254.0.0/16` 차단만으로 모든 cloud metadata 및 infrastructure 목적지를 차단했다고 주장하지 않습니다. 실제 배포 환경의 추가 목적지를 누락한 설정은 운영 승인을 받을 수 없습니다.
 
 DNS는 운영자가 고정한 resolver IP에 대한 UDP/TCP 53 경로로 제한합니다. resolver는 명시적으로 승인한 public 주소이며 host resolver로 자동 fallback하지 않습니다. Docker embedded DNS를 사용하는 배포 조합은 `HostConfig.DNS`의 명시적 upstream 외에 host resolv.conf 또는 다른 주소로 전달하지 않는지 고정 버전에서 확인해야 합니다. namespace 내부 stub이 존재한다는 이유만으로 host DNS 접근 전체를 허용하지 않습니다. stub 및 upstream 경로를 포함한 관측 가능한 실제 패킷이 이 계약을 만족하지 않으면 그 배포 조합을 거절합니다.
+
+감독 서비스가 만드는 resolver 파일은 `Sync` 전에 열린 파일에 `Chmod(0444)`를 명시적으로 적용하여 생성 시 umask와 무관하게 비루트 guest가 읽을 수 있게 합니다. 앞서 관찰한 guest DNS 실패의 원인은 현재 감독 서비스의 `umask 0022`가 아니라 이미지 상위 디렉터리가 `0444`여서 경로를 통과할 수 없었던 문제입니다. resolver 파일의 읽기 권한과 이미지 상위 디렉터리의 실행 권한을 별도로 보장합니다.
 
 공개 목적지와의 일반 통신에 destination allowlist를 추가하지 않습니다. 공개 서비스가 제공하는 DoH 등의 애플리케이션 내용까지 분류하는 정책도 약속하지 않습니다. 어떤 DNS 응답을 사용하더라도 이 경계에서 실제 private, host 또는 metadata 목적지로 직접 나가는 socket은 연결할 수 없어야 합니다. 허용된 공개 서비스가 트래픽을 다시 중계하거나 application tunnel을 제공하고 모듈 간 통신을 매개하는 것까지 막지는 못하며, 공개 인터넷을 거친 종단 간 격리를 보장하지 않습니다. 이 한계가 host INPUT 및 forwarding의 직접 접근 차단을 완화하지는 않습니다. runtime 자체는 임의 URL을 대신 호출해 경계를 우회하는 proxy를 제공하지 않습니다.
 
@@ -591,7 +618,7 @@ func NewDockerRunnerFactory(spec ModuleSpec, lease SandboxLease) func(
 ) (runner.Runner, error)
 ```
 
-`SandboxLease`는 관리 journal에 등록한 quota, network, directory와 container claim의 호스트 전용 묶음입니다. factory는 `hostSocketDir`가 scratch와 같은 XFS filesystem에 있는지 확인하고 같은 인스턴스 project ID 및 inheritance를 적용한 뒤에만 container를 시작할 수 있습니다. 반환 객체는 v1.6.3의 `Start`, `Diagnose`, `Stdout`, `Stderr`, `Name`, `Wait`, `Kill`, `ID`, `PluginToHost`, `HostToPlugin`을 모두 실제 container lifecycle에 연결합니다. 주소 변환과 실제 broker 연결 사이의 race-safe 경계는 위의 고정 배포 통합 gate를 충족해야 합니다. `Start` 취소와 별개로 종료 및 정리 context를 관리합니다. `Diagnose`에는 secret과 host 민감 경로를 포함하지 않으며, 진단 출력도 별도 무제한 로그 sink를 만들지 않습니다.
+`SandboxLease`는 관리 journal에 등록한 quota, network, directory와 container claim의 호스트 전용 묶음입니다. factory는 `hostSocketDir`가 scratch와 같은 XFS filesystem에 있는지 확인하고 같은 인스턴스 project ID 및 inheritance를 적용한 뒤에만 container를 시작할 수 있습니다. 반환 객체는 go-plugin `v1.8.0`의 `Start`, `Diagnose`, `Stdout`, `Stderr`, `Name`, `Wait`, `Kill`, `ID`, `PluginToHost`, `HostToPlugin`을 모두 실제 container lifecycle에 연결합니다. 주소 변환과 실제 broker 연결 사이의 race-safe 경계는 위의 고정 배포 통합 gate를 충족해야 합니다. `Start` 취소와 별개로 종료 및 정리 context를 관리합니다. `Diagnose`에는 secret과 host 민감 경로를 포함하지 않으며, 진단 출력도 별도 무제한 로그 sink를 만들지 않습니다.
 
 #### 핵심 의사코드
 
@@ -686,7 +713,7 @@ Stop(instance):
 | `BACKEND_RECONFIGURATION_REQUIRED` | `FailedPrecondition` | 활성 gateway 세션에 필요한 intent 등 선행 조건이 없습니다. 다른 모듈의 연결을 자동 재구성하지 않습니다. |
 | `INSTANCE_NOT_RUNNING`, `INSTANCE_DRAINING` | `FailedPrecondition` | 등록된 상태 정책에 맞지 않습니다. READY에서 START 활성화 중인 유효한 RUNNING 전용 호출은 위 gate에서 제한적으로 대기할 수 있지만 먼저 실행하지는 않습니다. 활성화 실패 또는 drain은 대기를 끝내며, 기존 init-safe, owner cleanup 및 event completion 정책은 유지합니다. |
 | `EVENT_QUEUE_OVERFLOW` | host failure reason, 필요한 제어 응답은 `ResourceExhausted` | 해당 모듈만 실패 및 정리합니다. overflow한 이벤트를 수락했다고 응답하지 않습니다. |
-| `STARTUP_DEADLINE_EXCEEDED`, `HOOK_DEADLINE_EXCEEDED` | `DeadlineExceeded` | 시작 전체 또는 hook 기한을 초과했습니다. 이전 handler가 끝났다는 추정 없이 인스턴스를 종료합니다. |
+| `STARTUP_DEADLINE_EXCEEDED`, `HOOK_DEADLINE_EXCEEDED` | `DeadlineExceeded` | 시작 전체 또는 해당 hook context의 실제 기한이 만료된 경우입니다. 시작 전체의 만료가 우선합니다. callback 내부의 더 짧은 helper/HTTP 기한이 끝났지만 hook context가 살아 있으면 `HOOK_FAILED`로 분류하고 원래 status와 detail을 보존합니다. 이전 handler가 끝났다고 추정하지 않습니다. |
 | `MODULE_REPORTED_FAILURE`, `HOOK_FAILED` | 원인에 맞는 status와 sanitized detail | 상태 또는 callback의 실패를 호스트 failure에 반영합니다. 오류를 성공으로 바꾸지 않습니다. |
 | `CREDENTIAL_REFERENCE_INVALID` | `PermissionDenied` | 다른 instance, 잘못된 purpose 또는 resource, 변조, expiry와 revocation입니다. 타인 credential 존재 여부를 구별해 주지 않습니다. |
 | `RESOURCE_LIMIT_EXCEEDED` | `ResourceExhausted` 또는 host terminal failure | API-level reservation은 명시적으로 거절합니다. filesystem `EDQUOT`, cgroup OOM 또는 task 제한에 따른 process 종료는 실제 결과를 기록합니다. |
@@ -753,12 +780,12 @@ Stop(instance):
 
 ### 6-2. Dependencies
 
-- [빌드 및 의존성 기준선](flexmodule-0-build-and-dependency-baseline.md)이 Go 1.24 및 로컬 SDK 의존성을 정리하고, [프로토콜 계약](flexmodule-1-protocol-contracts.md)이 major version, principal, grants, event 및 credential wire 계약을 확정해야 합니다.
+- [빌드 및 의존성 기준선](flexmodule-0-build-and-dependency-baseline.md)의 Go floor 1.27.0, compiler 1.27.3 및 고정 SDK source를 사용하며, [프로토콜 계약](flexmodule-1-protocol-contracts.md)이 major version, principal, grants, event 및 credential wire 계약을 확정해야 합니다.
 - [도메인 변환](flexmodule-2-domain-conversions.md)은 runtime boundary에서 사용할 안전한 DTO 변환과 presence 의미를 제공합니다. 이 작업과 런타임 작업은 동결된 P1 계약을 바탕으로 진행할 수 있습니다.
 - [Discord 백엔드](flexmodule-3-discord-backend.md)는 본 문서의 인증, 상태와 scope 통제를 실제 bot API, event, command 및 upload에 연결합니다. 인증되지 않은 중간 helper 구현을 배포 가능한 결과로 간주하지 않습니다.
 - [음성 작업](flexmodule-5-voice-jobs.md)은 선택 backend capability이며 같은 instance ownership과 drain을 사용합니다. 현재 Discord 음성 전송에 필요한 native voice 구성과 호환성을 backend가 충족하지 못하면 필수 voice 요청은 활성화를 거절하고 선택 요청은 actual grants에서 제외합니다. 이 조건은 core-only 또는 일반 모듈의 시작을 막지 않습니다. 미디어 인코더 및 변환 도구는 필요한 모듈의 이미지에 포함하며, 이를 위해 호스트나 일반 모듈 이미지에 인코더를 설치하지 않습니다.
 - [예제 및 검증](flexmodule-6-examples-and-validation.md)은 통합된 실행 경로에서 일반 bot 및 선택 voice 사례와 보안 부정 사례를 실행합니다.
-- 라이브러리 및 호스트 의존성은 go-plugin v1.6.3의 custom runner와 multiplex broker, gRPC, Protocol Buffers, rootful Docker Engine, 고정된 runsc/gVisor, cgroup v2, persistent 및 scratch/IPC 합산 XFS project quota와 실제 IPv4/IPv6 host firewall입니다.
+- 라이브러리 및 호스트 의존성은 go-plugin `v1.8.0`의 custom runner와 multiplex broker, gRPC `v1.85.0`, protobuf `v1.36.12`, rootful Docker Engine, 고정된 runsc/gVisor, cgroup v2, persistent 및 scratch/IPC 합산 XFS project quota와 실제 IPv4/IPv6 host firewall입니다. grpc 생성기 `v1.6.2`의 generic stream 계약을 따르며 truncated message의 `io.ErrUnexpectedEOF`를 정상 EOF로 취급하지 않습니다.
 - 필요한 privileged host provisioning, bounded attach 수집 및 독립 host logging의 유한 보관, 감독 서비스 운영 준비는 모듈 컨테이너 밖의 배포 선행 조건입니다. rootless나 Kubernetes 설정을 준비한 것으로 이를 대체하지 않습니다.
 - runsc의 UDS 및 mux 결합, 실제 connect 시점의 race-safe 경로 제한과 기본 자원 한도에 대한 실제 통합 검증은 아직 수행되지 않은 수용 gate입니다. upstream master 소스 또는 문서만으로 특정 배포 버전의 호환성을 보장하지 않습니다.
 
@@ -774,9 +801,9 @@ Stop(instance):
 
 ### 실행, 격리와 보안 근거
 
-- [go-plugin v1.6.3 client](https://github.com/hashicorp/go-plugin/blob/v1.6.3/client.go): 정확히 하나의 `Cmd`/`Reattach`/`RunnerFunc`, bootstrap 환경, AutoMTLS, stdout handshake와 종료 처리입니다.
-- [go-plugin v1.6.3 Runner interfaces](https://github.com/hashicorp/go-plugin/blob/v1.6.3/runner/runner.go): 실제 실행 수명주기 및 주소 변환 계약입니다.
-- [go-plugin v1.6.3 GRPCBroker](https://github.com/hashicorp/go-plugin/blob/v1.6.3/grpc_broker.go), [client multiplexer](https://github.com/hashicorp/go-plugin/blob/v1.6.3/internal/grpcmux/grpc_client_muxer.go), [server multiplexer](https://github.com/hashicorp/go-plugin/blob/v1.6.3/internal/grpcmux/grpc_server_muxer.go): 다중화 연결과 브로커 경로입니다.
+- [go-plugin v1.8.0 client](https://github.com/hashicorp/go-plugin/blob/v1.8.0/client.go): 정확히 하나의 `Cmd`/`Reattach`/`RunnerFunc`, bootstrap 환경, AutoMTLS, stdout handshake와 종료 처리입니다.
+- [go-plugin v1.8.0 Runner interfaces](https://github.com/hashicorp/go-plugin/blob/v1.8.0/runner/runner.go): 실제 실행 수명주기 및 주소 변환 계약입니다.
+- [go-plugin v1.8.0 GRPCBroker](https://github.com/hashicorp/go-plugin/blob/v1.8.0/grpc_broker.go), [client multiplexer](https://github.com/hashicorp/go-plugin/blob/v1.8.0/internal/grpcmux/grpc_client_muxer.go), [server multiplexer](https://github.com/hashicorp/go-plugin/blob/v1.8.0/internal/grpcmux/grpc_server_muxer.go): primary socket 위의 다중화 연결과 브로커 경로입니다. manifest 전 서비스 등록은 actual grants 확정 전 deny-all이며 배포 통합 gate를 대체하지 않습니다.
 - [Docker를 통한 gVisor 실행](https://gvisor.dev/docs/user_guide/quick_start/docker/), [gVisor networking](https://gvisor.dev/docs/user_guide/networking/), [platforms](https://gvisor.dev/docs/user_guide/platforms/), [security model](https://gvisor.dev/docs/architecture_guide/security/): runsc 등록, 격리와 별도 호스트 자원 및 네트워크 통제의 근거입니다.
 - [runsc flags](https://github.com/google/gvisor/blob/master/runsc/config/flags.go), [runsc config](https://github.com/google/gvisor/blob/master/runsc/config/config.go): host UDS 및 mount 후보 설정의 소스입니다. master는 배포 pin이 아니며 통합 gate를 대신하지 않습니다.
 - [gVisor systemd cgroup driver](https://gvisor.dev/docs/user_guide/systemd/): resource mapping 및 cgroup driver 전제 조건입니다.
