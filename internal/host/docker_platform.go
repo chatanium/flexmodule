@@ -135,7 +135,8 @@ func (p *DockerPlatform) Preflight(ctx context.Context) error {
 	if !ok || rt.Path != p.cfg.RunscPath {
 		return prerequisite(errors.New("registered runsc executable mismatch"))
 	}
-	requiredArgs := []string{"--platform=systrap", "--host-uds=create", "--file-access-mounts=shared", "--overlay2=root:self"}
+	// Both phases must retain the OCI quota rather than runsc's elevated defaults.
+	requiredArgs := []string{"--platform=systrap", "--host-uds=create", "--file-access-mounts=shared", "--overlay2=root:self", "--sandbox-creation-cpu-policy=1x", "--sandbox-lifecycle-cpu-policy=1x"}
 	if info.Info.CgroupDriver == "systemd" {
 		requiredArgs = append(requiredArgs, "--systemd-cgroup")
 	} else if info.Info.CgroupDriver != "cgroupfs" {

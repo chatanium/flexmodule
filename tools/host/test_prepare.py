@@ -111,8 +111,31 @@ class PreparationSafetyTests(unittest.TestCase):
             command.assert_not_called()
             atomic.assert_not_called()
 
+    def test_unapproved_cpu_policy_never_overwritten(self):
+        base_args = ["--platform=systrap", "--host-uds=create", "--file-access-mounts=shared", "--overlay2=root:self"]
+        for phase in ("creation", "lifecycle"):
+            for policy in (None, "4x", "uncapped"):
+                args = base_args[:]
+                for current in ("creation", "lifecycle"):
+                    value = policy if current == phase else "1x"
+                    if value is not None:
+                        args += ["--sandbox-" + current + "-cpu-policy=" + value]
+                args += ["--systemd-cgroup"]
+                entry = {"path": prepare.INSTALL + "/runsc", "runtimeArgs": args}
+                for source in ("actual_runtime", "daemon_config"):
+                    with self.subTest(phase=phase, policy=policy, source=source):
+                        daemon = {"runtimes": {prepare.RUNTIME_NAME: entry}} if source == "daemon_config" else {"runtimes": {}}
+                        before = {"Runtimes": {prepare.RUNTIME_NAME: entry}} if source == "actual_runtime" else {"Runtimes": {}}
+                        message = "already registered with different settings" if source == "actual_runtime" else "existing named lab runtime differs"
+                        with mock.patch.object(prepare, "read_file", return_value=prepare.serialized(daemon)), mock.patch.object(prepare, "docker") as docker, mock.patch.object(prepare, "command") as command, mock.patch.object(prepare, "atomic") as atomic:
+                            with self.assertRaisesRegex(RuntimeError, message):
+                                prepare.register_runtime(before)
+                            docker.assert_not_called()
+                            command.assert_not_called()
+                            atomic.assert_not_called()
+
     def test_identical_runtime_does_not_reload_docker(self):
-        entry = {"path": prepare.INSTALL + "/runsc", "runtimeArgs": prepare.RUNTIME_ARGS}
+        entry = {"path": prepare.INSTALL + "/runsc", "runtimeArgs": ["--platform=systrap", "--host-uds=create", "--file-access-mounts=shared", "--overlay2=root:self", "--sandbox-creation-cpu-policy=1x", "--sandbox-lifecycle-cpu-policy=1x", "--systemd-cgroup"]}
         nvidia = {"path": "nvidia-container-runtime", "args": []}
         daemon = {"runtimes": {prepare.RUNTIME_NAME: entry, "nvidia": nvidia}, "log-driver": "json-file"}
         info = {"Runtimes": daemon["runtimes"], "DefaultRuntime": "runc"}
@@ -120,6 +143,26 @@ class PreparationSafetyTests(unittest.TestCase):
             prepare.register_runtime(info)
             command.assert_not_called()
             atomic.assert_not_called()
+
+    def test_new_runtime_registers_exact_approved_cpu_policies(self):
+        entry = {"path": prepare.INSTALL + "/runsc", "runtimeArgs": ["--platform=systrap", "--host-uds=create", "--file-access-mounts=shared", "--overlay2=root:self", "--sandbox-creation-cpu-policy=1x", "--sandbox-lifecycle-cpu-policy=1x", "--systemd-cgroup"]}
+        nvidia = {"path": "nvidia-container-runtime", "args": []}
+        before = {"Runtimes": {"nvidia": nvidia}, "DefaultRuntime": "runc"}
+        original = prepare.serialized({"runtimes": {"nvidia": nvidia}, "log-driver": "json-file"})
+        daemon = {"runtimes": {prepare.RUNTIME_NAME: entry, "nvidia": nvidia}, "log-driver": "json-file"}
+        after = {"Runtimes": daemon["runtimes"], "DefaultRuntime": "runc"}
+        candidate = "/root/synthetic-docker-candidate.json"
+        mode = types.SimpleNamespace(st_mode=stat.S_IFREG | 0o640)
+        with mock.patch.object(prepare, "read_file", return_value=original), mock.patch.object(prepare, "docker", return_value=prepare.serialized(after)), mock.patch.object(prepare, "command") as command, mock.patch.object(prepare, "atomic") as atomic, mock.patch.object(prepare, "trusted", return_value=mode), mock.patch.object(prepare.tempfile, "mkstemp", return_value=(42, candidate)), mock.patch.object(prepare.os, "fdopen", mock.mock_open()) as fdopen, mock.patch.object(prepare.os, "unlink") as unlink:
+            prepare.register_runtime(before)
+            fdopen().write.assert_called_once_with(prepare.serialized(daemon))
+            command.assert_has_calls([
+                mock.call("dockerd", "--validate", "--config-file", candidate),
+                mock.call("systemctl", "kill", "--kill-whom=main", "--signal=HUP", "docker.service"),
+            ])
+            self.assertEqual(command.call_count, 2)
+            atomic.assert_any_call(prepare.DAEMON, prepare.serialized(daemon), mode=0o640, expected=original)
+            unlink.assert_called_once_with(candidate)
 
     def test_apply_cannot_be_abbreviated(self):
         arguments = ["prepare.py", "--app", "--inventory", "/root/unit-test.json", "--max-message-bytes", "1024", "--max-connections", "1", "--operation-timeout-seconds", "1", "--reconcile-interval-seconds", "1", "--api-deadline-seconds", "1", "--termination-deadline-seconds", "1", "--deadline-seconds", "30"]

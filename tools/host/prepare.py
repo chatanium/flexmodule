@@ -36,7 +36,8 @@ ARCHIVE_SHA = "708afc62f2ee82d19930c703e85f9dab4f27a78c0aec40c0f55eb1040107f1a7"
 ARCHIVE_SIZE = 57851781
 INSTALL = "/opt/flexmodule-lab/runsc/" + RELEASE
 RUNTIME_NAME = "flexmodule-lab-runsc-20261026"
-RUNTIME_ARGS = ["--platform=systrap", "--host-uds=create", "--file-access-mounts=shared", "--overlay2=root:self", "--systemd-cgroup"]
+# Keep the approved OCI CPU quota during creation and teardown, not runsc defaults.
+RUNTIME_ARGS = ["--platform=systrap", "--host-uds=create", "--file-access-mounts=shared", "--overlay2=root:self", "--sandbox-creation-cpu-policy=1x", "--sandbox-lifecycle-cpu-policy=1x", "--systemd-cgroup"]
 BACKING = "/home/flexmodule-lab-storage"
 WORK = BACKING + "/work"
 IMAGE = BACKING + "/data.xfs"
