@@ -262,7 +262,8 @@ for n,t in D.items():
             if fn in {'Token','AccessToken'}:
                 if n=='GuildMemberAddParams':emit(f'if err:=validateCredentialRef({x},c,{p});err!=nil{{return nil,err}};{y} = cloneCredential({x})')
                 elif d=='to':
-                    emit(f'if {x} != "" {{ if !c.projecting {{ {fail("CredentialBoundaryRequired",p,"raw credential requires trusted projection")} }}; ref,err:=c.encode("'+('interaction' if n=='Interaction' else 'webhook')+'",src.ID,'+('src.AppID' if n=='Interaction' else 'src.ApplicationID')+',src.GuildID,src.ChannelID,'+x+','+p+'); if err!=nil{return nil,err}; '+y+'=ref }')
+                    actor='user,err:=c.interactionStructUser(src,'+p+');if err!=nil{return nil,err}; ' if n=='Interaction' else 'user:=""; '
+                    emit(f'if {x} != "" {{ if !c.projecting {{ {fail("CredentialBoundaryRequired",p,"raw credential requires trusted projection")} }}; '+actor+'ref,err:=c.encode("'+('interaction' if n=='Interaction' else 'webhook')+'",src.ID,'+('src.AppID' if n=='Interaction' else 'src.ApplicationID')+',src.GuildID,src.ChannelID,user,'+x+','+p+'); if err!=nil{return nil,err}; '+y+'=ref }')
                 else:emit(f'if err:=validateCredentialRef({x},c,{p});err!=nil{{return nil,err}}')
                 # SDK raw Token remains empty in reverse, ref retained only by handle.
             elif n=='AuditLogChange' and fn in {'OldValue','NewValue'}:
@@ -583,7 +584,8 @@ for n,t in D.items():
             if n in {'Interaction','Webhook'}:
                 emit('if item!=nil && !item.null{ secret,err:=ingressScalar[string](item,c,'+path+');if err!=nil{return nil,err};if secret!=""{')
                 emit('id,err:=ingressScalar[string](n.get("id"),c,'+path+');if err!=nil{return nil,err};app,guild,channel:="","","";if v:=n.get("application_id");v!=nil&&!v.null{app,err=ingressScalar[string](v,c,'+path+');if err!=nil{return nil,err}};if v:=n.get("guild_id");v!=nil&&!v.null{guild,err=ingressScalar[string](v,c,'+path+');if err!=nil{return nil,err}};if v:=n.get("channel_id");v!=nil&&!v.null{channel,err=ingressScalar[string](v,c,'+path+');if err!=nil{return nil,err}}')
-                emit('ref,err:=c.encode("'+('interaction' if n=='Interaction' else 'webhook')+'",id,app,guild,channel,secret,'+path+');if err!=nil{return nil,err};dst.'+wf+'=&wire.DomainNullableCredentialRef{Kind:&wire.DomainNullableCredentialRef_Value{Value:ref}} }}')
+                emit('user,err:=c.interactionIngressUser(n,guild,'+path+');if err!=nil{return nil,err}' if n=='Interaction' else 'user:=""')
+                emit('ref,err:=c.encode("'+('interaction' if n=='Interaction' else 'webhook')+'",id,app,guild,channel,user,secret,'+path+');if err!=nil{return nil,err};dst.'+wf+'=&wire.DomainNullableCredentialRef{Kind:&wire.DomainNullableCredentialRef_Value{Value:ref}} }}')
             elif n=='GuildMemberAddParams':emit('if item!=nil{'+fail('CredentialBoundaryRequired',path,'user credential ingress requires operator-provisioned reference')+'}')
         else:
             if fn in {'Permissions','AppPermissions','DefaultMemberPermissions','Allow','Deny'} and f['source_type'].lstrip('*') in {'int','int64','string'}:
@@ -648,7 +650,8 @@ for n,t in D.items():
             if n in {'Interaction','Webhook'}:
                 emit('if !item.null{secret,err:=ingressScalar[string](item,c,'+path+');if err!=nil{return nil,err};if secret!=""{')
                 emit('id,err:=ingressScalar[string](n.get("id"),c,'+path+');if err!=nil{return nil,err};app,guild,channel:="","","";if v:=n.get("application_id");v!=nil&&!v.null{app,err=ingressScalar[string](v,c,'+path+');if err!=nil{return nil,err}};if v:=n.get("guild_id");v!=nil&&!v.null{guild,err=ingressScalar[string](v,c,'+path+');if err!=nil{return nil,err}};if v:=n.get("channel_id");v!=nil&&!v.null{channel,err=ingressScalar[string](v,c,'+path+');if err!=nil{return nil,err}}')
-                emit('ref,err:=c.encode("'+('interaction' if n=='Interaction' else 'webhook')+'",id,app,guild,channel,secret,'+path+');if err!=nil{return nil,err};dst.'+wf+'=ref }}')
+                emit('user,err:=c.interactionIngressUser(n,guild,'+path+');if err!=nil{return nil,err}' if n=='Interaction' else 'user:=""')
+                emit('ref,err:=c.encode("'+('interaction' if n=='Interaction' else 'webhook')+'",id,app,guild,channel,user,secret,'+path+');if err!=nil{return nil,err};dst.'+wf+'=ref }}')
             else:emit(f'{fail("CredentialBoundaryRequired",path,"user credential ingress requires operator-provisioned reference")}')
         else:
             nullable=w in allshapes and allshapes[w][0]=='nullable'

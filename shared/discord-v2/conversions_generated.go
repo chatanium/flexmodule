@@ -7494,7 +7494,7 @@ dst.AuthorizingIntegrationOwners.Values[targetKey1127] = mapValue1128
 }
 }
 {
-if src.Token != "" { if !c.projecting { return nil, c.fail("CredentialBoundaryRequired", fieldPath(path,"Token"), "raw credential requires trusted projection") }; ref,err:=c.encode("interaction",src.ID,src.AppID,src.GuildID,src.ChannelID,src.Token,fieldPath(path,"Token")); if err!=nil{return nil,err}; dst.CredentialRef=ref }
+if src.Token != "" { if !c.projecting { return nil, c.fail("CredentialBoundaryRequired", fieldPath(path,"Token"), "raw credential requires trusted projection") }; user,err:=c.interactionStructUser(src,fieldPath(path,"Token"));if err!=nil{return nil,err}; ref,err:=c.encode("interaction",src.ID,src.AppID,src.GuildID,src.ChannelID,user,src.Token,fieldPath(path,"Token")); if err!=nil{return nil,err}; dst.CredentialRef=ref }
 }
 {
 var optionalValue1129 int64
@@ -13676,7 +13676,7 @@ optionalValue1910 = string(src.Avatar)
 dst.Avatar=&optionalValue1910
 }
 {
-if src.Token != "" { if !c.projecting { return nil, c.fail("CredentialBoundaryRequired", fieldPath(path,"Token"), "raw credential requires trusted projection") }; ref,err:=c.encode("webhook",src.ID,src.ApplicationID,src.GuildID,src.ChannelID,src.Token,fieldPath(path,"Token")); if err!=nil{return nil,err}; dst.CredentialRef=ref }
+if src.Token != "" { if !c.projecting { return nil, c.fail("CredentialBoundaryRequired", fieldPath(path,"Token"), "raw credential requires trusted projection") }; user:=""; ref,err:=c.encode("webhook",src.ID,src.ApplicationID,src.GuildID,src.ChannelID,user,src.Token,fieldPath(path,"Token")); if err!=nil{return nil,err}; dst.CredentialRef=ref }
 }
 {
 var optionalValue1911 string

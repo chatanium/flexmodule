@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 	core "github.com/thirdscam/chatanium-flexmodule/shared/core-v2"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -268,7 +269,34 @@ func jsonFromWire(v *corewire.JSONValue, c *conversion, path string) (*JSONValue
 	}
 	return &JSONValue{Raw: bytes.Clone(v.Json)}, nil
 }
-func (c *conversion) encode(purpose, id, app, guild, channel, secret, path string) (*corewire.CredentialRef, error) {
+
+// Interaction credentials retain the authenticated invoking user, not a caller
+// supplied helper context. Guild delivery requires Member.User; DM delivery
+// requires User. Conflicting representations must never select a broader scope.
+func (c *conversion) interactionUser(guild, memberUser, user, path string) (string, error) {
+	actor := user
+	if guild != "" {
+		actor = memberUser
+	}
+	id, err := strconv.ParseUint(actor, 10, 64)
+	if err != nil || id == 0 || (memberUser != "" && user != "" && memberUser != user) {
+		return "", c.fail("CredentialBoundaryRequired", path, "interaction requires an unambiguous invoking user")
+	}
+	return actor, nil
+}
+
+func (c *conversion) interactionStructUser(src *discordgo.Interaction, path string) (string, error) {
+	memberUser, user := "", ""
+	if src.Member != nil && src.Member.User != nil {
+		memberUser = src.Member.User.ID
+	}
+	if src.User != nil {
+		user = src.User.ID
+	}
+	return c.interactionUser(src.GuildID, memberUser, user, path)
+}
+
+func (c *conversion) encode(purpose, id, app, guild, channel, user, secret, path string) (*corewire.CredentialRef, error) {
 	if c.policy == nil || c.encoder == nil || c.ctx == nil {
 		return nil, c.fail("CredentialBoundaryRequired", path, "trusted credential policy is required")
 	}
@@ -278,6 +306,12 @@ func (c *conversion) encode(purpose, id, app, guild, channel, secret, path strin
 		key = "interaction_id"
 	}
 	resources := map[string]string{key: id}
+	if purpose == "discord.interaction" {
+		if user == "" {
+			return nil, c.fail("CredentialBoundaryRequired", path, "interaction requires an invoking user")
+		}
+		resources["user_id"] = user
+	}
 	if app != "" {
 		resources["application_id"] = app
 	}

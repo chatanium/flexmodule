@@ -21,6 +21,9 @@ func (h *Helper) credentialRecord(use CredentialUse, p runtime.InstancePrincipal
 	if r == nil || r.owner != p || !proto.Equal(r.ref, use.Ref) || r.purpose != use.Purpose || !time.Now().Before(r.expires) {
 		return nil, denied("CREDENTIAL_REFERENCE_INVALID")
 	}
+	if r.purpose == "discord.interaction" && !snowflake(r.resource.GetResourceIds()["user_id"]) {
+		return nil, denied("CREDENTIAL_REFERENCE_INVALID")
+	}
 	return copySelector(r.resource), nil
 }
 func (h *Helper) credentialTargets(ctx context.Context, plan *RESTPlan, p runtime.InstancePrincipal) ([]*corewire.ResourceScope, error) {

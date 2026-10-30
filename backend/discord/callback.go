@@ -37,6 +37,15 @@ func (h *Helper) validateInitialCallback(ctx context.Context, operation string, 
 		return denied("CREDENTIAL_REFERENCE_INVALID")
 	}
 	kind, message := record.interactionType, record.sourceMessageID
+	// The stored source actor supplies authority even for identity-minimal
+	// callback DTOs. Optional caller identities may only constrain, not grant.
+	storedActor := record.resource.GetResourceIds()["user_id"]
+	actor := req.Interaction.GetUser().GetId()
+	memberActor := req.Interaction.GetMember().GetUser().GetId()
+	if !snowflake(storedActor) || (actor != "" && actor != storedActor) || (memberActor != "" && memberActor != storedActor) {
+		h.backend.mu.Unlock()
+		return denied("CREDENTIAL_REFERENCE_INVALID")
+	}
 	h.backend.mu.Unlock()
 	if int64(req.Interaction.GetType()) != int64(kind) {
 		return denied("CREDENTIAL_INTERACTION_TYPE_MISMATCH")

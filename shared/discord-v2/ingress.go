@@ -31,6 +31,25 @@ func (n *ingressNode) get(k string) *ingressNode {
 	}
 	return n.object[k]
 }
+
+func (c *conversion) interactionIngressUser(n *ingressNode, guild, path string) (string, error) {
+	memberUser, user := "", ""
+	for index, node := range []*ingressNode{n.get("member").get("user").get("id"), n.get("user").get("id")} {
+		if node == nil || node.null {
+			continue
+		}
+		id, err := ingressScalar[string](node, c, path)
+		if err != nil {
+			return "", err
+		}
+		if index == 0 {
+			memberUser = id
+		} else {
+			user = id
+		}
+	}
+	return c.interactionUser(guild, memberUser, user, path)
+}
 func (n *ingressNode) without(keys ...string) *ingressNode {
 	if len(keys) == 0 {
 		return n

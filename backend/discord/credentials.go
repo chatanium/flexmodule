@@ -65,6 +65,9 @@ func (e instanceEncoder) EncodeCredential(ctx context.Context, binding core.Cred
 	}
 	var initialDeadline time.Time
 	if binding.Purpose == "discord.interaction" {
+		if !snowflake(binding.ResourceScope.ResourceIds["user_id"]) {
+			return nil, denied("CREDENTIAL_REFERENCE_INVALID")
+		}
 		var err error
 		initialDeadline, err = initialCallbackDeadline(binding.ResourceScope.ResourceIds["interaction_id"])
 		if err != nil {
@@ -121,6 +124,9 @@ func (b *Backend) projectionPolicy(ctx context.Context, t discordv2.CredentialTa
 	expiry := time.Now().Add(b.config.CredentialTTL)
 	switch t.Purpose {
 	case "discord.interaction":
+		if !snowflake(ids["user_id"]) {
+			return core.CredentialBinding{}, denied("CREDENTIAL_REFERENCE_INVALID")
+		}
 		id := ids["interaction_id"]
 		n, e := strconv.ParseUint(id, 10, 64)
 		if e != nil || n == 0 {

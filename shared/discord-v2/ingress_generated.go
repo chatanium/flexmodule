@@ -4086,7 +4086,8 @@ decodedValue3573,decodeError3574:=c.nodeDomainNullableDomainUint64ToFlexmoduleCo
 item:=n.get("token")
 if item!=nil && !item.null{ secret,err:=ingressScalar[string](item,c,fieldPath(path,"Token"));if err!=nil{return nil,err};if secret!=""{
 id,err:=ingressScalar[string](n.get("id"),c,fieldPath(path,"Token"));if err!=nil{return nil,err};app,guild,channel:="","","";if v:=n.get("application_id");v!=nil&&!v.null{app,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("guild_id");v!=nil&&!v.null{guild,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("channel_id");v!=nil&&!v.null{channel,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}}
-ref,err:=c.encode("interaction",id,app,guild,channel,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=&wire.DomainNullableCredentialRef{Kind:&wire.DomainNullableCredentialRef_Value{Value:ref}} }}
+user,err:=c.interactionIngressUser(n,guild,fieldPath(path,"Token"));if err!=nil{return nil,err}
+ref,err:=c.encode("interaction",id,app,guild,channel,user,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=&wire.DomainNullableCredentialRef{Kind:&wire.DomainNullableCredentialRef_Value{Value:ref}} }}
 }
 {
 item:=n.get("version")
@@ -6099,7 +6100,8 @@ decodedValue4445,decodeError4446:=c.nodeflexmodulecorev2NullableString(item,fiel
 item:=n.get("token")
 if item!=nil && !item.null{ secret,err:=ingressScalar[string](item,c,fieldPath(path,"Token"));if err!=nil{return nil,err};if secret!=""{
 id,err:=ingressScalar[string](n.get("id"),c,fieldPath(path,"Token"));if err!=nil{return nil,err};app,guild,channel:="","","";if v:=n.get("application_id");v!=nil&&!v.null{app,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("guild_id");v!=nil&&!v.null{guild,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("channel_id");v!=nil&&!v.null{channel,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}}
-ref,err:=c.encode("webhook",id,app,guild,channel,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=&wire.DomainNullableCredentialRef{Kind:&wire.DomainNullableCredentialRef_Value{Value:ref}} }}
+user:=""
+ref,err:=c.encode("webhook",id,app,guild,channel,user,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=&wire.DomainNullableCredentialRef{Kind:&wire.DomainNullableCredentialRef_Value{Value:ref}} }}
 }
 {
 item:=n.get("application_id")
@@ -10631,7 +10633,8 @@ item:=n.get("token")
 if item!=nil{
 if !item.null{secret,err:=ingressScalar[string](item,c,fieldPath(path,"Token"));if err!=nil{return nil,err};if secret!=""{
 id,err:=ingressScalar[string](n.get("id"),c,fieldPath(path,"Token"));if err!=nil{return nil,err};app,guild,channel:="","","";if v:=n.get("application_id");v!=nil&&!v.null{app,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("guild_id");v!=nil&&!v.null{guild,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("channel_id");v!=nil&&!v.null{channel,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}}
-ref,err:=c.encode("interaction",id,app,guild,channel,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=ref }}
+user,err:=c.interactionIngressUser(n,guild,fieldPath(path,"Token"));if err!=nil{return nil,err}
+ref,err:=c.encode("interaction",id,app,guild,channel,user,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=ref }}
 }}
 {
 item:=n.get("version")
@@ -14616,7 +14619,8 @@ item:=n.get("token")
 if item!=nil{
 if !item.null{secret,err:=ingressScalar[string](item,c,fieldPath(path,"Token"));if err!=nil{return nil,err};if secret!=""{
 id,err:=ingressScalar[string](n.get("id"),c,fieldPath(path,"Token"));if err!=nil{return nil,err};app,guild,channel:="","","";if v:=n.get("application_id");v!=nil&&!v.null{app,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("guild_id");v!=nil&&!v.null{guild,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}};if v:=n.get("channel_id");v!=nil&&!v.null{channel,err=ingressScalar[string](v,c,fieldPath(path,"Token"));if err!=nil{return nil,err}}
-ref,err:=c.encode("webhook",id,app,guild,channel,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=ref }}
+user:=""
+ref,err:=c.encode("webhook",id,app,guild,channel,user,secret,fieldPath(path,"Token"));if err!=nil{return nil,err};dst.CredentialRef=ref }}
 }}
 {
 item:=n.get("application_id")

@@ -83,6 +83,11 @@ SDK would lose presence. Absent, explicit zero/false/empty, list clear and JSON
 null are distinct. Interaction and webhook handles hold opaque credential refs,
 not raw tokens. Live host objects, voice session credentials and bot tokens do
 not cross the module boundary.
+Interaction credential scopes retain the authenticated invoking `user_id` from
+guild `Member.User` or DM `User`, alongside the source interaction/application
+and present guild/channel IDs. Missing or conflicting invoking users fail before
+credential issuance. Callback and followup authorization preserve that immutable
+user binding; caller-supplied reference metadata cannot replace it.
 
 Command create, edit, get, list and bulk-overwrite use `ApplicationCommandView`,
 including `ApplicationCommandToProto` and `ProtoToApplicationCommand`. Its
