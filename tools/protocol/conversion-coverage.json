@@ -317,7 +317,7 @@
           "classification": "direct",
           "wire_field": "content",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Embeds",
@@ -6343,7 +6343,7 @@
           "classification": "direct",
           "wire_field": "duration",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Expiry",
@@ -6359,7 +6359,7 @@
           "classification": "inline",
           "wire_field": "layout_type",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Question",
@@ -7253,7 +7253,7 @@
           "classification": "direct",
           "wire_field": "avatar_url",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Components",
@@ -7269,7 +7269,7 @@
           "classification": "direct",
           "wire_field": "content",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Embeds",
@@ -7301,7 +7301,7 @@
           "classification": "direct",
           "wire_field": "thread_name",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Tts",
@@ -7317,7 +7317,7 @@
           "classification": "direct",
           "wire_field": "username",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -7399,7 +7399,7 @@
           "classification": "direct",
           "wire_field": "id",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Name",
@@ -7407,7 +7407,7 @@
           "classification": "direct",
           "wire_field": "name",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -7463,7 +7463,7 @@
           "classification": "direct",
           "wire_field": "label",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Value",
@@ -7588,7 +7588,7 @@
           "classification": "direct",
           "wire_field": "custom_id",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Disabled",
@@ -7628,7 +7628,7 @@
           "classification": "direct",
           "wire_field": "skuid",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Style",
@@ -7644,7 +7644,7 @@
           "classification": "direct",
           "wire_field": "url",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -7669,7 +7669,7 @@
           "classification": "direct",
           "wire_field": "custom_id",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "DefaultValues",
@@ -7701,7 +7701,7 @@
           "classification": "direct",
           "wire_field": "max_values",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "MenuType",
@@ -7766,7 +7766,7 @@
           "classification": "direct",
           "wire_field": "label",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "MaxLength",
@@ -7774,7 +7774,7 @@
           "classification": "direct",
           "wire_field": "max_length",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "MinLength",
@@ -7790,7 +7790,7 @@
           "classification": "direct",
           "wire_field": "placeholder",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Required",
@@ -7814,7 +7814,7 @@
           "classification": "direct",
           "wire_field": "value",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -14436,31 +14436,33 @@
           "source_field": "URL",
           "wire_field": "url",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "URL",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "CustomID",
           "wire_field": "custom_id",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "CustomID",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "SKUID",
           "wire_field": "skuid",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "SKUID",
           "safe_go_type": "string",
           "wire_type": "string",
@@ -15268,25 +15270,27 @@
           "source_field": "Name",
           "wire_field": "name",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Name",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "ID",
           "wire_field": "id",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "ID",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Animated",
@@ -16029,13 +16033,14 @@
           "source_field": "CustomID",
           "wire_field": "custom_id",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "CustomID",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "MinValues",
@@ -16053,13 +16058,14 @@
           "source_field": "MaxValues",
           "wire_field": "max_values",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
           "safe_go_field": "MaxValues",
           "safe_go_type": "int",
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_zero": true
         },
         {
           "source_field": "Required",
@@ -19751,13 +19757,14 @@
           "source_field": "Description",
           "wire_field": "description",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Description",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Component",
@@ -21915,13 +21922,14 @@
           "source_field": "Content",
           "wire_field": "content",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Content",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Embeds",
@@ -22293,25 +22301,27 @@
           "source_field": "LayoutType",
           "wire_field": "layout_type",
           "classification": "inline",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
           "safe_go_field": "LayoutType",
           "safe_go_type": "discordgo.PollLayoutType",
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Source PollLayoutType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_zero": true
         },
         {
           "source_field": "Duration",
           "wire_field": "duration",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
           "safe_go_field": "Duration",
           "safe_go_type": "int",
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_zero": true
         },
         {
           "source_field": "Results",
@@ -23084,13 +23094,14 @@
           "source_field": "CustomID",
           "wire_field": "custom_id",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "CustomID",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Placeholder",
@@ -23120,13 +23131,14 @@
           "source_field": "MaxValues",
           "wire_field": "max_values",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
           "safe_go_field": "MaxValues",
           "safe_go_type": "int",
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_zero": true
         },
         {
           "source_field": "DefaultValues",
@@ -23269,13 +23281,14 @@
           "source_field": "Label",
           "wire_field": "label",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Label",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Value",
@@ -24985,13 +24998,14 @@
           "source_field": "Label",
           "wire_field": "label",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Label",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Style",
@@ -25009,25 +25023,27 @@
           "source_field": "Placeholder",
           "wire_field": "placeholder",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Placeholder",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Value",
           "wire_field": "value",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Value",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Required",
@@ -25057,13 +25073,14 @@
           "source_field": "MaxLength",
           "wire_field": "max_length",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
           "safe_go_field": "MaxLength",
           "safe_go_type": "int",
           "wire_type": "sint64",
           "partial_wire_type": "DomainNullableSint64",
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_zero": true
         },
         {
           "source_field": "ID",
@@ -26549,37 +26566,40 @@
           "source_field": "Content",
           "wire_field": "content",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Content",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "Username",
           "wire_field": "username",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "Username",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "AvatarURL",
           "wire_field": "avatar_url",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "AvatarURL",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         },
         {
           "source_field": "TTS",
@@ -26669,13 +26689,14 @@
           "source_field": "ThreadName",
           "wire_field": "thread_name",
           "classification": "direct",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "safe_go_field": "ThreadName",
           "safe_go_type": "string",
           "wire_type": "string",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "numeric_contract": null,
-          "implementation": "static checked to/from field conversion; recursive typed ingress"
+          "implementation": "static checked to/from field conversion; recursive typed ingress",
+          "source_json_omit_empty": true
         }
       ]
     },

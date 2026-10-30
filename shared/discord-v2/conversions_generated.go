@@ -3907,20 +3907,24 @@ func (c *conversion) toButton(src *discordgo.Button, path string) (*wire.Button,
 		dst.Emoji = v
 	}
 	{
-		var optionalValue405 string
-		if credentialURL(string(src.URL)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "URL"), "credential-bearing URL requires runtime policy")
+		if src.URL != "" {
+			var optionalValue405 string
+			if credentialURL(string(src.URL)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "URL"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue405 = string(src.URL)
+			dst.Url = &optionalValue405
 		}
-		optionalValue405 = string(src.URL)
-		dst.Url = &optionalValue405
 	}
 	{
-		var optionalValue406 string
-		if credentialURL(string(src.CustomID)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "CustomID"), "credential-bearing URL requires runtime policy")
+		if src.CustomID != "" {
+			var optionalValue406 string
+			if credentialURL(string(src.CustomID)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "CustomID"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue406 = string(src.CustomID)
+			dst.CustomId = &optionalValue406
 		}
-		optionalValue406 = string(src.CustomID)
-		dst.CustomId = &optionalValue406
 	}
 	{
 		if src.SKUID != "" {
@@ -5232,20 +5236,24 @@ func (c *conversion) toComponentEmoji(src *discordgo.ComponentEmoji, path string
 	defer c.leave(src)
 	dst := &wire.ComponentEmoji{}
 	{
-		var optionalValue553 string
-		if credentialURL(string(src.Name)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Name"), "credential-bearing URL requires runtime policy")
+		if src.Name != "" {
+			var optionalValue553 string
+			if credentialURL(string(src.Name)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Name"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue553 = string(src.Name)
+			dst.Name = &optionalValue553
 		}
-		optionalValue553 = string(src.Name)
-		dst.Name = &optionalValue553
 	}
 	{
-		var optionalValue554 string
-		if credentialURL(string(src.ID)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "ID"), "credential-bearing URL requires runtime policy")
+		if src.ID != "" {
+			var optionalValue554 string
+			if credentialURL(string(src.ID)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "ID"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue554 = string(src.ID)
+			dst.Id = &optionalValue554
 		}
-		optionalValue554 = string(src.ID)
-		dst.Id = &optionalValue554
 	}
 	{
 		var optionalValue555 bool
@@ -6346,12 +6354,14 @@ func (c *conversion) toFileUpload(src *discordgo.FileUpload, path string) (*wire
 		dst.Id = &optionalValue671
 	}
 	{
-		var optionalValue672 string
-		if credentialURL(string(src.CustomID)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "CustomID"), "credential-bearing URL requires runtime policy")
+		if src.CustomID != "" {
+			var optionalValue672 string
+			if credentialURL(string(src.CustomID)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "CustomID"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue672 = string(src.CustomID)
+			dst.CustomId = &optionalValue672
 		}
-		optionalValue672 = string(src.CustomID)
-		dst.CustomId = &optionalValue672
 	}
 	{
 		if src.MinValues != nil {
@@ -6361,9 +6371,11 @@ func (c *conversion) toFileUpload(src *discordgo.FileUpload, path string) (*wire
 		}
 	}
 	{
-		var optionalValue674 int64
-		optionalValue674 = int64(src.MaxValues)
-		dst.MaxValues = &optionalValue674
+		if src.MaxValues != 0 {
+			var optionalValue674 int64
+			optionalValue674 = int64(src.MaxValues)
+			dst.MaxValues = &optionalValue674
+		}
 	}
 	{
 		if src.Required != nil {
@@ -11896,12 +11908,14 @@ func (c *conversion) toLabel(src *discordgo.Label, path string) (*wire.Label, er
 		dst.Label = &optionalValue1204
 	}
 	{
-		var optionalValue1205 string
-		if credentialURL(string(src.Description)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Description"), "credential-bearing URL requires runtime policy")
+		if src.Description != "" {
+			var optionalValue1205 string
+			if credentialURL(string(src.Description)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Description"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1205 = string(src.Description)
+			dst.Description = &optionalValue1205
 		}
-		optionalValue1205 = string(src.Description)
-		dst.Description = &optionalValue1205
 	}
 	{
 		convertedObject1206, objectError1207 := c.toMessageComponent(src.Component, fieldPath(path, "Component"))
@@ -15103,12 +15117,14 @@ func (c *conversion) toMessageSend(src *MessageSendView, path string) (*wire.Mes
 	defer c.leave(src)
 	dst := &wire.MessageSend{}
 	{
-		var optionalValue1478 string
-		if credentialURL(string(src.Content)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Content"), "credential-bearing URL requires runtime policy")
+		if src.Content != "" {
+			var optionalValue1478 string
+			if credentialURL(string(src.Content)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Content"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1478 = string(src.Content)
+			dst.Content = &optionalValue1478
 		}
-		optionalValue1478 = string(src.Content)
-		dst.Content = &optionalValue1478
 	}
 	{
 		if src.Embeds != nil {
@@ -15635,14 +15651,18 @@ func (c *conversion) toPoll(src *discordgo.Poll, path string) (*wire.Poll, error
 		dst.AllowMultiselect = &optionalValue1541
 	}
 	{
-		var optionalValue1542 int64
-		optionalValue1542 = int64(src.LayoutType)
-		dst.LayoutType = &optionalValue1542
+		if src.LayoutType != 0 {
+			var optionalValue1542 int64
+			optionalValue1542 = int64(src.LayoutType)
+			dst.LayoutType = &optionalValue1542
+		}
 	}
 	{
-		var optionalValue1543 int64
-		optionalValue1543 = int64(src.Duration)
-		dst.Duration = &optionalValue1543
+		if src.Duration != 0 {
+			var optionalValue1543 int64
+			optionalValue1543 = int64(src.Duration)
+			dst.Duration = &optionalValue1543
+		}
 	}
 	{
 		v, err := c.toPollResults(src.Results, fieldPath(path, "Results"))
@@ -16833,12 +16853,14 @@ func (c *conversion) toSelectMenu(src *discordgo.SelectMenu, path string) (*wire
 		dst.MenuType = &optionalValue1633
 	}
 	{
-		var optionalValue1634 string
-		if credentialURL(string(src.CustomID)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "CustomID"), "credential-bearing URL requires runtime policy")
+		if src.CustomID != "" {
+			var optionalValue1634 string
+			if credentialURL(string(src.CustomID)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "CustomID"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1634 = string(src.CustomID)
+			dst.CustomId = &optionalValue1634
 		}
-		optionalValue1634 = string(src.CustomID)
-		dst.CustomId = &optionalValue1634
 	}
 	{
 		var optionalValue1635 string
@@ -16856,9 +16878,11 @@ func (c *conversion) toSelectMenu(src *discordgo.SelectMenu, path string) (*wire
 		}
 	}
 	{
-		var optionalValue1637 int64
-		optionalValue1637 = int64(src.MaxValues)
-		dst.MaxValues = &optionalValue1637
+		if src.MaxValues != 0 {
+			var optionalValue1637 int64
+			optionalValue1637 = int64(src.MaxValues)
+			dst.MaxValues = &optionalValue1637
+		}
 	}
 	{
 		if src.DefaultValues != nil {
@@ -17112,12 +17136,14 @@ func (c *conversion) toSelectMenuOption(src *discordgo.SelectMenuOption, path st
 	defer c.leave(src)
 	dst := &wire.SelectMenuOption{}
 	{
-		var optionalValue1669 string
-		if credentialURL(string(src.Label)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Label"), "credential-bearing URL requires runtime policy")
+		if src.Label != "" {
+			var optionalValue1669 string
+			if credentialURL(string(src.Label)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Label"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1669 = string(src.Label)
+			dst.Label = &optionalValue1669
 		}
-		optionalValue1669 = string(src.Label)
-		dst.Label = &optionalValue1669
 	}
 	{
 		var optionalValue1670 string
@@ -18458,12 +18484,14 @@ func (c *conversion) toTextInput(src *discordgo.TextInput, path string) (*wire.T
 		dst.CustomId = &optionalValue1764
 	}
 	{
-		var optionalValue1765 string
-		if credentialURL(string(src.Label)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Label"), "credential-bearing URL requires runtime policy")
+		if src.Label != "" {
+			var optionalValue1765 string
+			if credentialURL(string(src.Label)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Label"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1765 = string(src.Label)
+			dst.Label = &optionalValue1765
 		}
-		optionalValue1765 = string(src.Label)
-		dst.Label = &optionalValue1765
 	}
 	{
 		var optionalValue1766 uint64
@@ -18471,20 +18499,24 @@ func (c *conversion) toTextInput(src *discordgo.TextInput, path string) (*wire.T
 		dst.Style = &optionalValue1766
 	}
 	{
-		var optionalValue1767 string
-		if credentialURL(string(src.Placeholder)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Placeholder"), "credential-bearing URL requires runtime policy")
+		if src.Placeholder != "" {
+			var optionalValue1767 string
+			if credentialURL(string(src.Placeholder)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Placeholder"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1767 = string(src.Placeholder)
+			dst.Placeholder = &optionalValue1767
 		}
-		optionalValue1767 = string(src.Placeholder)
-		dst.Placeholder = &optionalValue1767
 	}
 	{
-		var optionalValue1768 string
-		if credentialURL(string(src.Value)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Value"), "credential-bearing URL requires runtime policy")
+		if src.Value != "" {
+			var optionalValue1768 string
+			if credentialURL(string(src.Value)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Value"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1768 = string(src.Value)
+			dst.Value = &optionalValue1768
 		}
-		optionalValue1768 = string(src.Value)
-		dst.Value = &optionalValue1768
 	}
 	{
 		if src.Required != nil {
@@ -18499,9 +18531,11 @@ func (c *conversion) toTextInput(src *discordgo.TextInput, path string) (*wire.T
 		dst.MinLength = &optionalValue1770
 	}
 	{
-		var optionalValue1771 int64
-		optionalValue1771 = int64(src.MaxLength)
-		dst.MaxLength = &optionalValue1771
+		if src.MaxLength != 0 {
+			var optionalValue1771 int64
+			optionalValue1771 = int64(src.MaxLength)
+			dst.MaxLength = &optionalValue1771
+		}
 	}
 	{
 		var optionalValue1772 int64
@@ -20625,28 +20659,34 @@ func (c *conversion) toWebhookParams(src *WebhookParamsView, path string) (*wire
 	defer c.leave(src)
 	dst := &wire.WebhookParams{}
 	{
-		var optionalValue1949 string
-		if credentialURL(string(src.Content)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Content"), "credential-bearing URL requires runtime policy")
+		if src.Content != "" {
+			var optionalValue1949 string
+			if credentialURL(string(src.Content)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Content"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1949 = string(src.Content)
+			dst.Content = &optionalValue1949
 		}
-		optionalValue1949 = string(src.Content)
-		dst.Content = &optionalValue1949
 	}
 	{
-		var optionalValue1950 string
-		if credentialURL(string(src.Username)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Username"), "credential-bearing URL requires runtime policy")
+		if src.Username != "" {
+			var optionalValue1950 string
+			if credentialURL(string(src.Username)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "Username"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1950 = string(src.Username)
+			dst.Username = &optionalValue1950
 		}
-		optionalValue1950 = string(src.Username)
-		dst.Username = &optionalValue1950
 	}
 	{
-		var optionalValue1951 string
-		if credentialURL(string(src.AvatarURL)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "AvatarURL"), "credential-bearing URL requires runtime policy")
+		if src.AvatarURL != "" {
+			var optionalValue1951 string
+			if credentialURL(string(src.AvatarURL)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "AvatarURL"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1951 = string(src.AvatarURL)
+			dst.AvatarUrl = &optionalValue1951
 		}
-		optionalValue1951 = string(src.AvatarURL)
-		dst.AvatarUrl = &optionalValue1951
 	}
 	{
 		var optionalValue1952 bool
@@ -20723,12 +20763,14 @@ func (c *conversion) toWebhookParams(src *WebhookParamsView, path string) (*wire
 		dst.Flags = &optionalValue1969
 	}
 	{
-		var optionalValue1970 string
-		if credentialURL(string(src.ThreadName)) {
-			return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "ThreadName"), "credential-bearing URL requires runtime policy")
+		if src.ThreadName != "" {
+			var optionalValue1970 string
+			if credentialURL(string(src.ThreadName)) {
+				return nil, c.fail("CredentialBoundaryRequired", fieldPath(path, "ThreadName"), "credential-bearing URL requires runtime policy")
+			}
+			optionalValue1970 = string(src.ThreadName)
+			dst.ThreadName = &optionalValue1970
 		}
-		optionalValue1970 = string(src.ThreadName)
-		dst.ThreadName = &optionalValue1970
 	}
 	return dst, nil
 }

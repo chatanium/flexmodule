@@ -288,3 +288,81 @@ func TestInteractionButtonSKUJSONPresence(t *testing.T) {
 		t.Fatal("explicit typed empty SKU was silently omitted")
 	}
 }
+
+func TestWebhookOptionalStringsMatchSourceJSON(t *testing.T) {
+	for _, source := range []*discordgo.WebhookParams{
+		{},
+		{Content: "message", Username: "speaker", AvatarURL: "https://example.com/avatar.png", ThreadName: "topic"},
+	} {
+		data, err := discordv2.WebhookParamsToProto(&discordv2.WebhookParamsView{
+			Content: source.Content, Username: source.Username, AvatarURL: source.AvatarURL, ThreadName: source.ThreadName,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		plan, err := buildRESTPlan("WebhookThreadExecute", &wire.WebhookThreadExecuteRequest{
+			WebhookId: "123", Credential: apiFixtureCredential("discord.webhook"), Wait: true, Data: data,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		raw, err := json.Marshal(source)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var sdkJSON, outgoing map[string]json.RawMessage
+		if json.Unmarshal(raw, &sdkJSON) != nil || json.Unmarshal(plan.Request.JSON, &outgoing) != nil {
+			t.Fatal("invalid request JSON")
+		}
+		for _, field := range []string{"content", "username", "avatar_url", "thread_name"} {
+			if string(outgoing[field]) != string(sdkJSON[field]) {
+				t.Fatalf("%s source omission/value changed at HTTP boundary", field)
+			}
+		}
+	}
+	value, err := discordJSON(&wire.WebhookParams{
+		Content: apiFixturePointer(""), Username: apiFixturePointer(""),
+		AvatarUrl: apiFixturePointer(""), ThreadName: apiFixturePointer(""),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	object, ok := value.(map[string]any)
+	if !ok {
+		t.Fatal("typed webhook did not encode as an object")
+	}
+	for _, field := range []string{"content", "username", "avatar_url", "thread_name"} {
+		if got, present := object[field]; !present || got != "" {
+			t.Fatalf("%s explicit wire empty was silently removed", field)
+		}
+	}
+}
+
+func TestOutboundDefaultFieldsPreserveExplicitWireZero(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		input  any
+		fields []string
+	}{
+		{"Poll", &wire.Poll{Duration: apiFixturePointer(int64(0)), LayoutType: apiFixturePointer(int64(0))}, []string{"duration", "layout_type"}},
+		{"SelectMenu", &wire.SelectMenu{MaxValues: apiFixturePointer(int64(0))}, []string{"max_values"}},
+		{"FileUpload", &wire.FileUpload{MaxValues: apiFixturePointer(int64(0))}, []string{"max_values"}},
+		{"TextInput", &wire.TextInput{MaxLength: apiFixturePointer(int64(0))}, []string{"max_length"}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			value, err := discordJSON(tc.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			object, ok := value.(map[string]any)
+			if !ok {
+				t.Fatal("typed input did not encode as an object")
+			}
+			for _, field := range tc.fields {
+				if got, present := object[field]; !present || got != int64(0) {
+					t.Fatalf("%s explicit wire zero was silently removed", field)
+				}
+			}
+		})
+	}
+}

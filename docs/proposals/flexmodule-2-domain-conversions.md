@@ -11,15 +11,15 @@
 
 ## 1. Summary
 
-현재 선언된 Discord 도메인 메시지 154개와 enum 23개를 모두 분류하고, 전송 가능한 데이터의 양방향 변환을 필드와 값의 의미까지 보존하도록 정비합니다. 자격 증명, 파일 Reader 및 실행 중인 SDK 객체는 일반 필드처럼 직렬화하지 않고, typed reference, 업로드 파일 참조 또는 명시적으로 제한한 데이터 경계로 교체합니다. P1과 P3에서 추가하는 REST 요청, 응답 및 이벤트 DTO에도 같은 규칙을 적용하여 범용 봇 기능이 변환 과정에서 축소되지 않도록 합니다.
+기존 감사의 Discord 도메인 메시지 154개와 enum 23개를 보존하고, 최신 고정 SDK의 API 및 이벤트에서 도달하는 전체 타입까지 분류합니다. 전송 가능한 데이터는 양방향 변환에서 필드와 값의 의미를 보존하며, 자격 증명, 파일 Reader 및 실행 중인 SDK 객체는 typed reference, 업로드 파일 참조 또는 명시적으로 제한한 데이터 경계로 교체합니다. 역사적 선언 수로 최종 전송 범위를 제한하지 않습니다.
 
 ## 2. Background & Motivation
 
-### 확인된 현재 상태
+### 기존 감사 기준선
 
-현재 `discordgo.proto`의 최상위 메시지는 154개이며 enum은 23개입니다. `ChannelEdit`은 이 집계 밖의 `helper.proto`에 선언되어 있으므로 별도로 포함해야 합니다. 기존 감사의 변환 함수 유무 분류는 다음과 같습니다.
+아래 표는 업그레이드 전 v1 `discordgo.proto`의 메시지 154개와 enum 23개에 대한 감사 기록입니다. `ChannelEdit`은 당시 이 집계 밖의 `helper.proto`에 있었으므로 별도로 포함합니다. 함수 유무와 결함 관찰은 역사적 근거이며 현재 전송 범위나 구현 완료율이 아닙니다.
 
-| 현재 분류 | 메시지 수 | 이 제안에서의 처리 |
+| 기존 감사 분류 | 메시지 수 | 이 제안에서의 처리 |
 |---|---:|---|
 | 활성 named 변환이 양방향에 존재 | 72 | 모든 필드와 의미를 검토합니다. 실행 객체는 명시적 경계 교체 대상으로 분리합니다. |
 | 활성 변환이 한 방향에만 존재 | 2 | `File` 및 `WebhookParams`의 반대 방향과 경계 계약을 완성합니다. |
@@ -35,6 +35,18 @@
 
 기존 24개 격리 probe에서는 enum 문자열의 제어문자 변환, 기본 embed 타입 panic, nil 중첩 객체 panic, patch 초기화 손실, integer option accessor panic, resolved map key 변경 및 여러 필드 누락이 관찰되었습니다. 해당 probe는 컴파일을 막는 일부 response 함수를 제외한 격리 환경에서 실행되었으므로 전체 저장소의 성공 또는 실패를 대신하지 않습니다. 이 제안서를 작성하면서 빌드나 probe를 다시 실행하지 않았습니다.
 
+### 현재 source delta와 처리 범위
+
+현재 입력은 P0에 고정한 태그 없는 DiscordGo commit `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`입니다. [source summary](../../tools/protocol/inventory/source-refresh-summary.json), [API catalog](../../tools/protocol/inventory/source-api.json), [event catalog](../../tools/protocol/inventory/source-events.json) 및 [type closure](../../tools/protocol/inventory/source-type-closure.json)에 따라 API root 59개, API named-type closure 204개, event closure 228개, 두 closure의 합집합 282개를 처리합니다. source 메서드 232개에서 SDK-derived Helper 작업 153개를 노출하고 event row 74개 중 67개를 모듈에 전달합니다. 과거의 229개 메서드, 73개 이벤트, root 57개/type 199개와 메시지 154개/enum 23개는 최종 ceiling이 아닙니다.
+
+새 필드와 타입의 변환 계약은 다음과 같습니다.
+
+- `Label`(Discord type 18)과 `FileUpload`(19)를 포함한 component 13개를 재귀적으로 변환합니다. Label의 `Component`, FileUpload의 ID/custom ID, `MinValues *int`, `MaxValues`, `Required *bool`, `Values`를 보존하며 modal FileUpload의 Label 배치 규칙을 검증합니다.
+- resolved 타입을 `MessageComponentInteractionDataResolved`에서 `ComponentInteractionDataResolved`로 단절적으로 이관합니다. component 및 modal의 `Resolved.Attachments` map key, partial member와 첨부 DTO 전체를 유지합니다. `SelectMenu.Values`, `TextInput.Required *bool`, `SelectMenu.Required *bool`의 nil/false/true와 `TextInput.Label`의 omitempty 의미를 보존합니다.
+- `User.PrimaryGuild`의 `UserPrimaryGuild{IdentityGuildID, IdentityEnabled, Tag, Badge}`와 `WebhookEdit.Flags`를 포함합니다. 기본값으로 덮어쓰거나 flags patch 존재성을 잃지 않습니다.
+- `ChannelMessagesPinned`는 `before *time.Time` 및 `limit`을 받으며 응답은 `ChannelMessagePinsList{Items, HasMore}`입니다. 각 `MessagePin`의 `PinnedAt`과 `Message`, 목록 순서와 pagination을 보존하고 이전 `[]*Message` 결과로 축소하지 않습니다.
+- 새 `MESSAGE_REACTION_REMOVE_EMOJI`는 사용자별 제거와 구분합니다. `ChannelDelete.BeforeDelete`/`ThreadDelete.BeforeDelete`의 `*Channel`, `GuildMemberRemove.BeforeDelete`의 `*Member`, `GuildRoleUpdate.BeforeUpdate`/`GuildRoleDelete.BeforeDelete`의 `*Role`을 실제 존재할 때만 전달합니다. READY는 `SessionID`, `Shard`, `ResumeGatewayURL`을 제거하며 `UserVoiceState` REST 결과에서도 `VoiceState.SessionID`를 제거합니다.
+
 ### 확정된 요구사항
 
 관리, 모더레이션, 명령, 일반 메시지 및 선택적 음성 모듈은 같은 수준으로 지원합니다. 현재 예제가 사용하는 필드만 고치거나 음악 기능에 필요한 타입으로 범위를 줄이지 않습니다. 런타임과 모든 모듈을 함께 재빌드하는 v2 전환을 전제로 하며, 잘못된 v1 표현을 유지하기 위한 shim이나 alias는 남기지 않습니다.
@@ -45,7 +57,7 @@
 
 - [ ] 기존 154개 메시지, 23개 enum, 별도 `ChannelEdit` 및 P1/P3의 신규 API와 이벤트 DTO를 빠짐없이 분류합니다.
 - [ ] 모든 안전한 도메인 필드의 양방향 변환, 중첩 변환, map key, 목록 순서 및 표현 가능한 미지의 값을 보존합니다.
-- [ ] 미설정, 0, false, 빈 문자열, 빈 목록 및 API가 지원하는 명시적 null을 구분합니다.
+- [ ] wire DTO와 presence-aware view에서 미설정, 0, false, 빈 문자열, 빈 목록 및 API가 지원하는 명시적 null을 구분합니다.
 - [ ] 자격 증명을 P1의 typed `CredentialRef`와 sanitized SDK wrapper로 전달하고 일반 Token 문자열로 위장하지 않습니다.
 - [ ] 파일 내용을 nil Reader로 바꾸는 성공 경로를 제거하고 P3의 업로드 참조 및 읽기 lease 경계와 연결합니다.
 - [ ] 변환 실패를 구조화한 오류로 반환하고 panic, 로그만 출력한 값 누락 및 부분 성공을 제거합니다.
@@ -114,7 +126,7 @@ DB 스키마 변경은 없습니다. wire DTO와 Go 편의 타입은 다음과 �
 | `Channel.Messages`, `Channel.Members` | 실제 입력에 존재하는 안전한 snapshot을 변환합니다. 누락된 캐시를 조회해 채우거나 빈 결과를 완전한 캐시로 표시하지 않습니다. |
 | `User.Token`, `Session.Token`, `Identify.Token` | 모듈 DTO에서 제거합니다. 순수 변환기에 raw token이 들어오면 경계 오류로 거절하며 trusted runtime projection이 해당 정책을 먼저 적용합니다. |
 | `Interaction.Token`, `Webhook.Token` | runtime projection에서 용도와 자원 범위가 제한된 `CredentialRef`로 교체합니다. 모듈에는 Token이 비어 있는 SDK 객체와 별도 typed reference를 가진 handle을 제공합니다. |
-| `VoiceState.SessionID`, READY의 session/resume 정보, voice server credential | 런타임 연결 내부 정보로 제거합니다. 사용자, 채널, mute/deaf 등 허용된 voice 도메인 필드는 보존합니다. raw 이벤트나 URL을 통한 재노출도 금지합니다. |
+| `VoiceState.SessionID`, READY의 `SessionID`/`Shard`/`ResumeGatewayURL`, voice server credential | 런타임 연결 내부 정보로 제거합니다. 사용자, 채널, mute/deaf 등 허용된 voice 도메인 필드는 REST `UserVoiceState`와 이벤트에 같은 정책으로 보존합니다. raw 이벤트나 URL을 통한 재노출도 금지합니다. |
 | `GuildMemberAddParams`의 사용자 승인 credential | bot endpoint에 필요한 operator-provisioned 사용자 credential을 P1의 목적 제한 reference로 전달합니다. OAuth 로그인 흐름이나 secret export 기능을 새로 만들지 않습니다. |
 | `File` | 이름과 content type만 남기고 Reader를 nil로 만드는 변환은 삭제합니다. 모듈은 명시적으로 업로드한 `FileAttachment`를 전달하고 호스트가 P3의 read lease로 실제 파일을 엽니다. |
 
@@ -125,6 +137,8 @@ DB 스키마 변경은 없습니다. wire DTO와 Go 편의 타입은 다음과 �
 #### 기본 변환 규칙
 
 - nil 최상위 포인터는 `(nil, nil)`로 반환합니다. 선택적인 nested 포인터도 존재 여부를 보존하며, `Activity.Party`, `Assets`, `Secrets`, timestamp, `Presence` 및 partial `Channel`을 무조건 역참조하지 않습니다.
+- 요청용 SDK value-only 필드는 필드별로 검토한 `omitempty` 계약을 따릅니다. `MessageSend`, `WebhookParams`와 component 계열의 선택적 문자열 17개는 빈 source 값을 생략합니다. 숫자는 `Poll.Duration`, `Poll.LayoutType`, `SelectMenu.MaxValues`, `FileUpload.MaxValues`, `TextInput.MaxLength` 5개에만 source 0 생략을 적용합니다. 대상과 근거는 [필드별 매핑](../../tools/protocol/domain-mapping.json)의 `source_json_omit_empty` 및 `source_json_omit_zero`와 [SDK 설명](../../shared/README.md)에 기록합니다.
+- 위 생략 규칙은 SDK 입력을 wire로 옮길 때만 적용합니다. wire에 명시한 빈 문자열과 0을 HTTP 인코더에서 제거하지 않으며, 다른 0/false 값, 포인터, nullable 및 collection 존재성도 바꾸지 않습니다. 전체 SDK JSON과의 일괄 동등성이나 수신 snapshot의 존재성을 SDK 기본값에서 복원한다고 약속하지 않습니다.
 - protobuf가 표현할 수 없는 nil collection 원소는 인덱스가 포함된 명시적 오류로 거절합니다. 원소를 건너뛰어 목록 길이나 순서를 바꾸지 않습니다. API가 null 원소를 허용하는 경우에는 별도 nullable wire 표현을 사용합니다.
 - 일반 snapshot에서 nil과 빈 collection이 같은 의미라면 같은 빈 결과로 정규화할 수 있습니다. patch에서 같은 정규화를 적용하지 않습니다. 이 의미 구분을 필드별 분류에 기록합니다.
 - map은 입력 key를 그대로 복사합니다. 값 안의 `ID` 또는 `Member.User.ID`로 key를 다시 만들지 않습니다. resolved member에 `User`가 없는 정상 partial object를 허용하고 사용자를 만들어 넣지 않습니다.
@@ -142,7 +156,7 @@ DB 스키마 변경은 없습니다. wire DTO와 Go 편의 타입은 다음과 �
 | `Message` | `Flags`, `Interaction`, `InteractionMetadata`, `Mentions`, `MessageReference`, `MessageSnapshots`, `Poll`, `Reactions`, `ReferencedMessage`, `StickerItems`, `Thread`의 11개 누락을 양방향 수정합니다. |
 | `MessageSend` | `AllowedMentions`, `Components`, `Flags`, `Poll`, `Reference`를 보존합니다. 파일 내용은 업로드 참조로 전달하고 기존 단일 `File`/`Embed` convenience 필드는 SDK의 canonical 요청으로 명시적으로 정규화하거나 새 typed 호출로 마이그레이션합니다. |
 | `MessageEdit` | content, components, embeds, attachments의 omitted와 explicit empty를 구분합니다. `AllowedMentions` 및 flags를 보존하며 SDK value-only flags를 거쳐 presence를 잃지 않습니다. |
-| `User` | `GlobalName`, `AccentColor`, `Banner`, `MFAEnabled`, `PremiumType`, `System` 등 안전한 도메인 필드를 보존합니다. Token 누락은 보완 대상이 아니라 위의 금지 경계로 처리합니다. |
+| `User` | `GlobalName`, `AccentColor`, `Banner`, `MFAEnabled`, `PremiumType`, `System`, `PrimaryGuild`와 `UserPrimaryGuild`의 모든 안전한 필드를 보존합니다. Token 누락은 보완 대상이 아니라 위의 금지 경계로 처리합니다. |
 | `ApplicationCommand` | `Contexts`, `IntegrationTypes`, `DefaultPermission`, `DMPermission` 및 `DefaultMemberPermissions`의 값과 존재 여부를 보존합니다. nil과 명시적 0 권한을 혼동하거나 helper에서 권한을 강제로 nil로 만들지 않습니다. |
 | `ApplicationCommandOption` 및 choice | 역방향 `Autocomplete`, choice의 `NameLocalizations`, min/max 및 length의 presence를 보존합니다. 선택 값의 실제 종류와 parent option 타입을 맞춥니다. |
 | interaction option | string, integer, boolean, user, channel, role, mentionable, number, attachment 및 nested subcommand/group을 모두 처리합니다. role/mentionable/attachment ID를 버리지 않습니다. |
@@ -150,7 +164,7 @@ DB 스키마 변경은 없습니다. wire DTO와 Go 편의 타입은 다음과 �
 | resolved 객체 | Users, Members, Roles, Channels, Messages, Attachments 및 component resolved map의 원래 key를 유지합니다. partial member나 channel이 완전한 객체라는 가정을 하지 않습니다. |
 | `InteractionResponseData` | `Files`, `Attachments`, `Choices`, `CustomID`, `Title`, `Poll` 및 기존 content/components/embeds/mentions/flags를 모두 변환합니다. autocomplete, modal 및 메시지 응답을 같은 일부 필드로 축소하지 않습니다. |
 | `WebhookParams` | 누락된 역방향을 구현하고 `Components`, `Files`, `Flags` 및 모든 기존 필드를 보존합니다. 파일은 참조 경계를 사용합니다. |
-| `WebhookEdit` | 현재 content만 변환하는 경로를 교체하여 `AllowedMentions`, `Attachments`, `Components`, `Embeds`, `Files`와 patch presence를 보존합니다. |
+| `WebhookEdit` | 기존 감사에서 content만 변환하던 경로를 교체하여 `AllowedMentions`, `Attachments`, `Components`, `Embeds`, `Files`, 새 `Flags`와 patch presence를 보존합니다. |
 | `ChannelEdit` | `PermissionOverwrites`, `Flags`, `DefaultThreadRateLimitPerUser`, `Archived`, `AutoArchiveDuration`, `Locked`, `Invitable`, `AppliedTags`를 보완하고 4.2의 스키마 누락도 함께 해결합니다. |
 | `Presence.Activities` | 별도 축약 inline 변환을 없애거나 완전한 `Activity` 변환과 같은 결과가 되게 하여 `Party`, `Assets`, `Secrets`, `Instance`, `Flags`를 보존합니다. |
 | `GatewayBotResponse` | 공개 base URL, shard 권고 및 `SessionStartLimit`을 읽기 전용 데이터로 보존합니다. limit 필드의 실제 SDK 타입은 `SessionInformation`이며 `Total`, `Remaining`, `ResetAfter`의 밀리초 단위, `MaxConcurrency`를 모두 변환합니다. gateway 연결 또는 세션 재개 권한을 함께 부여하지 않습니다. |
@@ -198,7 +212,7 @@ DB 스키마 변경은 없습니다. wire DTO와 Go 편의 타입은 다음과 �
 
 `MessageActivityType`, `ChannelType`, `InteractionContextType`, `ApplicationIntegrationType`은 기존 숫자 계약 차이를 특히 확인합니다. 실제 의미가 0인 타입에 임의 offset을 주지 않습니다. composite mask는 알려진 상수의 단일 enum 값으로 축소하지 않습니다. wire에는 표현되지만 로컬 SDK의 `uint8`, `int`, `int64` 등에 들어가지 않는 값은 명시적 range 오류로 반환합니다.
 
-스칼라 wrapper 11개는 `GuildOnboardingMode`, `GuildOnboardingPromptType`, `RoleFlags`, `MemberFlags`, `AutoModerationActionType`, `PollLayoutType`, `SKUType`, `SKUFlags`, `SubscriptionStatus`, `EntitlementType`, `EntitlementOwnerType`입니다. mask인 세 flags wrapper는 bit 조합을, 나머지는 실제 underlying numeric value를 보존합니다. wrapper 부재와 존재하는 0이 구분되는 필드는 그 차이도 보존합니다. 별도 함수가 없다는 이유만으로 변환 완료로 계산하지 않습니다.
+스칼라 wrapper 11개는 `GuildOnboardingMode`, `GuildOnboardingPromptType`, `RoleFlags`, `MemberFlags`, `AutoModerationActionType`, `PollLayoutType`, `SKUType`, `SKUFlags`, `SubscriptionStatus`, `EntitlementType`, `EntitlementOwnerType`입니다. mask인 세 flags wrapper는 bit 조합을, 나머지는 wire에 존재하는 실제 underlying numeric value를 보존합니다. wrapper 부재와 존재하는 0이 구분되는 필드는 그 차이도 보존합니다. SDK source의 검토된 생략 규칙은 위의 기본 변환 규칙을 따릅니다. 별도 함수가 없다는 이유만으로 변환 완료로 계산하지 않습니다.
 
 #### interaction 값과 동적 JSON
 
@@ -216,7 +230,7 @@ wire JSON wrapper의 필드 이름은 P1의 `JSONValue.json`이며, UTF-8로 인
 
 #### component, patch 및 이벤트 closure
 
-현재 component oneof의 11가지 variant는 `ActionsRow`, `Button`, `SelectMenu`, `TextInput`, `Section`, `TextDisplay`, `Thumbnail`, `MediaGallery`, `FileComponent`, `Separator`, `Container`입니다. 각각의 필드와 중첩 component를 보존합니다. typed nil interface, 빈 oneof, 알려지지 않은 variant 및 허용되지 않는 type/payload 조합은 nil 성공이나 원소 삭제로 처리하지 않습니다.
+현재 component oneof의 13가지 variant는 `ActionsRow`, `Button`, `SelectMenu`, `TextInput`, `Section`, `TextDisplay`, `Thumbnail`, `MediaGallery`, `FileComponent`, `Separator`, `Container`, `Label`, `FileUpload`입니다. 각각의 필드와 중첩 component를 보존합니다. typed nil interface, 빈 oneof, 알려지지 않은 variant 및 허용되지 않는 type/payload 조합은 nil 성공이나 원소 삭제로 처리하지 않습니다.
 
 `MessageEdit`, `WebhookEdit`, `ChannelEdit` 및 다른 수정 요청의 authoritative 표현은 P1/P3의 typed request DTO입니다. SDK 구조체가 `omitempty`나 value-only 필드 때문에 명시적 zero/empty/null을 잃으면 해당 구조체를 왕복 경로로 사용하지 않습니다. P3의 presence-aware encoder가 typed DTO를 직접 요청 body로 만들며, P2의 편의 patch view는 같은 존재 여부를 유지합니다. attachment 수정 요청에는 응답 snapshot인 `MessageAttachment` 대신 P1의 `AttachmentEditEntry`와 present `AttachmentEditList`를 사용합니다. present 목록은 유지할 기존 ID와 추가할 새 파일 index를 모두 담은 수정 후 전체 집합입니다. 목록 미지정은 새 파일이 없을 때만 기존 첨부 유지이고, present 빈 목록은 전체 첨부 제거입니다.
 
@@ -224,7 +238,7 @@ wire JSON wrapper의 필드 이름은 P1의 `JSONValue.json`이며, UTF-8로 인
 
 P1/P3의 신규 요청 및 응답 DTO는 전부 같은 분류표에 추가합니다. tuple 인자는 이름 있는 필드, variadic 목록은 의미에 맞는 collection, error-only 결과는 Empty로 매핑하며, 각 reachable nested 타입까지 변환을 닫습니다. 새 이벤트는 `<SourceType>Event` 기반 typed payload와 실제 필드 presence를 사용합니다. stage 이벤트의 canonical 이름은 `STAGE_INSTANCE_CREATE`, `STAGE_INSTANCE_DELETE`, `STAGE_INSTANCE_UPDATE`이며 기존 로컬 event 이름의 오기를 호환 alias로 남기지 않습니다. `PRESENCES_REPLACE`처럼 전달 대상에서 제외한 legacy event가 있어도 순수 `Presence` 변환을 삭제하지 않습니다.
 
-현재 공식 bot API 분류에서 얻은 추가 도달 범위는 시그니처 root 57개에서 도달하는 named type 199개이며, struct 131개, scalar/alias 66개, interface 2개로 구성됩니다. 이는 신규 Protobuf message 199개라는 뜻이 아니며 기존 154개 또는 이벤트 전용 타입의 수를 대체하지 않습니다. `ChannelFollow`, `GuildChannelCreateData`, `UpdateStatusData` 등 기존 스키마 밖의 root와 두 interface의 구체 variant도 포함합니다. `Session` receiver, 임의 `RequestOption`, HTTP/Gateway transport 및 `VoiceConnection`은 domain root에서 제외하고 앞서 정한 명시적 경계로 분류합니다. 전체 source signature와 root 목록은 P3의 API 분류에 연결하며 타입 하나라도 처리 결론이 없으면 closure가 완료되지 않은 것으로 봅니다.
+기존 공식 bot API 감사의 root 57개와 named type 199개(struct 131개, scalar/alias 66개, interface 2개)는 역사적 기록입니다. 현재 API root 59개에서 도달하는 named type은 204개이며 API/event closure 합집합은 282개입니다. 이는 신규 Protobuf message 개수가 아니며 기존 메시지 154개나 이벤트 전용 타입의 수를 대체하지 않습니다. `ChannelFollow`, `GuildChannelCreateData`, `UpdateStatusData`, `ChannelMessagePinsList` 및 polymorphic variant도 포함합니다. `Session` receiver, 임의 `RequestOption`, HTTP/Gateway transport 및 `VoiceConnection`은 domain root에서 제외하고 명시적 경계로 분류합니다. 전체 source signature와 root 목록은 P3의 현재 API catalog에 연결하며 타입 하나라도 처리 결론이 없으면 closure 완료로 보지 않습니다.
 
 `BeforeUpdate` 및 `BeforeDelete`는 실제 cache snapshot이 존재할 때만 제공합니다. 삭제 이벤트를 생성 이벤트로 재해석하거나 누락된 author/member를 만들어 넣지 않습니다. 초기 154개를 모두 처리했더라도 새 API나 이벤트에서 도달하는 DTO가 미분류이면 P2의 통합 완료로 인정하지 않습니다.
 
@@ -434,19 +448,21 @@ func ProtoToGuildAuditLog(src *discordv2.GuildAuditLog) (*GuildAuditLogView, err
 
 #### credential projection 및 모듈 handle
 
-아래 `CredentialEncoder`, `CredentialBinding`, `CredentialUse` 및 `CredentialResolver`는 P1 소유 타입입니다. encoder는 인증된 인스턴스와 자원 범위에 결합하며 resolver는 런타임에만 존재합니다. 모듈 입력의 owner ID나 reference metadata를 그대로 신뢰하지 않습니다.
+아래 `CredentialEncoder`, `CredentialBinding`, `CredentialTarget`, `ProjectionPolicy`, `CredentialUse` 및 `CredentialResolver`는 P1 소유 타입입니다. `CredentialTarget`은 `Purpose string`과 `ResourceScope *corev2.ResourceSelector`만 담고, `ProjectionPolicy`의 정확한 함수 타입은 `func(context.Context, CredentialTarget) (CredentialBinding, error)`입니다. P3의 신뢰된 policy가 작업에 승인된 backend, purpose, 정확한 scope 및 유한한 미래 expiry를 제공합니다. converter가 기본 TTL을 정하거나 모듈 입력의 owner ID와 ref metadata를 신뢰하지 않으며 resolver는 런타임에만 존재합니다.
 
 ```go
-// ProjectInteraction is a runtime-only boundary projection. It preserves
-// all permitted domain fields and replaces the raw interaction token using
-// the supplied P1 encoder. The authenticated context determines ownership.
-// It never places a secret, an encoded secret, or a token-bearing URL on wire.
-func ProjectInteraction(ctx context.Context, src *discordgo.Interaction, encoder CredentialEncoder) (*discordv2.Interaction, error)
+// ProjectInteraction is a runtime-only projection using P1-owned policy types.
+// It derives interaction_id and present application_id/guild_id/channel_id from
+// the source, never from invented caller IDs, and passes no raw token to policy.
+// It validates the binding's backend, purpose, exact scope and future finite expiry.
+// The authenticated ctx is passed unchanged; only encoder receives the raw secret.
+func ProjectInteraction(ctx context.Context, src *discordgo.Interaction, encoder CredentialEncoder, policy ProjectionPolicy) (*discordv2.Interaction, error)
 
-// ProjectWebhook is the equivalent runtime-only projection for webhook data.
-// A token-free webhook remains token-free; a credential is issued only when
-// the runtime has the corresponding authorized source credential.
-func ProjectWebhook(ctx context.Context, src *discordgo.Webhook, encoder CredentialEncoder) (*discordv2.Webhook, error)
+// ProjectWebhook derives webhook_id and other present source resource IDs,
+// obtains the trusted policy binding and applies the same validation.
+// A token-free source stays token-free; secrets and token-bearing URLs never
+// reach policy, module DTOs or diagnostics.
+func ProjectWebhook(ctx context.Context, src *discordgo.Webhook, encoder CredentialEncoder, policy ProjectionPolicy) (*discordv2.Webhook, error)
 
 // InteractionHandle keeps the SDK convenience value separate from its opaque
 // credential. Value.Token is always empty; Credential is not a Discord token.
@@ -477,6 +493,8 @@ func ProtoToWebhookHandle(src *discordv2.Webhook) (*WebhookHandle, error)
 // non-empty raw token supplied in Value.
 func WebhookHandleToProto(src *WebhookHandle) (*discordv2.Webhook, error)
 ```
+
+두 projection은 실제 source의 `interaction_id` 또는 `webhook_id` 및 존재하는 `application_id`, `guild_id`, `channel_id`로 `CredentialTarget`을 구성합니다. policy가 반환한 binding의 backend와 purpose는 신뢰된 P3 작업에, selector는 source target에 정확히 일치해야 하며 expiry는 유한한 미래 시각이어야 합니다. raw secret은 policy에 주지 않고 검증된 binding과 함께 encoder에만 전달합니다. context를 바꾸지 않으며 대상 인스턴스의 인증과 승인은 P4가 담당합니다. expiry를 converter 기본값이나 untrusted ref metadata로 대신하지 않고 모든 호출자는 명시적인 네 번째 `policy` 인자로 이관하며 3인자 호환 alias를 남기지 않습니다.
 
 다른 순수 객체의 중첩 `User.Token`도 같은 금지 규칙을 따릅니다. runtime projection은 전체 객체 그래프, 알려진 credential URL 필드, raw 및 오류 표현을 정제한 뒤 모듈 경계로 내보냅니다. 변환기는 token을 발견했을 때 무조건 삭제하고 성공하는 대신 trusted projection을 요구하여, accidental 호출도 감지할 수 있게 합니다. 모듈 측 handle로 들어온 credential reference의 유효성, 소유권, 만료 및 목적은 호출 실행 시 P3/P4에서 확인합니다.
 
@@ -514,6 +532,9 @@ CONVERT_TYPED_OBJECT(source):
     for every declared field in the field inventory:
         if field is credential/runtime-only/file-reader:
             require its explicitly declared safe view or boundary projection
+        if converting an SDK source field with a reviewed omission policy:
+            if its empty string or numeric zero matches that field's policy:
+                leave the wire field absent and continue
         if field has meaningful presence:
             preserve absent, present-value, present-empty and allowed null separately
         if field is a map:
@@ -649,7 +670,7 @@ fixture는 각 SDK 선언, canonical wire 값 및 실제 요청 JSON의 별도 �
 
 ### 부록 A. 기존 154개 메시지의 전체 전환 목록
 
-다음은 현재 체크인된 v1 스키마와 변환 소스의 감사 기준선입니다. 활성 함수의 존재는 필드 보존이나 정확성을 뜻하지 않습니다. 정방향의 proto 미대입 필드와 역방향의 proto 미사용 필드는 정적 후보이며, inline 처리와 의도적인 경계 제거를 본문의 규칙으로 판정해야 합니다. `추가 후보 없음`은 검사한 필드 참조에서 추가 후보를 찾지 못했다는 뜻일 뿐 검증 통과가 아닙니다. 원본 Session·Identify·State의 실행 객체는 목록에서 빼서 은폐하지 않고, v2의 명시적 제거와 안전한 대체 대상으로 남깁니다.
+다음은 업그레이드 전 v1 스키마와 변환 소스의 역사적 감사 기준선입니다. 메시지 154개 및 enum 23개는 현재 범위의 상한이 아닙니다. 원본 source 링크와 필드 후보를 감사 근거로 보존하며 현재 signature와 field는 본문의 delta 및 source catalog를 따릅니다. 활성 함수 존재나 `추가 후보 없음`은 정확성 검증 통과를 뜻하지 않습니다. inline 처리와 의도적인 경계 제거는 본문 규칙으로 판정하며 Session, Identify, State의 실행 객체도 명시적 제거와 안전한 대체 대상으로 남깁니다.
 
 | 원본 메시지와 스키마 | 현재 분류 | 정방향 근거 및 미대입 후보 | 역방향 근거 및 미사용 후보 | 추가 Go 필드 후보 / 전환 경계 |
 |---|---|---|---|---|
@@ -808,9 +829,9 @@ fixture는 각 SDK 선언, canonical wire 값 및 실제 요청 JSON의 별도 �
 | `InteractionResponse`<br>[proto/discord-v1/discordgo.proto:1988](../../proto/discord-v1/discordgo.proto#L1988) | 활성 양방향 | [shared/discord-v1/convert/struct2buf/interactions.go:400](../../shared/discord-v1/convert/struct2buf/interactions.go#L400)<br>추가 후보 없음 | [shared/discord-v1/convert/buf2struct/interactions.go:361](../../shared/discord-v1/convert/buf2struct/interactions.go#L361)<br>추가 후보 없음 | 본문의 전체 필드·presence 규칙 적용 |
 | `InteractionResponseData`<br>[proto/discord-v1/discordgo.proto:1994](../../proto/discord-v1/discordgo.proto#L1994) | 활성 양방향 | [shared/discord-v1/convert/struct2buf/interactions.go:411](../../shared/discord-v1/convert/struct2buf/interactions.go#L411)<br>`Attachments`, `Choices`, `CustomId`, `Files`, `Poll`, `Title` | [shared/discord-v1/convert/buf2struct/interactions.go:372](../../shared/discord-v1/convert/buf2struct/interactions.go#L372)<br>`Choices`, `CustomId`, `Poll`, `Title` | Go 미사용: `Attachments`, `Choices`, `CustomID`, `Files`, `Poll`, `Title`<br>patch와 첨부파일은 존재성이 있는 요청 전용 view를 사용합니다. |
 
-### 부록 B. 유지 API에서 도달하는 199개 named type
+### 부록 B. 기존 감사 API에서 도달한 199개 named type
 
-이 목록은 57개 입력·출력 root에서 중첩 필드와 concrete variant까지 추적한 폐쇄 집합입니다. 131개 struct, 66개 scalar/alias, 2개 interface를 합친 수이며, 199개의 새 protobuf 메시지를 만든다는 뜻은 아닙니다. 기존 154개 스키마 메시지 및 이벤트 전용 DTO의 범위를 대체하지 않습니다. 아래 원본 Go 필드는 감사 입력이며 `Token`, `Reader`, 허용되지 않는 세션 정보와 손실이 있는 patch 구조를 그대로 wire에 복제하라는 명세가 아닙니다. 각 필드의 실제 v2 표현은 P1 및 이 문서의 안전한 view·경계 규칙을 적용합니다.
+이 목록은 기존 SDK `v0.29.0`, commit `6e8fa27c7917ea54d8b9ec26f126becae59058d2` 감사의 root 57개, struct 131개, scalar/alias 66개와 interface 2개를 보존한 역사적 closure입니다. 현재 API closure 204개나 API/event 합집합 282개의 상한이 아니며 최신 필드 선언으로 해석하지 않습니다. 이름이 바뀐 resolved 타입과 새 component, pins, UserPrimaryGuild 등은 본문 current-source delta 및 [현행 closure](../../tools/protocol/inventory/source-type-closure.json)를 따릅니다. 원본 `Token`, `Reader`, 세션 내부 정보나 손실 있는 patch 구조를 그대로 wire에 복제하지 않으며 P1과 이 문서의 안전한 view 및 경계 규칙을 적용합니다.
 
 직접 원본 이름으로 대응하는 스키마가 없는 핵심 struct는 `ChannelFollow`, `GuildChannelCreateData`, `UpdateStatusData`입니다. `ChannelEdit`은 기존 helper 스키마에도 선언되어 있으므로 도메인 스키마 154개만 검색하여 미정의로 오분류하지 않습니다.
 

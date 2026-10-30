@@ -320,14 +320,18 @@ for n,t in D.items():
                     b=s.lstrip('*')
                     if d=='to':
                         omit_empty=f.get('source_json_omit_empty',False)
+                        omit_zero=f.get('source_json_omit_zero',False)
                         if omit_empty:
                             if s!='string' or ',omitempty' not in f.get('source_json_tag',''):raise ValueError(('source omission contract',n,fn))
                             emit(f'if {x} != "" {{')
+                        if omit_zero:
+                            if s not in {'int','PollLayoutType'} or w!='sint64' or ',omitempty' not in f.get('source_json_tag',''):raise ValueError(('numeric source omission contract',n,fn))
+                            emit(f'if {x} != 0 {{')
                         if s.startswith('*'):emit(f'if {x} != nil {{');xx='(*'+x+')'
                         else:xx=x
                         value=fresh('optionalValue')
                         emit(f'var {value} {wiretype(w)}');baseassign(b,w,xx,value,d,p,parent);emit(f'{y}=&{value}')
-                        if s.startswith('*') or omit_empty:emit('}')
+                        if s.startswith('*') or omit_empty or omit_zero:emit('}')
                     else:
                         emit(f'if {x} != nil {{')
                         if s.startswith('*'):
@@ -359,6 +363,8 @@ def field_receipt(n,f):
     name=f['source_field']
     if f.get('source_json_omit_empty'):
         result['source_json_omit_empty']=True
+    if f.get('source_json_omit_zero'):
+        result['source_json_omit_zero']=True
     if (n,name) in CUSTOM_JSON_KEYS:
         result['trusted_ingress_json_key']=CUSTOM_JSON_KEYS[n,name]
         result['source_codec']='discordgo.'+n+'.UnmarshalJSON'

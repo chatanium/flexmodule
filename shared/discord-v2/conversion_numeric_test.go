@@ -3,6 +3,7 @@ package discordv2_test
 import (
 	"encoding/json"
 	"math"
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -220,4 +221,48 @@ func TestChoiceRangeAndWireDiscriminatorAreChecked(t *testing.T) {
 		t.Fatal("integer choice overflow accepted")
 	}
 	requireConversionError(t, err, "StructToProto", "ApplicationCommandOptionChoice", "Value")
+}
+
+func TestOutboundNumericDefaultsMatchSourceJSON(t *testing.T) {
+	cases := []struct {
+		name    string
+		source  any
+		fields  map[string]string
+		convert func(any) (any, error)
+	}{
+		{"Poll", &discordgo.Poll{}, map[string]string{"Duration": "duration", "LayoutType": "layout_type"}, func(v any) (any, error) { return discordv2.PollToProto(v.(*discordgo.Poll)) }},
+		{"SelectMenu", &discordgo.SelectMenu{}, map[string]string{"MaxValues": "max_values"}, func(v any) (any, error) { return discordv2.SelectMenuToProto(v.(*discordgo.SelectMenu)) }},
+		{"FileUpload", &discordgo.FileUpload{}, map[string]string{"MaxValues": "max_values"}, func(v any) (any, error) { return discordv2.FileUploadToProto(v.(*discordgo.FileUpload)) }},
+		{"TextInput", &discordgo.TextInput{}, map[string]string{"MaxLength": "max_length"}, func(v any) (any, error) { return discordv2.TextInputToProto(v.(*discordgo.TextInput)) }},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			source := reflect.ValueOf(tc.source).Elem()
+			for _, value := range []int64{0, 1, -1} {
+				for field := range tc.fields {
+					source.FieldByName(field).SetInt(value)
+				}
+				raw, err := json.Marshal(tc.source)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var sourceJSON map[string]json.RawMessage
+				if err = json.Unmarshal(raw, &sourceJSON); err != nil {
+					t.Fatal(err)
+				}
+				converted, err := tc.convert(tc.source)
+				if err != nil {
+					t.Fatal(err)
+				}
+				output := reflect.ValueOf(converted).Elem()
+				for field, jsonName := range tc.fields {
+					wireField := output.FieldByName(field)
+					_, sourcePresent := sourceJSON[jsonName]
+					if (!wireField.IsNil()) != sourcePresent || !wireField.IsNil() && wireField.Elem().Int() != value {
+						t.Fatalf("%s source omission/nonzero value changed", field)
+					}
+				}
+			}
+		})
+	}
 }

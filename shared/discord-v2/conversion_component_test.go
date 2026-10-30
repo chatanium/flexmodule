@@ -3,6 +3,7 @@ package discordv2_test
 import (
 	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/bwmarrin/discordgo"
@@ -312,5 +313,77 @@ func TestRichLayoutComponentsRetainNestedMediaAndPresence(t *testing.T) {
 	}
 	if body.Type != 17 || body.AccentColor == nil || *body.AccentColor != 0 || body.Components[0].Type != 14 || body.Components[0].Divider == nil || *body.Components[0].Divider || body.Components[0].Spacing != 2 {
 		t.Fatalf("decoded layout JSON: %s", raw)
+	}
+}
+
+func TestOutboundOptionalStringsMatchSourceJSON(t *testing.T) {
+	cases := []struct {
+		name    string
+		source  any
+		convert func(any) (any, error)
+	}{
+		{"Button", &discordgo.Button{}, func(v any) (any, error) { return discordv2.ButtonToProto(v.(*discordgo.Button)) }},
+		{"ComponentEmoji", &discordgo.ComponentEmoji{}, func(v any) (any, error) { return discordv2.ComponentEmojiToProto(v.(*discordgo.ComponentEmoji)) }},
+		{"FileUpload", &discordgo.FileUpload{}, func(v any) (any, error) { return discordv2.FileUploadToProto(v.(*discordgo.FileUpload)) }},
+		{"Label", &discordgo.Label{Component: discordgo.TextInput{CustomID: "input"}}, func(v any) (any, error) { return discordv2.LabelToProto(v.(*discordgo.Label)) }},
+		{"SelectMenu", &discordgo.SelectMenu{}, func(v any) (any, error) { return discordv2.SelectMenuToProto(v.(*discordgo.SelectMenu)) }},
+		{"SelectMenuOption", &discordgo.SelectMenuOption{}, func(v any) (any, error) { return discordv2.SelectMenuOptionToProto(v.(*discordgo.SelectMenuOption)) }},
+		{"TextInput", &discordgo.TextInput{}, func(v any) (any, error) { return discordv2.TextInputToProto(v.(*discordgo.TextInput)) }},
+		{"MessageSend", &discordgo.MessageSend{}, func(v any) (any, error) {
+			return discordv2.MessageSendToProto(&discordv2.MessageSendView{Content: v.(*discordgo.MessageSend).Content})
+		}},
+		{"WebhookParams", &discordgo.WebhookParams{}, func(v any) (any, error) {
+			source := v.(*discordgo.WebhookParams)
+			return discordv2.WebhookParamsToProto(&discordv2.WebhookParamsView{Content: source.Content, Username: source.Username, AvatarURL: source.AvatarURL, ThreadName: source.ThreadName})
+		}},
+	}
+	// Source JSON tags, not a duplicated omission list, identify the fields
+	// covered by this outbound policy. The wire Go names normalize SDK acronyms.
+	wireNames := map[string]string{"URL": "Url", "CustomID": "CustomId", "SKUID": "Skuid", "ID": "Id", "AvatarURL": "AvatarUrl"}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			source := reflect.ValueOf(tc.source).Elem()
+			for _, value := range []string{"", "source-value"} {
+				for index := range source.NumField() {
+					field := source.Type().Field(index)
+					if source.Field(index).Kind() == reflect.String && strings.Contains(field.Tag.Get("json"), ",omitempty") {
+						source.Field(index).SetString(value)
+					}
+				}
+				raw, err := json.Marshal(tc.source)
+				if err != nil {
+					t.Fatal(err)
+				}
+				var sourceJSON map[string]json.RawMessage
+				if err = json.Unmarshal(raw, &sourceJSON); err != nil {
+					t.Fatal(err)
+				}
+				converted, err := tc.convert(tc.source)
+				if err != nil {
+					t.Fatal(err)
+				}
+				output := reflect.ValueOf(converted).Elem()
+				for index := range source.NumField() {
+					field := source.Type().Field(index)
+					tag := field.Tag.Get("json")
+					if source.Field(index).Kind() != reflect.String || !strings.Contains(tag, ",omitempty") {
+						continue
+					}
+					jsonName := strings.Split(tag, ",")[0]
+					wireName := field.Name
+					if normalized, ok := wireNames[wireName]; ok {
+						wireName = normalized
+					}
+					wireField := output.FieldByName(wireName)
+					if !wireField.IsValid() || wireField.Kind() != reflect.Pointer {
+						t.Fatalf("%s has no optional wire string", field.Name)
+					}
+					_, sourcePresent := sourceJSON[jsonName]
+					if (!wireField.IsNil()) != sourcePresent || !wireField.IsNil() && wireField.Elem().String() != value {
+						t.Fatalf("%s does not match source JSON omission/value", field.Name)
+					}
+				}
+			}
+		})
 	}
 }

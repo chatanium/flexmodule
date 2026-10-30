@@ -698,7 +698,7 @@
           "classification": "direct",
           "wire_field": "content",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Embeds",
@@ -6724,7 +6724,7 @@
           "classification": "direct",
           "wire_field": "duration",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Expiry",
@@ -6740,7 +6740,7 @@
           "classification": "inline",
           "wire_field": "layout_type",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Question",
@@ -7634,7 +7634,7 @@
           "classification": "direct",
           "wire_field": "avatar_url",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Components",
@@ -7650,7 +7650,7 @@
           "classification": "direct",
           "wire_field": "content",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Embeds",
@@ -7682,7 +7682,7 @@
           "classification": "direct",
           "wire_field": "thread_name",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Tts",
@@ -7698,7 +7698,7 @@
           "classification": "direct",
           "wire_field": "username",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -7780,7 +7780,7 @@
           "classification": "direct",
           "wire_field": "id",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Name",
@@ -7788,7 +7788,7 @@
           "classification": "direct",
           "wire_field": "name",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -7844,7 +7844,7 @@
           "classification": "direct",
           "wire_field": "label",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Value",
@@ -7969,7 +7969,7 @@
           "classification": "direct",
           "wire_field": "custom_id",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Disabled",
@@ -8009,7 +8009,7 @@
           "classification": "direct",
           "wire_field": "skuid",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Style",
@@ -8025,7 +8025,7 @@
           "classification": "direct",
           "wire_field": "url",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -8050,7 +8050,7 @@
           "classification": "direct",
           "wire_field": "custom_id",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "DefaultValues",
@@ -8082,7 +8082,7 @@
           "classification": "direct",
           "wire_field": "max_values",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "MenuType",
@@ -8147,7 +8147,7 @@
           "classification": "direct",
           "wire_field": "label",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "MaxLength",
@@ -8155,7 +8155,7 @@
           "classification": "direct",
           "wire_field": "max_length",
           "wire_type": "sint64",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "MinLength",
@@ -8171,7 +8171,7 @@
           "classification": "direct",
           "wire_field": "placeholder",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         },
         {
           "legacy_field": "Required",
@@ -8195,7 +8195,7 @@
           "classification": "direct",
           "wire_field": "value",
           "wire_type": "string",
-          "decision": "Field-by-field conversion; source value is not mutated."
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative."
         }
       ],
       "migration": "Current source declaration retained or explicitly classified."
@@ -12251,7 +12251,8 @@
           "wire_type": "string",
           "field_number": 5,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "Button",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -12266,7 +12267,8 @@
           "wire_type": "string",
           "field_number": 6,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "Button",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -12281,7 +12283,7 @@
           "wire_type": "string",
           "field_number": 7,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits the empty optional identifier; source conversion retains nonempty values, while direct wire presence stays authoritative.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
           "source_json_omit_empty": true,
           "owner": "Button",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
@@ -13285,7 +13287,8 @@
           "wire_type": "string",
           "field_number": 1,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "ComponentEmoji",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -13300,7 +13303,8 @@
           "wire_type": "string",
           "field_number": 2,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "ComponentEmoji",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -14178,7 +14182,8 @@
           "wire_type": "string",
           "field_number": 2,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "FileUpload",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -14209,7 +14214,8 @@
           "wire_type": "sint64",
           "field_number": 4,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
+          "source_json_omit_zero": true,
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
           "owner": "FileUpload",
           "partial_wire_type": "DomainNullableSint64",
@@ -18726,7 +18732,8 @@
           "wire_type": "string",
           "field_number": 3,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "Label",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -21332,7 +21339,8 @@
           "wire_type": "string",
           "field_number": 1,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "MessageSend",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -21776,7 +21784,8 @@
           "wire_type": "sint64",
           "field_number": 4,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
+          "source_json_omit_zero": true,
           "numeric_contract": "Source PollLayoutType underlying int; preserve actual values and unknown representable numeric values with no ordinal offset; Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
           "owner": "Poll",
           "partial_wire_type": "DomainNullableSint64",
@@ -21792,7 +21801,8 @@
           "wire_type": "sint64",
           "field_number": 5,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
+          "source_json_omit_zero": true,
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
           "owner": "Poll",
           "partial_wire_type": "DomainNullableSint64",
@@ -22723,7 +22733,8 @@
           "wire_type": "string",
           "field_number": 2,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "SelectMenu",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -22769,7 +22780,8 @@
           "wire_type": "sint64",
           "field_number": 5,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
+          "source_json_omit_zero": true,
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
           "owner": "SelectMenu",
           "partial_wire_type": "DomainNullableSint64",
@@ -22948,7 +22960,8 @@
           "wire_type": "string",
           "field_number": 1,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "SelectMenuOption",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -24936,7 +24949,8 @@
           "wire_type": "string",
           "field_number": 2,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "TextInput",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -24967,7 +24981,8 @@
           "wire_type": "string",
           "field_number": 4,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "TextInput",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -24982,7 +24997,8 @@
           "wire_type": "string",
           "field_number": 5,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "TextInput",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -25028,7 +25044,8 @@
           "wire_type": "sint64",
           "field_number": 8,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. SDK JSON omits source zero for the optional provider-default field; nonzero source values and direct wire presence stay authoritative.",
+          "source_json_omit_zero": true,
           "numeric_contract": "Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.",
           "owner": "TextInput",
           "partial_wire_type": "DomainNullableSint64",
@@ -26802,7 +26819,8 @@
           "wire_type": "string",
           "field_number": 1,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "WebhookParams",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -26817,7 +26835,8 @@
           "wire_type": "string",
           "field_number": 2,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "WebhookParams",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -26832,7 +26851,8 @@
           "wire_type": "string",
           "field_number": 3,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "WebhookParams",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"
@@ -26953,7 +26973,8 @@
           "wire_type": "string",
           "field_number": 11,
           "presence": "absent/value",
-          "decision": "Field-by-field conversion; source value is not mutated.",
+          "decision": "Field-by-field conversion; source value is not mutated. Outbound SDK JSON omits an empty value-only string; nonempty source values and direct wire presence stay authoritative.",
+          "source_json_omit_empty": true,
           "owner": "WebhookParams",
           "partial_wire_type": "flexmodule.core.v2.NullableString",
           "partial_presence": "absent wrapper / selected typed value (including empty) / explicit null"

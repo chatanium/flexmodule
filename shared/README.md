@@ -93,11 +93,28 @@ partial/nullable DTOs retain their explicit null distinction. Optional SDK
 pointers stay nil, and null collection elements, malformed objects and invalid
 nullable/union variants are still rejected.
 
-SDK button conversion follows `Button.SKUID`'s reviewed `json:"sku_id,omitempty"`
-contract: an empty source SKU identifier is omitted, rather than sent as an
-invalid present empty identifier on ordinary buttons. Nonempty premium-button
-SKU identifiers are retained. Direct typed wire presence is not rewritten:
-explicitly empty values are not silently removed by the HTTP encoder.
+Outbound message, webhook and component conversion derives value-only string
+omission from the reviewed SDK `json:",omitempty"` tags. Empty optional source
+strings are omitted; nonempty strings are retained. This includes all four
+`WebhookParams` strings (`Content`, `Username`, `AvatarURL`, `ThreadName`), not
+only premium-button `SKUID`. Ordinary message snapshots and presence-aware
+edit/nullable fields do not use this rule.
+
+Five reviewed value-only numeric fields also follow their source zero-omission
+contract, rather than overriding a provider default with a present zero:
+
+| Source field | Meaning when omitted |
+| --- | --- |
+| `Poll.Duration` | [24 hours](https://docs.discord.com/developers/resources/poll#poll-create-request-object) |
+| `Poll.LayoutType` | [DEFAULT layout, value 1](https://docs.discord.com/developers/resources/poll#layout-type) |
+| `SelectMenu.MaxValues`, `FileUpload.MaxValues` | [Maximum count defaults to 1](https://docs.discord.com/developers/components/reference) |
+| `TextInput.MaxLength` | [Limit unspecified; a present value must be 1–4000](https://docs.discord.com/developers/components/reference#text-input-text-input-structure) |
+
+These are source-adaptation rules, not a blanket `omitempty` encoder. Nonzero
+values (including invalid values requiring normal validation), other numeric
+zero/false values, pointers, nullable fields and collection presence remain
+unchanged. Direct typed wire presence is authoritative: the HTTP encoder does
+not silently remove explicitly empty strings or explicit zero values.
 
 Interaction credential scopes retain the authenticated invoking `user_id` from
 guild `Member.User` or DM `User`, alongside the source interaction/application
