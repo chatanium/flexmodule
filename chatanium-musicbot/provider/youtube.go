@@ -113,12 +113,30 @@ func (y *Youtube) Initialize(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		line := strings.SplitN(strings.TrimSpace(string(raw)), "\n", 2)[0]
-		if line != tool.prefix && !strings.HasPrefix(line, tool.prefix+" ") {
+		if !matchesPinnedToolVersion(string(raw), tool.prefix) {
 			return errors.New("image media tool version differs from pinned lock")
 		}
 	}
 	return nil
+}
+
+func matchesPinnedToolVersion(output, prefix string) bool {
+	line, _, _ := strings.Cut(strings.TrimSpace(output), "\n")
+	if line == prefix || strings.HasPrefix(line, prefix+" ") {
+		return true
+	}
+	// The locked FFmpeg git tag generates n9.0.2 for both executables.
+	// Accept that exact release identity, not arbitrary tag/revision suffixes.
+	// The other tools retain their original, independent version checks.
+	switch prefix {
+	case "ffmpeg version 9.0.2":
+		prefix = "ffmpeg version n9.0.2"
+	case "ffprobe version 9.0.2":
+		prefix = "ffprobe version n9.0.2"
+	default:
+		return false
+	}
+	return line == prefix || strings.HasPrefix(line, prefix+" ")
 }
 func (y *Youtube) Resolve(ctx context.Context, query string) ([]Track, error) {
 	if len(strings.TrimSpace(query)) == 0 || len(query) > y.Limits.MaxQueryBytes {

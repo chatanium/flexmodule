@@ -10,6 +10,8 @@ From the repository root, `make build-media` builds the nested media modules; `m
 
 Only the media image contains the pinned FFmpeg 9.0.2 tools, at `/opt/flexmodule/bin/ffmpeg` and `/opt/flexmodule/bin/ffprobe`. Artifact provenance and image inputs are in `tools/media/tool-lock.json`. The player does not search the host PATH, install tools, update tools, fetch components, or use yt-dlp. Ordinary module images do not require media tools.
 
+INIT validates the complete FFmpeg version token: the pinned upstream git-tag build reports `n9.0.2`, while a release-archive build reports `9.0.2`. Both identify the required release; other versions, development revisions and `-dirty` suffixes are rejected. Image provenance and the immutable image approval remain the authority for the exact tool bytes.
+
 ## Configuration and approvals
 
 Core.GetConfig supplies the following structure. Replace every bracketed ID with an operator-approved Discord snowflake; these are not runnable personal IDs. Every numeric bound and duration is mandatory. `priority` and `max_redirects` must be present even when explicitly zero. Durations use Go duration syntax.

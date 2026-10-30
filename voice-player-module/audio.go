@@ -48,11 +48,23 @@ func validateEncoder(ctx context.Context, scratchDirectory string, limits player
 	if out.exceeded || errout.exceeded {
 		return errors.New("ffmpeg version output exceeds configured limit")
 	}
-	line, _, _ := strings.Cut(stdout.String(), "\n")
-	if line != "ffmpeg version 9.0.2" && !strings.HasPrefix(line, "ffmpeg version 9.0.2 ") {
+	if !isPinnedFFmpegVersion(stdout.String()) {
 		return errors.New("media image must provide pinned FFmpeg 9.0.2")
 	}
 	return nil
+}
+
+// FFmpeg's pinned git-tag build reports n9.0.2; release archives report 9.0.2.
+// Compare the complete version token, never a prefix that could admit another
+// release, a development revision or a locally modified build.
+func isPinnedFFmpegVersion(output string) bool {
+	line, _, _ := strings.Cut(output, "\n")
+	version, ok := strings.CutPrefix(line, "ffmpeg version ")
+	if !ok {
+		return false
+	}
+	version, _, _ = strings.Cut(version, " ")
+	return version == "9.0.2" || version == "n9.0.2"
 }
 
 type boundedWriter struct {

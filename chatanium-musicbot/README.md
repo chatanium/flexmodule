@@ -70,6 +70,8 @@ The instance child directory is created beneath that authenticated scratch mount
 | yt-dlp | 2026.10.26 | `/opt/flexmodule/yt-dlp/yt-dlp` |
 | Deno | 2.9.8 | `/opt/flexmodule/bin/deno` |
 
+FFmpeg and FFprobe's pinned upstream git-tag build reports the exact version token `n9.0.2`; release-archive builds report `9.0.2`. INIT accepts those two release identities, while rejecting other versions and development/`-dirty` suffixes. yt-dlp and Deno retain their separate exact pinned-version checks. Image provenance and immutable image approval remain authoritative for the exact tool bytes.
+
 The complete official yt-dlp onedir tree includes pinned EJS 0.8.0. The image, not a startup installer, supplies its interpreter/library/loader closure. The Go command builder remains pinned to `go-ytdlp v1.5.6`; only its explicit-executable command builder is used, never install/update/resolver APIs. Extraction disables config discovery, updates, remote components, cache discovery, and extractor/download retries, and explicitly selects the pinned Deno executable. Deno's writable cache is under owned scratch. Media subprocesses receive the fixed `LD_LIBRARY_PATH=/opt/flexmodule/lib`, not an inherited host search path. The shared encoder uses only local files and the approved executable, terminates/reaps its process group on cancellation, and bounds input, output, frames, packets, diagnostics, and lifetime. There is no DCA library, direct OpusSend channel, PATH lookup, `Join`, `Leave`, `Speaking`, fixed pacing sleep, update goroutine, or fake voice fallback.
 
 ## Commands and playlist semantics

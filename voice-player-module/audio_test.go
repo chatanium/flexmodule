@@ -9,6 +9,40 @@ import (
 	"time"
 )
 
+func TestPinnedFFmpegVersionAcceptsReleaseAndPinnedGitTag(t *testing.T) {
+	for _, banner := range []string{
+		"ffmpeg version 9.0.2",
+		"ffmpeg version n9.0.2",
+		"ffmpeg version 9.0.2 Copyright (c) the FFmpeg developers\nbuilt with gcc\n",
+		"ffmpeg version n9.0.2 Copyright (c) the FFmpeg developers\nbuilt with gcc\n",
+	} {
+		if !isPinnedFFmpegVersion(banner) {
+			t.Errorf("rejected pinned FFmpeg banner %q", banner)
+		}
+	}
+}
+
+func TestPinnedFFmpegVersionRejectsOtherVersionsAndMalformedBanners(t *testing.T) {
+	for _, banner := range []string{
+		"",
+		"ffmpeg version ",
+		"ffprobe version n9.0.2",
+		"unexpected output\nffmpeg version n9.0.2",
+		"ffmpeg version 9.0.20",
+		"ffmpeg version n9.0.20 Copyright (c) the FFmpeg developers",
+		"ffmpeg version 9.0.3",
+		"ffmpeg version n9.0.3",
+		"ffmpeg version n9.0.2-dirty",
+		"ffmpeg version n9.0.2-1-g946fcce07b",
+		"ffmpeg version N-946fcce07b",
+		"ffmpeg version n9.0.2unexpected",
+	} {
+		if isPinnedFFmpegVersion(banner) {
+			t.Errorf("accepted unpinned FFmpeg banner %q", banner)
+		}
+	}
+}
+
 func TestBoundedWriterRejectsOverflowWithoutPublishingPrefix(t *testing.T) {
 	var dst bytes.Buffer
 	writer := &boundedWriter{writer: &dst, remaining: 3}
