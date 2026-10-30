@@ -2,6 +2,7 @@ package host
 
 import (
 	"context"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,6 +18,7 @@ import (
 	"time"
 
 	"github.com/moby/moby/client"
+	"golang.org/x/sys/unix"
 )
 
 func networkCommandFixture(t *testing.T, script string) string {
@@ -241,5 +243,324 @@ func TestNetworkRulesWithoutBridgeLinkLocalPreserveDualStackDenials(t *testing.T
 				t.Errorf("family %d missing required rule %q", family, rule)
 			}
 		}
+	}
+}
+
+func routeMessage(kind uint16) []byte {
+	message := make([]byte, unix.NLMSG_HDRLEN)
+	binary.NativeEndian.PutUint32(message[:4], uint32(len(message)))
+	binary.NativeEndian.PutUint16(message[4:6], kind)
+	return message
+}
+
+func routeSocketFixture(t *testing.T) (*os.File, int) {
+	t.Helper()
+	fds, err := unix.Socketpair(unix.AF_UNIX, unix.SOCK_DGRAM|unix.SOCK_NONBLOCK|unix.SOCK_CLOEXEC, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	receiver := os.NewFile(uintptr(fds[0]), "route-receiver")
+	sender := os.NewFile(uintptr(fds[1]), "route-sender")
+	t.Cleanup(func() {
+		receiver.Close()
+		sender.Close()
+	})
+	if err := unix.SetsockoptInt(fds[1], unix.SOL_SOCKET, unix.SO_SNDBUF, 1<<20); err != nil {
+		t.Fatal(err)
+	}
+	return receiver, fds[1]
+}
+
+func sendRouteMessage(t *testing.T, sender int, message []byte) {
+	t.Helper()
+	if n, err := unix.SendmsgN(sender, message, nil, nil, unix.MSG_DONTWAIT); err != nil || n != len(message) {
+		t.Fatalf("queue route notification: %d %v", n, err)
+	}
+}
+
+func TestRouteNotificationFramingFailsClosed(t *testing.T) {
+	valid := routeMessage(unix.RTM_NEWADDR)
+	badLength := routeMessage(unix.RTM_NEWADDR)
+	binary.NativeEndian.PutUint32(badLength[:4], uint32(len(badLength)+1))
+	for _, tc := range []struct {
+		name    string
+		message []byte
+		flags   int
+		wantErr bool
+	}{
+		{"valid", valid, 0, false},
+		{"multiple", append(append([]byte{}, valid...), valid...), 0, false},
+		{"empty", nil, 0, true},
+		{"short-header", valid[:8], 0, true},
+		{"bad-length", badLength, 0, true},
+		{"overrun", routeMessage(unix.NLMSG_OVERRUN), 0, true},
+		{"kernel-error", routeMessage(unix.NLMSG_ERROR), 0, true},
+		{"datagram-truncated", valid, unix.MSG_TRUNC, true},
+		{"control-truncated", valid, unix.MSG_CTRUNC, true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if err := routeNotificationError(tc.message, tc.flags); (err != nil) != tc.wantErr {
+				t.Fatalf("notification validation = %v, want error %t", err, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestRouteNotificationReadDetectsSocketTruncation(t *testing.T) {
+	receiver, sender := routeSocketFixture(t)
+	sendRouteMessage(t, sender, routeMessage(unix.RTM_NEWADDR))
+	if err := readRouteNotification(receiver, make([]byte, 8)); err == nil || !strings.Contains(err.Error(), "truncated") {
+		t.Fatalf("truncated initial datagram accepted: %v", err)
+	}
+}
+
+func TestRouteNotificationDrainIsBounded(t *testing.T) {
+	receiver, sender := routeSocketFixture(t)
+	for range 256 {
+		sendRouteMessage(t, sender, routeMessage(unix.RTM_NEWROUTE))
+	}
+	if err := drainRouteNotifications(receiver, make([]byte, 65536)); err == nil || !strings.Contains(err.Error(), "count bound") {
+		t.Fatalf("notification flood did not fail closed at its bound: %v", err)
+	}
+}
+
+func routePolicyFixture(t *testing.T) (*networkPolicy, string) {
+	t.Helper()
+	logPath := filepath.Join(t.TempDir(), "closed")
+	bin := networkCommandFixture(t, "if [ \"$1\" = '--wait' ]; then\n  cat > /dev/null\n  echo closed >> '"+logPath+"'\n  exit 0\nfi\nif [ \"$1\" = '-D' ]; then\n  echo '0 flow entries have been deleted.' >&2\n  exit 1\nfi\nprintf '%s\\n' '-N FMowned'\n")
+	n := &ownedNetwork{
+		owner: Ownership{InstallationID: "installation", EpochID: "epoch", InstanceID: "instance", ContainerID: "container"},
+		chain: "FMowned", bridge: "not-a-host-interface",
+		ipv4: netip.MustParseAddr("10.240.0.2"), ipv6: netip.MustParseAddr("fd42:8a6b:98c1::2"),
+		policyInstalled: true, fingerprints: make(map[string][32]byte),
+	}
+	return &networkPolicy{
+		timeout: 5 * time.Second, owned: map[string]*ownedNetwork{n.owner.InstanceID: n},
+		cfg: NetworkConfig{IPTables: bin, IP6Tables: bin, IPTablesRestore: bin, IP6TablesRestore: bin, Conntrack: bin},
+	}, logPath
+}
+
+func TestRouteBurstCoalescesQueuedNotificationsAndClosesInactivePolicy(t *testing.T) {
+	receiver, sender := routeSocketFixture(t)
+	p, logPath := routePolicyFixture(t)
+	buffer := make([]byte, 65536)
+	for range 3 {
+		sendRouteMessage(t, sender, routeMessage(unix.RTM_NEWADDR))
+	}
+	if err := readRouteNotification(receiver, buffer); err != nil {
+		t.Fatal(err)
+	}
+	p.mu.Lock()
+	kill := p.reconcileRouteBurstLocked(receiver, buffer, nil)
+	p.mu.Unlock()
+	if len(kill) != 0 || p.watchErr != nil {
+		t.Fatalf("ordinary burst failed: %v %v", kill, p.watchErr)
+	}
+	log, err := os.ReadFile(logPath)
+	if err != nil || len(strings.Fields(string(log))) != 2 {
+		t.Fatalf("queued notifications did not close once per family: %q %v", log, err)
+	}
+	raw, err := receiver.SyscallConn()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var receiveErr error
+	if err := raw.Control(func(fd uintptr) {
+		_, _, _, _, receiveErr = unix.Recvmsg(int(fd), buffer, nil, unix.MSG_DONTWAIT)
+	}); err != nil {
+		t.Fatal(err)
+	}
+	if !errors.Is(receiveErr, unix.EAGAIN) {
+		t.Fatalf("startup notifications remained queued for replay: %v", receiveErr)
+	}
+	// An event arriving after the drained burst must initiate another closure,
+	// not be lost because the previous interval already reconciled.
+	sendRouteMessage(t, sender, routeMessage(unix.RTM_NEWROUTE))
+	if err := readRouteNotification(receiver, buffer); err != nil {
+		t.Fatal(err)
+	}
+	p.mu.Lock()
+	kill = p.reconcileRouteBurstLocked(receiver, buffer, nil)
+	p.mu.Unlock()
+	log, err = os.ReadFile(logPath)
+	if len(kill) != 0 || p.watchErr != nil || err != nil || len(strings.Fields(string(log))) != 4 {
+		t.Fatalf("later event was not reconciled separately: %v %v %q %v", kill, p.watchErr, log, err)
+	}
+}
+
+func TestRouteBurstLossKeepsEveryBoundPolicyClosed(t *testing.T) {
+	receiver, sender := routeSocketFixture(t)
+	p, logPath := routePolicyFixture(t)
+	other := *p.owned["instance"]
+	other.owner.InstanceID, other.owner.ContainerID = "other-instance", "other-container"
+	other.chain, other.enabled = "FMother", true
+	other.fingerprints = make(map[string][32]byte)
+	p.owned[other.owner.InstanceID] = &other
+	sendRouteMessage(t, sender, routeMessage(unix.RTM_NEWADDR))
+	sendRouteMessage(t, sender, routeMessage(unix.NLMSG_OVERRUN))
+	buffer := make([]byte, 65536)
+	if err := readRouteNotification(receiver, buffer); err != nil {
+		t.Fatal(err)
+	}
+	p.mu.Lock()
+	kill := p.reconcileRouteBurstLocked(receiver, buffer, nil)
+	p.mu.Unlock()
+	if p.watchErr == nil || len(kill) != 2 {
+		t.Fatalf("notification loss did not revoke every bound sandbox: %v %v", p.watchErr, kill)
+	}
+	killed := make(map[string]bool)
+	for _, owner := range kill {
+		killed[owner.InstanceID] = true
+	}
+	for id, n := range p.owned {
+		if n.enabled || !killed[id] {
+			t.Fatalf("policy reopened or omitted after monitor loss: %s", id)
+		}
+	}
+	log, err := os.ReadFile(logPath)
+	if err != nil || len(strings.Fields(string(log))) != 8 {
+		t.Fatalf("both policies were not closed in both families: %q %v", log, err)
+	}
+}
+
+func TestNetworkEnableRejectsLostRouteMonitor(t *testing.T) {
+	p := &networkPolicy{watchErr: errors.New("route monitor reported notification loss")}
+	// A nil Docker client detects any attempt to reopen after observation loss.
+	err := p.enable(context.Background(), &ownedNetwork{})
+	var hostError *Error
+	if !errors.As(err, &hostError) || hostError.Reason != "HOST_PREREQUISITE_FAILED" {
+		t.Fatalf("egress opening did not preserve route-monitor failure: %v", err)
+	}
+}
+
+func generationPolicyFixture(t *testing.T) (*networkPolicy, *ownedNetwork, string) {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "restore-scripts")
+	bin := networkCommandFixture(t, "if [ \"$1\" = '--wait' ]; then\n  cat >> '"+path+"'\n  exit 0\nfi\nif [ \"$1\" = '-D' ]; then\n  echo '0 flow entries have been deleted.' >&2\n  exit 1\nfi\nprintf '%s\\n' '-N FMowned'\n")
+	n := &ownedNetwork{
+		owner: Ownership{InstallationID: "installation", EpochID: "epoch", InstanceID: "instance"},
+		chain: "FMowned", bridge: "fmfixture",
+		ipv4: netip.MustParseAddr("10.240.0.2"), ipv6: netip.MustParseAddr("fd42:8a6b:98c1::2"),
+		gateway6: netip.MustParseAddr("fd42:8a6b:98c1::1"), linkLocal6: netip.MustParseAddr("fe80::2"),
+		policyInstalled: true, fingerprints: make(map[string][32]byte),
+	}
+	p := &networkPolicy{
+		owned: map[string]*ownedNetwork{n.owner.InstanceID: n},
+		cfg: NetworkConfig{IPTables: bin, IP6Tables: bin, IPTablesRestore: bin, IP6TablesRestore: bin,
+			Conntrack: bin, Resolvers: []string{"1.1.1.1", "2606:4700:4700::1111"}},
+	}
+	return p, n, path
+}
+
+func TestEveryPolicyReplacementChangesGenerationWithoutChangingActions(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		action  string
+		chains  int
+		replace func(*networkPolicy, *ownedNetwork) error
+	}{
+		{"allocation", "DROP", 6, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.installHooks(context.Background(), n)
+		}},
+		{"disable", "DROP", 6, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.disableLocked(context.Background(), n)
+		}},
+		{"cleanup-revoke", "DROP", 6, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.revokeForCleanup(context.Background(), n.owner)
+		}},
+		{"cleanup-remove", "DROP", 6, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.remove(context.Background(), n)
+		}},
+		{"enabled-ipv4", "RETURN", 3, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.installRules(context.Background(), n, 0, specialPurposePrefixes, true)
+		}},
+		{"enabled-ipv6", "RETURN", 3, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.installRules(context.Background(), n, 1, specialPurposePrefixes, true)
+		}},
+		{"closed-ipv4", "DROP", 3, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.installRules(context.Background(), n, 0, specialPurposePrefixes, false)
+		}},
+		{"closed-ipv6", "DROP", 3, func(p *networkPolicy, n *ownedNetwork) error {
+			return p.installRules(context.Background(), n, 1, specialPurposePrefixes, false)
+		}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			p, n, path := generationPolicyFixture(t)
+			if tc.name == "cleanup-remove" {
+				f := newCreateStateFixture(t, EgressPublicInternet)
+				n.owner = f.lease.Ownership
+				n.name = containerName(n.owner) + "-net"
+				p.owned = map[string]*ownedNetwork{n.owner.InstanceID: n}
+				if err := f.journal.SubmitCreate(context.Background(), n.owner, CreateNetwork, n.name); err != nil {
+					t.Fatal(err)
+				}
+				if err := f.journal.ObserveCreated(context.Background(), n.owner, CreateNetwork, n.name, "observed-network"); err != nil {
+					t.Fatal(err)
+				}
+				p.creates = f.journal
+				cli, err := client.New(client.WithAPIVersion("1.56"), client.WithHTTPClient(&http.Client{
+					Transport: networkTestTransport(func(r *http.Request) (*http.Response, error) {
+						if r.Method != http.MethodGet || r.URL.Path != "/v1.56/networks/observed-network" {
+							return nil, fmt.Errorf("unexpected Docker request: %s %s", r.Method, r.URL.Path)
+						}
+						return &http.Response{StatusCode: http.StatusNotFound,
+							Header: http.Header{"Content-Type": {"application/json"}},
+							Body:   io.NopCloser(strings.NewReader(`{"message":"network not found"}`)), Request: r}, nil
+					}),
+				}))
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() { cli.Close() })
+				p.docker = cli
+			}
+			var previous, previousNormalized, previousGeneration string
+			offset := 0
+			for range 2 {
+				if err := tc.replace(p, n); err != nil {
+					t.Fatal(err)
+				}
+				data, err := os.ReadFile(path)
+				if err != nil {
+					t.Fatal(err)
+				}
+				script := string(data[offset:])
+				offset = len(data)
+				generation := ""
+				markers := 0
+				for line := range strings.SplitSeq(script, "\n") {
+					fields := strings.Fields(line)
+					for i, field := range fields {
+						if field != "--comment" {
+							continue
+						}
+						if i+1 >= len(fields) || !strings.HasPrefix(fields[i+1], "fm-generation:") {
+							t.Fatalf("invalid generation marker: %q", line)
+						}
+						token := fields[i+1]
+						if generation == "" {
+							generation = token
+						}
+						if token != generation || !strings.HasSuffix(line, " -j "+tc.action) {
+							t.Fatalf("generation replaced an action or differs within operation: %q", line)
+						}
+						markers++
+					}
+				}
+				if generation == "" || markers != tc.chains || strings.Count(script, "COMMIT\n") != markers {
+					t.Fatalf("not every replaced chain has exactly one marker: %d markers, want %d", markers, tc.chains)
+				}
+				normalized := strings.ReplaceAll(script, generation, "fm-generation:<install>")
+				if previous != "" {
+					if generation == previousGeneration || script == previous {
+						t.Fatal("identical zero-counter replacement concealed a new installation")
+					}
+					if normalized != previousNormalized {
+						t.Fatal("generation tagging changed policy rules or terminal actions")
+					}
+				}
+				previous, previousNormalized, previousGeneration = script, normalized, generation
+			}
+		})
 	}
 }

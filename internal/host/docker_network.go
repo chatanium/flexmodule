@@ -3,7 +3,9 @@ package host
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
+	"encoding/binary"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -282,11 +284,18 @@ func (p *networkPolicy) networkIdentity(o Ownership) (*ownedNetwork, netip.Prefi
 	n := &ownedNetwork{owner: o, name: containerName(o) + "-net", bridge: "fm" + suffix, chain: "FM" + suffix, ipv4: subnet4.Addr().Next().Next(), ipv6: subnet6.Addr().Next().Next(), gateway6: subnet6.Addr().Next(), linkLocal6: netip.MustParseAddr("fe80::2"), fingerprints: make(map[string][32]byte)}
 	return n, subnet4, subnet6
 }
+
+// Every replacement marks an existing terminal rule. Even a zero-counter
+// DROP-to-DROP replacement must differ from its predecessor's rule identity;
+// observers must not infer counter continuity across a flush/rebuild.
+func newPolicyGeneration() string { return "fm-generation:" + rand.Text() }
+
 func (p *networkPolicy) installHooks(ctx context.Context, n *ownedNetwork) error {
+	generation := newPolicyGeneration()
 	for family := range 2 {
 		bin, restore := p.binaries(family)
 		for _, table := range []string{"raw", "mangle", "filter"} {
-			script := "*" + table + "\n:" + n.chain + " - [0:0]\n-A " + n.chain + " -j DROP\nCOMMIT\n"
+			script := "*" + table + "\n:" + n.chain + " - [0:0]\n-A " + n.chain + " -m comment --comment " + generation + " -j DROP\nCOMMIT\n"
 			if _, err := boundedCommand(ctx, restore, []string{"--wait", "--noflush"}, strings.NewReader(script), 4096); err != nil {
 				return err
 			}
@@ -316,6 +325,9 @@ func (p *networkPolicy) binaries(family int) (string, string) {
 func (p *networkPolicy) enable(ctx context.Context, n *ownedNetwork) error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+	if p.watchErr != nil {
+		return prerequisite(p.watchErr)
+	}
 	if !n.policyInstalled || !n.ipv4.IsValid() || !n.ipv6.IsValid() {
 		return errors.New("dual-stack default-deny endpoint not ready")
 	}
@@ -348,11 +360,12 @@ func (p *networkPolicy) disable(ctx context.Context, n *ownedNetwork) error {
 }
 func (p *networkPolicy) disableLocked(ctx context.Context, n *ownedNetwork) error {
 	var errs []error
+	generation := newPolicyGeneration()
 	for family := range 2 {
 		_, restore := p.binaries(family)
 		var script strings.Builder
 		for _, table := range []string{"raw", "mangle", "filter"} {
-			fmt.Fprintf(&script, "*%s\n-F %s\n-A %s -j DROP\nCOMMIT\n", table, n.chain, n.chain)
+			fmt.Fprintf(&script, "*%s\n-F %s\n-A %s -m comment --comment %s -j DROP\nCOMMIT\n", table, n.chain, n.chain, generation)
 		}
 		_, err := boundedCommand(ctx, restore, []string{"--wait", "--noflush"}, strings.NewReader(script.String()), 4096)
 		errs = append(errs, err)
@@ -387,6 +400,7 @@ func (p *networkPolicy) installRules(ctx context.Context, n *ownedNetwork, famil
 	if family == 1 {
 		ip = n.ipv6
 	}
+	generation := newPolicyGeneration()
 	var script strings.Builder
 	for _, table := range []string{"raw", "mangle", "filter"} {
 		fmt.Fprintf(&script, "*%s\n-F %s\n", table, n.chain)
@@ -458,9 +472,9 @@ func (p *networkPolicy) installRules(ctx context.Context, n *ownedNetwork, famil
 			add("-m conntrack --ctstate INVALID -j DROP")
 		}
 		if enabled {
-			add("-j RETURN")
+			add("-m comment --comment " + generation + " -j RETURN")
 		} else {
-			add("-j DROP")
+			add("-m comment --comment " + generation + " -j DROP")
 		}
 		script.WriteString("COMMIT\n")
 	}
@@ -502,6 +516,7 @@ func (p *networkPolicy) revokeForCleanup(ctx context.Context, o Ownership) error
 	n.enabled = false
 	found := false
 	var errs []error
+	generation := ""
 	for family := range 2 {
 		bin, restore := p.binaries(family)
 		for _, table := range []string{"raw", "mangle", "filter"} {
@@ -514,7 +529,10 @@ func (p *networkPolicy) revokeForCleanup(ctx context.Context, o Ownership) error
 				continue
 			}
 			found = true
-			script := fmt.Sprintf("*%s\n-F %s\n-A %s -j DROP\nCOMMIT\n", table, n.chain, n.chain)
+			if generation == "" {
+				generation = newPolicyGeneration()
+			}
+			script := fmt.Sprintf("*%s\n-F %s\n-A %s -m comment --comment %s -j DROP\nCOMMIT\n", table, n.chain, n.chain, generation)
 			_, err = boundedCommand(ctx, restore, []string{"--wait", "--noflush"}, strings.NewReader(script), 4096)
 			errs = append(errs, err)
 		}
@@ -562,6 +580,7 @@ func (p *networkPolicy) remove(ctx context.Context, n *ownedNetwork) error {
 	}
 	var errs []error
 	hadPolicy := false
+	generation := ""
 	// Close every extant owned chain, including a partially installed family.
 	// Missing chains are already closed; errors retain cleanup ownership.
 	for family := range 2 {
@@ -576,7 +595,10 @@ func (p *networkPolicy) remove(ctx context.Context, n *ownedNetwork) error {
 				continue
 			}
 			hadPolicy = true
-			script := fmt.Sprintf("*%s\n-F %s\n-A %s -j DROP\nCOMMIT\n", table, n.chain, n.chain)
+			if generation == "" {
+				generation = newPolicyGeneration()
+			}
+			script := fmt.Sprintf("*%s\n-F %s\n-A %s -m comment --comment %s -j DROP\nCOMMIT\n", table, n.chain, n.chain, generation)
 			_, err = boundedCommand(ctx, restore, []string{"--wait", "--noflush"}, strings.NewReader(script), 4096)
 			errs = append(errs, err)
 		}
@@ -687,59 +709,173 @@ func (p *networkPolicy) clearConntrack(ctx context.Context, n *ownedNetwork) err
 	}
 	return errors.Join(errs...)
 }
+func routeNotificationError(data []byte, flags int) error {
+	if flags&(unix.MSG_TRUNC|unix.MSG_CTRUNC) != 0 {
+		return errors.New("route monitor notification truncated")
+	}
+	if len(data) == 0 {
+		return errors.New("route monitor notification empty")
+	}
+	for len(data) != 0 {
+		if len(data) < unix.NLMSG_HDRLEN {
+			return errors.New("route monitor notification header truncated")
+		}
+		length := int(binary.NativeEndian.Uint32(data[:4]))
+		if length < unix.NLMSG_HDRLEN || length > len(data) {
+			return errors.New("route monitor notification length invalid")
+		}
+		kind := binary.NativeEndian.Uint16(data[4:6])
+		if kind == unix.NLMSG_ERROR || kind == unix.NLMSG_OVERRUN {
+			return errors.New("route monitor reported notification loss")
+		}
+		aligned := (length + unix.NLMSG_ALIGNTO - 1) &^ (unix.NLMSG_ALIGNTO - 1)
+		if length == len(data) {
+			return nil
+		}
+		if aligned > len(data) {
+			return errors.New("route monitor notification padding truncated")
+		}
+		data = data[aligned:]
+	}
+	return nil
+}
+
+func readRouteNotification(fd *os.File, buffer []byte) error {
+	raw, err := fd.SyscallConn()
+	if err != nil {
+		return err
+	}
+	var n, flags int
+	var receiveErr error
+	if err := raw.Read(func(fd uintptr) bool {
+		n, _, flags, _, receiveErr = unix.Recvmsg(int(fd), buffer, nil, unix.MSG_DONTWAIT)
+		return !errors.Is(receiveErr, unix.EAGAIN) && !errors.Is(receiveErr, unix.EWOULDBLOCK)
+	}); err != nil {
+		return err
+	}
+	if receiveErr != nil {
+		return receiveErr
+	}
+	return routeNotificationError(buffer[:n], flags)
+}
+
+func drainRouteNotifications(fd *os.File, buffer []byte) error {
+	raw, err := fd.SyscallConn()
+	if err != nil {
+		return err
+	}
+	var receiveErr error
+	if err := raw.Control(func(fd uintptr) {
+		total := 0
+		for range 256 {
+			n, _, flags, _, err := unix.Recvmsg(int(fd), buffer, nil, unix.MSG_DONTWAIT)
+			if errors.Is(err, unix.EAGAIN) || errors.Is(err, unix.EWOULDBLOCK) {
+				return
+			}
+			if err != nil {
+				receiveErr = err
+				return
+			}
+			if receiveErr = routeNotificationError(buffer[:n], flags); receiveErr != nil {
+				return
+			}
+			total += n
+			if total > 1<<20 {
+				receiveErr = errors.New("route monitor notification byte bound exceeded")
+				return
+			}
+		}
+		receiveErr = errors.New("route monitor notification count bound exceeded")
+	}); err != nil {
+		return err
+	}
+	return receiveErr
+}
+
+func (p *networkPolicy) reconcileRouteBurstLocked(fd *os.File, buffer []byte, notificationErr error) []Ownership {
+	type closedNetwork struct {
+		network *ownedNetwork
+		enabled bool
+		ctx     context.Context
+		cancel  context.CancelFunc
+		err     error
+	}
+	closed := make([]closedNetwork, 0, len(p.owned))
+	haveEnabled := false
+	// Close every bound policy, even when enabled is false: a failed/partial
+	// installation is not proof that all tables and both families are closed.
+	for _, n := range p.owned {
+		if n.owner.ContainerID == "" {
+			continue
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), p.timeout)
+		state := closedNetwork{network: n, enabled: n.enabled, ctx: ctx, cancel: cancel}
+		state.err = p.disableLocked(ctx, n)
+		closed = append(closed, state)
+		haveEnabled = haveEnabled || state.enabled
+	}
+	// Notifications already queued belong to the same closed reconciliation
+	// interval. Draining them avoids replaying startup address/route bursts as
+	// repeated conntrack deletion and full policy replacement after reopening.
+	if notificationErr == nil {
+		notificationErr = drainRouteNotifications(fd, buffer)
+	}
+	if notificationErr != nil {
+		p.watchErr = notificationErr
+	}
+	var blocked []netip.Prefix
+	var inventoryErr error
+	if notificationErr == nil && haveEnabled {
+		blocked, inventoryErr = p.blockedDestinations()
+	}
+	var kill []Ownership
+	for _, state := range closed {
+		n, err := state.network, state.err
+		if notificationErr == nil && err == nil && state.enabled {
+			err = n.refreshBridgeIPv6Identity()
+			if err == nil {
+				err = inventoryErr
+			}
+			if err == nil {
+				for family := range 2 {
+					if err = p.installRules(state.ctx, n, family, blocked, true); err != nil {
+						break
+					}
+				}
+				if err == nil {
+					n.enabled = true
+				}
+			}
+		}
+		if notificationErr != nil || err != nil {
+			p.disableLocked(state.ctx, n)
+			kill = append(kill, n.owner)
+		}
+		state.cancel()
+	}
+	return kill
+}
+
 func (p *networkPolicy) watchHostAddresses(fd *os.File) {
-	// A route/address change closes all egress first. Rules are rebuilt from the
-	// current complete inventory before reopening. Failure kills owned sandboxes.
+	// Close before coalescing each finite burst, then rebuild from the complete
+	// current inventory once. A later event begins a new closed interval.
 	buffer := make([]byte, 65536)
 	for {
-		_, err := fd.Read(buffer)
+		err := readRouteNotification(fd, buffer)
 		p.mu.Lock()
 		if p.watcher != fd {
 			p.mu.Unlock()
 			return
 		}
-		if err != nil {
-			p.watchErr = err
-		}
-		var kill []Ownership
-		for _, n := range p.owned {
-			if n.owner.ContainerID == "" {
-				continue
-			}
-			wasEnabled := n.enabled
-			ctx, cancel := context.WithTimeout(context.Background(), p.timeout)
-			e := p.disableLocked(ctx, n)
-			if err == nil && e == nil && wasEnabled {
-				e = n.refreshBridgeIPv6Identity()
-			}
-			if err == nil && e == nil && wasEnabled {
-				blocked, bErr := p.blockedDestinations()
-				if bErr != nil {
-					e = bErr
-				} else {
-					for family := range 2 {
-						if e = p.installRules(ctx, n, family, blocked, true); e != nil {
-							break
-						}
-					}
-					if e == nil {
-						n.enabled = true
-					}
-				}
-			}
-			if err != nil || e != nil {
-				p.disableLocked(ctx, n)
-				kill = append(kill, n.owner)
-			}
-			cancel()
-		}
+		kill := p.reconcileRouteBurstLocked(fd, buffer, err)
+		failed := p.watchErr != nil
 		p.mu.Unlock()
 		for _, o := range kill {
 			ctx, cancel := context.WithTimeout(context.Background(), p.timeout)
 			p.docker.ContainerKill(ctx, o.ContainerID, client.ContainerKillOptions{Signal: "SIGKILL"})
 			cancel()
 		}
-		if err != nil {
+		if failed {
 			fd.Close()
 			return
 		}
