@@ -168,10 +168,7 @@ func (m *Manager) Launch(ctx context.Context, spec ModuleSpec) (result *Instance
 	m.instances[spec.ModuleID] = i
 	m.mu.Unlock()
 	defer func() {
-		reason := failureReason(launchErr, "HOOK_FAILED")
-		if startup.Err() == context.DeadlineExceeded {
-			reason = "STARTUP_DEADLINE_EXCEEDED"
-		}
+		reason := failureReason(startup, launchErr, "HOOK_FAILED")
 		cancelStartup()
 		close(i.launchDone)
 		if launchErr != nil {
@@ -416,10 +413,28 @@ func (m *Manager) Launch(ctx context.Context, spec ModuleSpec) (result *Instance
 	return i, nil
 }
 func deadlineOf(ctx context.Context) time.Time { d, _ := ctx.Deadline(); return d }
+
+// A returned DeadlineExceeded status may belong to a nested helper rather than
+// this hook. Retain the original error/status and mark only observed expiration
+// of the context that callHook itself supplied.
+type hookDeadlineFailure struct {
+	cause error
+}
+
+func (failure *hookDeadlineFailure) Error() string { return failure.cause.Error() }
+func (failure *hookDeadlineFailure) Unwrap() error { return failure.cause }
+func (failure *hookDeadlineFailure) GRPCStatus() *status.Status {
+	return status.Convert(failure.cause)
+}
+
 func callHook[T any](ctx context.Context, l Limits, call func(context.Context) (T, error)) (T, error) {
 	bounded, cancel := context.WithTimeout(ctx, time.Duration(l.HookRPCDeadline))
 	defer cancel()
-	return call(bounded)
+	value, err := call(bounded)
+	if err != nil && bounded.Err() == context.DeadlineExceeded {
+		return value, &hookDeadlineFailure{cause: err}
+	}
+	return value, err
 }
 func (m *Manager) stage(ctx context.Context, i *Instance, stage wire.Stage, init *wire.InitContext) error {
 	_, err := callHook(ctx, m.config.Limits, func(c context.Context) (struct{}, error) {
@@ -427,11 +442,15 @@ func (m *Manager) stage(ctx context.Context, i *Instance, stage wire.Stage, init
 	})
 	return err
 }
-func failureReason(err error, fallback string) string {
+func failureReason(startup context.Context, err error, fallback string) string {
+	if startup.Err() == context.DeadlineExceeded {
+		return "STARTUP_DEADLINE_EXCEEDED"
+	}
 	if err == nil {
 		return fallback
 	}
-	if errors.Is(err, context.DeadlineExceeded) || status.Code(err) == codes.DeadlineExceeded {
+	var hookDeadline *hookDeadlineFailure
+	if errors.As(err, &hookDeadline) {
 		return "HOOK_DEADLINE_EXCEEDED"
 	}
 	if errors.Is(err, context.Canceled) || status.Code(err) == codes.Canceled {
