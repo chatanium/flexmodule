@@ -42,14 +42,16 @@ type DockerConfig struct {
 	Network             NetworkConfig     `json:"network"`
 }
 type DockerPlatform struct {
-	mu             sync.Mutex
-	cfg            DockerConfig
-	docker         *client.Client
-	images         *client.Client
-	imageTransport *http.Transport
-	instances      map[string]*dockerInstance
-	network        *networkPolicy
-	creates        CreateJournal
+	mu              sync.Mutex
+	cfg             DockerConfig
+	docker          *client.Client
+	createDocker    *client.Client
+	images          *client.Client
+	imageTransport  *http.Transport
+	createTransport *http.Transport
+	instances       map[string]*dockerInstance
+	network         *networkPolicy
+	creates         CreateJournal
 }
 type dockerInstance struct {
 	cleanup       sync.Mutex
@@ -70,23 +72,34 @@ func NewDockerPlatform(cfg DockerConfig) (*DockerPlatform, error) {
 	if !strings.HasPrefix(cfg.Endpoint, "unix:///") || cfg.EngineVersion == "" || cfg.RuntimeName == "" || cfg.RunscVersion == "" || cfg.APIDeadline <= 0 || cfg.TerminationDeadline <= 0 {
 		return nil, invalid("exact local Docker/runsc configuration and finite deadlines required")
 	}
+	// Keep the SDK's concrete base transport for bounded attach/hijack dialing.
+	// Only create and network requests need the response-body receipt wrapper.
 	cli, err := client.New(client.WithHost(cfg.Endpoint))
 	if err != nil {
+		return nil, err
+	}
+	createDocker, createTransport, err := newCreateClient(cfg.Endpoint)
+	if err != nil {
+		cli.Close()
 		return nil, err
 	}
 	images, transport, err := newBoundedImageClient(cfg.Endpoint)
 	if err != nil {
 		cli.Close()
+		createDocker.Close()
+		createTransport.CloseIdleConnections()
 		return nil, err
 	}
-	policy, err := newNetworkPolicy(cli, cfg.Network, cfg.APIDeadline)
+	policy, err := newNetworkPolicy(createDocker, cfg.Network, cfg.APIDeadline)
 	if err != nil {
 		cli.Close()
+		createDocker.Close()
+		createTransport.CloseIdleConnections()
 		images.Close()
 		transport.CloseIdleConnections()
 		return nil, err
 	}
-	return &DockerPlatform{cfg: cfg, docker: cli, images: images, imageTransport: transport, instances: make(map[string]*dockerInstance), network: policy}, nil
+	return &DockerPlatform{cfg: cfg, docker: cli, createDocker: createDocker, images: images, imageTransport: transport, createTransport: createTransport, instances: make(map[string]*dockerInstance), network: policy}, nil
 }
 func (p *DockerPlatform) BindCreateJournal(j CreateJournal) error {
 	if j == nil {
@@ -361,7 +374,8 @@ func (p *DockerPlatform) Create(ctx context.Context, spec LaunchSpec, lease Leas
 	if err := p.creates.SubmitCreate(api, lease.Ownership, CreateContainer, containerName(lease.Ownership)); err != nil {
 		return nil, err
 	}
-	result, err := p.docker.ContainerCreate(api, client.ContainerCreateOptions{
+	createAPI, receipt := createRequest(api, CreateContainer, containerName(lease.Ownership))
+	result, err := p.createDocker.ContainerCreate(createAPI, client.ContainerCreateOptions{
 		Name:   containerName(lease.Ownership),
 		Config: &container.Config{Image: spec.ImageDigest, Entrypoint: spec.Entrypoint, Cmd: spec.Args, Env: env, User: fmt.Sprintf("%d:%d", spec.UID, spec.GID), WorkingDir: GuestScratchPath, Tty: false, AttachStdout: true, AttachStderr: true, Labels: ownershipLabels(lease.Ownership)},
 		HostConfig: &container.HostConfig{
@@ -374,7 +388,7 @@ func (p *DockerPlatform) Create(ctx context.Context, spec LaunchSpec, lease Leas
 		NetworkingConfig: topology,
 	})
 	if err != nil {
-		return nil, err
+		return nil, recordCreateRejection(err, receipt, p.creates, lease.Ownership, p.cfg.APIDeadline)
 	}
 	own := lease.Ownership
 	own.ContainerID = result.ID
@@ -783,6 +797,7 @@ func (p *DockerPlatform) Close() error {
 		}
 	}
 	p.imageTransport.CloseIdleConnections()
-	errs = append(errs, p.images.Close(), p.docker.Close())
+	p.createTransport.CloseIdleConnections()
+	errs = append(errs, p.images.Close(), p.createDocker.Close(), p.docker.Close())
 	return errors.Join(errs...)
 }

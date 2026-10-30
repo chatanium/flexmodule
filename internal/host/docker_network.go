@@ -164,9 +164,10 @@ func (p *networkPolicy) prepare(ctx context.Context, o Ownership) (*ownedNetwork
 		return nil, err
 	}
 	p.owned[o.InstanceID] = n
-	result, err := p.docker.NetworkCreate(ctx, n.name, client.NetworkCreateOptions{Driver: "bridge", EnableIPv4: &v4, EnableIPv6: &v6, Options: map[string]string{"com.docker.network.bridge.name": n.bridge, "com.docker.network.bridge.enable_icc": "false"}, Labels: ownershipLabels(o), IPAM: &network.IPAM{Driver: "default", Config: []network.IPAMConfig{{Subnet: subnet4, Gateway: subnet4.Addr().Next()}, {Subnet: subnet6, Gateway: subnet6.Addr().Next()}}}})
+	request, receipt := createRequest(ctx, CreateNetwork, n.name)
+	result, err := p.docker.NetworkCreate(request, n.name, client.NetworkCreateOptions{Driver: "bridge", EnableIPv4: &v4, EnableIPv6: &v6, Options: map[string]string{"com.docker.network.bridge.name": n.bridge, "com.docker.network.bridge.enable_icc": "false"}, Labels: ownershipLabels(o), IPAM: &network.IPAM{Driver: "default", Config: []network.IPAMConfig{{Subnet: subnet4, Gateway: subnet4.Addr().Next()}, {Subnet: subnet6, Gateway: subnet6.Addr().Next()}}}})
 	if err != nil {
-		return n, err
+		return n, recordCreateRejection(err, receipt, p.creates, o, p.timeout)
 	}
 	n.id = result.ID
 	created, err := p.docker.NetworkInspect(ctx, n.id, client.NetworkInspectOptions{})

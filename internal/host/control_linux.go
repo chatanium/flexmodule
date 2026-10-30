@@ -152,6 +152,17 @@ func manifestPacketLimit(max int) (int, error) {
 	}
 	return bound, nil
 }
+
+// Only the reconcile RPC may advertise pending cleanup as nonfatal admission.
+// CREATE_OUTCOME_UNRESOLVED alone is insufficient: controlError also uses it for
+// joins containing unrelated enforcement, storage, or transport failures.
+func reconciliationError(err error) error {
+	if unresolvedCleanupOnly(err) {
+		return &Error{Reason: "HOST_RECONCILIATION_PENDING", Message: "only unresolved Docker creates remain; affected installations stay reserved while unrelated installations may run"}
+	}
+	return err
+}
+
 func controlError(err error) *Error {
 	if errors.Is(err, ErrCreateUnresolved) {
 		return &Error{Reason: "CREATE_OUTCOME_UNRESOLVED", Message: "submitted Docker create may still complete; resources remain reserved without automatic resubmission or release"}

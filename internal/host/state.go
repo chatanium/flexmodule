@@ -47,6 +47,10 @@ func openJournal(ctx context.Context, dir string) (*journal, error) {
 		db.Close()
 		return nil, err
 	}
+	if err = j.initializeCreateRejections(ctx); err != nil {
+		db.Close()
+		return nil, err
+	}
 	return j, nil
 }
 func nextProject(ctx context.Context, tx *sql.Tx) (uint32, error) {
@@ -199,7 +203,7 @@ func (j *journal) cleanup(ctx context.Context, id string, complete bool, cause e
 	}
 	defer tx.Rollback()
 	var unresolved int
-	if err = tx.QueryRowContext(ctx, "SELECT count(*) FROM create_submissions WHERE instance=? AND state!='OBSERVED'", id).Scan(&unresolved); err != nil {
+	if err = tx.QueryRowContext(ctx, "SELECT count(*) FROM create_submissions WHERE instance=? AND state='SUBMITTED'", id).Scan(&unresolved); err != nil {
 		return err
 	}
 	if unresolved != 0 {

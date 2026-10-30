@@ -192,6 +192,47 @@ func TestOnlyUnresolvedCleanupMayContinueSupervisorStartup(t *testing.T) {
 	}
 }
 
+func TestReconciliationErrorOnlyAdvertisesPendingForUnresolvedCleanup(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		err     error
+		pending bool
+	}{
+		{"resolved", nil, false},
+		{"unresolved", ErrCreateUnresolved, true},
+		{"wrapped cleanup", cleanupStep(FailureCleanupPlatform, errors.Join(ErrCleanupIncomplete, ErrCreateUnresolved)), true},
+		{"cleanup only", ErrCleanupIncomplete, false},
+		{"deadline", errors.Join(ErrCreateUnresolved, context.DeadlineExceeded), false},
+		{"enforcement", errors.Join(ErrCreateUnresolved, prerequisite(errors.New("enforcement unavailable"))), false},
+		{"journal", errors.Join(ErrCleanupIncomplete, ErrCreateUnresolved, errors.New("journal unavailable")), false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			err := reconciliationError(tc.err)
+			if tc.err == nil {
+				if err != nil {
+					t.Fatal(err)
+				}
+				return
+			}
+			if !tc.pending && err != tc.err {
+				t.Fatal("fatal reconciliation error was replaced")
+			}
+			// Exercise the same sanitization and JSON boundary as the real RPC.
+			data, marshalErr := marshalControl(controlResponse{Version: controlVersion, Error: controlError(err)})
+			if marshalErr != nil {
+				t.Fatal(marshalErr)
+			}
+			var response controlResponse
+			if decodeErr := strictJSON(data, &response); decodeErr != nil {
+				t.Fatal(decodeErr)
+			}
+			if response.Error == nil || (response.Error.Reason == "HOST_RECONCILIATION_PENDING") != tc.pending {
+				t.Fatalf("unsafe pending admission result: %+v", response.Error)
+			}
+		})
+	}
+}
+
 func TestLegacyPendingCreateMigrationDoesNotInventPreflightSubmission(t *testing.T) {
 	for _, state := range []string{"ALLOCATING", "ALLOCATED", "CREATING"} {
 		t.Run(state, func(t *testing.T) {

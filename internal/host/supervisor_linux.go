@@ -353,7 +353,7 @@ func (s *Supervisor) dispatch(ctx context.Context, r controlRequest, out *contro
 		return nil, nil
 	}
 	if r.Operation == "reconcile" {
-		return nil, s.reconcile(ctx, false)
+		return nil, reconciliationError(s.reconcile(ctx, false))
 	}
 	lock := s.instanceLock(r.InstanceID)
 	// Wait must not hold the instance lock: termination is what unblocks Wait.

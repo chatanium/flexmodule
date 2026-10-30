@@ -90,6 +90,23 @@ func observe(phase string, n int) error {
 	return nil
 }
 
+func reconcileHost(ctx context.Context, supervisor interface{ Reconcile(context.Context) error }, output io.Writer, modules int) error {
+	err := supervisor.Reconcile(ctx)
+	if err == nil {
+		return nil
+	}
+	pending, ok := err.(*host.Error)
+	if !ok || pending.Reason != "HOST_RECONCILIATION_PENDING" {
+		return errors.New("host reconciliation failed")
+	}
+	// This result does not release claims or authorize the affected installation.
+	// Acquire still enforces its durable exclusive claim.
+	if json.NewEncoder(output).Encode(observation{Phase: pending.Reason, Modules: modules, Voice: voiceEnabled}) != nil {
+		return errors.New("runtime observation output failed")
+	}
+	return nil
+}
+
 // serve has no executable fallback: every module launch goes through the real
 // authenticated supervisor client and Manager's sandbox RunnerFunc.
 func serve(ctx context.Context, config runtime.Config, clientConfig host.ClientConfig) (result error) {
@@ -100,8 +117,8 @@ func serve(ctx context.Context, config runtime.Config, clientConfig host.ClientC
 		return errors.New("host supervisor registration failed")
 	}
 	defer supervisor.Close()
-	if err = supervisor.Reconcile(startup); err != nil {
-		return errors.New("host reconciliation failed")
+	if err = reconcileHost(startup, supervisor, os.Stdout, len(config.Modules)); err != nil {
+		return err
 	}
 	files, err := upload.New(startup, upload.Config{ManagementDirectory: config.Host.ManagementDirectory, Limits: config.Limits, ModuleMountRoots: []string{config.Host.StorageRoot, config.Host.IPCRoot}})
 	if err != nil {

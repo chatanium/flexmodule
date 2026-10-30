@@ -87,20 +87,24 @@ type CreateState string
 const (
 	CreateSubmitted CreateState = "SUBMITTED"
 	CreateObserved  CreateState = "OBSERVED"
+	CreateRejected  CreateState = "REJECTED"
 )
 
 type CreateRecord struct {
-	Identity string
-	State    CreateState
-	ObjectID string
+	Identity  string
+	State     CreateState
+	ObjectID  string
+	Rejection string
 }
 
 // CreateJournal commits the submission before Docker dispatch. A successful
 // response or an exact ownership-checked observation must be durable before
-// deleting the created object; absence alone never resolves SUBMITTED.
+// deleting the created object. Only an authoritative completed negative response
+// may reject a submission; absence, deadlines and transport errors never do.
 type CreateJournal interface {
 	SubmitCreate(context.Context, Ownership, CreateKind, string) error
 	ObserveCreated(context.Context, Ownership, CreateKind, string, string) error
+	RejectCreate(context.Context, Ownership, CreateKind, string, string) error
 	LookupCreate(context.Context, Ownership, CreateKind) (CreateRecord, bool, error)
 	RecordFailure(context.Context, Ownership, FailurePhase, FailureReason) error
 }

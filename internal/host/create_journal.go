@@ -28,10 +28,9 @@ func (j *journal) SubmitCreate(ctx context.Context, o Ownership, kind CreateKind
 	if err := j.creationOwner(ctx, o); err != nil {
 		return err
 	}
-	// Never UPSERT or retry a submitted operation, even when its caller received
-	// an error. Its single deterministic name and ownership bind any late result.
-	// No SDK error, including a definite-looking HTTP failure, is an implemented
-	// negative-result fence. Keep the reservation until a labeled object is seen.
+	// Never UPSERT or retry a submitted operation. Its deterministic name and
+	// ownership bind any late result. Only the trusted platform's completed
+	// negative-response evidence can reject it without an observed object.
 	result, err := j.db.ExecContext(ctx, `INSERT INTO create_submissions(instance,kind,identity,state,object_id) SELECT ?,?,?,'SUBMITTED','' FROM instances WHERE id=? AND cleanup!='COMPLETE' ON CONFLICT(instance,kind) DO NOTHING`, o.InstanceID, kind, identity, o.InstanceID)
 	if err != nil {
 		return err
@@ -53,14 +52,14 @@ func (j *journal) LookupCreate(ctx context.Context, o Ownership, kind CreateKind
 		return CreateRecord{}, false, err
 	}
 	var record CreateRecord
-	err := j.db.QueryRowContext(ctx, `SELECT identity,state,object_id FROM create_submissions WHERE instance=? AND kind=?`, o.InstanceID, kind).Scan(&record.Identity, &record.State, &record.ObjectID)
+	err := j.db.QueryRowContext(ctx, `SELECT identity,state,object_id,rejection FROM create_submissions WHERE instance=? AND kind=?`, o.InstanceID, kind).Scan(&record.Identity, &record.State, &record.ObjectID, &record.Rejection)
 	if errors.Is(err, sql.ErrNoRows) {
 		return CreateRecord{}, false, nil
 	}
 	if err != nil {
 		return CreateRecord{}, false, err
 	}
-	if record.Identity == "" || (record.State != CreateSubmitted && record.State != CreateObserved) || (record.State == CreateObserved && record.ObjectID == "") {
+	if record.Identity == "" || (record.State != CreateSubmitted && record.State != CreateObserved && record.State != CreateRejected) || (record.State == CreateObserved && record.ObjectID == "") || (record.State == CreateRejected && (record.ObjectID != "" || record.Rejection == "")) {
 		return CreateRecord{}, false, errors.New("invalid durable create submission state")
 	}
 	return record, true, nil
@@ -79,7 +78,7 @@ func (j *journal) ObserveCreated(ctx context.Context, o Ownership, kind CreateKi
 	if record.State == CreateObserved && record.ObjectID != id {
 		return errors.New("created object does not match the resolved submitted operation")
 	}
-	result, err := j.db.ExecContext(ctx, `UPDATE create_submissions SET state='OBSERVED',object_id=? WHERE instance=? AND kind=? AND identity=? AND (state='SUBMITTED' OR (state='OBSERVED' AND object_id=?))`, id, o.InstanceID, kind, identity, id)
+	result, err := j.db.ExecContext(ctx, `UPDATE create_submissions SET state='OBSERVED',object_id=? WHERE instance=? AND kind=? AND identity=? AND (state IN ('SUBMITTED','REJECTED') OR (state='OBSERVED' AND object_id=?))`, id, o.InstanceID, kind, identity, id)
 	if err != nil {
 		return err
 	}
@@ -89,6 +88,34 @@ func (j *journal) ObserveCreated(ctx context.Context, o Ownership, kind CreateKi
 	}
 	if n != 1 {
 		return errors.New("created object resolution conflicted")
+	}
+	return nil
+}
+
+// RejectCreate is a trusted-platform transition, not an operator force reset.
+// Evidence must fence this exact dispatched request's completion. Cleanup still
+// verifies ownership and absence, including any object left by failed rollback.
+func (j *journal) RejectCreate(ctx context.Context, o Ownership, kind CreateKind, identity, evidence string) error {
+	if evidence == "" {
+		return errors.New("completed create rejection evidence is missing")
+	}
+	record, found, err := j.LookupCreate(ctx, o, kind)
+	if err != nil {
+		return err
+	}
+	if !found || record.Identity != identity || record.ObjectID != "" {
+		return errors.New("rejected create has no matching unresolved operation")
+	}
+	result, err := j.db.ExecContext(ctx, `UPDATE create_submissions SET state='REJECTED',rejection=? WHERE instance=? AND kind=? AND identity=? AND object_id='' AND (state='SUBMITTED' OR (state='REJECTED' AND rejection=?))`, evidence, o.InstanceID, kind, identity, evidence)
+	if err != nil {
+		return err
+	}
+	n, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if n != 1 {
+		return errors.New("create rejection resolution conflicted")
 	}
 	return nil
 }
@@ -114,7 +141,7 @@ func requireCreateResolved(ctx context.Context, j CreateJournal, o Ownership, ki
 }
 func (j *journal) unresolvedCreates(ctx context.Context, id string) error {
 	var count int
-	if err := j.db.QueryRowContext(ctx, `SELECT count(*) FROM create_submissions WHERE instance=? AND state!='OBSERVED'`, id).Scan(&count); err != nil {
+	if err := j.db.QueryRowContext(ctx, `SELECT count(*) FROM create_submissions WHERE instance=? AND state='SUBMITTED'`, id).Scan(&count); err != nil {
 		return err
 	}
 	if count != 0 {
@@ -187,17 +214,46 @@ func (j *journal) initializeCreateJournal(ctx context.Context) error {
 	}
 	for _, l := range leases {
 		// A legacy ID is only a lookup hint until current ownership labels match.
-		if _, err = tx.ExecContext(ctx, `INSERT OR IGNORE INTO create_submissions VALUES(?,?,?,'SUBMITTED',?)`, l.Spec.InstanceID, CreateContainer, containerName(l.Ownership), l.Ownership.ContainerID); err != nil {
+		if _, err = tx.ExecContext(ctx, `INSERT OR IGNORE INTO create_submissions(instance,kind,identity,state,object_id) VALUES(?,?,?,'SUBMITTED',?)`, l.Spec.InstanceID, CreateContainer, containerName(l.Ownership), l.Ownership.ContainerID); err != nil {
 			return err
 		}
 		if l.Spec.InitialEgress == EgressPublicInternet {
-			if _, err = tx.ExecContext(ctx, `INSERT OR IGNORE INTO create_submissions VALUES(?,?,?,'SUBMITTED','')`, l.Spec.InstanceID, CreateNetwork, containerName(l.Ownership)+"-net"); err != nil {
+			if _, err = tx.ExecContext(ctx, `INSERT OR IGNORE INTO create_submissions(instance,kind,identity,state,object_id) VALUES(?,?,?,'SUBMITTED','')`, l.Spec.InstanceID, CreateNetwork, containerName(l.Ownership)+"-net"); err != nil {
 				return err
 			}
 		}
 	}
 	if _, err = tx.ExecContext(ctx, "INSERT INTO metadata(key,value) VALUES('create_journal_v1','1')"); err != nil {
 		return err
+	}
+	return tx.Commit()
+}
+
+// SQLite cannot widen the original CHECK constraint in place. Rebuild only this
+// ledger in one transaction; neither old submissions nor ownership claims change.
+func (j *journal) initializeCreateRejections(ctx context.Context) error {
+	tx, err := j.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	var initialized int
+	if err = tx.QueryRowContext(ctx, "SELECT count(*) FROM metadata WHERE key='create_journal_v2'").Scan(&initialized); err != nil {
+		return err
+	}
+	if initialized != 0 {
+		return nil
+	}
+	for _, statement := range []string{
+		`CREATE TABLE create_submissions_v2(instance TEXT NOT NULL REFERENCES instances(id),kind TEXT NOT NULL CHECK(kind IN ('container','network')),identity TEXT NOT NULL,state TEXT NOT NULL CHECK(state IN ('SUBMITTED','OBSERVED','REJECTED')),object_id TEXT NOT NULL,rejection TEXT NOT NULL DEFAULT '',CHECK(state!='REJECTED' OR (object_id='' AND rejection!='')),PRIMARY KEY(instance,kind),UNIQUE(kind,identity))`,
+		`INSERT INTO create_submissions_v2(instance,kind,identity,state,object_id) SELECT instance,kind,identity,state,object_id FROM create_submissions`,
+		`DROP TABLE create_submissions`,
+		`ALTER TABLE create_submissions_v2 RENAME TO create_submissions`,
+		`INSERT INTO metadata(key,value) VALUES('create_journal_v2','1')`,
+	} {
+		if _, err = tx.ExecContext(ctx, statement); err != nil {
+			return err
+		}
 	}
 	return tx.Commit()
 }
