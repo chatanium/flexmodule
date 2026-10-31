@@ -4,8 +4,15 @@ This optional media module accepts audio attachments only from explicitly config
 
 ## Artifacts and trust boundaries
 
-Source is in `modules/audio-player`, an independent Go module that directly
-requires `github.com/chatanium/discordgo v0.30.0` without a DiscordGo replacement.
+Source is in `modules/audio-player`, an independent Go module that requires
+`github.com/bwmarrin/discordgo v0.29.1-0.20260214123928-f43dd94faaac`, matching the
+root `go.mod` version authority. Its DiscordGo replacement is
+`../../.tools/deps/discordgo`; the FlexModule root replacement remains `../..`.
+Run `make prepare-sdk` from the repository root before direct Go commands here,
+and follow the root [shared-lease and revalidation instructions](../../README.md#pinned-builds-and-independent-artifacts).
+The prepared source comes from the maintained upstream patch stack, not a
+published fork dependency. Original upstream checksums belong to
+`third_party/discordgo/upstream.sum`, not this module's `go.sum`.
 The preserved executable name is `bin/voice-player-module`; the source move does
 not change the manifest, ModuleID or image/grant contract.
 

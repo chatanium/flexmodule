@@ -39,6 +39,7 @@ From the repository root, with the pinned Go compiler installed:
 
 ```sh
 make tools
+make prepare-sdk
 make buf
 make buf-check
 ```
@@ -58,21 +59,42 @@ rebuild helper clients/backend planners.
 
 ## Maintain source-derived contracts
 
-The SDK is the direct published dependency
-[`github.com/chatanium/discordgo v0.30.0`](https://github.com/chatanium/discordgo/tree/v0.30.0),
-upstream `f43dd94` plus the approved Gateway/context/ingress/observer and native
-DAVE patches. [`tools/sdk.py`](../tools/sdk.py) resolves its exact canonical
-module source and checksum; there is no local SDK directory fallback.
+The root `go.mod` pins upstream `github.com/bwmarrin/discordgo`
+`v0.29.1-0.20260214123928-f43dd94faaac` and replaces it with
+`./.tools/deps/discordgo`; nested media modules use the matching requirement and
+`../../.tools/deps/discordgo`. [`tools/sdk.py`](../tools/sdk.py) verifies the
+upstream download against `third_party/discordgo/upstream.sum` and applies the
+[four numbered DiscordGo patches](../third_party/discordgo/README.md) in lexical
+filename order, without a `series` file. The root requirement is the version
+authority; consumer `go.sum` files are not original-checksum authority because
+`go mod tidy` prunes sums for the locally replaced module.
+
+`make prepare-sdk` publishes immutable generations below `.tools/deps`, selected
+by the stable relative alias `.tools/deps/discordgo`. Compilation and extraction
+resolve the same prepared source; neither falls back to a fork checkout or
+unpatched upstream. Provenance contains exactly `Path`, `Version`, `Sum`,
+`GoModSum`, `PatchSHA256` and `SourceSHA256`, not machine-specific `Dir`.
+Preparation takes an exclusive lock; compiler/native consumers of the stable
+alias hold a shared lease and revalidate without writes as described in the
+[root build instructions](../README.md#pinned-builds-and-independent-artifacts).
+The extractor compiles using only the standard library, resolves an immutable
+generation `Dir` and reads that generation directly. Do not wrap the extractor
+or a preparing resolver in a shared lease: preparation takes the exclusive lock.
+
 Reviewed inventories and policy are under `tools/protocol/inventory/`;
-historical v0.29.0/v1 audits remain provenance, not the current API ceiling.
-Inventory labels such as `discordgo/restapi.go` are stable logical source
+historical v0.29.0/v1 audits and published SDK v0.30.0 evidence remain provenance,
+not current dependency instructions or the API ceiling. `Label`, `FileUpload`
+and `MessageSnapshot` already belong to the pinned upstream, not the local patch
+stack. Inventory labels such as `discordgo/restapi.go` are stable logical source
 identities, not checkout paths. After an intentional SDK/source-policy change,
-update reviewed policy and provenance rather than weakening inventory checks.
+update reviewed policy and all six provenance fields rather than weakening
+inventory checks.
 The dependent generation order is:
 
 ```sh
+make prepare-sdk
 env -u GOROOT .tools/go/bin/go run -mod=readonly ./tools/protocol/extract-source.go \
-  -sdk github.com/chatanium/discordgo -out tools/protocol/inventory/source-extracted.json
+  -sdk github.com/bwmarrin/discordgo -out tools/protocol/inventory/source-extracted.json
 python3 tools/protocol/refresh-inventory.py
 python3 tools/protocol/emit-domain.py
 python3 tools/protocol/generate_events.py
@@ -84,14 +106,15 @@ python3 tools/protocol/generate-backend-api.py
 python3 tools/protocol/generate-backend-events.py
 ```
 
-The first command assumes the pinned distribution is installed at
+The Go command assumes the pinned distribution is installed at
 `.tools/go/bin/go`; use the actual pinned compiler path if you chose another
-installation. Run these commands from the repository root. Review all generated
-source/mapping changes together; this sequence is not a replacement for the
-parent's formatting, build, test and live acceptance work.
+installation. Run these commands from the repository root and prepare before
+direct Go execution. Review all generated source/mapping changes together;
+this sequence is not a replacement for formatting, build, test, external
+consumer or live acceptance work.
 
-The `-sdk` flag may be omitted for the same canonical default; a local
-`discordgo` directory is not an accepted argument. Backend generation publishes
+The `-sdk` flag may be omitted for the same upstream import-path default; a local
+directory is not an accepted argument. Backend generation publishes
 `api_generated.go`, `json_codec_generated.go`, `api_projection_generated.go`
 and `rest_plans_generated.go` under `internal/backend/discord`, and coverage to
 `tools/protocol/backend-api-coverage.json` by default. To stage all five outputs

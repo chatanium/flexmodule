@@ -70,7 +70,7 @@ Current entry points:
 | `proto/core-v2/`, `shared/core-v2/` | Lifecycle, configuration, file transfer and authenticated transport |
 | `proto/discord-v2/`, `shared/discord-v2/`, `internal/backend/discord/` | Typed Discord domain/events/helpers and host adapter |
 | `internal/backend/discord/http/` | Host-only HTTP transport (package `http`, imported as `discordhttp`) |
-| `internal/backend/discord/voicejobs/` | Optional bounded voice jobs; native DAVE bridge belongs to the [published SDK](https://github.com/chatanium/discordgo/tree/v0.30.0/internal/dave) |
+| `internal/backend/discord/voicejobs/` | Optional bounded voice jobs; native DAVE bridge is supplied by the [maintained SDK patch stack](third_party/discordgo/README.md) |
 | `shared/media/opus/` | Module-side bounded FFmpeg/Opus processing, not a core service |
 | `examples/general-bot/`, `modules/music-bot/`, `modules/audio-player/` | Ordinary bot example and independent optional media modules |
 | `tests/integration/` | Integration runner (`main.go`), `sandbox-policy.py` observer and `fixtures/sandbox/` |
@@ -97,6 +97,7 @@ protoc-gen-go-grpc v1.6.2 under `.tools/bin`. From the repository root:
 
 ```sh
 make tools
+make prepare-sdk
 make build
 make build-media
 make buf
@@ -105,29 +106,77 @@ make buf-check
 
 | Command | Artifact or scope |
 |---|---|
+| `make prepare-sdk` | Download the pinned upstream DiscordGo module, verify its original checksums and apply the maintained patches; no application/native compilation |
 | `make build` | `bin/runtime`, `bin/flexmodule-supervisor`, `bin/test-module`; Linux/amd64 and CGO=0 by default, no native DAVE or media tools |
 | `make build-media` | `bin/chatanium-musicbot`, `bin/voice-player-module`; Go compilation only, no media tool installation |
-| `make build-all` | All three local Go modules, including root packages and ordinary/media binaries; SDK checks belong to its own repository, not the native voice bundle |
+| `make build-all` | All three local Go modules, including root packages and ordinary/media binaries; native voice is a separate target |
 | `make build-native BUILD_JOBS=2` | Independent native C++/ABI/loader/license gate; `.tools/native/prefix` and `.tools/native/bundle`, no application Go compilation or `bin/voice-runtime` publication |
 | `make build-voice BUILD_JOBS=2` | `bin/voice-runtime/runtime` plus `lib/`, `licenses/` and `provenance/`; explicit voice/CGO build |
 | `make buf` / `make buf-check` | Transactional owned protobuf publication / non-mutating generation comparison; see [protocol maintenance](proto/README.md) |
 | `make build-integration` | `bin/flexmodule-integration` from `tests/integration` and the CLI-package `bin/flexmodule-runtime-return-holder`; CGO=0, no test execution |
 | `make build-sandbox` | `bin/sandbox-module` from `tests/integration/fixtures/sandbox` |
-| `make check-offline` | Buf schema/generation comparison and bounded ordinary tests in all three local Go modules; no SDK-repository, live Discord or native build |
+| `make check-offline` | 21 focused SDK-preparation tests, Buf schema/generation comparison and bounded ordinary tests in the prepared SDK and all three local Go modules; no separate SDK checkout, live Discord or native build |
 | `make clean` | Enumerated ordinary binaries only; no Docker prune or deletion of retained native work |
 
 The three local Go modules are `.`, `modules/music-bot`, and
-`modules/audio-player`. All directly require the public
-[`github.com/chatanium/discordgo v0.30.0`](https://github.com/chatanium/discordgo/tree/v0.30.0)
-without a DiscordGo `replace` or local-source fallback. The immutable tag is commit
-`f2d1806d4599ff674163be703c0d62a23d4bb524`, with canonical Go checksum
-`h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=`.
-This fork includes upstream `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`
-plus the Gateway/context/ingress/observer and native DAVE patch set; it is not
-unmodified upstream. [`tools/sdk.py`](tools/sdk.py) resolves and verifies the
-consuming module's exact published source/checksum. SDK root and nested
-`examples/linked_roles` / `examples/voice_receive` modules and their CI are owned
-by the separate SDK repository.
+`modules/audio-player`. All require `github.com/bwmarrin/discordgo`
+`v0.29.1-0.20260214123928-f43dd94faaac`, upstream commit
+`f43dd94faaacd5b163e9e783f14b5bd8be639fc9`. The root `go.mod` is the version
+authority and replaces that module with `./.tools/deps/discordgo`; each nested
+module uses `../../.tools/deps/discordgo` and retains its FlexModule root
+replacement. DiscordGo imports use `github.com/bwmarrin/discordgo`; the public
+FlexModule module path remains `github.com/thirdscam/chatanium-flexmodule`.
+
+[`tools/sdk.py`](tools/sdk.py) downloads verified upstream source in an isolated
+module context and applies these four patches from
+[`third_party/discordgo/patches/`](third_party/discordgo/patches/):
+
+1. `0001-toolchain-and-dependencies.patch`
+2. `0002-discord-api-and-partial-state.patch`
+3. `0003-context-aware-bounded-gateway.patch`
+4. `0004-native-dave-voice-transport.patch`
+
+Patch filenames determine lexical application order; there is no `series` file.
+The complete stack preserves the reviewed functional SDK, not unmodified
+upstream. `Label`, `FileUpload` and `MessageSnapshot` already exist in the pinned
+upstream source; they are not local patch additions.
+[`third_party/discordgo/upstream.sum`](third_party/discordgo/upstream.sum) is the
+sole original-upstream checksum authority. Consumer `go.sum` files are not:
+`go mod tidy` prunes the original module's sums when a local replacement is used.
+
+Preparation publishes complete immutable generations under ignored
+`.tools/deps/discordgo-generations/`, selected atomically by the stable relative
+symlink `.tools/deps/discordgo`. Identical inputs reuse the existing generation
+without changing its files; failures preserve the previous tree. Do not edit
+prepared source or the alias, mutate a shared Go module cache, or delete older
+generations while readers may use them.
+
+Run `make prepare-sdk` before direct Go commands in the root or nested modules.
+Repository build, image and offline entry points prepare first, then retain a
+shared `.tools/deps/discordgo.lock` lease while compilers or native containers
+consume the alias. Preparation uses the exclusive lock; never invoke it while
+holding a shared lease. Direct raw Go commands must prepare first and avoid
+concurrent dependency preparation; consumers of the stable alias can use the
+same shared lease and `tools/sdk.py --verify-only` revalidation sequence.
+Read-only validation does not download, write or take a write lock. The
+stdlib-only protocol extractor resolves an immutable generation `Dir` and reads
+it directly; do not wrap it or preparation commands in a shared lease, which
+would deadlock their exclusive preparation.
+
+Compilation and [protocol extraction](proto/README.md#maintain-source-derived-contracts)
+use the same prepared source. Provenance records `Path`, `Version`, `Sum`,
+`GoModSum`, `PatchSHA256` and `SourceSHA256`; resolver `Dir` points to the
+immutable generation and is not portable provenance.
+
+The published SDK `v0.30.0` at commit
+`f2d1806d4599ff674163be703c0d62a23d4bb524` remains historical functional-source
+evidence, not a consumed module or build prerequisite. Its source repository and
+remote tags were not modified by this migration. Publication records and past
+live-test evidence do not verify a new build. A separate external shared-package
+consumer replacing only the FlexModule root successfully tidied and ran a
+`UserToProto`/`ProtoToUser` round-trip against original upstream DiscordGo with
+no SDK replacement. This bounded DTO-consumer check does not validate host
+runtime patches or live Discord interoperability.
 
 Source moves preserve output names: `examples/general-bot` builds
 `bin/test-module`, `modules/music-bot` builds `bin/chatanium-musicbot`, and
@@ -137,17 +186,21 @@ Native/media artifact builds require Linux/amd64, Docker Engine with BuildKit
 supporting `ADD --checksum` and `COPY --chmod`, Python 3.8+, GNU
 `readelf`, `ldd`, `timeout`, `flock`, `setsid`, and the target
 `/lib64/ld-linux-x86-64.so.2`. Keep the checkout and workspaces below `/home`.
-Large source/dependency/compiler/cache trees stay in `.tools/native` or
-`.tools/media`, not host `/tmp` or Docker compiler layers. The SDK's
-[`tools/native/native-lock.json`](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/native-lock.json)
-and this repository's `tools/media/tool-lock.json` pin compiler bases, package
-inputs and sources. Builds do not install host packages or prune/restart Docker.
+Large source/dependency/compiler/cache trees stay in `.tools/deps`,
+`.tools/native` or `.tools/media`, not host `/tmp` or Docker compiler layers.
+This repository's [`tools/native/native-lock.json`](tools/native/native-lock.json)
+and `tools/media/tool-lock.json` pin compiler bases, package inputs and sources.
+Native work, prefixes and bundles remain under `.tools/native`. Builds do not
+install host packages or prune/restart Docker.
 
 The optional native bundle uses an EL9 builder and pinned libdave commit
-`6396c90aedbb9a6ee117ea9ce1ce9832af6a3375` with the approved SDK
-[`libdave.patch`](https://github.com/chatanium/discordgo/blob/v0.30.0/tools/native/libdave.patch).
-This repository retains the EL9 builder and bundle packaging; it resolves the
-published SDK via `tools/sdk.py` and mounts that source at `/sdk`.
+`6396c90aedbb9a6ee117ea9ce1ce9832af6a3375` with
+[`third_party/libdave/patches/0001-flexmodule-abi.patch`](third_party/libdave/patches/0001-flexmodule-abi.patch).
+This repository owns the native lock, ABI patch, EL9 builder and bundle packaging.
+The host prepares the SDK before taking its shared build lease; the native
+container reads that prepared source through `/source/.tools/deps/discordgo`,
+validates without writes and compares all six provenance fields with the host.
+There is no separate `/sdk` mount or SDK-owned native input.
 It is a **source-patched fork**, not an upstream libdave release binary.
 Publication requires its actual ELF providers, eager relocation and target loader
 checks; a distro glibc version alone is not an ABI compatibility guarantee.

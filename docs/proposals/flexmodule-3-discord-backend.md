@@ -11,7 +11,7 @@
 
 ## 1. Summary
 
-FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추가하고, P0에 고정한 공개 DiscordGo가 제공하는 공식 봇 기능 전체를 형식이 지정된 Discord 어댑터로 제공합니다. 모든 요청은 인증된 모듈 인스턴스, 실제 부여된 capability, 리소스 범위와 수명 주기를 검사하며, 파일과 자격증명은 인스턴스에 귀속된 참조로만 전달합니다. 명령과 인터랙션의 소유권, 취소 가능한 외부 요청, 메모리 사용량이 파일 크기에 비례하지 않는 multipart 전송을 함께 정의합니다.
+FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추가하고, P0의 upstream과 패치로 준비한 DiscordGo가 제공하는 공식 봇 기능 전체를 형식이 지정된 Discord 어댑터로 제공합니다. 모든 요청은 인증된 모듈 인스턴스, 실제 부여된 capability, 리소스 범위와 수명 주기를 검사하며, 파일과 자격증명은 인스턴스에 귀속된 참조로만 전달합니다. 명령과 인터랙션의 소유권, 취소 가능한 외부 요청, 메모리 사용량이 파일 크기에 비례하지 않는 multipart 전송을 함께 정의합니다.
 
 ## 2. Background & Motivation
 
@@ -19,7 +19,7 @@ FlexModule의 코어에 백엔드 중립적인 파일 업로드 서비스를 추
 
 기존 v1 감사에서 [Helper 스키마](../../proto/discord-v1/helper.proto)는 RPC 40개를 선언했고 [런타임 서버](../../shared/discord-v1/runtime/helper.go)는 18개를 구현하지 않았으며 일부 client에는 nil 성공 경로가 있었습니다. 당시 SDK 메서드 229개와 event row 73개는 감사 provenance로 보존하며 현재 API의 ceiling으로 사용하지 않습니다.
 
-현재 입력은 P0의 공개 `github.com/chatanium/discordgo v0.30.0`이며 upstream base `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`와 승인된 Gateway 및 native DAVE 변경을 포함합니다. [API catalog](../../tools/protocol/inventory/source-api.json)의 source 메서드 232개는 canonical 152개, alias 43개, backend 내부 또는 상태 helper 13개, 제외 24개입니다. canonical은 REST 149개와 Gateway 3개이며 상태 계산 `UserChannelPermissions` 하나를 합쳐 SDK-derived Helper 작업 153개를 노출합니다. route 등록/해제와 운영자 credential binding 조회 3개 및 코어 파일 전송 RPC 2개는 이 SDK 집계와 구분합니다.
+현재 입력은 P0의 `github.com/bwmarrin/discordgo v0.29.1-0.20260214123928-f43dd94faaac`에 유지 관리하는 패치를 적용한 소스이며 upstream base `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`와 승인된 Gateway 및 native DAVE 변경을 포함합니다. 컴파일러와 프로토콜 추출기는 같은 준비된 소스를 사용합니다. [API catalog](../../tools/protocol/inventory/source-api.json)의 source 메서드 232개는 canonical 152개, alias 43개, backend 내부 또는 상태 helper 13개, 제외 24개입니다. canonical은 REST 149개와 Gateway 3개이며 상태 계산 `UserChannelPermissions` 하나를 합쳐 SDK-derived Helper 작업 153개를 노출합니다. route 등록/해제와 운영자 credential binding 조회 3개 및 코어 파일 전송 RPC 2개는 이 SDK 집계와 구분합니다.
 
 API root 59개, API named-type closure 204개, event closure 228개와 두 closure의 합집합 282개를 P2에 연결합니다. [event catalog](../../tools/protocol/inventory/source-events.json)는 74개 row 중 67개를 모듈에 전달합니다. 부록 A와 C의 229개/73개 표는 기존 `v0.29.0` source signature 및 줄 위치를 보존한 역사적 감사이며 현재 서명이나 최종 범위로 인용하지 않습니다.
 
@@ -864,13 +864,13 @@ Discord wire 버전 전환에는 별도 경로 fixture가 필요합니다. packa
 - [P5 음성 작업](flexmodule-5-voice-jobs.md): 선택 voice 기능과 동일 guild/channel 자원 정리의 연동입니다. 일반 봇 API의 필수 미디어 도구 의존성은 아닙니다.
 - [P6 예제 및 검증](flexmodule-6-examples-and-validation.md): 관리/명령/메시지와 선택 오디오 예제, 실제 환경 검증 및 운영 문서입니다.
 - Discord의 실제 봇 설치, application/guild 권한, privileged intent 설정 및 필요한 경우 운영자가 사전 설정한 사용자 credential이 필요합니다. 문서화한 grant만으로 Discord의 외부 승인이 생기지 않습니다.
-- gRPC/Protobuf, 공개 DiscordGo 및 Go 표준 `context`, `io`, `net/http`, `mime/multipart`를 사용합니다. 임시 파일 저장소의 가용 공간, 필수 유한 운영자 한도와 영속 소유권 메타데이터 보관 위치가 준비되어야 합니다.
+- gRPC/Protobuf, P0에서 준비한 DiscordGo 및 Go 표준 `context`, `io`, `net/http`, `mime/multipart`를 사용합니다. 임시 파일 저장소의 가용 공간, 필수 유한 운영자 한도와 영속 소유권 메타데이터 보관 위치가 준비되어야 합니다.
 
 ## 7. References
 
 ### 관련 제안과 역사적 소스 근거
 
-현재 host 구현은 [internal/backend/discord](../../internal/backend/discord/), HTTP transport는 [internal/backend/discord/http](../../internal/backend/discord/http/)(package `http`, alias `discordhttp`)에 있습니다. 공개 모듈 API는 [shared/discord-v2](../../shared/discord-v2/)이며 SDK는 [공개 v0.30.0](https://github.com/chatanium/discordgo/tree/v0.30.0)입니다. 아래 v1 및 로컬 SDK 경로와 부록의 줄 위치는 2026-10-29 감사 근거로 보존하며 현재 checkout 위치로 사용하지 않습니다.
+현재 host 구현은 [internal/backend/discord](../../internal/backend/discord/), HTTP transport는 [internal/backend/discord/http](../../internal/backend/discord/http/)(package `http`, alias `discordhttp`)에 있습니다. 공개 모듈 API는 [shared/discord-v2](../../shared/discord-v2/)이며 SDK는 [upstream과 유지 관리하는 패치](../../third_party/discordgo/README.md)로 준비합니다. 아래 v1 및 로컬 SDK 경로와 부록의 줄 위치는 2026-10-29 감사 근거로 보존하며 현재 checkout 위치로 사용하지 않습니다.
 
 - [P1 프로토콜 계약](flexmodule-1-protocol-contracts.md), [P2 도메인 변환](flexmodule-2-domain-conversions.md), [P4 런타임 및 격리](flexmodule-4-runtime-and-isolation.md), [P5 음성 작업](flexmodule-5-voice-jobs.md), [P6 예제 및 검증](flexmodule-6-examples-and-validation.md)
 - [현재 Helper proto](../../proto/discord-v1/helper.proto), [현재 Helper 서버와 stub client](../../shared/discord-v1/runtime/helper.go), [현재 Discord helper](../../shared/discord-v1/runtime/discord_helper.go)

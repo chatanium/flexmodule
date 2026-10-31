@@ -433,15 +433,16 @@ play track:
 
 | Target | 입력과 산출물 및 실행 경계 |
 |---|---|
+| `make prepare-sdk` | 루트 `go.mod`의 upstream pin을 `third_party/discordgo/upstream.sum`으로 검증해 내려받고 번호 붙은 패치 네 개를 사전순으로 적용합니다. 준비된 SDK는 `.tools/deps`의 불변 세대와 안정적인 상대 alias로 게시하며 application/native 컴파일은 하지 않습니다. |
 | `make build` | native DAVE를 import/link하지 않는 Linux runtime, supervisor와 일반 `examples/general-bot`(출력 `bin/test-module`)을 빌드합니다. 미디어 executable을 설치하거나 실행하지 않습니다. |
 | `make build-voice` | `voice && cgo`로 pinned libdave를 연결한 선택적 host runtime과 native library/license bundle을 `bin/voice-runtime/`에 만듭니다. 실제 digest, ABI 및 loader closure 검증이 필요하며 기본 build와 별개입니다. |
-| `make build-media` | 공개 `github.com/chatanium/discordgo v0.30.0` 및 v2 계약으로 `modules/music-bot`과 `modules/audio-player`를 빌드합니다. 출력 이름은 `bin/chatanium-musicbot`, `bin/voice-player-module`로 유지하며 nested module 실패도 전체 실패로 반환합니다. |
-| `make build-all` | 로컬 Go 모듈 `.`, `modules/music-bot`, `modules/audio-player`를 빌드합니다. SDK root와 중첩 SDK 예제 및 CI는 별도 SDK 저장소가 관리합니다. native voice target은 포함하지 않습니다. |
+| `make build-media` | 준비된 `github.com/bwmarrin/discordgo` 및 v2 계약으로 `modules/music-bot`과 `modules/audio-player`를 빌드합니다. 출력 이름은 `bin/chatanium-musicbot`, `bin/voice-player-module`로 유지하며 nested module 실패도 전체 실패로 반환합니다. |
+| `make build-all` | 로컬 Go 모듈 `.`, `modules/music-bot`, `modules/audio-player`를 빌드합니다. 별도 SDK 저장소의 root 및 중첩 SDK 예제는 빌드 입력이 아니며 native voice target도 포함하지 않습니다. |
 | `make build-integration` | `bin/flexmodule-integration`과 `bin/flexmodule-runtime-return-holder`를 만듭니다. 기존 pinned Go wrapper를 사용하며 두 산출물 모두 `CGO_ENABLED=0`, 빈 build tags, `-mod=readonly -trimpath`를 적용합니다. 전자는 `./tests/integration`의 Go runner(`main.go`)이고 후자는 `./cmd/flexmodule` package의 `go test -c` 실행 파일입니다. 테스트 실행이나 native voice 빌드가 아닙니다. |
 | `make build-sandbox` | canonical `tests/integration/fixtures/sandbox`를 `bin/sandbox-module`로 빌드합니다. `make image-module MODULE_KIND=sandbox MODULE_IMAGE=<명시적 tag>`로 fixture 이미지를 만들고, 설치 설정에는 검토한 immutable `repository@sha256:...`를 사용합니다. |
 | `make image-module` | 미디어 도구가 없는 일반 모듈 OCI 이미지를 만듭니다. |
 | `make image-media` | pinned tool lock을 사용하는 두 media 예제 OCI 이미지를 만듭니다. host installer 또는 runtime update 경로가 있으면 완료가 아닙니다. |
-| `make check-offline` | Buf schema와 생성 비교 및 로컬 Go 모듈 세 개의 유한 ordinary 시험을 수행합니다. 일반 예제와 integration fixture는 root에 포함되며 SDK 저장소 시험, native 빌드, 라이브 Discord나 secret은 포함하지 않습니다. |
+| `make check-offline` | SDK 준비 전에 Python 준비 시험 21개를 실행하며 Buf schema와 생성 비교 및 준비된 SDK와 로컬 Go 모듈 세 개의 ordinary Go 시험을 수행합니다. 일반 예제와 integration fixture는 root에 포함되며 별도 SDK checkout, native 빌드, 라이브 Discord나 secret은 필요하지 않습니다. |
 | `make check-sandbox` | 기존 baseline 경로입니다. 준비된 supervisor와 canonical OCI fixture를 사용해 시작, INIT 경계 검사, 유한 RUNNING 관찰 및 종료를 확인합니다. 성공해도 `sandbox.full_policy`는 `NOT_RUN`이며 전체 quota, crash, network 정책의 PASS가 아닙니다. |
 | `make check-sandbox-policy` | 명시적으로 설치한 `INTEGRATION` binary의 `sandbox --policy-plan ...`을 실행합니다. root observer가 선택한 case의 실제 host 증거와 소유 자원 정리를 검사하며, 성공 범위는 plan의 `cases`뿐입니다. repo의 `go run`이나 자동 권한 상승을 사용하지 않습니다. |
 | `make smoke-discord` | 운영자가 승인한 test guild, bot credentials 및 시험 대상만 사용합니다. destructive moderation에는 명시적 대상 승인이 필요합니다. |
@@ -449,11 +450,11 @@ play track:
 
 검사에는 case별 timeout과 전체 실행 deadline을 둡니다. local gRPC listener, HTTP server, worker, subprocess와 파일을 반드시 정리합니다. 오프라인 suite에서 로컬 fixture를 명시적으로 주입할 수 있지만 생산 API에 임의 endpoint/header/URL 전달 기능을 열지 않습니다. root, 음악 봇, audio-player 및 integration package를 빠짐없이 포함하며 build 실패 package를 단순 제외해서 통과시키지 않습니다.
 
-2026-10-31 전환 뒤 로컬 Go 모듈은 세 개이며 모두 공개 SDK를 직접 요구하고 DiscordGo `replace`를 사용하지 않습니다. 기존 감사의 SDK root 및 linked-roles/voice-receive 중첩 모듈은 별도 SDK 저장소로 이관했고 helper-service 두 모듈은 제거했습니다. 일반 예제와 integration은 계속 루트 모듈의 대상입니다. SDK 예제의 OAuth 요구를 범용 모듈 로그인 요구로 확대하지 않습니다.
+현재 로컬 Go 모듈은 세 개이며 모두 루트 `go.mod`의 `github.com/bwmarrin/discordgo` 요구 버전을 따릅니다. 루트는 `./.tools/deps/discordgo`, 두 중첩 모듈은 `../../.tools/deps/discordgo`로 대체합니다. 직접 Go 명령 전에 루트에서 `make prepare-sdk`를 실행하고 의존성 준비를 동시에 실행하지 않습니다. 빌드 진입점은 alias 소비 중 공유 lease와 쓰기 없는 재검증을 사용하며 배타 준비를 공유 lease 안에서 실행하지 않습니다. 표준 라이브러리만 사용하는 추출기는 불변 `Dir`를 직접 읽으므로 공유 lease로 감싸지 않습니다. 원본 checksum의 기준은 `third_party/discordgo/upstream.sum`이며 소비 모듈의 `go.sum`이 아닙니다. 과거 공개 SDK와 linked-roles/voice-receive 예제는 역사적 게시 근거이며 그 저장소와 태그는 이 전환에서 수정하지 않았습니다. helper-service 두 모듈은 제거했고 일반 예제와 integration은 계속 루트 모듈의 대상입니다. SDK 예제의 OAuth 요구를 범용 모듈 로그인 요구로 확대하지 않습니다.
 
 실제 smoke의 자격증명은 호스트 백엔드만 읽습니다. 모듈 이미지, config, env 또는 검사 로그에 bot token을 전달하지 않습니다. 승인된 guild 및 channel이 없거나 credential이 없으면 해당 검사를 `NOT_RUN`으로 표시하고 라이브 검수 미완료를 보고합니다. 실제 요청이 변경을 일으킨 뒤 응답을 놓쳤을 수 있으므로, 단순 timeout을 근거로 동일 moderation 요청을 재전송하지 않습니다.
 
-현재 라이브 시험은 개발자 계정의 일반 사용자 권한을 유지하는 것을 전제로 합니다. 사용자가 관리 및 관리자 권한이 필요한 라이브 성공 경로를 보류했으므로 해당 항목은 `DEFERRED_BY_USER`로 구분하고, 이를 위해 역할, gateway intents 또는 grants를 넓히지 않습니다. 해당 기능의 구현과 오프라인 검수는 유지합니다. 아래 실제 성공은 명시한 일반 사용자 경로에 한정하며 전체 P6 완료를 뜻하지 않습니다.
+아래 라이브 시험 기록은 SDK 소스 준비 방식 전환 전의 역사적 증거이며 전환 뒤 빌드, 외부 소비자 호환성 또는 재시험 성공을 뜻하지 않습니다. 당시 시험은 개발자 계정의 일반 사용자 권한을 유지하는 것을 전제로 했습니다. 사용자가 관리 및 관리자 권한이 필요한 라이브 성공 경로를 보류했으므로 해당 항목은 `DEFERRED_BY_USER`로 구분하고, 이를 위해 역할, gateway intents 또는 grants를 넓히지 않습니다. 해당 기능의 구현과 오프라인 검수는 유지합니다. 아래 실제 성공은 명시한 일반 사용자 경로에 한정하며 전체 P6 완료를 뜻하지 않습니다.
 
 아래 라이브 관찰은 2026-10-31 폴더/SDK 전환 이전의 기록입니다. 이번 문서 수정에서 해당 시험을 다시 실행한 결과가 아닙니다.
 
@@ -654,7 +655,7 @@ P0부터 P5까지의 실제 계약 및 구현을 입력으로 사용합니다. �
 - [Chatanium 모듈 설계 이슈](https://github.com/thirdscam/chatanium/issues/10)
 - [현재 변환 계층](../../shared/discord-v2/)
 - [현재 Discord backend](../../internal/backend/discord/)
-- [공개 DiscordGo event 등록](https://github.com/chatanium/discordgo/blob/v0.30.0/eventhandlers.go)
+- [현재 DiscordGo 패치 및 소스 준비 계약](../../third_party/discordgo/README.md)
 - [Discord 파일 업로드](https://docs.discord.com/developers/reference#uploading-files)
 - [Discord 메시지 생성](https://docs.discord.com/developers/resources/message#create-message)
 - [Discord 메시지 수정](https://docs.discord.com/developers/resources/message#edit-message)

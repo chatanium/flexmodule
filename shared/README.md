@@ -18,10 +18,30 @@ there is no mixed-version fallback.
 
 The public Go module remains `github.com/thirdscam/chatanium-flexmodule`;
 `shared/` and `proto/` imports are unchanged. Host-only packages under
-`internal/` are not module-author APIs. Discord types come directly from the
-published [`github.com/chatanium/discordgo v0.30.0`](https://github.com/chatanium/discordgo/tree/v0.30.0),
-not a replaced local SDK tree. These source boundaries do not change OCI
-manifests, ModuleIDs or actual grant checks.
+`internal/` are not module-author APIs. Discord types use the
+`github.com/bwmarrin/discordgo` import path. The root `go.mod` pins upstream
+`v0.29.1-0.20260214123928-f43dd94faaac` and replaces it with
+`./.tools/deps/discordgo`; the nested media modules use the same requirement and
+`../../.tools/deps/discordgo` replacement. This is the
+[maintained upstream-plus-patches workflow](../third_party/discordgo/README.md),
+not a dependency on a published fork or an unpatched-upstream fallback.
+
+For host/runtime builds and the in-repository modules, run `make prepare-sdk`
+from the repository root before direct Go commands. Repository build entry
+points hold a shared SDK lease across compiler consumption. For raw Go commands,
+prepare first and avoid concurrent dependency preparation; see the
+[root build instructions](../README.md#pinned-builds-and-independent-artifacts).
+`third_party/discordgo/upstream.sum`, not consumer `go.sum`, is the preparation
+checksum authority.
+
+Go replacements do not propagate to downstream consumers. Public `shared/`
+users can consume the pinned upstream `github.com/bwmarrin/discordgo` DTO module
+normally, without an SDK replacement; the host runtime needs the maintained
+patches. A separate consumer module replacing only the FlexModule root was
+tidied and ran a `UserToProto`/`ProtoToUser` round-trip using the original
+upstream module and verified checksums, with no DiscordGo replacement. This is
+bounded public-consumer evidence, not proof of host or live Discord behavior.
+These source boundaries do not change OCI manifests, ModuleIDs or grant checks.
 
 ## Transport and lifecycle
 

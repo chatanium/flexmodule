@@ -37,7 +37,7 @@
 
 ### 현재 source delta와 처리 범위
 
-현재 입력은 P0에 고정한 공개 `github.com/chatanium/discordgo v0.30.0`입니다. upstream base는 `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`이며 승인된 Gateway 및 native DAVE 변경을 포함합니다. [source summary](../../tools/protocol/inventory/source-refresh-summary.json), [API catalog](../../tools/protocol/inventory/source-api.json), [event catalog](../../tools/protocol/inventory/source-events.json) 및 [type closure](../../tools/protocol/inventory/source-type-closure.json)에 따라 API root 59개, API named-type closure 204개, event closure 228개, 두 closure의 합집합 282개를 처리합니다. source 메서드 232개에서 SDK-derived Helper 작업 153개를 노출하고 event row 74개 중 67개를 모듈에 전달합니다. 과거의 229개 메서드, 73개 이벤트, root 57개/type 199개와 메시지 154개/enum 23개는 최종 ceiling이 아닙니다.
+현재 입력은 P0의 루트 `go.mod`에 고정한 `github.com/bwmarrin/discordgo v0.29.1-0.20260214123928-f43dd94faaac`에 유지 관리하는 패치를 적용한 소스입니다. upstream base는 `f43dd94faaacd5b163e9e783f14b5bd8be639fc9`이며 승인된 Gateway 및 native DAVE 변경을 패치로 보존합니다. `Label`, `FileUpload`, `MessageSnapshot`은 이미 이 upstream에 있는 타입이며 로컬 패치로 추가한 타입이 아닙니다. [source summary](../../tools/protocol/inventory/source-refresh-summary.json), [API catalog](../../tools/protocol/inventory/source-api.json), [event catalog](../../tools/protocol/inventory/source-events.json) 및 [type closure](../../tools/protocol/inventory/source-type-closure.json)에 따라 API root 59개, API named-type closure 204개, event closure 228개, 두 closure의 합집합 282개를 처리합니다. source 메서드 232개에서 SDK-derived Helper 작업 153개를 노출하고 event row 74개 중 67개를 모듈에 전달합니다. 과거의 229개 메서드, 73개 이벤트, root 57개/type 199개와 메시지 154개/enum 23개는 최종 ceiling이 아닙니다.
 
 새 필드와 타입의 변환 계약은 다음과 같습니다.
 
