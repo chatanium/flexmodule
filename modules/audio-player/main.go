@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	"github.com/hashicorp/go-plugin"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 	discordwire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"

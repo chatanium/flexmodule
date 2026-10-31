@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	runtime "github.com/thirdscam/chatanium-flexmodule/internal/runtime"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 	discordv2 "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"

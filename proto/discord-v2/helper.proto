@@ -28,7 +28,7 @@ message DiscordErrorDetail {
   repeated flexmodule.core.v2.FieldViolation field_errors = 4;
 }
 
-// Source: discordgo/oauth2.go:46-55
+// Source: discordgo/oauth2.go:45-54
 message ApplicationRequest {
   string app_id = 1;
   RequestOptions options = 1000;
@@ -1181,7 +1181,7 @@ message PollExpireResponse {
   Message value = 1;
 }
 
-// Source: discordgo/wsapi.go:490-492
+// Source: discordgo/wsapi.go:491-493
 message RequestGuildMembersRequest {
   string guild_id = 1;
   string query = 2;
@@ -1191,7 +1191,7 @@ message RequestGuildMembersRequest {
   RequestOptions options = 1000;
 }
 
-// Source: discordgo/wsapi.go:501-503
+// Source: discordgo/wsapi.go:502-504
 message RequestGuildMembersListRequest {
   string guild_id = 1;
   RequestGuildMembersListUserIDsArgList user_ids = 2;
@@ -1372,7 +1372,7 @@ message ThreadsPrivateJoinedArchivedResponse {
   ThreadsList value = 1;
 }
 
-// Source: discordgo/wsapi.go:465-467
+// Source: discordgo/wsapi.go:466-468
 message UpdateStatusComplexRequest {
   UpdateStatusData usd = 1;
   RequestOptions options = 1000;

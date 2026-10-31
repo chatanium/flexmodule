@@ -2214,16 +2214,16 @@
       "Name": "Asset",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 122,
+      "Line": 118,
       "Column": 6,
-      "End": 126,
+      "End": 122,
       "Fields": [
         {
           "Name": "Type",
           "Type": "int",
           "Tag": "`json:\"type\"`",
-          "Line": 123,
-          "End": 123,
+          "Line": 119,
+          "End": 119,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -2236,8 +2236,8 @@
           "Name": "ID",
           "Type": "string",
           "Tag": "`json:\"id\"`",
-          "Line": 124,
-          "End": 124,
+          "Line": 120,
+          "End": 120,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -2250,8 +2250,8 @@
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 125,
-          "End": 125,
+          "Line": 121,
+          "End": 121,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -22158,16 +22158,16 @@
       "Name": "UpdateStatusData",
       "Kind": "struct",
       "File": "discordgo/wsapi.go",
-      "Line": 376,
+      "Line": 377,
       "Column": 6,
-      "End": 381,
+      "End": 382,
       "Fields": [
         {
           "Name": "IdleSince",
           "Type": "*int",
           "Tag": "`json:\"since\"`",
-          "Line": 377,
-          "End": 377,
+          "Line": 378,
+          "End": 378,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -22180,8 +22180,8 @@
           "Name": "Activities",
           "Type": "[]*Activity",
           "Tag": "`json:\"activities\"`",
-          "Line": 378,
-          "End": 378,
+          "Line": 379,
+          "End": 379,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -22194,8 +22194,8 @@
           "Name": "AFK",
           "Type": "bool",
           "Tag": "`json:\"afk\"`",
-          "Line": 379,
-          "End": 379,
+          "Line": 380,
+          "End": 380,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -22208,8 +22208,8 @@
           "Name": "Status",
           "Type": "string",
           "Tag": "`json:\"status\"`",
-          "Line": 380,
-          "End": 380,
+          "Line": 381,
+          "End": 381,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26756,16 +26756,16 @@
       "Name": "requestGuildMembersData",
       "Kind": "struct",
       "File": "discordgo/wsapi.go",
-      "Line": 469,
+      "Line": 470,
       "Column": 6,
-      "End": 476,
+      "End": 477,
       "Fields": [
         {
           "Name": "GuildID",
           "Type": "string",
           "Tag": "`json:\"guild_id\"`",
-          "Line": 470,
-          "End": 470,
+          "Line": 471,
+          "End": 471,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26778,8 +26778,8 @@
           "Name": "Query",
           "Type": "*string",
           "Tag": "`json:\"query,omitempty\"`",
-          "Line": 471,
-          "End": 471,
+          "Line": 472,
+          "End": 472,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26792,8 +26792,8 @@
           "Name": "UserIDs",
           "Type": "*[]string",
           "Tag": "`json:\"user_ids,omitempty\"`",
-          "Line": 472,
-          "End": 472,
+          "Line": 473,
+          "End": 473,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26806,8 +26806,8 @@
           "Name": "Limit",
           "Type": "int",
           "Tag": "`json:\"limit\"`",
-          "Line": 473,
-          "End": 473,
+          "Line": 474,
+          "End": 474,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26820,8 +26820,8 @@
           "Name": "Nonce",
           "Type": "string",
           "Tag": "`json:\"nonce,omitempty\"`",
-          "Line": 474,
-          "End": 474,
+          "Line": 475,
+          "End": 475,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26834,8 +26834,8 @@
           "Name": "Presences",
           "Type": "bool",
           "Tag": "`json:\"presences\"`",
-          "Line": 475,
-          "End": 475,
+          "Line": 476,
+          "End": 476,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26861,16 +26861,16 @@
       "Name": "requestGuildMembersOp",
       "Kind": "struct",
       "File": "discordgo/wsapi.go",
-      "Line": 478,
+      "Line": 479,
       "Column": 6,
-      "End": 481,
+      "End": 482,
       "Fields": [
         {
           "Name": "Op",
           "Type": "int",
           "Tag": "`json:\"op\"`",
-          "Line": 479,
-          "End": 479,
+          "Line": 480,
+          "End": 480,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -26883,8 +26883,8 @@
           "Name": "Data",
           "Type": "requestGuildMembersData",
           "Tag": "`json:\"d\"`",
-          "Line": 480,
-          "End": 480,
+          "Line": 481,
+          "End": 481,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -27366,16 +27366,16 @@
       "Name": "updateStatusOp",
       "Kind": "struct",
       "File": "discordgo/wsapi.go",
-      "Line": 383,
+      "Line": 384,
       "Column": 6,
-      "End": 386,
+      "End": 387,
       "Fields": [
         {
           "Name": "Op",
           "Type": "int",
           "Tag": "`json:\"op\"`",
-          "Line": 384,
-          "End": 384,
+          "Line": 385,
+          "End": 385,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -27388,8 +27388,8 @@
           "Name": "Data",
           "Type": "UpdateStatusData",
           "Tag": "`json:\"d\"`",
-          "Line": 385,
-          "End": 385,
+          "Line": 386,
+          "End": 386,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -50476,12 +50476,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/event.go:122:38",
+      "Name": "anonymous@discordgo/event.go:120:38",
       "Kind": "interface{}",
       "File": "discordgo/event.go",
-      "Line": 122,
+      "Line": 120,
       "Column": 38,
-      "End": 122,
+      "End": 120,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -50492,12 +50492,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/event.go:136:42",
+      "Name": "anonymous@discordgo/event.go:134:42",
       "Kind": "interface{}",
       "File": "discordgo/event.go",
-      "Line": 136,
+      "Line": 134,
       "Column": 42,
-      "End": 136,
+      "End": 134,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -50508,12 +50508,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/event.go:168:38",
+      "Name": "anonymous@discordgo/event.go:166:38",
       "Kind": "interface{}",
       "File": "discordgo/event.go",
-      "Line": 168,
+      "Line": 166,
       "Column": 38,
-      "End": 168,
+      "End": 166,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -50524,12 +50524,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/event.go:191:43",
+      "Name": "anonymous@discordgo/event.go:189:43",
       "Kind": "interface{}",
       "File": "discordgo/event.go",
-      "Line": 191,
+      "Line": 189,
       "Column": 43,
-      "End": 191,
+      "End": 189,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -50540,12 +50540,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/event.go:196:51",
+      "Name": "anonymous@discordgo/event.go:194:51",
       "Kind": "interface{}",
       "File": "discordgo/event.go",
-      "Line": 196,
+      "Line": 194,
       "Column": 51,
-      "End": 196,
+      "End": 194,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -50556,12 +50556,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/event.go:224:33",
+      "Name": "anonymous@discordgo/event.go:222:33",
       "Kind": "interface{}",
       "File": "discordgo/event.go",
-      "Line": 224,
+      "Line": 222,
       "Column": 33,
-      "End": 224,
+      "End": 222,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -53358,12 +53358,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:47:51",
+      "Name": "anonymous@discordgo/logging.go:46:51",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 47,
+      "Line": 46,
       "Column": 51,
-      "End": 47,
+      "End": 46,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -53374,12 +53374,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:72:53",
+      "Name": "anonymous@discordgo/logging.go:71:53",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 72,
+      "Line": 71,
       "Column": 53,
-      "End": 72,
+      "End": 71,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -53390,12 +53390,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/logging.go:85:61",
+      "Name": "anonymous@discordgo/logging.go:84:61",
       "Kind": "interface{}",
       "File": "discordgo/logging.go",
-      "Line": 85,
+      "Line": 84,
       "Column": 61,
-      "End": 85,
+      "End": 84,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -53472,19 +53472,19 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/oauth2.go:75:10",
+      "Name": "anonymous@discordgo/oauth2.go:73:10",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 75,
+      "Line": 73,
       "Column": 10,
-      "End": 78,
+      "End": 76,
       "Fields": [
         {
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 76,
-          "End": 76,
+          "Line": 74,
+          "End": 74,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -53497,8 +53497,8 @@
           "Name": "Description",
           "Type": "string",
           "Tag": "`json:\"description\"`",
-          "Line": 77,
-          "End": 77,
+          "Line": 75,
+          "End": 75,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -53519,19 +53519,19 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/oauth2.go:94:10",
+      "Name": "anonymous@discordgo/oauth2.go:91:10",
       "Kind": "struct",
       "File": "discordgo/oauth2.go",
-      "Line": 94,
+      "Line": 91,
       "Column": 10,
-      "End": 97,
+      "End": 94,
       "Fields": [
         {
           "Name": "Name",
           "Type": "string",
           "Tag": "`json:\"name\"`",
-          "Line": 95,
-          "End": 95,
+          "Line": 92,
+          "End": 92,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -53544,8 +53544,8 @@
           "Name": "Description",
           "Type": "string",
           "Tag": "`json:\"description\"`",
-          "Line": 96,
-          "End": 96,
+          "Line": 93,
+          "End": 93,
           "Exported": true,
           "Embedded": false,
           "Documentation": "",
@@ -54778,12 +54778,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/state.go:957:44",
+      "Name": "anonymous@discordgo/state.go:956:44",
       "Kind": "interface{}",
       "File": "discordgo/state.go",
-      "Line": 957,
+      "Line": 956,
       "Column": 44,
-      "End": 957,
+      "End": 956,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -56877,12 +56877,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/wsapi.go:320:70",
+      "Name": "anonymous@discordgo/wsapi.go:321:70",
       "Kind": "interface{}",
       "File": "discordgo/wsapi.go",
-      "Line": 320,
+      "Line": 321,
       "Column": 70,
-      "End": 320,
+      "End": 321,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -56893,12 +56893,12 @@
       "ExternalReferences": []
     },
     {
-      "Name": "anonymous@discordgo/wsapi.go:542:43",
+      "Name": "anonymous@discordgo/wsapi.go:543:43",
       "Kind": "interface{}",
       "File": "discordgo/wsapi.go",
-      "Line": 542,
+      "Line": 543,
       "Column": 43,
-      "End": 542,
+      "End": 543,
       "Fields": null,
       "Exported": false,
       "Alias": false,
@@ -64686,37 +64686,37 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:122:38:anonymous@discordgo/event.go:122:38": {
+    "discordgo/event.go:120:38:anonymous@discordgo/event.go:120:38": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:136:42:anonymous@discordgo/event.go:136:42": {
+    "discordgo/event.go:134:42:anonymous@discordgo/event.go:134:42": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:168:38:anonymous@discordgo/event.go:168:38": {
+    "discordgo/event.go:166:38:anonymous@discordgo/event.go:166:38": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:191:43:anonymous@discordgo/event.go:191:43": {
+    "discordgo/event.go:189:43:anonymous@discordgo/event.go:189:43": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:196:51:anonymous@discordgo/event.go:196:51": {
+    "discordgo/event.go:194:51:anonymous@discordgo/event.go:194:51": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:224:33:anonymous@discordgo/event.go:224:33": {
+    "discordgo/event.go:222:33:anonymous@discordgo/event.go:222:33": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -65762,19 +65762,19 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:47:51:anonymous@discordgo/logging.go:47:51": {
+    "discordgo/logging.go:46:51:anonymous@discordgo/logging.go:46:51": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:72:53:anonymous@discordgo/logging.go:72:53": {
+    "discordgo/logging.go:71:53:anonymous@discordgo/logging.go:71:53": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:85:61:anonymous@discordgo/logging.go:85:61": {
+    "discordgo/logging.go:84:61:anonymous@discordgo/logging.go:84:61": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -65803,7 +65803,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/oauth2.go:75:10:anonymous@discordgo/oauth2.go:75:10": {
+    "discordgo/oauth2.go:73:10:anonymous@discordgo/oauth2.go:73:10": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "8cfba3bd0968cd9cab3cb263b00fecb4fd5e2c1cfa1dd36324b2c3e6add303e1",
       "fields": {
@@ -65820,7 +65820,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/oauth2.go:94:10:anonymous@discordgo/oauth2.go:94:10": {
+    "discordgo/oauth2.go:91:10:anonymous@discordgo/oauth2.go:91:10": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "8cfba3bd0968cd9cab3cb263b00fecb4fd5e2c1cfa1dd36324b2c3e6add303e1",
       "fields": {
@@ -66275,7 +66275,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/state.go:957:44:anonymous@discordgo/state.go:957:44": {
+    "discordgo/state.go:956:44:anonymous@discordgo/state.go:956:44": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -67016,13 +67016,13 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/wsapi.go:320:70:anonymous@discordgo/wsapi.go:320:70": {
+    "discordgo/wsapi.go:321:70:anonymous@discordgo/wsapi.go:321:70": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/wsapi.go:542:43:anonymous@discordgo/wsapi.go:542:43": {
+    "discordgo/wsapi.go:543:43:anonymous@discordgo/wsapi.go:543:43": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -80828,16 +80828,19 @@
       "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
       "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
     },
-    "canonicalModule": "github.com/chatanium/discordgo; version and checksum come from the consuming Go module, not the historical upstream sdkVersion field",
-    "canonicalImportReview": "voice_gateway.go and voice_transport.go import the canonical module's internal/dave package. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities are stable inventory labels, not local checkout paths.",
-    "publicationSourceReview": "Published v0.30.0 incorporates gofmt doc-comment layout changes in logging.go and oauth2.go; the five reviewed Application method documentation fingerprints follow those comments without changing signatures, bodies, defaults or classifications. voice.go's active fingerprint corrects an already stale pin to the byte-identical source in main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
+    "canonicalModule": "github.com/bwmarrin/discordgo; the original upstream module version is required by each consuming go.mod, with upstream archive and go.mod checksum authority in third_party/discordgo/upstream.sum. The maintained third_party/discordgo/patches stack prepares the SDK; extracted sdkModule provenance records Path, Version, Sum, GoModSum, PatchSHA256 and SourceSHA256, excluding machine-specific Dir.",
+    "canonicalImportReview": "voice_gateway.go and voice_transport.go retain the original github.com/bwmarrin/discordgo/internal/dave imports instead of the published fork namespace. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities remain stable inventory labels, not prepared-generation paths.",
+    "publicationSourceReview": "Historical published v0.30.0 incorporated gofmt doc-comment layout changes in logging.go and oauth2.go; its five reviewed Application method documentation fingerprints followed those comments without changing signatures, bodies, defaults or classifications. The maintained patch stack excludes those comment-only reflows and the active fingerprints now follow the original upstream comment layout. voice.go remains byte-identical to the reviewed published source and main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
     "retirementSourceReview": "The published voice.go matches existing main source but active inventories lagged its retirement handshake. VoiceConnection.leaveAck and leaveConfirmed are private runtime-only state: ordered null-channel observation closes the acknowledgement; DisconnectContext waits within CloseTimeout, joins confirmation errors, and retains the reservation until cleanup and confirmation. Two extra anonymous empty struct channel types are implementation-local. Other nested identity changes and public declaration fingerprints are source-position shifts plus the separately reviewed OAuth documentation formatting; no module exposure changes.",
-    "sourcePackageSHA256": "9b8a66d3a4401004e59f29f4d23bc04f361eb5b9c9fe1317e64e3fe71902a9a9",
-    "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
+    "sourcePackageSHA256": "f991276a836876b3840d4599ac530afe2cfd80f2fc4baeba0e6f7fceb762c336",
+    "sourceFormatting": "The prepared SDK preserves pinned upstream f43dd94 comment and blank-line layout while applying the maintained functional P3/P5 patch stack. Comment/blank-only fork reflows in discord.go, event.go, state.go, wsapi.go, logging.go, oauth2.go and discord_test.go are excluded; discord_test.go is outside this non-test package census. Exact reviewed hashes cover the eight changed non-test source files, position-only declaration shifts, whitespace-only documentation changes and blank-line-only method body changes. No type shapes, classifications, exposure decisions or module contract totals change. PatchSHA256 identifies the ordered maintained patch inputs and SourceSHA256 identifies the prepared source, recorded in extracted sdkModule provenance.",
     "sdkModule": {
-      "Path": "github.com/chatanium/discordgo",
-      "Sum": "h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=",
-      "Version": "v0.30.0"
+      "GoModSum": "h1:JsaNXATZGUDc+uiR1/TGW4Aq4IKc2Hh/O8LhsBiSIBs=",
+      "PatchSHA256": "2905d7c43cd8ff11fb37194de26655190b53bae10856199eca7c9510c42b42c3",
+      "Path": "github.com/bwmarrin/discordgo",
+      "SourceSHA256": "edd4b32f167a045a0b95d5ea6c5090bbe70bc3b6238725aa033fd48abbd4662c",
+      "Sum": "h1:W9t/lhAHWwtLHME/ceUE5c49Wl+5jnOVcEezmjlJ0Fc=",
+      "Version": "v0.29.1-0.20260214123928-f43dd94faaac"
     },
     "extraction": "go run -mod=readonly tools/protocol/extract-source.go -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
@@ -80853,7 +80856,7 @@
       },
       {
         "path": "discordgo/discord.go",
-        "sha256": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+        "sha256": "f204bfacf24cc6ba0c1559b5060fd007c92901811b07db713f7b5642d9537af9",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -80871,7 +80874,7 @@
       },
       {
         "path": "discordgo/event.go",
-        "sha256": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+        "sha256": "950b9716d0f61c944ff70c947c48925a9611fed28a6b636db3e1675ca4aae6e3",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -80952,7 +80955,7 @@
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
+        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -80970,7 +80973,7 @@
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
+        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -80997,7 +81000,7 @@
       },
       {
         "path": "discordgo/state.go",
-        "sha256": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+        "sha256": "1658028a4b80d3d2d46e9c354e9a145e22574363c962ff36de33fb13bf087baf",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -81050,7 +81053,7 @@
       },
       {
         "path": "discordgo/voice_gateway.go",
-        "sha256": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
+        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -81091,7 +81094,7 @@
       },
       {
         "path": "discordgo/voice_transport.go",
-        "sha256": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
+        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -81116,7 +81119,7 @@
       },
       {
         "path": "discordgo/wsapi.go",
-        "sha256": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07",
+        "sha256": "29463af8932851a0e5991c5dd357d14e64382c657c3e653b10236e3dc3a1742c",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -81124,7 +81127,7 @@
         ]
       }
     ],
-    "rawSHA256": "75f923466bb0b198ef3ecd22dc515412c5ad782d4127902f5be49578ec4ab6d1",
+    "rawSHA256": "dabc75e5db563a2d4d7f28181031d1a2c29089a6eb2c2be038e077576590fea0",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   }

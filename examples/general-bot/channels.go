@@ -5,7 +5,7 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
 )
 

@@ -335,11 +335,11 @@ func extractMethod(in input, fn *ast.FuncDecl) method {
 }
 
 func main() {
-	sdk := flag.String("sdk", "github.com/chatanium/discordgo", "canonical SDK module import path (resolved from go.mod, never a local directory)")
+	sdk := flag.String("sdk", "github.com/bwmarrin/discordgo", "canonical SDK module import path (resolved from go.mod and prepared with maintained patches)")
 	out := flag.String("out", "tools/protocol/inventory/source-extracted.json", "raw source inventory output")
 	flag.Parse()
-	if *sdk != "github.com/chatanium/discordgo" {
-		fail("SDK must be the required canonical github.com/chatanium/discordgo module")
+	if *sdk != "github.com/bwmarrin/discordgo" {
+		fail("SDK must be the required canonical github.com/bwmarrin/discordgo module")
 	}
 	command := exec.Command("python3", "tools/sdk.py", "--go", filepath.Join(runtime.GOROOT(), "bin", "go"), "--json")
 	command.Stderr = os.Stderr
@@ -348,10 +348,13 @@ func main() {
 		fail("resolve SDK module: %v", err)
 	}
 	var module struct {
-		Path    string
-		Version string
-		Sum     string
-		Dir     string
+		Path         string
+		Version      string
+		Sum          string
+		GoModSum     string
+		Dir          string
+		PatchSHA256  string
+		SourceSHA256 string
 	}
 	if err := json.Unmarshal(metadata, &module); err != nil {
 		fail("decode SDK module: %v", err)
@@ -361,7 +364,14 @@ func main() {
 		fail("read SDK: %v", err)
 	}
 	result := catalog{Types: []sourceType{}, NestedTypes: []sourceType{}, Methods: []method{}, Events: []event{}, PolymorphicExpansion: map[string][]string{"MessageComponent": {}, "InteractionData": {}}, EndpointDeclarations: map[string]string{}}
-	result.SDKModule = map[string]string{"Path": module.Path, "Version": module.Version, "Sum": module.Sum}
+	result.SDKModule = map[string]string{
+		"Path":         module.Path,
+		"Version":      module.Version,
+		"Sum":          module.Sum,
+		"GoModSum":     module.GoModSum,
+		"PatchSHA256":  module.PatchSHA256,
+		"SourceSHA256": module.SourceSHA256,
+	}
 	profiles := map[string]build.Context{}
 	for _, name := range []string{"ordinary", "native_voice"} {
 		ctx := build.Default

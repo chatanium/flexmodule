@@ -3408,7 +3408,7 @@ message PartialUnfurledMediaItem {
   flexmodule.core.v2.NullableString url = 1;
 }
 
-// discordgo/wsapi.go:376; safe domain snapshot/request.
+// discordgo/wsapi.go:377; safe domain snapshot/request.
 message UpdateStatusData {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   optional sint64 idle_since = 1;
@@ -3417,7 +3417,7 @@ message UpdateStatusData {
   optional string status = 4;
 }
 
-// discordgo/wsapi.go:376; recursive ingress presence view.
+// discordgo/wsapi.go:377; recursive ingress presence view.
 message PartialUpdateStatusData {
   // Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
   DomainNullableSint64 idle_since = 1;

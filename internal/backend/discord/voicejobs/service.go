@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	rt "github.com/thirdscam/chatanium-flexmodule/internal/runtime"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"

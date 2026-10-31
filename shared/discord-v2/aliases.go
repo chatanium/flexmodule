@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 )
 

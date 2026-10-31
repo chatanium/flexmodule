@@ -1,8 +1,8 @@
 FROM docker.io/library/almalinux@sha256:7b72041988f07ef5020f7f5da036a9aad9165d996d02946bce29c9a38e99ba59
 # Only the small compiler environment is an image layer. vcpkg, downloads,
 # source trees, Go caches, TMPDIR and compiler products are bind-mounted /home.
-# The selected canonical SDK is mounted at /sdk only when running the builder;
-# its native lock and patch are not copied from this repository into image layers.
+# The prepared SDK, native lock and patches remain in the read-only /source
+# mount; no project dependency sources are copied into image layers.
 COPY repositories.repo /etc/yum.repos.d/flexmodule-pinned.repo
 RUN set -eu; \
     for item in \

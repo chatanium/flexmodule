@@ -25766,7 +25766,7 @@ func (x *PartialUnfurledMediaItem) GetUrl() *core_v2.NullableString {
 	return nil
 }
 
-// discordgo/wsapi.go:376; safe domain snapshot/request.
+// discordgo/wsapi.go:377; safe domain snapshot/request.
 type UpdateStatusData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.
@@ -25836,7 +25836,7 @@ func (x *UpdateStatusData) GetStatus() string {
 	return ""
 }
 
-// discordgo/wsapi.go:376; recursive ingress presence view.
+// discordgo/wsapi.go:377; recursive ingress presence view.
 type PartialUpdateStatusData struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Source range -9223372036854775808..9223372036854775807 (pinned Linux amd64); checked conversion, no truncation/wrap; negative lengths/counts rejected.

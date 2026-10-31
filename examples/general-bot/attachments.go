@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"errors"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 	discord "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
 )

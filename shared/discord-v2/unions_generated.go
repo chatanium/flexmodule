@@ -2,7 +2,7 @@
 package discordv2
 
 import (
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
 )
 

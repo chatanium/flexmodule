@@ -152,7 +152,7 @@ func (x *DiscordErrorDetail) GetFieldErrors() []*core_v2.FieldViolation {
 	return nil
 }
 
-// Source: discordgo/oauth2.go:46-55
+// Source: discordgo/oauth2.go:45-54
 type ApplicationRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AppId         string                 `protobuf:"bytes,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"`
@@ -10883,7 +10883,7 @@ func (x *PollExpireResponse) GetValue() *Message {
 	return nil
 }
 
-// Source: discordgo/wsapi.go:490-492
+// Source: discordgo/wsapi.go:491-493
 type RequestGuildMembersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	GuildId       string                 `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3" json:"guild_id,omitempty"`
@@ -10968,7 +10968,7 @@ func (x *RequestGuildMembersRequest) GetOptions() *RequestOptions {
 	return nil
 }
 
-// Source: discordgo/wsapi.go:501-503
+// Source: discordgo/wsapi.go:502-504
 type RequestGuildMembersListRequest struct {
 	state         protoimpl.MessageState                 `protogen:"open.v1"`
 	GuildId       string                                 `protobuf:"bytes,1,opt,name=guild_id,json=guildId,proto3" json:"guild_id,omitempty"`
@@ -12650,7 +12650,7 @@ func (x *ThreadsPrivateJoinedArchivedResponse) GetValue() *ThreadsList {
 	return nil
 }
 
-// Source: discordgo/wsapi.go:465-467
+// Source: discordgo/wsapi.go:466-468
 type UpdateStatusComplexRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Usd           *UpdateStatusData      `protobuf:"bytes,1,opt,name=usd,proto3" json:"usd,omitempty"`

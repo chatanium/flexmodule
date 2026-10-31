@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	discordbackend "github.com/thirdscam/chatanium-flexmodule/internal/backend/discord"
 	discordhttp "github.com/thirdscam/chatanium-flexmodule/internal/backend/discord/http"
 	runtime "github.com/thirdscam/chatanium-flexmodule/internal/runtime"

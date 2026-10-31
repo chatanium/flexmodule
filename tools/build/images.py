@@ -12,6 +12,8 @@ from artifacts import capture, digest, inventory, run, write_json
 
 root = Path(__file__).resolve().parents[2]
 os.chdir(root)
+sys.path.insert(0, str(root / 'tools'))
+from sdk import resolve as resolve_sdk
 if not str(root).startswith('/home/'):
     raise RuntimeError('Image build workspace must be on /home, never /tmp or Docker build layers')
 work = root / '.tools/images'
@@ -20,6 +22,19 @@ lockfile = (work / 'build.lock').open('w')
 fcntl.flock(lockfile, fcntl.LOCK_EX)
 mode = sys.argv[1]
 go = os.environ['GO_BINARY']
+# Direct Python entrypoints enforce preparation too, before any compilation
+# (including the manifest parser) or image construction.
+sdk_modules = [root]
+if mode == 'media':
+    sdk_modules += [root / 'modules/music-bot', root / 'modules/audio-player']
+for module in sdk_modules:
+    resolve_sdk(go, module)
+# A concurrent preparer cannot replace the go.mod alias while Go compiles the
+# parser or while image artifacts/evidence are being assembled.
+sdk_lease = (root / '.tools/deps/discordgo.lock').open('rb')
+fcntl.flock(sdk_lease, fcntl.LOCK_SH)
+for module in sdk_modules:
+    resolve_sdk(go, module, prepare=False)
 label_key = 'org.chatanium.flexmodule.manifest.v2'
 
 
@@ -84,6 +99,9 @@ def publish_images(results):
 
 
 if mode == 'module':
+    base = json.loads((root / 'tools/native/native-lock.json').read_text())['builder_base']
+    if f'FROM {base} AS trust' not in (root / 'tools/build/Module.Dockerfile').read_text().splitlines():
+        raise RuntimeError('Module trust source must match tools/native/native-lock.json builder_base')
     kind = os.environ.get('MODULE_KIND', 'general')
     choices = {'general': ('examples/general-bot', 'bin/test-module'),
                'sandbox': ('tests/integration/fixtures/sandbox', 'bin/sandbox-module')}

@@ -8,6 +8,9 @@ import re
 import shutil
 import sys
 
+# /source is read-only, including imported build helpers.
+sys.dont_write_bytecode = True
+
 sys.path.insert(0, '/source/tools/build')
 from artifacts import capture, checkout, check_elf_versions, digest, elf_closure, inventory, run, write_json
 sys.path.insert(0, '/source/tools')
@@ -16,12 +19,23 @@ from sdk import provenance as sdk_provenance, resolve as resolve_sdk
 source = Path('/source')
 work = Path('/work')
 sdk = json.loads((work / 'sdk-module.json').read_text())
-sdk_source = Path('/sdk')
-lock_path = sdk_source / 'tools/native/native-lock.json'
+sdk_source = (source / '.tools/deps/discordgo').resolve(strict=True)
+lock_path = source / 'tools/native/native-lock.json'
+patch_dir = source / 'third_party/libdave/patches'
+for path in (lock_path, patch_dir):
+    if path.is_symlink() or not path.exists():
+        raise RuntimeError('Missing or unsafe native build input: ' + str(path))
 lock = json.loads(lock_path.read_text())
-patch = sdk_source / 'tools/native/libdave.patch'
-if digest(patch) != lock['libdave']['patch_sha256']:
-    raise RuntimeError('Unapproved libdave patch digest')
+patches = sorted(patch_dir.glob('*.patch'))
+approved_patches = lock['libdave']['patches']
+if not patches or set(approved_patches) != {patch.name for patch in patches}:
+    raise RuntimeError('Native patch set differs from tools/native/native-lock.json')
+for patch in patches:
+    if (patch.is_symlink() or not patch.is_file()
+            or not re.fullmatch(r'[0-9]{4}-.+\.patch', patch.name)
+            or not re.fullmatch(r'[0-9a-f]{64}', approved_patches[patch.name])
+            or digest(patch) != approved_patches[patch.name]):
+        raise RuntimeError('Unapproved libdave patch: ' + str(patch))
 work.mkdir(exist_ok=True)
 os.environ.update(TMPDIR='/work/tmp', HOME='/work/home', VCPKG_DOWNLOADS='/work/downloads',
                   VCPKG_DEFAULT_BINARY_CACHE='/work/vcpkg-cache', VCPKG_MAX_CONCURRENCY=os.environ['BUILD_JOBS'])
@@ -34,6 +48,12 @@ os.environ.update(PATH='/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bi
                   GOPATH='/work/go', GOCACHE='/work/go-cache', GOMODCACHE='/work/go-modcache')
 if capture('/go/bin/go', 'env', 'GOVERSION') != os.environ['GO_TOOLCHAIN']:
     raise RuntimeError('Pinned Go compiler mismatch')
+# Validate both native-only and application builds before any native work.
+# The relative go.mod replacement is visible through /source, not a host path.
+resolved_sdk = resolve_sdk('/go/bin/go', source, prepare=False)
+if (Path(resolved_sdk['Dir']) != sdk_source
+        or sdk_provenance(resolved_sdk) != sdk_provenance(sdk)):
+    raise RuntimeError('Prepared SDK differs from the host-approved dependency')
 # Fresh checkout per invocation: patched worktrees never masquerade as upstream.
 checkout_dir = work / 'libdave'
 if checkout_dir.exists():
@@ -59,8 +79,8 @@ run('git', '-C', vcpkg, 'cat-file', '-e', lock['builtin_baseline'] + ':versions/
 mls_manifest = json.loads((repo / 'cpp/vcpkg-alts/overlay-ports/mlspp/vcpkg.json').read_text())
 if lock['mlspp_commit'] not in mls_manifest.values():
     raise RuntimeError('Unexpected MLSPP source pin')
-run('git', '-C', repo, 'apply', '--check', patch)
-run('git', '-C', repo, 'apply', patch)
+run('git', '-C', repo, 'apply', '--check', *patches)
+run('git', '-C', repo, 'apply', *patches)
 run(repo / 'cpp/vcpkg/bootstrap-vcpkg.sh', '-disableMetrics')
 triplets = work / 'triplets'
 triplets.mkdir(exist_ok=True)
@@ -117,7 +137,9 @@ provenance = bundle / 'provenance'
 provenance.mkdir()
 write_json(provenance / 'builder-abi.json', builder_abi)
 shutil.copy2(lock_path, provenance / 'native-lock.json')
-shutil.copy2(patch, provenance / 'libdave.patch')
+(provenance / 'libdave-patches').mkdir()
+for patch in patches:
+    shutil.copy2(patch, provenance / 'libdave-patches' / patch.name)
 shutil.copy2('/opt/flexmodule-builder/packages.txt', provenance / 'builder-packages.txt')
 (provenance / 'native-symbols.txt').write_text(symbols)
 (provenance / 'configure-cache.txt').write_text((build / 'CMakeCache.txt').read_text())
@@ -139,8 +161,8 @@ write_json(provenance / 'builder-source-sha256.json', {
 })
 write_json(provenance / 'downloads.json', inventory(work / 'downloads'))
 write_json(provenance / 'sdk-module.json', sdk_provenance(sdk))
-write_json(provenance / 'sdk-native-assets-sha256.json', {
-    str(path.relative_to(sdk_source)): digest(path) for path in (lock_path, patch)
+write_json(provenance / 'native-assets-sha256.json', {
+    str(path.relative_to(source)): digest(path) for path in (lock_path, *patches)
 })
 write_json(provenance / 'sdk-source-sha256.json', {
     str(path.relative_to(sdk_source)): digest(path)
@@ -158,9 +180,6 @@ env.update(CGO_ENABLED='1', GOOS='linux', GOARCH='amd64', GOTOOLCHAIN='local', G
            GOPATH='/work/go', GOCACHE='/work/go-cache', GOMODCACHE='/work/go-modcache',
            CGO_CFLAGS='-I' + str(prefix / 'include'),
            CGO_LDFLAGS='-L' + str(lib.parent) + ' -Wl,-rpath,$ORIGIN/lib')
-resolved_sdk = resolve_sdk('/go/bin/go', source)
-if sdk_provenance(resolved_sdk) != sdk_provenance(sdk):
-    raise RuntimeError('Native asset module differs from the application SDK dependency')
 run('/go/bin/go', '-C', source, 'build', '-mod=readonly', '-trimpath', '-tags=voice', '-o', bundle / 'runtime', './cmd/flexmodule', env=env)
 env['LD_LIBRARY_PATH'] = str(bundle / 'lib')
 run('/lib64/ld-linux-x86-64.so.2', '--list', bundle / 'runtime', env=env)

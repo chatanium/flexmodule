@@ -1,6 +1,6 @@
 package discordbackend
 
-import "github.com/chatanium/discordgo"
+import "github.com/bwmarrin/discordgo"
 
 // SDK State getters return cache-owned pointers. Copy only the fields actually
 // used while holding State's lock; no cache pointer survives a remote lookup.

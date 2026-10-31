@@ -12,18 +12,18 @@
       "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
       "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
     },
-    "canonicalModule": "github.com/chatanium/discordgo; version and checksum come from the consuming Go module, not the historical upstream sdkVersion field",
-    "canonicalImportReview": "voice_gateway.go and voice_transport.go import the canonical module's internal/dave package. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities are stable inventory labels, not local checkout paths.",
-    "publicationSourceReview": "Published v0.30.0 incorporates gofmt doc-comment layout changes in logging.go and oauth2.go; the five reviewed Application method documentation fingerprints follow those comments without changing signatures, bodies, defaults or classifications. voice.go's active fingerprint corrects an already stale pin to the byte-identical source in main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
+    "canonicalModule": "github.com/bwmarrin/discordgo; the original upstream module version is required by each consuming go.mod, with upstream archive and go.mod checksum authority in third_party/discordgo/upstream.sum. The maintained third_party/discordgo/patches stack prepares the SDK; extracted sdkModule provenance records Path, Version, Sum, GoModSum, PatchSHA256 and SourceSHA256, excluding machine-specific Dir.",
+    "canonicalImportReview": "voice_gateway.go and voice_transport.go retain the original github.com/bwmarrin/discordgo/internal/dave imports instead of the published fork namespace. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities remain stable inventory labels, not prepared-generation paths.",
+    "publicationSourceReview": "Historical published v0.30.0 incorporated gofmt doc-comment layout changes in logging.go and oauth2.go; its five reviewed Application method documentation fingerprints followed those comments without changing signatures, bodies, defaults or classifications. The maintained patch stack excludes those comment-only reflows and the active fingerprints now follow the original upstream comment layout. voice.go remains byte-identical to the reviewed published source and main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
     "retirementSourceReview": "The published voice.go matches existing main source but active inventories lagged its retirement handshake. VoiceConnection.leaveAck and leaveConfirmed are private runtime-only state: ordered null-channel observation closes the acknowledgement; DisconnectContext waits within CloseTimeout, joins confirmation errors, and retains the reservation until cleanup and confirmation. Two extra anonymous empty struct channel types are implementation-local. Other nested identity changes and public declaration fingerprints are source-position shifts plus the separately reviewed OAuth documentation formatting; no module exposure changes.",
-    "sourcePackageSHA256": "9b8a66d3a4401004e59f29f4d23bc04f361eb5b9c9fe1317e64e3fe71902a9a9",
-    "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner."
+    "sourcePackageSHA256": "f991276a836876b3840d4599ac530afe2cfd80f2fc4baeba0e6f7fceb762c336",
+    "sourceFormatting": "The prepared SDK preserves pinned upstream f43dd94 comment and blank-line layout while applying the maintained functional P3/P5 patch stack. Comment/blank-only fork reflows in discord.go, event.go, state.go, wsapi.go, logging.go, oauth2.go and discord_test.go are excluded; discord_test.go is outside this non-test package census. Exact reviewed hashes cover the eight changed non-test source files, position-only declaration shifts, whitespace-only documentation changes and blank-line-only method body changes. No type shapes, classifications, exposure decisions or module contract totals change. PatchSHA256 identifies the ordered maintained patch inputs and SourceSHA256 identifies the prepared source, recorded in extracted sdkModule provenance."
   },
   "sourceFiles": {
     "discordgo/components.go": "c6a81575ef04f16b8afeb0a49086be9390313f459d76f4f51df090a8f5f738b9",
-    "discordgo/discord.go": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+    "discordgo/discord.go": "f204bfacf24cc6ba0c1559b5060fd007c92901811b07db713f7b5642d9537af9",
     "discordgo/endpoints.go": "5f496f57ad583a8a5e8073690103e3eb77d2dec12787a79d71f4d969b8db494f",
-    "discordgo/event.go": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+    "discordgo/event.go": "950b9716d0f61c944ff70c947c48925a9611fed28a6b636db3e1675ca4aae6e3",
     "discordgo/eventhandlers.go": "11e720d86f3eb457206adde87b585e5d8fec5e5b67bd06f61732d2ef334111b7",
     "discordgo/events.go": "b4998b7b303b3aa9291d93b3177115a45756d58f8e409cc8fe57260c9431c123",
     "discordgo/gateway_context.go": "4cccbe39e0bb7e175ed2fd4ed89649f93668134e00f1fade2eaa989852958c71",
@@ -32,26 +32,26 @@
     "discordgo/gateway_payload.go": "443ff2e9c6df3aa13c295ff9450abbd7811652ee7bd26483f46122200f409496",
     "discordgo/interactions.go": "fafd9ef3fb5396df8cb273537bc284250052cde804c968f46d0d6e65756f3a71",
     "discordgo/locales.go": "e84d174a37df048769ade0c068732e4f0c5aaae23cbfa6dba061815510052d9f",
-    "discordgo/logging.go": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
+    "discordgo/logging.go": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
     "discordgo/message.go": "b1b29d909be56f9daf87ef095a9315491e666afc943fb743586bafdfea9a0471",
-    "discordgo/oauth2.go": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
+    "discordgo/oauth2.go": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
     "discordgo/ratelimit.go": "d0fdceee0dbb764bbad5c7a2c998d502d918204384d637a5e9605a2de7abe1d1",
     "discordgo/restapi.go": "44664bc0e12355514ce2635cf189e91752f61ffa9c505e41e7d9853f94329afb",
-    "discordgo/state.go": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+    "discordgo/state.go": "1658028a4b80d3d2d46e9c354e9a145e22574363c962ff36de33fb13bf087baf",
     "discordgo/structs.go": "8aff34dc9d04d4e5bd6cbcd50efa7c47aeddcfa89e0010822b8b5fbb1c2112a0",
     "discordgo/user.go": "630fafca4237f15bba22cf452879cfbcab30e59c9934069f11fcd0c469d75ed4",
     "discordgo/util.go": "99641a9261c2be5dd74fd717c889f076150164647c99a70aae64fdbdd800807f",
     "discordgo/voice.go": "b3761bff6cd5a700053d7267bca3ee1fd35809cedaabb9bac3531c247a9d700f",
     "discordgo/voice_disabled.go": "ccda5e563a220bc2077c698dd19b00d9a0f539f030d921e0acf6f2e2d3d0d346",
-    "discordgo/voice_gateway.go": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
+    "discordgo/voice_gateway.go": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
     "discordgo/voice_nocgo.go": "b880d0316f0801a76ca3b97b961e8ca71ffb0af382a989ff45412bd7d591abad",
     "discordgo/voice_opus.go": "64d3cbc3d8ce521da88c2536b1c26603009e724d55d2b2b72fdb1f9b650553b0",
     "discordgo/voice_packet.go": "f742bbca0c00e12c9a9e292fe07d4cf3114c20252b12fc71faecf216dfab04a4",
     "discordgo/voice_protocol.go": "dcd87f9d22000318711cb233a579e0c5448c574d46e432024cafccf1cae4d2ac",
-    "discordgo/voice_transport.go": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
+    "discordgo/voice_transport.go": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
     "discordgo/voice_udp.go": "d53b5401844b898dc989bc81913ee07d650b692a8a21acd609f06a864cfdb759",
     "discordgo/webhook.go": "dcec5083aa0c411e26d6f64c09ca0c4cb6a75747a72ca99d8cebcaee38acdce6",
-    "discordgo/wsapi.go": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07"
+    "discordgo/wsapi.go": "29463af8932851a0e5991c5dd357d14e64382c657c3e653b10236e3dc3a1742c"
   },
   "types": {
     "APIErrorMessage": {
@@ -11497,7 +11497,7 @@
   },
   "methods": {
     "AddHandler": {
-      "sourceSHA256": "8a6b1229c80e272d378980f94231278bc885e68dfe2f017918396142ba4f09d4",
+      "sourceSHA256": "36e3f6b4ad735ca1dc14f85d5168e645b4f96598194d0c6d15c9eafd40f428a0",
       "metadata": {
         "protoOperation": null,
         "classification": "backend_internal_control_helper",
@@ -11535,7 +11535,7 @@
       "review": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
     },
     "Application": {
-      "sourceSHA256": "53c7059ae4bbde2464ee23725f5965cbc1ff9f2c78b7e2dc568325962a0178a9",
+      "sourceSHA256": "ea164fd28e1e95640b8d4481663ae40aa2033626d948ba5d58aebe9e622b91a6",
       "metadata": {
         "protoOperation": "Application",
         "classification": "canonical_typed_bot_rpc",
@@ -11586,7 +11586,7 @@
       "review": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
     },
     "ApplicationBotCreate": {
-      "sourceSHA256": "576eff9aff3d593c6e0f493ea3c2b82a736f87bfabb04e8c615c5ef9c49fabb1",
+      "sourceSHA256": "5686aca3b585f6a248e215d4f9f3903ef71c7586ec7d78ccab8fe0c4143baffe",
       "metadata": {
         "protoOperation": null,
         "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
@@ -11830,7 +11830,7 @@
       "review": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
     },
     "ApplicationCreate": {
-      "sourceSHA256": "1b43ee2e3740c17619284df3b69d0fa0015a658d0b1435ffc55bf90fad55d235",
+      "sourceSHA256": "d2fd9c14bbd40ef069e70d0dba55b04b41107bbcd466702de4d1f26b9d6daf1a",
       "metadata": {
         "protoOperation": null,
         "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
@@ -11852,7 +11852,7 @@
       "review": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
     },
     "ApplicationDelete": {
-      "sourceSHA256": "3d20156ab37c8a83070fed289fd3605e7ca3f365d6e7701872dd8cc00994c164",
+      "sourceSHA256": "a1a105922985b5af440d34a0e322ac510f64df3a024887c26cf4edbbd50c6fa7",
       "metadata": {
         "protoOperation": null,
         "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
@@ -12050,7 +12050,7 @@
       "review": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners."
     },
     "ApplicationUpdate": {
-      "sourceSHA256": "d79a8c2c7a03da52b3870e59aa0bde303442811103d7799346b826346f0f8a40",
+      "sourceSHA256": "e9a8c4a30eff50bda6de0153ec7c632d8d935bfb4d9b043270d952fef922bf78",
       "metadata": {
         "protoOperation": null,
         "classification": "excluded_user_account_oauth_owner_only_unsafe_http",
@@ -13629,7 +13629,7 @@
       "review": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation."
     },
     "CloseWithCode": {
-      "sourceSHA256": "1d8d263f50489ae92962f7da1f0a8ed94905d45341a930ba7add2bd7e2e1e83d",
+      "sourceSHA256": "6dfd1b0702cfa78ba29ed3a54ab519b2c0af07a7092a28b0c5a4918c03208195",
       "metadata": {
         "protoOperation": null,
         "classification": "backend_internal_control_helper",
@@ -16455,7 +16455,7 @@
       }
     },
     "HeartbeatLatency": {
-      "sourceSHA256": "85c0d882df0cb8d749d1f85764c2872642ee721b1c5f3c478991a0506f6642a7",
+      "sourceSHA256": "73aee4f4a6d4506b8878fb07b24da63effac08a823baab858316d93a4f059f8d",
       "metadata": {
         "protoOperation": null,
         "classification": "backend_internal_control_helper",
@@ -20333,7 +20333,7 @@
       "review": "Reviewed exact current registration/wrapper syntax and source positions; canonical module name/projection/intent disposition preserved."
     }
   },
-  "nestedTypesSHA256": "62687105edd8dbeb4d26d0ad99788d683c0e0b079fa7b34b04b901b4919a3124",
+  "nestedTypesSHA256": "33a56b692e61a28a0167193f52ac8c9d306b8e86fa0eefccb761f54784d6cfeb",
   "nestedTypes": {
     "discordgo/components.go:44:8:anonymous@discordgo/components.go:44:8": {
       "classification": "SDK-local-or-anonymous-source-syntax",
@@ -20767,37 +20767,37 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:122:38:anonymous@discordgo/event.go:122:38": {
+    "discordgo/event.go:120:38:anonymous@discordgo/event.go:120:38": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:136:42:anonymous@discordgo/event.go:136:42": {
+    "discordgo/event.go:134:42:anonymous@discordgo/event.go:134:42": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:168:38:anonymous@discordgo/event.go:168:38": {
+    "discordgo/event.go:166:38:anonymous@discordgo/event.go:166:38": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:191:43:anonymous@discordgo/event.go:191:43": {
+    "discordgo/event.go:189:43:anonymous@discordgo/event.go:189:43": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:196:51:anonymous@discordgo/event.go:196:51": {
+    "discordgo/event.go:194:51:anonymous@discordgo/event.go:194:51": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/event.go:224:33:anonymous@discordgo/event.go:224:33": {
+    "discordgo/event.go:222:33:anonymous@discordgo/event.go:222:33": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -21843,19 +21843,19 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:47:51:anonymous@discordgo/logging.go:47:51": {
+    "discordgo/logging.go:46:51:anonymous@discordgo/logging.go:46:51": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:72:53:anonymous@discordgo/logging.go:72:53": {
+    "discordgo/logging.go:71:53:anonymous@discordgo/logging.go:71:53": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/logging.go:85:61:anonymous@discordgo/logging.go:85:61": {
+    "discordgo/logging.go:84:61:anonymous@discordgo/logging.go:84:61": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -21884,7 +21884,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/oauth2.go:75:10:anonymous@discordgo/oauth2.go:75:10": {
+    "discordgo/oauth2.go:73:10:anonymous@discordgo/oauth2.go:73:10": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "8cfba3bd0968cd9cab3cb263b00fecb4fd5e2c1cfa1dd36324b2c3e6add303e1",
       "fields": {
@@ -21901,7 +21901,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/oauth2.go:94:10:anonymous@discordgo/oauth2.go:94:10": {
+    "discordgo/oauth2.go:91:10:anonymous@discordgo/oauth2.go:91:10": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "8cfba3bd0968cd9cab3cb263b00fecb4fd5e2c1cfa1dd36324b2c3e6add303e1",
       "fields": {
@@ -22356,7 +22356,7 @@
       },
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/state.go:957:44:anonymous@discordgo/state.go:957:44": {
+    "discordgo/state.go:956:44:anonymous@discordgo/state.go:956:44": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -23097,13 +23097,13 @@
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/wsapi.go:320:70:anonymous@discordgo/wsapi.go:320:70": {
+    "discordgo/wsapi.go:321:70:anonymous@discordgo/wsapi.go:321:70": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
       "decision": "Retained complete AST syntax/line/column identity across ordinary/native build profiles; host-local syntax is never promoted to a module DTO."
     },
-    "discordgo/wsapi.go:542:43:anonymous@discordgo/wsapi.go:542:43": {
+    "discordgo/wsapi.go:543:43:anonymous@discordgo/wsapi.go:543:43": {
       "classification": "SDK-local-or-anonymous-source-syntax",
       "shapeSHA256": "ff75ee97e43d9a5c283b800ec897f351d1dd508bbfb9c49f2d8d0b6e422c0337",
       "fields": {},
@@ -24111,7 +24111,7 @@
     },
     {
       "path": "discordgo/discord.go",
-      "sha256": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+      "sha256": "f204bfacf24cc6ba0c1559b5060fd007c92901811b07db713f7b5642d9537af9",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -24129,7 +24129,7 @@
     },
     {
       "path": "discordgo/event.go",
-      "sha256": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+      "sha256": "950b9716d0f61c944ff70c947c48925a9611fed28a6b636db3e1675ca4aae6e3",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -24210,7 +24210,7 @@
     },
     {
       "path": "discordgo/logging.go",
-      "sha256": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
+      "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -24228,7 +24228,7 @@
     },
     {
       "path": "discordgo/oauth2.go",
-      "sha256": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
+      "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -24255,7 +24255,7 @@
     },
     {
       "path": "discordgo/state.go",
-      "sha256": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+      "sha256": "1658028a4b80d3d2d46e9c354e9a145e22574363c962ff36de33fb13bf087baf",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -24308,7 +24308,7 @@
     },
     {
       "path": "discordgo/voice_gateway.go",
-      "sha256": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
+      "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
       "buildConstraint": "voice && cgo",
       "buildProfiles": [
         "native_voice"
@@ -24349,7 +24349,7 @@
     },
     {
       "path": "discordgo/voice_transport.go",
-      "sha256": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
+      "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
       "buildConstraint": "voice && cgo",
       "buildProfiles": [
         "native_voice"
@@ -24374,7 +24374,7 @@
     },
     {
       "path": "discordgo/wsapi.go",
-      "sha256": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07",
+      "sha256": "29463af8932851a0e5991c5dd357d14e64382c657c3e653b10236e3dc3a1742c",
       "buildConstraint": "",
       "buildProfiles": [
         "native_voice",
@@ -24404,7 +24404,7 @@
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     ".New": {
-      "sourceSHA256": "9b29e50b420de704103f4c8f66330e80e99e3a80bcfd9bad1fe3a831836c76d0",
+      "sourceSHA256": "e76386699cd34ec400f6c15affa558bc1a00a9546d40a09e876488dcdd50fac7",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
@@ -24909,27 +24909,27 @@
       "decision": "SDK source object/value/codec convenience, not a module RPC. Safe data remains subject to explicit field-level domain mapping; methods do not introduce transport or credentials into DTOs."
     },
     "Session.AddHandler": {
-      "sourceSHA256": "1a3331ae7b55ee774e7318ebc765e819b28d1ba33ed169f368ea6ff3d70be011",
+      "sourceSHA256": "a015a719d363d5bef99363211e5575eac6c51d80f07a90b594a4b3bb5e21079b",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.AddHandlerOnce": {
-      "sourceSHA256": "1572698eaa9ee0f09f1d9acdb15bcbaf34bc1dc10dffefbce9c863af46abad42",
+      "sourceSHA256": "918e13c4e743cc60db62dbeaff607d7609ee17fe540f943a952f93f65b8b6238",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.Application": {
-      "sourceSHA256": "ee53fd0c42f52fbddc82da5b1f9c5c35f71cdbdc68fef4a60e2599ecb4201a0b",
+      "sourceSHA256": "ccedaf5f634373bc4f4d24f56c9526ea40c66391ddc06bcca3f83c5e732b8100",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.ApplicationAssets": {
-      "sourceSHA256": "f2605f7e0ab1e59ff3109500d91d1ebb317a75b19de14c92879c2ef8a629aabe",
+      "sourceSHA256": "5a9ba92cf7256698428b6788e461cbf57fe3091ccf7ea6313eb10b8d6db773d1",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.ApplicationBotCreate": {
-      "sourceSHA256": "80d7b9e146d9b0ff28e1680d774e1ba6bbbe0e0f166165cfb9995e94d383a8fa",
+      "sourceSHA256": "6ac13ed588be2408c911f191345db2691aecc28151a0b3eae3677335fb5ad65c",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -24979,12 +24979,12 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.ApplicationCreate": {
-      "sourceSHA256": "57dbfe0659ff00c113ed47c94958358b29af209d24c7d4fe5b882e1df1e7bf95",
+      "sourceSHA256": "00812bf7c9645c13665521fb66bea7caea83e53d86c005c9b4d22aed3b3e121f",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.ApplicationDelete": {
-      "sourceSHA256": "2fd4c8c05c11d14257f62924ab85105b47e8dfc031188409465668be7925f8bd",
+      "sourceSHA256": "04f730140b4ea5d2b0e0601e5c8f32048cf0c61f21a954e58fe55dda2a0e29de",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25024,12 +25024,12 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.ApplicationUpdate": {
-      "sourceSHA256": "416250bd7fb91be1de8da80a4d6e8d0ff7bd6545c34b325089d779e5c49d745f",
+      "sourceSHA256": "9c327e85b24729493398b37250e38f0d93f0f68a7f1fa621d94309f4d9f13061",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.Applications": {
-      "sourceSHA256": "694f3ccb5ad430668458e6d167ca3e5b58b8f547724bfdbfbdb5052fa41ce1f9",
+      "sourceSHA256": "8e26613f2d7faf9852f8ae2d4f5d77bc1f833e2dbcc13e4a871702022474edf4",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25244,7 +25244,7 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.CloseWithCode": {
-      "sourceSHA256": "772dfed4431c3e210766d7ef807add24f035d2b69b2d97b24680e45347211ca6",
+      "sourceSHA256": "747d6961b421a819a70a1f58068fb09ddf1237129471aa4c8109dedddbfab540",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25319,7 +25319,7 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.GatewayWriteStruct": {
-      "sourceSHA256": "f5f09f1968fdd7fbd4c0f5a48464a482b56ba6039b1e6ac3cead2493547ad61a",
+      "sourceSHA256": "252ba287548d80abe323fd046354cc15f598c6a1b86adc4b0a78b3d4394ea7a5",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25689,7 +25689,7 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.HeartbeatLatency": {
-      "sourceSHA256": "0909b40e3f029b59bdd8b82cd18a1fdf2c11f069fc38c5b0d3a24203e67f1476",
+      "sourceSHA256": "88b47f9ead7ba11057cd5e1b89ba8cf5cd89e18e54902eafa2b4f0a2e47d0d1e",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25799,17 +25799,17 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.RequestGuildMembers": {
-      "sourceSHA256": "cc66ff6840ae5a83bc710fadfbf6607bc2a7dbacdf4daebddb081d8199a6d6de",
+      "sourceSHA256": "53d5c3389df2798a081b1d5b6bb33c197151b8c26058306ea2b3d6ee244b0228",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.RequestGuildMembersBatch": {
-      "sourceSHA256": "4d7974d0244bcb5390065fe9aad44e42beef3867f62cf1eb8166f94528fc87e2",
+      "sourceSHA256": "db05bcd73b3c7d0ab7bb574f85c06cf2f9ccb8da15e3cd5191d80cefb31c2232",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.RequestGuildMembersBatchList": {
-      "sourceSHA256": "ac5d90926fe6c1c456f55b28a77c1b470bfc067e42d6c5ce943041383f270680",
+      "sourceSHA256": "7f655905b0f89606b360ff728d36efd0e42e78453fdbffb592ed05f6504292f4",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25819,7 +25819,7 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.RequestGuildMembersList": {
-      "sourceSHA256": "4b38cf1bf74a88e0f473566bcd5593df33d7740ba1d1777fefbd5731f7dca507",
+      "sourceSHA256": "a1ee78803567867ce6d9b997b4907e1f480ed439c78ed2d0415d0b626258a4f5",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25944,22 +25944,22 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.UpdateCustomStatus": {
-      "sourceSHA256": "d281b62a13f3cfcf3e6286eb54a7a6cd156b8d187689462d69d853feb1d96502",
+      "sourceSHA256": "88f14ce91c15348d13df42241c7e8609d147f74a67b11af03c6b2e104e25eaf2",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.UpdateGameStatus": {
-      "sourceSHA256": "7064eee7d2474e7091dcf7cc03aa67fb3596451c3a73edf033cd862c632306f6",
+      "sourceSHA256": "6c4e562272265459294d5d01a3d7757616459dbd2d1e6ae4c5d2c3af572330f4",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.UpdateListeningStatus": {
-      "sourceSHA256": "5969056f29d2fa246e4862020c3fe9c0bc223080097215308f99c2b1a0fe9967",
+      "sourceSHA256": "38686f5a55a706092992add752d5b20235c76aac8d22612649a7ccda0771db20",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.UpdateStatusComplex": {
-      "sourceSHA256": "310b875cea7ee28b32950c636741e288d99b26826bd1ccf21f8654dccf1440f3",
+      "sourceSHA256": "52269f3349b66bac890f5d9923dd30b7c0a5f8c5e6c84587caa6446613419df5",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -25969,12 +25969,12 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.UpdateStreamingStatus": {
-      "sourceSHA256": "bac25d1dffbd89cec612c500c97691eda290599f3ef697a425095332144312e6",
+      "sourceSHA256": "88fa3546cfb257980dfd04b4d4c026bd92ba183f3808f5f95ab657ece4ff4210",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "Session.UpdateWatchStatus": {
-      "sourceSHA256": "28f0599472e537ca5751fb8e01dbcc48ccbbb908c057f2f2d0446f39a7316581",
+      "sourceSHA256": "fe870fefe23ab5fa5d974a7936336ee1d1d4a1c2f99a5c747321437699bf4d8f",
       "classification": "session-method-disposition",
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
@@ -26109,37 +26109,37 @@
       "decision": "See source-api.json for the complete canonical/alias/internal/excluded disposition; this logical declaration is not an additional operation."
     },
     "State.Channel": {
-      "sourceSHA256": "56038ff4554915ec7b9f43e433e02d2c3472a0e9499c74b6d0141da519f46d84",
+      "sourceSHA256": "77ba67fc77a3a58480a5a3ee92077100fab35ece98365d59c56aa32b4354d407",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.ChannelAdd": {
-      "sourceSHA256": "5ebc33837d3edc3a3a24cf5622ec71165843a3fc71cb86b45dbab54c81baf4cb",
+      "sourceSHA256": "675e0631259be5f7120cbb80dfdd841573f85cf0097a5cf96e07c9b19c1acb3d",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.ChannelRemove": {
-      "sourceSHA256": "d138b2387aacdb43594f513cd48d1af99ca57e89145e3bff78e4ff49e8e5dff6",
+      "sourceSHA256": "126efcd217ef5464ec218f8de6ba149b59d58bfa175f2a3c655029c93484f510",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.Emoji": {
-      "sourceSHA256": "c29684d73665c8ce0c60cef7d22a972fb49533024a31ca7031f4c15f7b9ec21a",
+      "sourceSHA256": "805cdd221f2b3b6a793dc4c69910693a70723f4457adcc43e560dbf90757983f",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.EmojiAdd": {
-      "sourceSHA256": "6166f1fc7cee17f8afe3613c26d0e009ed67fb6de3dfb1a26e92c19780539afc",
+      "sourceSHA256": "131747d0c19960fa84be58f193108e4f94ec0e1cebb1d4da34d8911c47bca92d",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.EmojisAdd": {
-      "sourceSHA256": "3d53c77cc9de90faa4a9c3134a835a7a4501ed6e45fd8c965b84ea99c1b33607",
+      "sourceSHA256": "6c92ac01430f5f2eaf11b53f290c8d61fb1832c334fe5a55c1ba9077ab5c4119",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.Guild": {
-      "sourceSHA256": "e7c67a2eb45c20a971c18523a1ffef5d9d89f417b955f132f3810232f9b7f43f",
+      "sourceSHA256": "cc89a3df1419c887518535bc3a3cba8abdfe3172097693c8dfa6c848a3ddc551",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
@@ -26154,107 +26154,107 @@
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.Member": {
-      "sourceSHA256": "f06dbdde85db3edd29a4942b38d55c6cb6238b9928d78e9eb7090813bd47b809",
+      "sourceSHA256": "15383d13e58a4f1be46a82665ffeae051ad9e9181b55d31334d883ddd34f1a6a",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.MemberAdd": {
-      "sourceSHA256": "e8d8a09d6195a2b58ae917f6da72099278d8d13a35142032302bd5992fc63817",
+      "sourceSHA256": "9d8de93d16a772ed435a39db70a1c910ddc2b1fd07a27f4710149caea39707a0",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.MemberRemove": {
-      "sourceSHA256": "600e5859bc4eb9d7b352ab6fc308804ace128621fabcfb787c6f7c053cd41b66",
+      "sourceSHA256": "3431acf217a662d4c7e7d7e0b8615782d451e275f505f928616ed8240bf8d481",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.Message": {
-      "sourceSHA256": "225fb01de6486a0d3e17ef5ced1203bf20a2b7c6e7f782356d1c7fbefd27156d",
+      "sourceSHA256": "5a86a5a558bf324449edf1e8767d20333587b58428492565613d45fa38a653e1",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.MessageAdd": {
-      "sourceSHA256": "71713277fd89ba41f5fc9d9048db38ee4cb59354b746e1d0e00bcc4ffe294b03",
+      "sourceSHA256": "5a263b1340916f1b91ec5aff915b9ebd32d40834e359b6c844deacd3f7efb65a",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.MessageColor": {
-      "sourceSHA256": "99777a8717caa7fa09d3c590bec18800013828176c04107408c83031eabcbf47",
+      "sourceSHA256": "34acd0be6402fa90835a0d4633516635372627002a98d1d97ec49a88e8602a79",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.MessagePermissions": {
-      "sourceSHA256": "b2bd6c68dab0d62fb43336708d747dc7dbff9fd749faca78bc4bfcff1319a7bf",
+      "sourceSHA256": "b8e364498061448fcb2960facddf221c86901ada7e8bc17daa9053215213f7c4",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.MessageRemove": {
-      "sourceSHA256": "b20db21e5cb18fe1e9d8c6ff6a67d9060de433838ac35315ffe07b7915581ff1",
+      "sourceSHA256": "a01efcecde38fc2e3eed2749760b3f59359c29697af83952258f174598366f42",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.OnInterface": {
-      "sourceSHA256": "c1204f3b831355d44869a6181790abcdbf15dfb0bf81645181bc69d19c2bc9e4",
+      "sourceSHA256": "6942d58a2fd17b36536c63f6dcccfcac92cad2b2516d951985b482e54a27c482",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.Presence": {
-      "sourceSHA256": "7da862a810fe51f9406fa6478a0eb1b2e3550b96c34e168cbba1c86bff871423",
+      "sourceSHA256": "ae88c0cc0d57f525446e248519fdb50ebfb44dad6b7c34a786357b9e39e460d2",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.PresenceAdd": {
-      "sourceSHA256": "7ff9174596eeb667c8257a56d899030a85b4b4ec8244bf975c8b384f5ead0707",
+      "sourceSHA256": "71720d1e6dfad2e043ce181b1576884ab9a9bdbccae26d695c4009d451b538cd",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.PresenceRemove": {
-      "sourceSHA256": "80f4f294a17c4e7fd58d5ffd794e9cd4d4a5566218a55100de263d4091ba4d7f",
+      "sourceSHA256": "a0ae65ebb0f1d11b828ec1599826e8444b3670730889470d1177306d12953bb0",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.Role": {
-      "sourceSHA256": "30cd8d9591c1f25f6fc4f68bc694e1177ee7a89c7c3cfd4c07ac8d6b1e288f5b",
+      "sourceSHA256": "9ab81b52f3f9a32bc140adc8d1055bb1bbd287015e6f74e8def0efe096fbd3d4",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.RoleAdd": {
-      "sourceSHA256": "e7e5c4bbf63af01778878039e466f5088a80985f36dd7982a909647fae174a1e",
+      "sourceSHA256": "7f29eff964450727b7f2a418b4d0e38e780f83c028e09b0464722e6c2cb3f406",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.RoleRemove": {
-      "sourceSHA256": "1a747fce5f449e31a20f1bce9f7721dd27a5e392cc77d0356523639d1af3ac4c",
+      "sourceSHA256": "70524393f8fb3b01e1c12ad52a3dc7028106b11d40ba6607c2c9fdd1744b69d7",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.ThreadListSync": {
-      "sourceSHA256": "e642729f8e4ce9780555fbe8df9d6595e3764ff7e389add4d0b86dafc3c82684",
+      "sourceSHA256": "81407e07887d3900d40db43ae1b271cc6110be70731c41ab32bac9827919259c",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.ThreadMemberUpdate": {
-      "sourceSHA256": "27e22a2b3da66480564f772a81bbbb3c85053417be93e9265888e63781895437",
+      "sourceSHA256": "81acdba2e6094fa19b9230ab59116e16376c5415a5a8cdd1503e0b2832846f71",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.ThreadMembersUpdate": {
-      "sourceSHA256": "233f3eedd12686dd1322231f422c963179effb00e505f7b1e7dccf0d3b9dcc3a",
+      "sourceSHA256": "9ece4bb112c5eb1e92aa2f14a3516e44815cf99487be87af42fb6688d52de8de",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.UserChannelPermissions": {
-      "sourceSHA256": "bbf0935417b0fe468c47ae4472a357ac925040d1456fd37df962d521c1366c94",
+      "sourceSHA256": "4a98f72a52431694825df8f3485a5f1d8714c2e3a18e23bd75d63a935cb9d16f",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.UserColor": {
-      "sourceSHA256": "c9d89d564b0a01678722498d0f100d381a16a1a0e94de7dde1b072b513e3be6c",
+      "sourceSHA256": "ffaaf0b29b31c477bebb7c2ed0670ea53fa69c8d45b311fb0e94030102f6f9dd",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },
     "State.VoiceState": {
-      "sourceSHA256": "59c1a82a9657e254ef3f7b89001a696dedd656948bf054eef04cfff6efc60767",
+      "sourceSHA256": "fd2d7d5fdd77f92d687b25041230dd22e94929da017a8e76b2e1609cb68c7fc2",
       "classification": "host-only-sdk-helper",
       "decision": "SDK host-side lifecycle, transport, state, credentials, native voice, request construction or validation convenience; no additional module RPC or implicit domain exposure."
     },

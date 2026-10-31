@@ -1,6 +1,6 @@
 package discordbackend
 
-import "github.com/chatanium/discordgo"
+import "github.com/bwmarrin/discordgo"
 
 // Operator IDs are expectations, not authority to impersonate a different bot.
 // READY comes from the owned authenticated session, never a module DTO.

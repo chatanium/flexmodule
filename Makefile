@@ -12,7 +12,7 @@ export CONFIG SUPERVISOR_SOCKET SUPERVISOR_UID SUPERVISOR_MAX_BYTES CHECK_DEADLI
 export INTEGRATION POLICY_PLAN POLICY_RUNNER EVIDENCE
 
 # Runtime, general example, supervisor, and independent media modules.
-# The canonical DiscordGo module and its examples are checked in their own repo.
+# The prepared DiscordGo SDK is checked locally; upstream example releases are not owned here.
 BUILD_TARGETS := .:./cmd/flexmodule:bin/runtime .:./examples/general-bot:bin/test-module .:./cmd/flexmodule-supervisor:bin/flexmodule-supervisor
 MEDIA_TARGETS := modules/music-bot:.:bin/chatanium-musicbot modules/audio-player:.:bin/voice-player-module
 MODULE_CHECK_TARGETS := .:./...:-
@@ -30,11 +30,15 @@ GENERATED_EXPECTED_FILES := core-v2/core.pb.go core-v2/core_grpc.pb.go \
 GENERATED_FILES := $(GENERATED_EXPECTED_FILES)
 export GENERATED_FILES GENERATED_EXPECTED_FILES BUILD_OUTPUTS
 
-.PHONY: tools build build-native build-voice build-media build-all build-sandbox build-integration buf buf-check clean run \
+.PHONY: tools prepare-sdk build build-native build-voice build-media build-all build-sandbox build-integration buf buf-check clean run \
 	image-module image-media check-offline check-sandbox check-sandbox-policy smoke-discord smoke-voice
 
 tools:
 	@bash tools/install-tools.sh
+
+# Resolve and validate the pinned upstream source plus the maintained patch stack.
+prepare-sdk:
+	@bash -euo pipefail -c 'source tools/common.sh; use_go; run python3 tools/sdk.py --go "$$GO_BINARY"'
 
 # Ordinary runtime, supervisor and bot; no native DAVE or media tool dependency.
 build:

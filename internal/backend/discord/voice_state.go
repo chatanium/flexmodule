@@ -2,7 +2,7 @@ package discordbackend
 
 import (
 	"context"
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	runtime "github.com/thirdscam/chatanium-flexmodule/internal/runtime"
 )
 

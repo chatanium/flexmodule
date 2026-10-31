@@ -9,7 +9,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	discordhttp "github.com/thirdscam/chatanium-flexmodule/internal/backend/discord/http"
 	runtime "github.com/thirdscam/chatanium-flexmodule/internal/runtime"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"

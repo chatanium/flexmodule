@@ -2,7 +2,7 @@ package discordbackend
 
 import (
 	"context"
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
 	"google.golang.org/protobuf/proto"

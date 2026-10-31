@@ -36,29 +36,33 @@ cleanup() {
     exit "$status"
 }
 trap cleanup EXIT
-# The published SDK owns its native ABI contract; never use checkout-local
-# copies of its lock or patch. The compiler image still contains no SDK source.
+# Prepare before mounting /source read-only. The local build-wide lock and
+# maintained native patches stay outside the SDK and compiler image layers.
 safe_file .tools/native/sdk-module.json
-run python3 tools/sdk.py --go "$GO_BINARY" --json > .tools/native/sdk-module.json
-sdk_source=$(python3 -c 'import json; print(json.load(open(".tools/native/sdk-module.json"))["Dir"])')
+run python3 tools/sdk.py --go "$GO_BINARY"
+# Publication needs this same lock exclusively; hold our shared lease across
+# the read-only container build and all resulting provenance/output copies.
+safe_file .tools/deps/discordgo.lock
+exec 8<.tools/deps/discordgo.lock
+flock -s 8
+run python3 tools/sdk.py --go "$GO_BINARY" --verify-only --json > .tools/native/sdk-module.json
 run python3 -c '
 import json
 from pathlib import Path
-import sys
 
-base = json.loads((Path(sys.argv[1]) / "tools/native/native-lock.json").read_text())["builder_base"]
+base = json.loads(Path("tools/native/native-lock.json").read_text())["builder_base"]
 if f"FROM {base}" not in Path("tools/native/Builder.Dockerfile").read_text().splitlines():
-    raise SystemExit("Native compiler image must match canonical SDK native-lock.json builder_base")
-' "$sdk_source"
+    raise SystemExit("Native compiler image must match tools/native/native-lock.json builder_base")
+'
 run docker build --platform linux/amd64 --iidfile "$image_file" -f tools/native/Builder.Dockerfile tools/native
 builder=$(< "$image_file")
 [[ "$builder" =~ ^sha256:[0-9a-f]{64}$ ]] || fail 'Docker returned an invalid builder image ID'
 run docker run --rm --init --user "$(id -u):$(id -g)" \
     --mount "type=bind,src=$ROOT,dst=/source,readonly" \
     --mount "type=bind,src=$ROOT/.tools/native,dst=/work" \
-    --mount "type=bind,src=$sdk_source,dst=/sdk,readonly" \
     "${go_mount[@]}" \
     -e BUILD_JOBS -e GO_TOOLCHAIN -e NATIVE_ONLY="$native_only" -e TMPDIR=/work/tmp \
+    -e PYTHONDONTWRITEBYTECODE=1 \
     "$builder" python3 /source/tools/native/build.py
 printf '%s\n' "$builder" > .tools/native/bundle/provenance/builder-image-id.txt
 # Inspect actual target providers and force eager relocation before publishing.

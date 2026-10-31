@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
 	discordv2 "github.com/thirdscam/chatanium-flexmodule/shared/discord-v2"
 	"google.golang.org/protobuf/proto"

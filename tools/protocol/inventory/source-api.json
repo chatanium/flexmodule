@@ -379,9 +379,9 @@
       "exposed": false,
       "name": "AddHandler",
       "signature": "func (s *Session) AddHandler(handler interface{}) func()",
-      "source": "discordgo/event.go:122",
-      "endLine": 131,
-      "documentation": "// AddHandler allows you to add an event handler that will be fired anytime\n// the Discord WSAPI event that matches the function fires.\n// The first parameter is a *Session, and the second parameter is a pointer\n// to a struct corresponding to the event for which you want to listen.\n//\n// eg:\n//\n//\tSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {\n//\t})\n//\n// or:\n//\n//\tSession.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {\n//\t})\n//\n// List of events can be found at this page, with corresponding names in the\n// library for each event: https://discord.com/developers/docs/topics/gateway#event-names\n// There are also synthetic events fired by the library internally which are\n// available for handling, like Connect, Disconnect, and RateLimit.\n// events.go contains all of the Discord WSAPI and synthetic events that can be handled.\n//\n// The return value of this method is a function, that when called will remove the\n// event handler.",
+      "source": "discordgo/event.go:120",
+      "endLine": 129,
+      "documentation": "// AddHandler allows you to add an event handler that will be fired anytime\n// the Discord WSAPI event that matches the function fires.\n// The first parameter is a *Session, and the second parameter is a pointer\n// to a struct corresponding to the event for which you want to listen.\n//\n// eg:\n//     Session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {\n//     })\n//\n// or:\n//     Session.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {\n//     })\n//\n// List of events can be found at this page, with corresponding names in the\n// library for each event: https://discord.com/developers/docs/topics/gateway#event-names\n// There are also synthetic events fired by the library internally which are\n// available for handling, like Connect, Disconnect, and RateLimit.\n// events.go contains all of the Discord WSAPI and synthetic events that can be handled.\n//\n// The return value of this method is a function, that when called will remove the\n// event handler.",
       "body": "\n\teh := handlerForInterface(handler)\n\n\tif eh == nil {\n\t\ts.log(LogError, \"Invalid handler type, handler will never be called\")\n\t\treturn func() {}\n\t}\n\n\treturn s.addEventHandler(eh)\n",
       "arguments": [
         {
@@ -403,7 +403,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) AddHandler(handler interface{}) func()",
-      "sourceRange": "discordgo/event.go:122-131",
+      "sourceRange": "discordgo/event.go:120-129",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": []
     },
@@ -424,8 +424,8 @@
       "exposed": false,
       "name": "AddHandlerOnce",
       "signature": "func (s *Session) AddHandlerOnce(handler interface{}) func()",
-      "source": "discordgo/event.go:136",
-      "endLine": 145,
+      "source": "discordgo/event.go:134",
+      "endLine": 143,
       "documentation": "// AddHandlerOnce allows you to add an event handler that will be fired the next time\n// the Discord WSAPI event that matches the function fires.\n// See AddHandler for more details.",
       "body": "\n\teh := handlerForInterface(handler)\n\n\tif eh == nil {\n\t\ts.log(LogError, \"Invalid handler type, handler will never be called\")\n\t\treturn func() {}\n\t}\n\n\treturn s.addEventHandlerOnce(eh)\n",
       "arguments": [
@@ -448,7 +448,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) AddHandlerOnce(handler interface{}) func()",
-      "sourceRange": "discordgo/event.go:136-145",
+      "sourceRange": "discordgo/event.go:134-143",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": []
     },
@@ -477,9 +477,9 @@
       },
       "name": "Application",
       "signature": "func (s *Session) Application(appID string) (st *Application, err error)",
-      "source": "discordgo/oauth2.go:46",
-      "endLine": 55,
-      "documentation": "// Application returns an Application structure of a specific Application\n//\n//\tappID : The ID of an Application",
+      "source": "discordgo/oauth2.go:45",
+      "endLine": 54,
+      "documentation": "// Application returns an Application structure of a specific Application\n//   appID : The ID of an Application",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
       "arguments": [
         {
@@ -517,7 +517,7 @@
         "EndpointOAuth2Application"
       ],
       "sourceSignature": "func (s *Session) Application(appID string) (st *Application, err error)",
-      "sourceRange": "discordgo/oauth2.go:46-55",
+      "sourceRange": "discordgo/oauth2.go:45-54",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": [
         "Application"
@@ -543,8 +543,8 @@
       "exposed": false,
       "name": "ApplicationAssets",
       "signature": "func (s *Session) ApplicationAssets(appID string) (ass []*Asset, err error)",
-      "source": "discordgo/oauth2.go:129",
-      "endLine": 138,
+      "source": "discordgo/oauth2.go:125",
+      "endLine": 134,
       "documentation": "// ApplicationAssets returns an application's assets",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2ApplicationAssets(appID), nil, EndpointOAuth2ApplicationAssets(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &ass)\n\treturn\n",
       "arguments": [
@@ -583,7 +583,7 @@
         "EndpointOAuth2ApplicationAssets"
       ],
       "sourceSignature": "func (s *Session) ApplicationAssets(appID string) (ass []*Asset, err error)",
-      "sourceRange": "discordgo/oauth2.go:129-138",
+      "sourceRange": "discordgo/oauth2.go:125-134",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": []
     },
@@ -606,9 +606,9 @@
       "exposed": false,
       "name": "ApplicationBotCreate",
       "signature": "func (s *Session) ApplicationBotCreate(appID string) (st *User, err error)",
-      "source": "discordgo/oauth2.go:149",
-      "endLine": 158,
-      "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//\tappID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
+      "source": "discordgo/oauth2.go:145",
+      "endLine": 154,
+      "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//   appID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2ApplicationsBot(appID), nil, EndpointOAuth2ApplicationsBot(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
       "arguments": [
         {
@@ -646,7 +646,7 @@
         "EndpointOAuth2ApplicationsBot"
       ],
       "sourceSignature": "func (s *Session) ApplicationBotCreate(appID string) (st *User, err error)",
-      "sourceRange": "discordgo/oauth2.go:149-158",
+      "sourceRange": "discordgo/oauth2.go:145-154",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": []
     },
@@ -1494,9 +1494,9 @@
       "exposed": false,
       "name": "ApplicationCreate",
       "signature": "func (s *Session) ApplicationCreate(ap *Application) (st *Application, err error)",
-      "source": "discordgo/oauth2.go:73",
-      "endLine": 87,
-      "documentation": "// ApplicationCreate creates a new Application\n//\n//\tname : Name of Application / Bot\n//\turis : Redirect URIs (Not required)",
+      "source": "discordgo/oauth2.go:71",
+      "endLine": 85,
+      "documentation": "// ApplicationCreate creates a new Application\n//    name : Name of Application / Bot\n//    uris : Redirect URIs (Not required)",
       "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2Applications, data, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
       "arguments": [
         {
@@ -1534,7 +1534,7 @@
         "EndpointOAuth2Applications"
       ],
       "sourceSignature": "func (s *Session) ApplicationCreate(ap *Application) (st *Application, err error)",
-      "sourceRange": "discordgo/oauth2.go:73-87",
+      "sourceRange": "discordgo/oauth2.go:71-85",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": []
     },
@@ -1557,9 +1557,9 @@
       "exposed": false,
       "name": "ApplicationDelete",
       "signature": "func (s *Session) ApplicationDelete(appID string) (err error)",
-      "source": "discordgo/oauth2.go:111",
-      "endLine": 119,
-      "documentation": "// ApplicationDelete deletes an existing Application\n//\n//\tappID : The ID of an Application",
+      "source": "discordgo/oauth2.go:107",
+      "endLine": 115,
+      "documentation": "// ApplicationDelete deletes an existing Application\n//   appID : The ID of an Application",
       "body": "\n\n\t_, err = s.RequestWithBucketID(\"DELETE\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\treturn\n",
       "arguments": [
         {
@@ -1588,7 +1588,7 @@
         "EndpointOAuth2Application"
       ],
       "sourceSignature": "func (s *Session) ApplicationDelete(appID string) (err error)",
-      "sourceRange": "discordgo/oauth2.go:111-119",
+      "sourceRange": "discordgo/oauth2.go:107-115",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": []
     },
@@ -2176,9 +2176,9 @@
       "exposed": false,
       "name": "ApplicationUpdate",
       "signature": "func (s *Session) ApplicationUpdate(appID string, ap *Application) (st *Application, err error)",
-      "source": "discordgo/oauth2.go:92",
-      "endLine": 106,
-      "documentation": "// ApplicationUpdate updates an existing Application\n//\n//\tvar : desc",
+      "source": "discordgo/oauth2.go:89",
+      "endLine": 103,
+      "documentation": "// ApplicationUpdate updates an existing Application\n//   var : desc",
       "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"PUT\", EndpointOAuth2Application(appID), data, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
       "arguments": [
         {
@@ -2225,7 +2225,7 @@
         "EndpointOAuth2Application"
       ],
       "sourceSignature": "func (s *Session) ApplicationUpdate(appID string, ap *Application) (st *Application, err error)",
-      "sourceRange": "discordgo/oauth2.go:92-106",
+      "sourceRange": "discordgo/oauth2.go:89-103",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": []
     },
@@ -2248,8 +2248,8 @@
       "exposed": false,
       "name": "Applications",
       "signature": "func (s *Session) Applications() (st []*Application, err error)",
-      "source": "discordgo/oauth2.go:58",
-      "endLine": 67,
+      "source": "discordgo/oauth2.go:57",
+      "endLine": 66,
       "documentation": "// Applications returns all applications for the authenticated user",
       "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Applications, nil, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
       "arguments": [],
@@ -2278,7 +2278,7 @@
         "EndpointOAuth2Applications"
       ],
       "sourceSignature": "func (s *Session) Applications() (st []*Application, err error)",
-      "sourceRange": "discordgo/oauth2.go:58-67",
+      "sourceRange": "discordgo/oauth2.go:57-66",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": []
     },
@@ -6384,9 +6384,9 @@
       "name": "CloseWithCode",
       "signature": "func (s *Session) CloseWithCode(closeCode int) error",
       "source": "discordgo/wsapi.go:808",
-      "endLine": 841,
+      "endLine": 843,
       "documentation": "// CloseWithCode closes a websocket using the provided closeCode and stops all\n// listening/heartbeat goroutines.",
-      "body": "\n\ts.wsLifecycle.Lock()\n\ts.Lock()\n\ts.DataReady = false\n\tif s.listening != nil {\n\t\tclose(s.listening)\n\t\ts.listening = nil\n\t}\n\tconn := s.wsConn\n\ts.wsConn = nil\n\tvoices := make([]*VoiceConnection, 0, len(s.VoiceConnections))\n\tfor _, voice := range s.VoiceConnections {\n\t\tvoices = append(voices, voice)\n\t}\n\ts.Unlock()\n\tfor _, voice := range voices {\n\t\tvoice.engine.stop(ErrVoiceClosed)\n\t}\n\tvar err error\n\tif conn != nil {\n\t\t// Bound both gate acquisition and the close frame. A stuck writer is\n\t\t// interrupted by Close even if it used a background context.\n\t\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\t\terr = s.gatewayWriteFrame(ctx, conn, websocket.CloseMessage, websocket.FormatCloseMessage(closeCode, \"\"), nil)\n\t\tcancel()\n\t\tcloseErr := conn.Close()\n\t\tif err == nil {\n\t\t\terr = closeErr\n\t\t}\n\t}\n\ts.wsLifecycle.Unlock()\n\ts.handleEvent(disconnectEventType, &Disconnect{})\n\treturn err\n",
+      "body": "\n\ts.wsLifecycle.Lock()\n\ts.Lock()\n\n\ts.DataReady = false\n\n\tif s.listening != nil {\n\t\tclose(s.listening)\n\t\ts.listening = nil\n\t}\n\tconn := s.wsConn\n\ts.wsConn = nil\n\tvoices := make([]*VoiceConnection, 0, len(s.VoiceConnections))\n\tfor _, voice := range s.VoiceConnections {\n\t\tvoices = append(voices, voice)\n\t}\n\ts.Unlock()\n\tfor _, voice := range voices {\n\t\tvoice.engine.stop(ErrVoiceClosed)\n\t}\n\tvar err error\n\tif conn != nil {\n\t\t// Bound both gate acquisition and the close frame. A stuck writer is\n\t\t// interrupted by Close even if it used a background context.\n\t\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\t\terr = s.gatewayWriteFrame(ctx, conn, websocket.CloseMessage, websocket.FormatCloseMessage(closeCode, \"\"), nil)\n\t\tcancel()\n\t\tcloseErr := conn.Close()\n\t\tif err == nil {\n\t\t\terr = closeErr\n\t\t}\n\t}\n\ts.wsLifecycle.Unlock()\n\ts.handleEvent(disconnectEventType, &Disconnect{})\n\treturn err\n",
       "arguments": [
         {
           "name": "closeCode",
@@ -6411,7 +6411,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) CloseWithCode(closeCode int) error",
-      "sourceRange": "discordgo/wsapi.go:808-841",
+      "sourceRange": "discordgo/wsapi.go:808-843",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": []
     },
@@ -7931,8 +7931,8 @@
       "exposed": false,
       "name": "GatewayWriteStruct",
       "signature": "func (s *Session) GatewayWriteStruct(data interface{}) error",
-      "source": "discordgo/wsapi.go:542",
-      "endLine": 544,
+      "source": "discordgo/wsapi.go:543",
+      "endLine": 545,
       "documentation": "// GatewayWriteStruct allows for sending raw gateway structs over the gateway.",
       "body": "\n\treturn s.gatewayWrite(context.Background(), nil, data)\n",
       "arguments": [
@@ -7957,7 +7957,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) GatewayWriteStruct(data interface{}) error",
-      "sourceRange": "discordgo/wsapi.go:542-544",
+      "sourceRange": "discordgo/wsapi.go:543-545",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": []
     },
@@ -14420,9 +14420,9 @@
       "name": "HeartbeatLatency",
       "signature": "func (s *Session) HeartbeatLatency() time.Duration",
       "source": "discordgo/wsapi.go:311",
-      "endLine": 315,
+      "endLine": 316,
       "documentation": "// HeartbeatLatency returns the latency between heartbeat acknowledgement and heartbeat send.",
-      "body": "\n\ts.RLock()\n\tdefer s.RUnlock()\n\treturn s.LastHeartbeatAck.Sub(s.LastHeartbeatSent)\n",
+      "body": "\n\ts.RLock()\n\tdefer s.RUnlock()\n\treturn s.LastHeartbeatAck.Sub(s.LastHeartbeatSent)\n\n",
       "arguments": [],
       "results": [
         {
@@ -14437,7 +14437,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) HeartbeatLatency() time.Duration",
-      "sourceRange": "discordgo/wsapi.go:311-315",
+      "sourceRange": "discordgo/wsapi.go:311-316",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": []
     },
@@ -16361,8 +16361,8 @@
       },
       "name": "RequestGuildMembers",
       "signature": "func (s *Session) RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error",
-      "source": "discordgo/wsapi.go:490",
-      "endLine": 492,
+      "source": "discordgo/wsapi.go:491",
+      "endLine": 493,
       "documentation": "// RequestGuildMembers requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Single Guild ID to request members of\n// query     : String that username starts with, leave empty to return all members\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members",
       "body": "\n\treturn s.RequestGuildMembersContext(context.Background(), guildID, query, limit, nonce, presences)\n",
       "arguments": [
@@ -16425,7 +16425,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error",
-      "sourceRange": "discordgo/wsapi.go:490-492",
+      "sourceRange": "discordgo/wsapi.go:491-493",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": []
     },
@@ -16454,8 +16454,8 @@
       "exposed": true,
       "name": "RequestGuildMembersBatch",
       "signature": "func (s *Session) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) error",
-      "source": "discordgo/wsapi.go:514",
-      "endLine": 521,
+      "source": "discordgo/wsapi.go:515",
+      "endLine": 522,
       "documentation": "// RequestGuildMembersBatch requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Slice of guild IDs to request members of\n// query     : String that username starts with, leave empty to return all members\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members\n//\n// NOTE: this function is deprecated, please use RequestGuildMembers instead",
       "body": "\n\tfor _, guildID := range guildIDs {\n\t\tif err := s.RequestGuildMembers(guildID, query, limit, nonce, presences); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n",
       "arguments": [
@@ -16518,7 +16518,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) error",
-      "sourceRange": "discordgo/wsapi.go:514-521",
+      "sourceRange": "discordgo/wsapi.go:515-522",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": [],
       "aliasMapping": {
@@ -16596,8 +16596,8 @@
       "exposed": true,
       "name": "RequestGuildMembersBatchList",
       "signature": "func (s *Session) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) error",
-      "source": "discordgo/wsapi.go:532",
-      "endLine": 539,
+      "source": "discordgo/wsapi.go:533",
+      "endLine": 540,
       "documentation": "// RequestGuildMembersBatchList requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Slice of guild IDs to request members of\n// userIDs   : IDs of users to fetch\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members\n//\n// NOTE: this function is deprecated, please use RequestGuildMembersList instead",
       "body": "\n\tfor _, guildID := range guildIDs {\n\t\tif err := s.RequestGuildMembersList(guildID, userIDs, limit, nonce, presences); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n",
       "arguments": [
@@ -16660,7 +16660,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) error",
-      "sourceRange": "discordgo/wsapi.go:532-539",
+      "sourceRange": "discordgo/wsapi.go:533-540",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": [],
       "aliasMapping": {
@@ -16833,8 +16833,8 @@
       },
       "name": "RequestGuildMembersList",
       "signature": "func (s *Session) RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error",
-      "source": "discordgo/wsapi.go:501",
-      "endLine": 503,
+      "source": "discordgo/wsapi.go:502",
+      "endLine": 504,
       "documentation": "// RequestGuildMembersList requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Single Guild ID to request members of\n// userIDs   : IDs of users to fetch\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members",
       "body": "\n\treturn s.RequestGuildMembersListContext(context.Background(), guildID, userIDs, limit, nonce, presences)\n",
       "arguments": [
@@ -16897,7 +16897,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error",
-      "sourceRange": "discordgo/wsapi.go:501-503",
+      "sourceRange": "discordgo/wsapi.go:502-504",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": []
     },
@@ -19001,8 +19001,8 @@
       "exposed": true,
       "name": "UpdateCustomStatus",
       "signature": "func (s *Session) UpdateCustomStatus(state string) (err error)",
-      "source": "discordgo/wsapi.go:447",
-      "endLine": 462,
+      "source": "discordgo/wsapi.go:448",
+      "endLine": 463,
       "documentation": "// UpdateCustomStatus is used to update the user's custom status.\n// If state!=\"\" then set the custom status.\n// Else, set user to active and remove the custom status.",
       "body": "\n\tdata := UpdateStatusData{\n\t\tStatus: \"online\",\n\t}\n\n\tif state != \"\" {\n\t\t// Discord requires a non-empty activity name, therefore we provide \"Custom Status\" as a placeholder.\n\t\tdata.Activities = []*Activity{{\n\t\t\tName:  \"Custom Status\",\n\t\t\tType:  ActivityTypeCustom,\n\t\t\tState: state,\n\t\t}}\n\t}\n\n\treturn s.UpdateStatusComplex(data)\n",
       "arguments": [
@@ -19029,7 +19029,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) UpdateCustomStatus(state string) (err error)",
-      "sourceRange": "discordgo/wsapi.go:447-462",
+      "sourceRange": "discordgo/wsapi.go:448-463",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": [],
       "aliasMapping": {
@@ -19095,8 +19095,8 @@
       "exposed": true,
       "name": "UpdateGameStatus",
       "signature": "func (s *Session) UpdateGameStatus(idle int, name string) (err error)",
-      "source": "discordgo/wsapi.go:412",
-      "endLine": 414,
+      "source": "discordgo/wsapi.go:413",
+      "endLine": 415,
       "documentation": "// UpdateGameStatus is used to update the user's status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set game.\n// if otherwise, set status to active, and no activity.",
       "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, ActivityTypeGame, name, \"\"))\n",
       "arguments": [
@@ -19132,7 +19132,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) UpdateGameStatus(idle int, name string) (err error)",
-      "sourceRange": "discordgo/wsapi.go:412-414",
+      "sourceRange": "discordgo/wsapi.go:413-415",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": [],
       "aliasMapping": {
@@ -19203,8 +19203,8 @@
       "exposed": true,
       "name": "UpdateListeningStatus",
       "signature": "func (s *Session) UpdateListeningStatus(name string) (err error)",
-      "source": "discordgo/wsapi.go:440",
-      "endLine": 442,
+      "source": "discordgo/wsapi.go:441",
+      "endLine": 443,
       "documentation": "// UpdateListeningStatus is used to set the user to \"Listening to...\"\n// If name!=\"\" then set to what user is listening to\n// Else, set user to active and no activity.",
       "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(0, ActivityTypeListening, name, \"\"))\n",
       "arguments": [
@@ -19231,7 +19231,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) UpdateListeningStatus(name string) (err error)",
-      "sourceRange": "discordgo/wsapi.go:440-442",
+      "sourceRange": "discordgo/wsapi.go:441-443",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": [],
       "aliasMapping": {
@@ -19297,8 +19297,8 @@
       },
       "name": "UpdateStatusComplex",
       "signature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) error",
-      "source": "discordgo/wsapi.go:465",
-      "endLine": 467,
+      "source": "discordgo/wsapi.go:466",
+      "endLine": 468,
       "documentation": "// UpdateStatusComplex allows for sending the raw status update data untouched by discordgo.",
       "body": "\n\treturn s.UpdateStatusComplexContext(context.Background(), usd)\n",
       "arguments": [
@@ -19325,7 +19325,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) error",
-      "sourceRange": "discordgo/wsapi.go:465-467",
+      "sourceRange": "discordgo/wsapi.go:466-468",
       "sourceReview": "Reviewed local P3/P5 Gateway/voice boundary update: retain module disposition and exact source signature/body/documentation; local context/gate/observer/voice integration adds no module operation.",
       "typeRoots": [
         "UpdateStatusData"
@@ -19412,8 +19412,8 @@
       "exposed": true,
       "name": "UpdateStreamingStatus",
       "signature": "func (s *Session) UpdateStreamingStatus(idle int, name string, url string) (err error)",
-      "source": "discordgo/wsapi.go:429",
-      "endLine": 435,
+      "source": "discordgo/wsapi.go:430",
+      "endLine": 436,
       "documentation": "// UpdateStreamingStatus is used to update the user's streaming status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set game.\n// If name!=\"\" and url!=\"\" then set the status type to streaming with the URL set.\n// if otherwise, set status to active, and no game.",
       "body": "\n\tgameType := ActivityTypeGame\n\tif url != \"\" {\n\t\tgameType = ActivityTypeStreaming\n\t}\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, gameType, name, url))\n",
       "arguments": [
@@ -19458,7 +19458,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) UpdateStreamingStatus(idle int, name string, url string) (err error)",
-      "sourceRange": "discordgo/wsapi.go:429-435",
+      "sourceRange": "discordgo/wsapi.go:430-436",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": [],
       "aliasMapping": {
@@ -19534,8 +19534,8 @@
       "exposed": true,
       "name": "UpdateWatchStatus",
       "signature": "func (s *Session) UpdateWatchStatus(idle int, name string) (err error)",
-      "source": "discordgo/wsapi.go:420",
-      "endLine": 422,
+      "source": "discordgo/wsapi.go:421",
+      "endLine": 423,
       "documentation": "// UpdateWatchStatus is used to update the user's watch status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set movie/stream.\n// if otherwise, set status to active, and no activity.",
       "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, ActivityTypeWatching, name, \"\"))\n",
       "arguments": [
@@ -19571,7 +19571,7 @@
       ],
       "endpointExpressions": [],
       "sourceSignature": "func (s *Session) UpdateWatchStatus(idle int, name string) (err error)",
-      "sourceRange": "discordgo/wsapi.go:420-422",
+      "sourceRange": "discordgo/wsapi.go:421-423",
       "sourceReview": "Signature/body/defaults unchanged; classification and metadata retained. Documentation comes from the actual AST-attached comment group, not preceding unrelated section banners.",
       "typeRoots": [],
       "aliasMapping": {
@@ -37360,16 +37360,16 @@
         "Name": "UpdateStatusData",
         "Kind": "struct",
         "File": "discordgo/wsapi.go",
-        "Line": 376,
+        "Line": 377,
         "Column": 6,
-        "End": 381,
+        "End": 382,
         "Fields": [
           {
             "Name": "IdleSince",
             "Type": "*int",
             "Tag": "`json:\"since\"`",
-            "Line": 377,
-            "End": 377,
+            "Line": 378,
+            "End": 378,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -37382,8 +37382,8 @@
             "Name": "Activities",
             "Type": "[]*Activity",
             "Tag": "`json:\"activities\"`",
-            "Line": 378,
-            "End": 378,
+            "Line": 379,
+            "End": 379,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -37396,8 +37396,8 @@
             "Name": "AFK",
             "Type": "bool",
             "Tag": "`json:\"afk\"`",
-            "Line": 379,
-            "End": 379,
+            "Line": 380,
+            "End": 380,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -37410,8 +37410,8 @@
             "Name": "Status",
             "Type": "string",
             "Tag": "`json:\"status\"`",
-            "Line": 380,
-            "End": 380,
+            "Line": 381,
+            "End": 381,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -73433,16 +73433,16 @@
         "Name": "UpdateStatusData",
         "Kind": "struct",
         "File": "discordgo/wsapi.go",
-        "Line": 376,
+        "Line": 377,
         "Column": 6,
-        "End": 381,
+        "End": 382,
         "Fields": [
           {
             "Name": "IdleSince",
             "Type": "*int",
             "Tag": "`json:\"since\"`",
-            "Line": 377,
-            "End": 377,
+            "Line": 378,
+            "End": 378,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -73455,8 +73455,8 @@
             "Name": "Activities",
             "Type": "[]*Activity",
             "Tag": "`json:\"activities\"`",
-            "Line": 378,
-            "End": 378,
+            "Line": 379,
+            "End": 379,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -73469,8 +73469,8 @@
             "Name": "AFK",
             "Type": "bool",
             "Tag": "`json:\"afk\"`",
-            "Line": 379,
-            "End": 379,
+            "Line": 380,
+            "End": 380,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -73483,8 +73483,8 @@
             "Name": "Status",
             "Type": "string",
             "Tag": "`json:\"status\"`",
-            "Line": 380,
-            "End": 380,
+            "Line": 381,
+            "End": 381,
             "Exported": true,
             "Embedded": false,
             "Documentation": "",
@@ -75042,16 +75042,19 @@
       "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
       "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
     },
-    "canonicalModule": "github.com/chatanium/discordgo; version and checksum come from the consuming Go module, not the historical upstream sdkVersion field",
-    "canonicalImportReview": "voice_gateway.go and voice_transport.go import the canonical module's internal/dave package. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities are stable inventory labels, not local checkout paths.",
-    "publicationSourceReview": "Published v0.30.0 incorporates gofmt doc-comment layout changes in logging.go and oauth2.go; the five reviewed Application method documentation fingerprints follow those comments without changing signatures, bodies, defaults or classifications. voice.go's active fingerprint corrects an already stale pin to the byte-identical source in main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
+    "canonicalModule": "github.com/bwmarrin/discordgo; the original upstream module version is required by each consuming go.mod, with upstream archive and go.mod checksum authority in third_party/discordgo/upstream.sum. The maintained third_party/discordgo/patches stack prepares the SDK; extracted sdkModule provenance records Path, Version, Sum, GoModSum, PatchSHA256 and SourceSHA256, excluding machine-specific Dir.",
+    "canonicalImportReview": "voice_gateway.go and voice_transport.go retain the original github.com/bwmarrin/discordgo/internal/dave imports instead of the published fork namespace. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities remain stable inventory labels, not prepared-generation paths.",
+    "publicationSourceReview": "Historical published v0.30.0 incorporated gofmt doc-comment layout changes in logging.go and oauth2.go; its five reviewed Application method documentation fingerprints followed those comments without changing signatures, bodies, defaults or classifications. The maintained patch stack excludes those comment-only reflows and the active fingerprints now follow the original upstream comment layout. voice.go remains byte-identical to the reviewed published source and main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
     "retirementSourceReview": "The published voice.go matches existing main source but active inventories lagged its retirement handshake. VoiceConnection.leaveAck and leaveConfirmed are private runtime-only state: ordered null-channel observation closes the acknowledgement; DisconnectContext waits within CloseTimeout, joins confirmation errors, and retains the reservation until cleanup and confirmation. Two extra anonymous empty struct channel types are implementation-local. Other nested identity changes and public declaration fingerprints are source-position shifts plus the separately reviewed OAuth documentation formatting; no module exposure changes.",
-    "sourcePackageSHA256": "9b8a66d3a4401004e59f29f4d23bc04f361eb5b9c9fe1317e64e3fe71902a9a9",
-    "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
+    "sourcePackageSHA256": "f991276a836876b3840d4599ac530afe2cfd80f2fc4baeba0e6f7fceb762c336",
+    "sourceFormatting": "The prepared SDK preserves pinned upstream f43dd94 comment and blank-line layout while applying the maintained functional P3/P5 patch stack. Comment/blank-only fork reflows in discord.go, event.go, state.go, wsapi.go, logging.go, oauth2.go and discord_test.go are excluded; discord_test.go is outside this non-test package census. Exact reviewed hashes cover the eight changed non-test source files, position-only declaration shifts, whitespace-only documentation changes and blank-line-only method body changes. No type shapes, classifications, exposure decisions or module contract totals change. PatchSHA256 identifies the ordered maintained patch inputs and SourceSHA256 identifies the prepared source, recorded in extracted sdkModule provenance.",
     "sdkModule": {
-      "Path": "github.com/chatanium/discordgo",
-      "Sum": "h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=",
-      "Version": "v0.30.0"
+      "GoModSum": "h1:JsaNXATZGUDc+uiR1/TGW4Aq4IKc2Hh/O8LhsBiSIBs=",
+      "PatchSHA256": "2905d7c43cd8ff11fb37194de26655190b53bae10856199eca7c9510c42b42c3",
+      "Path": "github.com/bwmarrin/discordgo",
+      "SourceSHA256": "edd4b32f167a045a0b95d5ea6c5090bbe70bc3b6238725aa033fd48abbd4662c",
+      "Sum": "h1:W9t/lhAHWwtLHME/ceUE5c49Wl+5jnOVcEezmjlJ0Fc=",
+      "Version": "v0.29.1-0.20260214123928-f43dd94faaac"
     },
     "extraction": "go run -mod=readonly tools/protocol/extract-source.go -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
@@ -75067,7 +75070,7 @@
       },
       {
         "path": "discordgo/discord.go",
-        "sha256": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+        "sha256": "f204bfacf24cc6ba0c1559b5060fd007c92901811b07db713f7b5642d9537af9",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -75085,7 +75088,7 @@
       },
       {
         "path": "discordgo/event.go",
-        "sha256": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+        "sha256": "950b9716d0f61c944ff70c947c48925a9611fed28a6b636db3e1675ca4aae6e3",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -75166,7 +75169,7 @@
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
+        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -75184,7 +75187,7 @@
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
+        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -75211,7 +75214,7 @@
       },
       {
         "path": "discordgo/state.go",
-        "sha256": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+        "sha256": "1658028a4b80d3d2d46e9c354e9a145e22574363c962ff36de33fb13bf087baf",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -75264,7 +75267,7 @@
       },
       {
         "path": "discordgo/voice_gateway.go",
-        "sha256": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
+        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -75305,7 +75308,7 @@
       },
       {
         "path": "discordgo/voice_transport.go",
-        "sha256": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
+        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -75330,7 +75333,7 @@
       },
       {
         "path": "discordgo/wsapi.go",
-        "sha256": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07",
+        "sha256": "29463af8932851a0e5991c5dd357d14e64382c657c3e653b10236e3dc3a1742c",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -75338,7 +75341,7 @@
         ]
       }
     ],
-    "rawSHA256": "75f923466bb0b198ef3ecd22dc515412c5ad782d4127902f5be49578ec4ab6d1",
+    "rawSHA256": "dabc75e5db563a2d4d7f28181031d1a2c29089a6eb2c2be038e077576590fea0",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   }

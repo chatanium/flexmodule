@@ -1,8 +1,8 @@
 {
   "generator": "python3 tools/protocol/generate-client.py",
   "inputSHA256": {
-    "api-mapping.json": "6481cc80a1929142c69df959525551f7a077f2f2f33432b6a3e3645812f6f32d",
-    "conversions_generated.go": "e6e2de1b397448210da015309a28f0217214801b5134a9253cad6a6ba7fe5287"
+    "api-mapping.json": "53c756e07051429ca3ef7b42651f032be96f6f60cb795f37291fc6b6e280bca1",
+    "conversions_generated.go": "52fcb73347e7b9fee1f91637736543ff8d01a6c24b16b9220127530b69d5b79d"
   },
   "counts": {
     "canonical": 153,
@@ -23,7 +23,7 @@
         "options"
       ],
       "output": "*discordgo.Application",
-      "source": "discordgo/oauth2.go:46-55"
+      "source": "discordgo/oauth2.go:45-54"
     },
     {
       "name": "ApplicationCommand",
@@ -1776,7 +1776,7 @@
         "options"
       ],
       "output": "error",
-      "source": "discordgo/wsapi.go:490-492"
+      "source": "discordgo/wsapi.go:491-493"
     },
     {
       "name": "RequestGuildMembersList",
@@ -1794,7 +1794,7 @@
         "options"
       ],
       "output": "error",
-      "source": "discordgo/wsapi.go:501-503"
+      "source": "discordgo/wsapi.go:502-504"
     },
     {
       "name": "SKUs",
@@ -2067,7 +2067,7 @@
         "options"
       ],
       "output": "error",
-      "source": "discordgo/wsapi.go:465-467"
+      "source": "discordgo/wsapi.go:466-468"
     },
     {
       "name": "User",

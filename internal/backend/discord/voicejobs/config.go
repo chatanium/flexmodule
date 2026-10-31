@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
 	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"

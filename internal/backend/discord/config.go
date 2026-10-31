@@ -1,7 +1,7 @@
 package discordbackend
 
 import (
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	discordhttp "github.com/thirdscam/chatanium-flexmodule/internal/backend/discord/http"
 	runtime "github.com/thirdscam/chatanium-flexmodule/internal/runtime"
 	"github.com/thirdscam/chatanium-flexmodule/internal/runtime/upload"

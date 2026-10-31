@@ -208,9 +208,9 @@
         {
           "name": "New",
           "signature": "func New(token string) (s *Session, err error)",
-          "source": "discordgo/discord.go:35",
-          "endLine": 70,
-          "documentation": "// New creates a new Discord session with provided token.\n// If the token is for a bot, it must be prefixed with \"Bot \"\n//\n//\te.g. \"Bot ...\"\n//\n// Or if it is an OAuth2 token, it must be prefixed with \"Bearer \"\n//\n//\te.g. \"Bearer ...\"",
+          "source": "discordgo/discord.go:32",
+          "endLine": 67,
+          "documentation": "// New creates a new Discord session with provided token.\n// If the token is for a bot, it must be prefixed with \"Bot \"\n// \t\te.g. \"Bot ...\"\n// Or if it is an OAuth2 token, it must be prefixed with \"Bearer \"\n//\t\te.g. \"Bearer ...\"",
           "body": "\n\n\t// Create an empty Session interface.\n\ts = &Session{\n\t\tState:                  NewState(),\n\t\tRatelimiter:            NewRatelimiter(),\n\t\tStateEnabled:           true,\n\t\tCompress:               true,\n\t\tShouldReconnectOnError: true,\n\t\tShouldRetryOnRateLimit: true,\n\t\tShardID:                0,\n\t\tShardCount:             1,\n\t\tMaxRestRetries:         3,\n\t\tClient:                 &http.Client{Timeout: (20 * time.Second)},\n\t\tDialer:                 websocket.DefaultDialer,\n\t\tUserAgent:              \"DiscordBot (https://github.com/bwmarrin/discordgo, v\" + VERSION + \")\",\n\t\tsequence:               new(int64),\n\t\tLastHeartbeatAck:       time.Now().UTC(),\n\t\t// Ordinary standalone defaults; hosts explicitly configure their own\n\t\t// ingress bounds with ConfigureGatewayIngress before opening.\n\t\tgatewayFrameMaxBytes:   defaultGatewayFrameMaxBytes,\n\t\tgatewayDecodedMaxBytes: defaultGatewayDecodedMaxBytes,\n\t}\n\n\t// Initialize the Identify Package with defaults\n\t// These can be modified prior to calling Open()\n\ts.Identify.Compress = true\n\ts.Identify.LargeThreshold = 250\n\ts.Identify.Properties.OS = runtime.GOOS\n\ts.Identify.Properties.Browser = \"DiscordGo v\" + VERSION\n\ts.Identify.Intents = IntentsAllWithoutPrivileged\n\ts.Identify.Token = token\n\ts.Token = token\n\n\treturn\n",
           "arguments": [
             {
@@ -3832,9 +3832,9 @@
         {
           "name": "AddHandler",
           "signature": "func (s *Session) AddHandler(handler interface{}) func()",
-          "source": "discordgo/event.go:122",
-          "endLine": 131,
-          "documentation": "// AddHandler allows you to add an event handler that will be fired anytime\n// the Discord WSAPI event that matches the function fires.\n// The first parameter is a *Session, and the second parameter is a pointer\n// to a struct corresponding to the event for which you want to listen.\n//\n// eg:\n//\n//\tSession.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {\n//\t})\n//\n// or:\n//\n//\tSession.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {\n//\t})\n//\n// List of events can be found at this page, with corresponding names in the\n// library for each event: https://discord.com/developers/docs/topics/gateway#event-names\n// There are also synthetic events fired by the library internally which are\n// available for handling, like Connect, Disconnect, and RateLimit.\n// events.go contains all of the Discord WSAPI and synthetic events that can be handled.\n//\n// The return value of this method is a function, that when called will remove the\n// event handler.",
+          "source": "discordgo/event.go:120",
+          "endLine": 129,
+          "documentation": "// AddHandler allows you to add an event handler that will be fired anytime\n// the Discord WSAPI event that matches the function fires.\n// The first parameter is a *Session, and the second parameter is a pointer\n// to a struct corresponding to the event for which you want to listen.\n//\n// eg:\n//     Session.AddHandler(func(s *discordgo.Session, m *discordgo.MessageCreate) {\n//     })\n//\n// or:\n//     Session.AddHandler(func(s *discordgo.Session, m *discordgo.PresenceUpdate) {\n//     })\n//\n// List of events can be found at this page, with corresponding names in the\n// library for each event: https://discord.com/developers/docs/topics/gateway#event-names\n// There are also synthetic events fired by the library internally which are\n// available for handling, like Connect, Disconnect, and RateLimit.\n// events.go contains all of the Discord WSAPI and synthetic events that can be handled.\n//\n// The return value of this method is a function, that when called will remove the\n// event handler.",
           "body": "\n\teh := handlerForInterface(handler)\n\n\tif eh == nil {\n\t\ts.log(LogError, \"Invalid handler type, handler will never be called\")\n\t\treturn func() {}\n\t}\n\n\treturn s.addEventHandler(eh)\n",
           "arguments": [
             {
@@ -3867,8 +3867,8 @@
         {
           "name": "AddHandlerOnce",
           "signature": "func (s *Session) AddHandlerOnce(handler interface{}) func()",
-          "source": "discordgo/event.go:136",
-          "endLine": 145,
+          "source": "discordgo/event.go:134",
+          "endLine": 143,
           "documentation": "// AddHandlerOnce allows you to add an event handler that will be fired the next time\n// the Discord WSAPI event that matches the function fires.\n// See AddHandler for more details.",
           "body": "\n\teh := handlerForInterface(handler)\n\n\tif eh == nil {\n\t\ts.log(LogError, \"Invalid handler type, handler will never be called\")\n\t\treturn func() {}\n\t}\n\n\treturn s.addEventHandlerOnce(eh)\n",
           "arguments": [
@@ -3902,9 +3902,9 @@
         {
           "name": "Application",
           "signature": "func (s *Session) Application(appID string) (st *Application, err error)",
-          "source": "discordgo/oauth2.go:46",
-          "endLine": 55,
-          "documentation": "// Application returns an Application structure of a specific Application\n//\n//\tappID : The ID of an Application",
+          "source": "discordgo/oauth2.go:45",
+          "endLine": 54,
+          "documentation": "// Application returns an Application structure of a specific Application\n//   appID : The ID of an Application",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
           "arguments": [
             {
@@ -3953,8 +3953,8 @@
         {
           "name": "ApplicationAssets",
           "signature": "func (s *Session) ApplicationAssets(appID string) (ass []*Asset, err error)",
-          "source": "discordgo/oauth2.go:129",
-          "endLine": 138,
+          "source": "discordgo/oauth2.go:125",
+          "endLine": 134,
           "documentation": "// ApplicationAssets returns an application's assets",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2ApplicationAssets(appID), nil, EndpointOAuth2ApplicationAssets(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &ass)\n\treturn\n",
           "arguments": [
@@ -4004,9 +4004,9 @@
         {
           "name": "ApplicationBotCreate",
           "signature": "func (s *Session) ApplicationBotCreate(appID string) (st *User, err error)",
-          "source": "discordgo/oauth2.go:149",
-          "endLine": 158,
-          "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//\tappID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
+          "source": "discordgo/oauth2.go:145",
+          "endLine": 154,
+          "documentation": "// ApplicationBotCreate creates an Application Bot Account\n//\n//   appID : The ID of an Application\n//\n// NOTE: func name may change, if I can think up something better.",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2ApplicationsBot(appID), nil, EndpointOAuth2ApplicationsBot(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
           "arguments": [
             {
@@ -4736,9 +4736,9 @@
         {
           "name": "ApplicationCreate",
           "signature": "func (s *Session) ApplicationCreate(ap *Application) (st *Application, err error)",
-          "source": "discordgo/oauth2.go:73",
-          "endLine": 87,
-          "documentation": "// ApplicationCreate creates a new Application\n//\n//\tname : Name of Application / Bot\n//\turis : Redirect URIs (Not required)",
+          "source": "discordgo/oauth2.go:71",
+          "endLine": 85,
+          "documentation": "// ApplicationCreate creates a new Application\n//    name : Name of Application / Bot\n//    uris : Redirect URIs (Not required)",
           "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"POST\", EndpointOAuth2Applications, data, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
           "arguments": [
             {
@@ -4787,9 +4787,9 @@
         {
           "name": "ApplicationDelete",
           "signature": "func (s *Session) ApplicationDelete(appID string) (err error)",
-          "source": "discordgo/oauth2.go:111",
-          "endLine": 119,
-          "documentation": "// ApplicationDelete deletes an existing Application\n//\n//\tappID : The ID of an Application",
+          "source": "discordgo/oauth2.go:107",
+          "endLine": 115,
+          "documentation": "// ApplicationDelete deletes an existing Application\n//   appID : The ID of an Application",
           "body": "\n\n\t_, err = s.RequestWithBucketID(\"DELETE\", EndpointOAuth2Application(appID), nil, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\treturn\n",
           "arguments": [
             {
@@ -5274,9 +5274,9 @@
         {
           "name": "ApplicationUpdate",
           "signature": "func (s *Session) ApplicationUpdate(appID string, ap *Application) (st *Application, err error)",
-          "source": "discordgo/oauth2.go:92",
-          "endLine": 106,
-          "documentation": "// ApplicationUpdate updates an existing Application\n//\n//\tvar : desc",
+          "source": "discordgo/oauth2.go:89",
+          "endLine": 103,
+          "documentation": "// ApplicationUpdate updates an existing Application\n//   var : desc",
           "body": "\n\n\tdata := struct {\n\t\tName        string `json:\"name\"`\n\t\tDescription string `json:\"description\"`\n\t}{ap.Name, ap.Description}\n\n\tbody, err := s.RequestWithBucketID(\"PUT\", EndpointOAuth2Application(appID), data, EndpointOAuth2Application(\"\"))\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
           "arguments": [
             {
@@ -5334,8 +5334,8 @@
         {
           "name": "Applications",
           "signature": "func (s *Session) Applications() (st []*Application, err error)",
-          "source": "discordgo/oauth2.go:58",
-          "endLine": 67,
+          "source": "discordgo/oauth2.go:57",
+          "endLine": 66,
           "documentation": "// Applications returns all applications for the authenticated user",
           "body": "\n\n\tbody, err := s.RequestWithBucketID(\"GET\", EndpointOAuth2Applications, nil, EndpointOAuth2Applications)\n\tif err != nil {\n\t\treturn\n\t}\n\n\terr = unmarshal(body, &st)\n\treturn\n",
           "arguments": [],
@@ -8232,9 +8232,9 @@
           "name": "CloseWithCode",
           "signature": "func (s *Session) CloseWithCode(closeCode int) error",
           "source": "discordgo/wsapi.go:808",
-          "endLine": 841,
+          "endLine": 843,
           "documentation": "// CloseWithCode closes a websocket using the provided closeCode and stops all\n// listening/heartbeat goroutines.",
-          "body": "\n\ts.wsLifecycle.Lock()\n\ts.Lock()\n\ts.DataReady = false\n\tif s.listening != nil {\n\t\tclose(s.listening)\n\t\ts.listening = nil\n\t}\n\tconn := s.wsConn\n\ts.wsConn = nil\n\tvoices := make([]*VoiceConnection, 0, len(s.VoiceConnections))\n\tfor _, voice := range s.VoiceConnections {\n\t\tvoices = append(voices, voice)\n\t}\n\ts.Unlock()\n\tfor _, voice := range voices {\n\t\tvoice.engine.stop(ErrVoiceClosed)\n\t}\n\tvar err error\n\tif conn != nil {\n\t\t// Bound both gate acquisition and the close frame. A stuck writer is\n\t\t// interrupted by Close even if it used a background context.\n\t\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\t\terr = s.gatewayWriteFrame(ctx, conn, websocket.CloseMessage, websocket.FormatCloseMessage(closeCode, \"\"), nil)\n\t\tcancel()\n\t\tcloseErr := conn.Close()\n\t\tif err == nil {\n\t\t\terr = closeErr\n\t\t}\n\t}\n\ts.wsLifecycle.Unlock()\n\ts.handleEvent(disconnectEventType, &Disconnect{})\n\treturn err\n",
+          "body": "\n\ts.wsLifecycle.Lock()\n\ts.Lock()\n\n\ts.DataReady = false\n\n\tif s.listening != nil {\n\t\tclose(s.listening)\n\t\ts.listening = nil\n\t}\n\tconn := s.wsConn\n\ts.wsConn = nil\n\tvoices := make([]*VoiceConnection, 0, len(s.VoiceConnections))\n\tfor _, voice := range s.VoiceConnections {\n\t\tvoices = append(voices, voice)\n\t}\n\ts.Unlock()\n\tfor _, voice := range voices {\n\t\tvoice.engine.stop(ErrVoiceClosed)\n\t}\n\tvar err error\n\tif conn != nil {\n\t\t// Bound both gate acquisition and the close frame. A stuck writer is\n\t\t// interrupted by Close even if it used a background context.\n\t\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\t\terr = s.gatewayWriteFrame(ctx, conn, websocket.CloseMessage, websocket.FormatCloseMessage(closeCode, \"\"), nil)\n\t\tcancel()\n\t\tcloseErr := conn.Close()\n\t\tif err == nil {\n\t\t\terr = closeErr\n\t\t}\n\t}\n\ts.wsLifecycle.Unlock()\n\ts.handleEvent(disconnectEventType, &Disconnect{})\n\treturn err\n",
           "arguments": [
             {
               "name": "closeCode",
@@ -9212,8 +9212,8 @@
         {
           "name": "GatewayWriteStruct",
           "signature": "func (s *Session) GatewayWriteStruct(data interface{}) error",
-          "source": "discordgo/wsapi.go:542",
-          "endLine": 544,
+          "source": "discordgo/wsapi.go:543",
+          "endLine": 545,
           "documentation": "// GatewayWriteStruct allows for sending raw gateway structs over the gateway.",
           "body": "\n\treturn s.gatewayWrite(context.Background(), nil, data)\n",
           "arguments": [
@@ -14182,9 +14182,9 @@
           "name": "HeartbeatLatency",
           "signature": "func (s *Session) HeartbeatLatency() time.Duration",
           "source": "discordgo/wsapi.go:311",
-          "endLine": 315,
+          "endLine": 316,
           "documentation": "// HeartbeatLatency returns the latency between heartbeat acknowledgement and heartbeat send.",
-          "body": "\n\ts.RLock()\n\tdefer s.RUnlock()\n\treturn s.LastHeartbeatAck.Sub(s.LastHeartbeatSent)\n",
+          "body": "\n\ts.RLock()\n\tdefer s.RUnlock()\n\treturn s.LastHeartbeatAck.Sub(s.LastHeartbeatSent)\n\n",
           "arguments": [],
           "results": [
             {
@@ -15579,8 +15579,8 @@
         {
           "name": "RequestGuildMembers",
           "signature": "func (s *Session) RequestGuildMembers(guildID, query string, limit int, nonce string, presences bool) error",
-          "source": "discordgo/wsapi.go:490",
-          "endLine": 492,
+          "source": "discordgo/wsapi.go:491",
+          "endLine": 493,
           "documentation": "// RequestGuildMembers requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Single Guild ID to request members of\n// query     : String that username starts with, leave empty to return all members\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members",
           "body": "\n\treturn s.RequestGuildMembersContext(context.Background(), guildID, query, limit, nonce, presences)\n",
           "arguments": [
@@ -15654,8 +15654,8 @@
         {
           "name": "RequestGuildMembersBatch",
           "signature": "func (s *Session) RequestGuildMembersBatch(guildIDs []string, query string, limit int, nonce string, presences bool) error",
-          "source": "discordgo/wsapi.go:514",
-          "endLine": 521,
+          "source": "discordgo/wsapi.go:515",
+          "endLine": 522,
           "documentation": "// RequestGuildMembersBatch requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Slice of guild IDs to request members of\n// query     : String that username starts with, leave empty to return all members\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members\n//\n// NOTE: this function is deprecated, please use RequestGuildMembers instead",
           "body": "\n\tfor _, guildID := range guildIDs {\n\t\tif err := s.RequestGuildMembers(guildID, query, limit, nonce, presences); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n",
           "arguments": [
@@ -15729,8 +15729,8 @@
         {
           "name": "RequestGuildMembersBatchList",
           "signature": "func (s *Session) RequestGuildMembersBatchList(guildIDs []string, userIDs []string, limit int, nonce string, presences bool) error",
-          "source": "discordgo/wsapi.go:532",
-          "endLine": 539,
+          "source": "discordgo/wsapi.go:533",
+          "endLine": 540,
           "documentation": "// RequestGuildMembersBatchList requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Slice of guild IDs to request members of\n// userIDs   : IDs of users to fetch\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members\n//\n// NOTE: this function is deprecated, please use RequestGuildMembersList instead",
           "body": "\n\tfor _, guildID := range guildIDs {\n\t\tif err := s.RequestGuildMembersList(guildID, userIDs, limit, nonce, presences); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n",
           "arguments": [
@@ -15888,8 +15888,8 @@
         {
           "name": "RequestGuildMembersList",
           "signature": "func (s *Session) RequestGuildMembersList(guildID string, userIDs []string, limit int, nonce string, presences bool) error",
-          "source": "discordgo/wsapi.go:501",
-          "endLine": 503,
+          "source": "discordgo/wsapi.go:502",
+          "endLine": 504,
           "documentation": "// RequestGuildMembersList requests guild members from the gateway\n// The gateway responds with GuildMembersChunk events\n// guildID   : Single Guild ID to request members of\n// userIDs   : IDs of users to fetch\n// limit     : Max number of items to return, or 0 to request all members matched\n// nonce     : Nonce to identify the Guild Members Chunk response\n// presences : Whether to request presences of guild members",
           "body": "\n\treturn s.RequestGuildMembersListContext(context.Background(), guildID, userIDs, limit, nonce, presences)\n",
           "arguments": [
@@ -17650,8 +17650,8 @@
         {
           "name": "UpdateCustomStatus",
           "signature": "func (s *Session) UpdateCustomStatus(state string) (err error)",
-          "source": "discordgo/wsapi.go:447",
-          "endLine": 462,
+          "source": "discordgo/wsapi.go:448",
+          "endLine": 463,
           "documentation": "// UpdateCustomStatus is used to update the user's custom status.\n// If state!=\"\" then set the custom status.\n// Else, set user to active and remove the custom status.",
           "body": "\n\tdata := UpdateStatusData{\n\t\tStatus: \"online\",\n\t}\n\n\tif state != \"\" {\n\t\t// Discord requires a non-empty activity name, therefore we provide \"Custom Status\" as a placeholder.\n\t\tdata.Activities = []*Activity{{\n\t\t\tName:  \"Custom Status\",\n\t\t\tType:  ActivityTypeCustom,\n\t\t\tState: state,\n\t\t}}\n\t}\n\n\treturn s.UpdateStatusComplex(data)\n",
           "arguments": [
@@ -17689,8 +17689,8 @@
         {
           "name": "UpdateGameStatus",
           "signature": "func (s *Session) UpdateGameStatus(idle int, name string) (err error)",
-          "source": "discordgo/wsapi.go:412",
-          "endLine": 414,
+          "source": "discordgo/wsapi.go:413",
+          "endLine": 415,
           "documentation": "// UpdateGameStatus is used to update the user's status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set game.\n// if otherwise, set status to active, and no activity.",
           "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, ActivityTypeGame, name, \"\"))\n",
           "arguments": [
@@ -17737,8 +17737,8 @@
         {
           "name": "UpdateListeningStatus",
           "signature": "func (s *Session) UpdateListeningStatus(name string) (err error)",
-          "source": "discordgo/wsapi.go:440",
-          "endLine": 442,
+          "source": "discordgo/wsapi.go:441",
+          "endLine": 443,
           "documentation": "// UpdateListeningStatus is used to set the user to \"Listening to...\"\n// If name!=\"\" then set to what user is listening to\n// Else, set user to active and no activity.",
           "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(0, ActivityTypeListening, name, \"\"))\n",
           "arguments": [
@@ -17776,8 +17776,8 @@
         {
           "name": "UpdateStatusComplex",
           "signature": "func (s *Session) UpdateStatusComplex(usd UpdateStatusData) error",
-          "source": "discordgo/wsapi.go:465",
-          "endLine": 467,
+          "source": "discordgo/wsapi.go:466",
+          "endLine": 468,
           "documentation": "// UpdateStatusComplex allows for sending the raw status update data untouched by discordgo.",
           "body": "\n\treturn s.UpdateStatusComplexContext(context.Background(), usd)\n",
           "arguments": [
@@ -17863,8 +17863,8 @@
         {
           "name": "UpdateStreamingStatus",
           "signature": "func (s *Session) UpdateStreamingStatus(idle int, name string, url string) (err error)",
-          "source": "discordgo/wsapi.go:429",
-          "endLine": 435,
+          "source": "discordgo/wsapi.go:430",
+          "endLine": 436,
           "documentation": "// UpdateStreamingStatus is used to update the user's streaming status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set game.\n// If name!=\"\" and url!=\"\" then set the status type to streaming with the URL set.\n// if otherwise, set status to active, and no game.",
           "body": "\n\tgameType := ActivityTypeGame\n\tif url != \"\" {\n\t\tgameType = ActivityTypeStreaming\n\t}\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, gameType, name, url))\n",
           "arguments": [
@@ -17920,8 +17920,8 @@
         {
           "name": "UpdateWatchStatus",
           "signature": "func (s *Session) UpdateWatchStatus(idle int, name string) (err error)",
-          "source": "discordgo/wsapi.go:420",
-          "endLine": 422,
+          "source": "discordgo/wsapi.go:421",
+          "endLine": 423,
           "documentation": "// UpdateWatchStatus is used to update the user's watch status.\n// If idle>0 then set status to idle.\n// If name!=\"\" then set movie/stream.\n// if otherwise, set status to active, and no activity.",
           "body": "\n\treturn s.UpdateStatusComplex(*newUpdateStatusData(idle, ActivityTypeWatching, name, \"\"))\n",
           "arguments": [
@@ -19726,8 +19726,8 @@
         {
           "name": "Channel",
           "signature": "func (s *State) Channel(channelID string) (*Channel, error)",
-          "source": "discordgo/state.go:679",
-          "endLine": 692,
+          "source": "discordgo/state.go:678",
+          "endLine": 691,
           "documentation": "// Channel gets a channel by ID, it will look in all guilds and private channels.",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\ts.RLock()\n\tdefer s.RUnlock()\n\n\tif c, ok := s.channelMap[channelID]; ok {\n\t\treturn c, nil\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
@@ -19774,8 +19774,8 @@
         {
           "name": "ChannelAdd",
           "signature": "func (s *State) ChannelAdd(channel *Channel) error",
-          "source": "discordgo/state.go:483",
-          "endLine": 527,
+          "source": "discordgo/state.go:482",
+          "endLine": 526,
           "documentation": "// ChannelAdd adds a channel to the current world state, or\n// updates it if it already exists.\n// Channels may exist either as PrivateChannels or inside\n// a guild.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\t// If the channel exists, replace it\n\tif c, ok := s.channelMap[channel.ID]; ok {\n\t\tif channel.Messages == nil {\n\t\t\tchannel.Messages = c.Messages\n\t\t}\n\t\tif channel.PermissionOverwrites == nil {\n\t\t\tchannel.PermissionOverwrites = c.PermissionOverwrites\n\t\t}\n\t\tif channel.ThreadMetadata == nil {\n\t\t\tchannel.ThreadMetadata = c.ThreadMetadata\n\t\t}\n\n\t\t*c = *channel\n\t\treturn nil\n\t}\n\n\tif channel.Type == ChannelTypeDM || channel.Type == ChannelTypeGroupDM {\n\t\ts.PrivateChannels = append(s.PrivateChannels, channel)\n\t\ts.channelMap[channel.ID] = channel\n\t\treturn nil\n\t}\n\n\tguild, ok := s.guildMap[channel.GuildID]\n\tif !ok {\n\t\treturn ErrStateNotFound\n\t}\n\n\tif channel.IsThread() {\n\t\tguild.Threads = append(guild.Threads, channel)\n\t} else {\n\t\tguild.Channels = append(guild.Channels, channel)\n\t}\n\n\ts.channelMap[channel.ID] = channel\n\n\treturn nil\n",
           "arguments": [
@@ -19813,8 +19813,8 @@
         {
           "name": "ChannelRemove",
           "signature": "func (s *State) ChannelRemove(channel *Channel) error",
-          "source": "discordgo/state.go:530",
-          "endLine": 581,
+          "source": "discordgo/state.go:529",
+          "endLine": 580,
           "documentation": "// ChannelRemove removes a channel from current world state.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\t_, err := s.Channel(channel.ID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\tif channel.Type == ChannelTypeDM || channel.Type == ChannelTypeGroupDM {\n\t\ts.Lock()\n\t\tdefer s.Unlock()\n\n\t\tfor i, c := range s.PrivateChannels {\n\t\t\tif c.ID == channel.ID {\n\t\t\t\ts.PrivateChannels = append(s.PrivateChannels[:i], s.PrivateChannels[i+1:]...)\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t\tdelete(s.channelMap, channel.ID)\n\t\treturn nil\n\t}\n\n\tguild, err := s.Guild(channel.GuildID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\tif channel.IsThread() {\n\t\tfor i, t := range guild.Threads {\n\t\t\tif t.ID == channel.ID {\n\t\t\t\tguild.Threads = append(guild.Threads[:i], guild.Threads[i+1:]...)\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t} else {\n\t\tfor i, c := range guild.Channels {\n\t\t\tif c.ID == channel.ID {\n\t\t\t\tguild.Channels = append(guild.Channels[:i], guild.Channels[i+1:]...)\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t}\n\n\tdelete(s.channelMap, channel.ID)\n\n\treturn nil\n",
           "arguments": [
@@ -19852,8 +19852,8 @@
         {
           "name": "Emoji",
           "signature": "func (s *State) Emoji(guildID, emojiID string) (*Emoji, error)",
-          "source": "discordgo/state.go:695",
-          "endLine": 715,
+          "source": "discordgo/state.go:694",
+          "endLine": 714,
           "documentation": "// Emoji returns an emoji for a guild and emoji id.",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\ts.RLock()\n\tdefer s.RUnlock()\n\n\tfor _, e := range guild.Emojis {\n\t\tif e.ID == emojiID {\n\t\t\treturn e, nil\n\t\t}\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
@@ -19909,8 +19909,8 @@
         {
           "name": "EmojiAdd",
           "signature": "func (s *State) EmojiAdd(guildID string, emoji *Emoji) error",
-          "source": "discordgo/state.go:718",
-          "endLine": 740,
+          "source": "discordgo/state.go:717",
+          "endLine": 739,
           "documentation": "// EmojiAdd adds an emoji to the current world state.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\tfor i, e := range guild.Emojis {\n\t\tif e.ID == emoji.ID {\n\t\t\tguild.Emojis[i] = emoji\n\t\t\treturn nil\n\t\t}\n\t}\n\n\tguild.Emojis = append(guild.Emojis, emoji)\n\treturn nil\n",
           "arguments": [
@@ -19957,8 +19957,8 @@
         {
           "name": "EmojisAdd",
           "signature": "func (s *State) EmojisAdd(guildID string, emojis []*Emoji) error",
-          "source": "discordgo/state.go:743",
-          "endLine": 750,
+          "source": "discordgo/state.go:742",
+          "endLine": 749,
           "documentation": "// EmojisAdd adds multiple emojis to the world state.",
           "body": "\n\tfor _, e := range emojis {\n\t\tif err := s.EmojiAdd(guildID, e); err != nil {\n\t\t\treturn err\n\t\t}\n\t}\n\treturn nil\n",
           "arguments": [
@@ -20005,9 +20005,9 @@
         {
           "name": "Guild",
           "signature": "func (s *State) Guild(guildID string) (*Guild, error)",
-          "source": "discordgo/state.go:183",
-          "endLine": 196,
-          "documentation": "// Guild gets a guild by ID.\n// Useful for querying if @me is in a guild:\n//\n//\t   _, err := discordgo.Session.State.Guild(guildID)\n//\t\t  isInGuild := err == nil",
+          "source": "discordgo/state.go:182",
+          "endLine": 195,
+          "documentation": "// Guild gets a guild by ID.\n// Useful for querying if @me is in a guild:\n//    _, err := discordgo.Session.State.Guild(guildID)\n//\t  isInGuild := err == nil",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\ts.RLock()\n\tdefer s.RUnlock()\n\n\tif g, ok := s.guildMap[guildID]; ok {\n\t\treturn g, nil\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
             {
@@ -20131,8 +20131,8 @@
         {
           "name": "Member",
           "signature": "func (s *State) Member(guildID, userID string) (*Member, error)",
-          "source": "discordgo/state.go:385",
-          "endLine": 404,
+          "source": "discordgo/state.go:384",
+          "endLine": 403,
           "documentation": "// Member gets a member by ID from a guild.",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\ts.RLock()\n\tdefer s.RUnlock()\n\n\tmembers, ok := s.memberMap[guildID]\n\tif !ok {\n\t\treturn nil, ErrStateNotFound\n\t}\n\n\tm, ok := members[userID]\n\tif ok {\n\t\treturn m, nil\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
@@ -20188,8 +20188,8 @@
         {
           "name": "MemberAdd",
           "signature": "func (s *State) MemberAdd(member *Member) error",
-          "source": "discordgo/state.go:338",
-          "endLine": 347,
+          "source": "discordgo/state.go:337",
+          "endLine": 346,
           "documentation": "// MemberAdd adds a member to the current world state, or\n// updates it if it already exists.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\treturn s.memberAdd(member)\n",
           "arguments": [
@@ -20227,8 +20227,8 @@
         {
           "name": "MemberRemove",
           "signature": "func (s *State) MemberRemove(member *Member) error",
-          "source": "discordgo/state.go:350",
-          "endLine": 382,
+          "source": "discordgo/state.go:349",
+          "endLine": 381,
           "documentation": "// MemberRemove removes a member from current world state.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\tguild, err := s.Guild(member.GuildID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\tmembers, ok := s.memberMap[member.GuildID]\n\tif !ok {\n\t\treturn ErrStateNotFound\n\t}\n\n\t_, ok = members[member.User.ID]\n\tif !ok {\n\t\treturn ErrStateNotFound\n\t}\n\tdelete(members, member.User.ID)\n\n\tfor i, m := range guild.Members {\n\t\tif m.User.ID == member.User.ID {\n\t\t\tguild.Members = append(guild.Members[:i], guild.Members[i+1:]...)\n\t\t\treturn nil\n\t\t}\n\t}\n\n\treturn ErrStateNotFound\n",
           "arguments": [
@@ -20266,8 +20266,8 @@
         {
           "name": "Message",
           "signature": "func (s *State) Message(channelID, messageID string) (*Message, error)",
-          "source": "discordgo/state.go:891",
-          "endLine": 911,
+          "source": "discordgo/state.go:890",
+          "endLine": 910,
           "documentation": "// Message gets a message by channel and message ID.",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\tc, err := s.Channel(channelID)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\ts.RLock()\n\tdefer s.RUnlock()\n\n\tfor _, m := range c.Messages {\n\t\tif m.ID == messageID {\n\t\t\treturn m, nil\n\t\t}\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
@@ -20323,8 +20323,8 @@
         {
           "name": "MessageAdd",
           "signature": "func (s *State) MessageAdd(message *Message) error",
-          "source": "discordgo/state.go:755",
-          "endLine": 807,
+          "source": "discordgo/state.go:754",
+          "endLine": 806,
           "documentation": "// MessageAdd adds a message to the current world state, or updates it if it exists.\n// If the channel cannot be found, the message is discarded.\n// Messages are kept in state up to s.MaxMessageCount per channel.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\tc, err := s.Channel(message.ChannelID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\t// If the message exists, merge in the new message contents.\n\tfor _, m := range c.Messages {\n\t\tif m.ID == message.ID {\n\t\t\tif message.Content != \"\" {\n\t\t\t\tm.Content = message.Content\n\t\t\t}\n\t\t\tif message.EditedTimestamp != nil {\n\t\t\t\tm.EditedTimestamp = message.EditedTimestamp\n\t\t\t}\n\t\t\tif message.Mentions != nil {\n\t\t\t\tm.Mentions = message.Mentions\n\t\t\t}\n\t\t\tif message.Embeds != nil {\n\t\t\t\tm.Embeds = message.Embeds\n\t\t\t}\n\t\t\tif message.Attachments != nil {\n\t\t\t\tm.Attachments = message.Attachments\n\t\t\t}\n\t\t\tif !message.Timestamp.IsZero() {\n\t\t\t\tm.Timestamp = message.Timestamp\n\t\t\t}\n\t\t\tif message.Author != nil {\n\t\t\t\tm.Author = message.Author\n\t\t\t}\n\t\t\tif message.Components != nil {\n\t\t\t\tm.Components = message.Components\n\t\t\t}\n\n\t\t\treturn nil\n\t\t}\n\t}\n\n\tc.Messages = append(c.Messages, message)\n\n\tif len(c.Messages) > s.MaxMessageCount {\n\t\tc.Messages = c.Messages[len(c.Messages)-s.MaxMessageCount:]\n\t}\n\n\treturn nil\n",
           "arguments": [
@@ -20362,8 +20362,8 @@
         {
           "name": "MessageColor",
           "signature": "func (s *State) MessageColor(message *Message) int",
-          "source": "discordgo/state.go:1298",
-          "endLine": 1318,
+          "source": "discordgo/state.go:1297",
+          "endLine": 1317,
           "documentation": "// MessageColor returns the color of the author's name as displayed\n// in the client associated with this message.",
           "body": "\n\tif s == nil {\n\t\treturn 0\n\t}\n\n\tif message.Member == nil || message.Member.Roles == nil {\n\t\treturn 0\n\t}\n\n\tchannel, err := s.Channel(message.ChannelID)\n\tif err != nil {\n\t\treturn 0\n\t}\n\n\tguild, err := s.Guild(channel.GuildID)\n\tif err != nil {\n\t\treturn 0\n\t}\n\n\treturn firstRoleColorColor(guild, message.Member.Roles)\n",
           "arguments": [
@@ -20401,8 +20401,8 @@
         {
           "name": "MessagePermissions",
           "signature": "func (s *State) MessagePermissions(message *Message) (apermissions int64, err error)",
-          "source": "discordgo/state.go:1246",
-          "endLine": 1266,
+          "source": "discordgo/state.go:1245",
+          "endLine": 1265,
           "documentation": "// MessagePermissions returns the permissions of the author of the message\n// in the channel in which it was sent.",
           "body": "\n\tif s == nil {\n\t\treturn 0, ErrNilState\n\t}\n\n\tif message.Author == nil || message.Member == nil {\n\t\treturn 0, ErrMessageIncompletePermissions\n\t}\n\n\tchannel, err := s.Channel(message.ChannelID)\n\tif err != nil {\n\t\treturn\n\t}\n\n\tguild, err := s.Guild(channel.GuildID)\n\tif err != nil {\n\t\treturn\n\t}\n\n\treturn memberPermissions(guild, channel, message.Author.ID, message.Member.Roles), nil\n",
           "arguments": [
@@ -20449,8 +20449,8 @@
         {
           "name": "MessageRemove",
           "signature": "func (s *State) MessageRemove(message *Message) error",
-          "source": "discordgo/state.go:810",
-          "endLine": 816,
+          "source": "discordgo/state.go:809",
+          "endLine": 815,
           "documentation": "// MessageRemove removes a message from the world state.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\treturn s.messageRemoveByID(message.ChannelID, message.ID)\n",
           "arguments": [
@@ -20488,8 +20488,8 @@
         {
           "name": "OnInterface",
           "signature": "func (s *State) OnInterface(se *Session, i interface{}) (err error)",
-          "source": "discordgo/state.go:957",
-          "endLine": 1216,
+          "source": "discordgo/state.go:956",
+          "endLine": 1215,
           "documentation": "// OnInterface handles all events related to states.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\tr, ok := i.(*Ready)\n\tif ok {\n\t\treturn s.onReady(se, r)\n\t}\n\n\tif !se.StateEnabled {\n\t\treturn nil\n\t}\n\n\tswitch t := i.(type) {\n\tcase *GuildCreate:\n\t\terr = s.GuildAdd(t.Guild)\n\tcase *GuildUpdate:\n\t\terr = s.GuildAdd(t.Guild)\n\tcase *GuildDelete:\n\t\tvar old *Guild\n\t\told, err = s.Guild(t.ID)\n\t\tif err == nil {\n\t\t\toldCopy := *old\n\t\t\tt.BeforeDelete = &oldCopy\n\t\t}\n\n\t\terr = s.GuildRemove(t.Guild)\n\tcase *GuildMemberAdd:\n\t\tvar guild *Guild\n\t\t// Updates the MemberCount of the guild.\n\t\tguild, err = s.Guild(t.Member.GuildID)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tguild.MemberCount++\n\n\t\t// Caches member if tracking is enabled.\n\t\tif s.TrackMembers {\n\t\t\terr = s.MemberAdd(t.Member)\n\t\t}\n\tcase *GuildMemberUpdate:\n\t\tif s.TrackMembers {\n\t\t\tvar old *Member\n\t\t\told, err = s.Member(t.GuildID, t.User.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeUpdate = &oldCopy\n\t\t\t}\n\n\t\t\terr = s.MemberAdd(t.Member)\n\t\t}\n\tcase *GuildMemberRemove:\n\t\tvar guild *Guild\n\t\t// Updates the MemberCount of the guild.\n\t\tguild, err = s.Guild(t.Member.GuildID)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tguild.MemberCount--\n\n\t\t// Removes member from the cache if tracking is enabled.\n\t\tif s.TrackMembers {\n\t\t\told, err := s.Member(t.Member.GuildID, t.Member.User.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeDelete = &oldCopy\n\t\t\t}\n\n\t\t\terr = s.MemberRemove(t.Member)\n\t\t}\n\tcase *GuildMembersChunk:\n\t\tif s.TrackMembers {\n\t\t\tfor i := range t.Members {\n\t\t\t\tt.Members[i].GuildID = t.GuildID\n\t\t\t\terr = s.MemberAdd(t.Members[i])\n\t\t\t}\n\t\t}\n\n\t\tif s.TrackPresences {\n\t\t\tfor _, p := range t.Presences {\n\t\t\t\terr = s.PresenceAdd(t.GuildID, p)\n\t\t\t}\n\t\t}\n\tcase *GuildRoleCreate:\n\t\tif s.TrackRoles {\n\t\t\terr = s.RoleAdd(t.GuildID, t.Role)\n\t\t}\n\tcase *GuildRoleUpdate:\n\t\tif s.TrackRoles {\n\t\t\told, err := s.Role(t.GuildID, t.Role.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeUpdate = &oldCopy\n\t\t\t}\n\n\t\t\terr = s.RoleAdd(t.GuildID, t.Role)\n\t\t}\n\tcase *GuildRoleDelete:\n\t\tif s.TrackRoles {\n\t\t\told, err := s.Role(t.GuildID, t.RoleID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeDelete = &oldCopy\n\t\t\t}\n\n\t\t\terr = s.RoleRemove(t.GuildID, t.RoleID)\n\t\t}\n\tcase *GuildEmojisUpdate:\n\t\tif s.TrackEmojis {\n\t\t\tvar guild *Guild\n\t\t\tguild, err = s.Guild(t.GuildID)\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\ts.Lock()\n\t\t\tdefer s.Unlock()\n\t\t\tguild.Emojis = t.Emojis\n\t\t}\n\tcase *GuildStickersUpdate:\n\t\tif s.TrackStickers {\n\t\t\tvar guild *Guild\n\t\t\tguild, err = s.Guild(t.GuildID)\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\ts.Lock()\n\t\t\tdefer s.Unlock()\n\t\t\tguild.Stickers = t.Stickers\n\t\t}\n\tcase *ChannelCreate:\n\t\tif s.TrackChannels {\n\t\t\terr = s.ChannelAdd(t.Channel)\n\t\t}\n\tcase *ChannelUpdate:\n\t\tif s.TrackChannels {\n\t\t\told, err := s.Channel(t.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeUpdate = &oldCopy\n\t\t\t}\n\t\t\terr = s.ChannelAdd(t.Channel)\n\t\t}\n\tcase *ChannelDelete:\n\t\tif s.TrackChannels {\n\t\t\told, err := s.Channel(t.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeDelete = &oldCopy\n\t\t\t}\n\t\t\terr = s.ChannelRemove(t.Channel)\n\t\t}\n\tcase *ThreadCreate:\n\t\tif s.TrackThreads {\n\t\t\terr = s.ChannelAdd(t.Channel)\n\t\t}\n\tcase *ThreadUpdate:\n\t\tif s.TrackThreads {\n\t\t\told, err := s.Channel(t.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeUpdate = &oldCopy\n\t\t\t}\n\t\t\terr = s.ChannelAdd(t.Channel)\n\t\t}\n\tcase *ThreadDelete:\n\t\tif s.TrackThreads {\n\t\t\told, err := s.Channel(t.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeDelete = &oldCopy\n\t\t\t}\n\t\t\terr = s.ChannelRemove(t.Channel)\n\t\t}\n\tcase *ThreadMemberUpdate:\n\t\tif s.TrackThreads {\n\t\t\terr = s.ThreadMemberUpdate(t)\n\t\t}\n\tcase *ThreadMembersUpdate:\n\t\tif s.TrackThreadMembers {\n\t\t\terr = s.ThreadMembersUpdate(t)\n\t\t}\n\tcase *ThreadListSync:\n\t\tif s.TrackThreads {\n\t\t\terr = s.ThreadListSync(t)\n\t\t}\n\tcase *MessageCreate:\n\t\tif s.MaxMessageCount != 0 {\n\t\t\terr = s.MessageAdd(t.Message)\n\t\t}\n\tcase *MessageUpdate:\n\t\tif s.MaxMessageCount != 0 {\n\t\t\tvar old *Message\n\t\t\told, err = s.Message(t.ChannelID, t.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeUpdate = &oldCopy\n\t\t\t}\n\n\t\t\terr = s.MessageAdd(t.Message)\n\t\t}\n\tcase *MessageDelete:\n\t\tif s.MaxMessageCount != 0 {\n\t\t\tvar old *Message\n\t\t\told, err = s.Message(t.ChannelID, t.ID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeDelete = &oldCopy\n\t\t\t}\n\n\t\t\terr = s.MessageRemove(t.Message)\n\t\t}\n\tcase *MessageDeleteBulk:\n\t\tif s.MaxMessageCount != 0 {\n\t\t\tfor _, mID := range t.Messages {\n\t\t\t\ts.messageRemoveByID(t.ChannelID, mID)\n\t\t\t}\n\t\t}\n\tcase *VoiceStateUpdate:\n\t\tif s.TrackVoice {\n\t\t\tvar old *VoiceState\n\t\t\told, err = s.VoiceState(t.GuildID, t.UserID)\n\t\t\tif err == nil {\n\t\t\t\toldCopy := *old\n\t\t\t\tt.BeforeUpdate = &oldCopy\n\t\t\t}\n\n\t\t\terr = s.voiceStateUpdate(t)\n\t\t}\n\tcase *PresenceUpdate:\n\t\tif s.TrackPresences {\n\t\t\ts.PresenceAdd(t.GuildID, &t.Presence)\n\t\t}\n\t\tif s.TrackMembers {\n\t\t\tif t.Status == StatusOffline {\n\t\t\t\treturn\n\t\t\t}\n\n\t\t\tvar m *Member\n\t\t\tm, err = s.Member(t.GuildID, t.User.ID)\n\n\t\t\tif err != nil {\n\t\t\t\t// Member not found; this is a user coming online\n\t\t\t\tm = &Member{\n\t\t\t\t\tGuildID: t.GuildID,\n\t\t\t\t\tUser:    t.User,\n\t\t\t\t}\n\t\t\t} else {\n\t\t\t\tif t.User.Username != \"\" {\n\t\t\t\t\tm.User.Username = t.User.Username\n\t\t\t\t}\n\t\t\t}\n\n\t\t\terr = s.MemberAdd(m)\n\t\t}\n\n\t}\n\n\treturn\n",
           "arguments": [
@@ -20534,8 +20534,8 @@
         {
           "name": "Presence",
           "signature": "func (s *State) Presence(guildID, userID string) (*Presence, error)",
-          "source": "discordgo/state.go:289",
-          "endLine": 306,
+          "source": "discordgo/state.go:288",
+          "endLine": 305,
           "documentation": "// Presence gets a presence by ID from a guild.",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\tfor _, p := range guild.Presences {\n\t\tif p.User.ID == userID {\n\t\t\treturn p, nil\n\t\t}\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
@@ -20591,8 +20591,8 @@
         {
           "name": "PresenceAdd",
           "signature": "func (s *State) PresenceAdd(guildID string, presence *Presence) error",
-          "source": "discordgo/state.go:253",
-          "endLine": 262,
+          "source": "discordgo/state.go:252",
+          "endLine": 261,
           "documentation": "// PresenceAdd adds a presence to the current world state, or\n// updates it if it already exists.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\treturn s.presenceAdd(guildID, presence)\n",
           "arguments": [
@@ -20639,8 +20639,8 @@
         {
           "name": "PresenceRemove",
           "signature": "func (s *State) PresenceRemove(guildID string, presence *Presence) error",
-          "source": "discordgo/state.go:265",
-          "endLine": 286,
+          "source": "discordgo/state.go:264",
+          "endLine": 285,
           "documentation": "// PresenceRemove removes a presence from the current world state.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\tfor i, p := range guild.Presences {\n\t\tif p.User.ID == presence.User.ID {\n\t\t\tguild.Presences = append(guild.Presences[:i], guild.Presences[i+1:]...)\n\t\t\treturn nil\n\t\t}\n\t}\n\n\treturn ErrStateNotFound\n",
           "arguments": [
@@ -20687,8 +20687,8 @@
         {
           "name": "Role",
           "signature": "func (s *State) Role(guildID, roleID string) (*Role, error)",
-          "source": "discordgo/state.go:457",
-          "endLine": 477,
+          "source": "discordgo/state.go:456",
+          "endLine": 476,
           "documentation": "// Role gets a role by ID from a guild.",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\ts.RLock()\n\tdefer s.RUnlock()\n\n\tfor _, r := range guild.Roles {\n\t\tif r.ID == roleID {\n\t\t\treturn r, nil\n\t\t}\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
@@ -20744,8 +20744,8 @@
         {
           "name": "RoleAdd",
           "signature": "func (s *State) RoleAdd(guildID string, role *Role) error",
-          "source": "discordgo/state.go:408",
-          "endLine": 430,
+          "source": "discordgo/state.go:407",
+          "endLine": 429,
           "documentation": "// RoleAdd adds a role to the current world state, or\n// updates it if it already exists.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\tfor i, r := range guild.Roles {\n\t\tif r.ID == role.ID {\n\t\t\tguild.Roles[i] = role\n\t\t\treturn nil\n\t\t}\n\t}\n\n\tguild.Roles = append(guild.Roles, role)\n\treturn nil\n",
           "arguments": [
@@ -20792,8 +20792,8 @@
         {
           "name": "RoleRemove",
           "signature": "func (s *State) RoleRemove(guildID, roleID string) error",
-          "source": "discordgo/state.go:433",
-          "endLine": 454,
+          "source": "discordgo/state.go:432",
+          "endLine": 453,
           "documentation": "// RoleRemove removes a role from current world state by ID.",
           "body": "\n\tif s == nil {\n\t\treturn ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\tfor i, r := range guild.Roles {\n\t\tif r.ID == roleID {\n\t\t\tguild.Roles = append(guild.Roles[:i], guild.Roles[i+1:]...)\n\t\t\treturn nil\n\t\t}\n\t}\n\n\treturn ErrStateNotFound\n",
           "arguments": [
@@ -20840,8 +20840,8 @@
         {
           "name": "ThreadListSync",
           "signature": "func (s *State) ThreadListSync(tls *ThreadListSync) error",
-          "source": "discordgo/state.go:584",
-          "endLine": 625,
+          "source": "discordgo/state.go:583",
+          "endLine": 624,
           "documentation": "// ThreadListSync syncs guild threads with provided ones.",
           "body": "\n\tguild, err := s.Guild(tls.GuildID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\ts.Lock()\n\tdefer s.Unlock()\n\n\t// This algorithm filters out archived or\n\t// threads which are children of channels in channelIDs\n\t// and then it adds all synced threads to guild threads and cache\n\tindex := 0\nouter:\n\tfor _, t := range guild.Threads {\n\t\tif !t.ThreadMetadata.Archived && tls.ChannelIDs != nil {\n\t\t\tfor _, v := range tls.ChannelIDs {\n\t\t\t\tif t.ParentID == v {\n\t\t\t\t\tdelete(s.channelMap, t.ID)\n\t\t\t\t\tcontinue outer\n\t\t\t\t}\n\t\t\t}\n\t\t\tguild.Threads[index] = t\n\t\t\tindex++\n\t\t} else {\n\t\t\tdelete(s.channelMap, t.ID)\n\t\t}\n\t}\n\tguild.Threads = guild.Threads[:index]\n\tfor _, t := range tls.Threads {\n\t\ts.channelMap[t.ID] = t\n\t\tguild.Threads = append(guild.Threads, t)\n\t}\n\n\tfor _, m := range tls.Members {\n\t\tif c, ok := s.channelMap[m.ID]; ok {\n\t\t\tc.Member = m\n\t\t}\n\t}\n\n\treturn nil\n",
           "arguments": [
@@ -20879,8 +20879,8 @@
         {
           "name": "ThreadMemberUpdate",
           "signature": "func (s *State) ThreadMemberUpdate(mu *ThreadMemberUpdate) error",
-          "source": "discordgo/state.go:668",
-          "endLine": 676,
+          "source": "discordgo/state.go:667",
+          "endLine": 675,
           "documentation": "// ThreadMemberUpdate sets or updates member data for the current user.",
           "body": "\n\tthread, err := s.Channel(mu.ID)\n\tif err != nil {\n\t\treturn err\n\t}\n\n\tthread.Member = mu.ThreadMember\n\treturn nil\n",
           "arguments": [
@@ -20918,8 +20918,8 @@
         {
           "name": "ThreadMembersUpdate",
           "signature": "func (s *State) ThreadMembersUpdate(tmu *ThreadMembersUpdate) error",
-          "source": "discordgo/state.go:628",
-          "endLine": 665,
+          "source": "discordgo/state.go:627",
+          "endLine": 664,
           "documentation": "// ThreadMembersUpdate updates thread members list",
           "body": "\n\tthread, err := s.Channel(tmu.ID)\n\tif err != nil {\n\t\treturn err\n\t}\n\ts.Lock()\n\tdefer s.Unlock()\n\n\tfor idx, member := range thread.Members {\n\t\tfor _, removedMember := range tmu.RemovedMembers {\n\t\t\tif member.ID == removedMember {\n\t\t\t\tthread.Members = append(thread.Members[:idx], thread.Members[idx+1:]...)\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t}\n\n\tfor _, addedMember := range tmu.AddedMembers {\n\t\tthread.Members = append(thread.Members, addedMember.ThreadMember)\n\t\t// Embedded partial members may omit User. Preserve the event, but do\n\t\t// not manufacture an identity to insert an unkeyable cache entry.\n\t\tif addedMember.Member != nil && addedMember.Member.User != nil {\n\t\t\terr = s.memberAdd(addedMember.Member)\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t}\n\t\tif addedMember.Presence != nil {\n\t\t\terr = s.presenceAdd(tmu.GuildID, addedMember.Presence)\n\t\t\tif err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t}\n\t}\n\tthread.MemberCount = tmu.MemberCount\n\n\treturn nil\n",
           "arguments": [
@@ -20957,8 +20957,8 @@
         {
           "name": "UserChannelPermissions",
           "signature": "func (s *State) UserChannelPermissions(userID, channelID string) (apermissions int64, err error)",
-          "source": "discordgo/state.go:1221",
-          "endLine": 1242,
+          "source": "discordgo/state.go:1220",
+          "endLine": 1241,
           "documentation": "// UserChannelPermissions returns the permission of a user in a channel.\n// userID    : The ID of the user to calculate permissions for.\n// channelID : The ID of the channel to calculate permission for.",
           "body": "\n\tif s == nil {\n\t\treturn 0, ErrNilState\n\t}\n\n\tchannel, err := s.Channel(channelID)\n\tif err != nil {\n\t\treturn\n\t}\n\n\tguild, err := s.Guild(channel.GuildID)\n\tif err != nil {\n\t\treturn\n\t}\n\n\tmember, err := s.Member(guild.ID, userID)\n\tif err != nil {\n\t\treturn\n\t}\n\n\treturn memberPermissions(guild, channel, userID, member.Roles), nil\n",
           "arguments": [
@@ -21014,8 +21014,8 @@
         {
           "name": "UserColor",
           "signature": "func (s *State) UserColor(userID, channelID string) int",
-          "source": "discordgo/state.go:1273",
-          "endLine": 1294,
+          "source": "discordgo/state.go:1272",
+          "endLine": 1293,
           "documentation": "// UserColor returns the color of a user in a channel.\n// While colors are defined at a Guild level, determining for a channel is more useful in message handlers.\n// 0 is returned in cases of error, which is the color of @everyone.\n// userID    : The ID of the user to calculate the color for.\n// channelID   : The ID of the channel to calculate the color for.",
           "body": "\n\tif s == nil {\n\t\treturn 0\n\t}\n\n\tchannel, err := s.Channel(channelID)\n\tif err != nil {\n\t\treturn 0\n\t}\n\n\tguild, err := s.Guild(channel.GuildID)\n\tif err != nil {\n\t\treturn 0\n\t}\n\n\tmember, err := s.Member(guild.ID, userID)\n\tif err != nil {\n\t\treturn 0\n\t}\n\n\treturn firstRoleColorColor(guild, member.Roles)\n",
           "arguments": [
@@ -21062,8 +21062,8 @@
         {
           "name": "VoiceState",
           "signature": "func (s *State) VoiceState(guildID, userID string) (*VoiceState, error)",
-          "source": "discordgo/state.go:871",
-          "endLine": 888,
+          "source": "discordgo/state.go:870",
+          "endLine": 887,
           "documentation": "// VoiceState gets a VoiceState by guild and user ID.",
           "body": "\n\tif s == nil {\n\t\treturn nil, ErrNilState\n\t}\n\n\tguild, err := s.Guild(guildID)\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\n\tfor _, state := range guild.VoiceStates {\n\t\tif state.UserID == userID {\n\t\t\treturn state, nil\n\t\t}\n\t}\n\n\treturn nil, ErrStateNotFound\n",
           "arguments": [
@@ -24306,16 +24306,19 @@
       "P3": "Context-aware shared Gateway lifecycle/writers; bounded ingress and callback join; ordered raw host observer and detached Before snapshots; uppercase STAGE_INSTANCE_* registration; corrected API/voice endpoint initialization. Parent-approved Go1.27 vet correction uses a literal %s format for ErrUnauthorized informational logging in RequestWithLockedBucket; no module API/behavior change. Parent-assigned Message.UnmarshalJSON partial-components correction preserves omitted nil versus present empty slice, avoiding implicit cache component deletion on partial MESSAGE_UPDATE.",
       "P5": "Bounded context-native voice API/engine with DAVE under voice+cgo; ordinary unsupported backend; private credential dispatch and immutable Opus handoff; removed legacy ChannelVoiceJoin/speaking/channel/UDP paths. Parent-assigned crypto review separates reset/proposal/prepared-ID deadlines and binds pending-reset authorization to authenticated opcode24 epoch1 plus current generation/version/successful opcode26 write; deferred opcode25 may complete matching unconsumed authorization. Native crypto ABI/patch remains unchanged."
     },
-    "canonicalModule": "github.com/chatanium/discordgo; version and checksum come from the consuming Go module, not the historical upstream sdkVersion field",
-    "canonicalImportReview": "voice_gateway.go and voice_transport.go import the canonical module's internal/dave package. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities are stable inventory labels, not local checkout paths.",
-    "publicationSourceReview": "Published v0.30.0 incorporates gofmt doc-comment layout changes in logging.go and oauth2.go; the five reviewed Application method documentation fingerprints follow those comments without changing signatures, bodies, defaults or classifications. voice.go's active fingerprint corrects an already stale pin to the byte-identical source in main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
+    "canonicalModule": "github.com/bwmarrin/discordgo; the original upstream module version is required by each consuming go.mod, with upstream archive and go.mod checksum authority in third_party/discordgo/upstream.sum. The maintained third_party/discordgo/patches stack prepares the SDK; extracted sdkModule provenance records Path, Version, Sum, GoModSum, PatchSHA256 and SourceSHA256, excluding machine-specific Dir.",
+    "canonicalImportReview": "voice_gateway.go and voice_transport.go retain the original github.com/bwmarrin/discordgo/internal/dave imports instead of the published fork namespace. These import-only changes update the active source hashes; upstream-base identity and historical baseline/audit records are unchanged. discordgo/ source identities remain stable inventory labels, not prepared-generation paths.",
+    "publicationSourceReview": "Historical published v0.30.0 incorporated gofmt doc-comment layout changes in logging.go and oauth2.go; its five reviewed Application method documentation fingerprints followed those comments without changing signatures, bodies, defaults or classifications. The maintained patch stack excludes those comment-only reflows and the active fingerprints now follow the original upstream comment layout. voice.go remains byte-identical to the reviewed published source and main commit 3158838b78dd92cb8220673cc4887d009204ef1a. Historical snapshots and audits remain unchanged.",
     "retirementSourceReview": "The published voice.go matches existing main source but active inventories lagged its retirement handshake. VoiceConnection.leaveAck and leaveConfirmed are private runtime-only state: ordered null-channel observation closes the acknowledgement; DisconnectContext waits within CloseTimeout, joins confirmation errors, and retains the reservation until cleanup and confirmation. Two extra anonymous empty struct channel types are implementation-local. Other nested identity changes and public declaration fingerprints are source-position shifts plus the separately reviewed OAuth documentation formatting; no module exposure changes.",
-    "sourcePackageSHA256": "9b8a66d3a4401004e59f29f4d23bc04f361eb5b9c9fe1317e64e3fe71902a9a9",
-    "sourceFormatting": "Parent-applied final SDK formatting incorporated into exact frozen source byte hashes. Pinned upstream f43dd94 plus reviewed local P3/P5 corrections; no semantic reformatting or SDK edits performed by the inventory owner.",
+    "sourcePackageSHA256": "f991276a836876b3840d4599ac530afe2cfd80f2fc4baeba0e6f7fceb762c336",
+    "sourceFormatting": "The prepared SDK preserves pinned upstream f43dd94 comment and blank-line layout while applying the maintained functional P3/P5 patch stack. Comment/blank-only fork reflows in discord.go, event.go, state.go, wsapi.go, logging.go, oauth2.go and discord_test.go are excluded; discord_test.go is outside this non-test package census. Exact reviewed hashes cover the eight changed non-test source files, position-only declaration shifts, whitespace-only documentation changes and blank-line-only method body changes. No type shapes, classifications, exposure decisions or module contract totals change. PatchSHA256 identifies the ordered maintained patch inputs and SourceSHA256 identifies the prepared source, recorded in extracted sdkModule provenance.",
     "sdkModule": {
-      "Path": "github.com/chatanium/discordgo",
-      "Sum": "h1:RDJvQXn0dO0mJxhwNT7MWybNKyS9tzvYw2cmuDYoGuI=",
-      "Version": "v0.30.0"
+      "GoModSum": "h1:JsaNXATZGUDc+uiR1/TGW4Aq4IKc2Hh/O8LhsBiSIBs=",
+      "PatchSHA256": "2905d7c43cd8ff11fb37194de26655190b53bae10856199eca7c9510c42b42c3",
+      "Path": "github.com/bwmarrin/discordgo",
+      "SourceSHA256": "edd4b32f167a045a0b95d5ea6c5090bbe70bc3b6238725aa033fd48abbd4662c",
+      "Sum": "h1:W9t/lhAHWwtLHME/ceUE5c49Wl+5jnOVcEezmjlJ0Fc=",
+      "Version": "v0.29.1-0.20260214123928-f43dd94faaac"
     },
     "extraction": "go run -mod=readonly tools/protocol/extract-source.go -out tools/protocol/inventory/source-extracted.json",
     "refresh": "python3 tools/protocol/refresh-inventory.py",
@@ -24331,7 +24334,7 @@
       },
       {
         "path": "discordgo/discord.go",
-        "sha256": "8477cc6bc5f63d407533fd28ed06465abfea8b4db8674ba8637ac9a499094ced",
+        "sha256": "f204bfacf24cc6ba0c1559b5060fd007c92901811b07db713f7b5642d9537af9",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -24349,7 +24352,7 @@
       },
       {
         "path": "discordgo/event.go",
-        "sha256": "bf933dfda7f6d819b64c7669658ffbca7db81ab72eef01ae2c389d8932aacbb6",
+        "sha256": "950b9716d0f61c944ff70c947c48925a9611fed28a6b636db3e1675ca4aae6e3",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -24430,7 +24433,7 @@
       },
       {
         "path": "discordgo/logging.go",
-        "sha256": "fdde2bbcf4d44ce30babca6c4aeff176f2707e5fa140c26d7ce8d4d45c58ff73",
+        "sha256": "29ea884fcd257ab51afe81dbf6e37bce10b23bd011748fafaf9f6bca05f36c79",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -24448,7 +24451,7 @@
       },
       {
         "path": "discordgo/oauth2.go",
-        "sha256": "8592c67b6e1c46c5d9a0ff52234c50f203dbc2605ff784a22255ea6ef0f0d1c4",
+        "sha256": "546db3dd8c5f39d69d743452b37504a29ca949550341b82f1cef275932b2eabc",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -24475,7 +24478,7 @@
       },
       {
         "path": "discordgo/state.go",
-        "sha256": "2adea6c2dd8f4bbcd159a022e93b76dde2393f23699a1c59afd6987d553778a0",
+        "sha256": "1658028a4b80d3d2d46e9c354e9a145e22574363c962ff36de33fb13bf087baf",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -24528,7 +24531,7 @@
       },
       {
         "path": "discordgo/voice_gateway.go",
-        "sha256": "c4399079bda0a1c87cfe12566dba6c3b82de0e38ac9886a6148537adecfd23f3",
+        "sha256": "9a73b5456ba271fa70578c0caf981409e306ad2dfa8537f0051cd033166f150c",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -24569,7 +24572,7 @@
       },
       {
         "path": "discordgo/voice_transport.go",
-        "sha256": "b3d5fb75e3facd68c4267c6ba4b484f9ba1483d5de98c0449f07778689dd7069",
+        "sha256": "a9abf83f778622350072899987520d306eeeebb0749c919b22236b221fb15982",
         "buildConstraint": "voice && cgo",
         "buildProfiles": [
           "native_voice"
@@ -24594,7 +24597,7 @@
       },
       {
         "path": "discordgo/wsapi.go",
-        "sha256": "315afe2f518980f421255145d737f37d4e06c193034ab4e6d7b87a0384090e07",
+        "sha256": "29463af8932851a0e5991c5dd357d14e64382c657c3e653b10236e3dc3a1742c",
         "buildConstraint": "",
         "buildProfiles": [
           "native_voice",
@@ -24602,7 +24605,7 @@
         ]
       }
     ],
-    "rawSHA256": "75f923466bb0b198ef3ecd22dc515412c5ad782d4127902f5be49578ec4ab6d1",
+    "rawSHA256": "dabc75e5db563a2d4d7f28181031d1a2c29089a6eb2c2be038e077576590fea0",
     "historicalBaseline": "source-baseline-v0.29.0.json",
     "legacyConversionAudit": "legacy-conversion-coverage.json (unchanged historical audit)"
   }

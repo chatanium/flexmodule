@@ -53,6 +53,12 @@ if [[ "$scenario" == voice ]]; then
     [[ -f bin/voice-runtime/provenance/native-lock.json ]] || fail 'Build real voice-enabled native artifact with make build-voice first'
 fi
 [[ -x "$runtime" ]] || fail 'Build the requested runtime before smoke; no automatic installs or fake success'
+# The go-run harness consumes the same prepared SDK as ordinary builds.
+run python3 tools/sdk.py --go "$GO_BINARY"
+safe_file .tools/deps/discordgo.lock
+exec 8<.tools/deps/discordgo.lock
+flock -s 8
+run python3 tools/sdk.py --go "$GO_BINARY" --verify-only
 # Never source .env, echo config or pass a secret into module container env.
 # The real harness records unavailable live observations as NOT_RUN.
 run timeout --signal=TERM --kill-after=15s "$CHECK_DEADLINE" \

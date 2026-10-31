@@ -7,7 +7,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	rt "github.com/thirdscam/chatanium-flexmodule/internal/runtime"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
 	"google.golang.org/grpc/codes"

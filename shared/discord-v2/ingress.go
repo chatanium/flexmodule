@@ -10,7 +10,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/chatanium/discordgo"
+	"github.com/bwmarrin/discordgo"
 	wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

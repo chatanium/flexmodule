@@ -2,8 +2,10 @@ module github.com/thirdscam/chatanium-flexmodule
 
 go 1.27.0
 
+replace github.com/bwmarrin/discordgo => ./.tools/deps/discordgo
+
 require (
-	github.com/chatanium/discordgo v0.30.0
+	github.com/bwmarrin/discordgo v0.29.1-0.20260214123928-f43dd94faaac
 	github.com/containerd/errdefs v1.0.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-plugin v1.8.0

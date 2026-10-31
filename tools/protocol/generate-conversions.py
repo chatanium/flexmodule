@@ -214,7 +214,7 @@ def writego(name,lines):
     body='\n'.join(lines[1:])+'\n'
     imports={
         'bytes':'"bytes"','context':'"context"','math':'"math"','strconv':'"strconv"','time':'"time"',
-        'discordgo':'"github.com/chatanium/discordgo"',
+        'discordgo':'"github.com/bwmarrin/discordgo"',
         'corewire':'corewire "github.com/thirdscam/chatanium-flexmodule/proto/core-v2"',
         'wire':'wire "github.com/thirdscam/chatanium-flexmodule/proto/discord-v2"',
         'core':'core "github.com/thirdscam/chatanium-flexmodule/shared/core-v2"',
